@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Mail, Linkedin, Heart } from "lucide-react";
-import logoUrl from "@assets/generated_images/GreenElephant_logo_icon_white_d5712486.png";
+import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
 
 export default function Footer() {
   const footerLinks = {
@@ -12,9 +12,9 @@ export default function Footer() {
       { label: "Coaching", href: "/coaching" },
     ],
     learn: [
-      { label: "Arbora Research Lab", href: "/arbora" },
+      { label: "Lab", href: "/lab" },
       { label: "Resources", href: "/resources" },
-      { label: "About Us", href: "/about" },
+      { label: "Consulting", href: "/consulting" },
       { label: "Contact", href: "/contact" },
     ],
     legal: [

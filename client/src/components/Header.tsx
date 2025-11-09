@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoUrl from "@assets/generated_images/GreenElephant_logo_icon_white_d5712486.png";
+import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,7 +13,8 @@ export default function Header() {
     { href: "/prompts", label: "Prompt Library" },
     { href: "/retreats", label: "Retreats" },
     { href: "/coaching", label: "Coaching" },
-    { href: "/arbora", label: "Arbora Lab" },
+    { href: "/lab", label: "Lab" },
+    { href: "/consulting", label: "Consulting" },
     { href: "/resources", label: "Resources" },
     { href: "/contact", label: "Contact" },
   ];

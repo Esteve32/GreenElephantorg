@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+  }
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);
@@ -43,18 +50,18 @@
   --chart-3: 45 93% 40%;
   --chart-4: 159 61% 30%;
   --chart-5: 251 45% 40%;
-  --font-sans: Inter, sans-serif;
-  --font-serif: Merriweather, serif;
-  --font-mono: 'DM Sans', monospace;
+  --font-sans: Lato, sans-serif;
+  --font-serif: Lato, sans-serif;
+  --font-mono: 'Archivo', monospace;
   
-  --influence: 0 61% 50%;
-  --attitude: 24 100% 60%;
-  --chaordic: 48 100% 50%;
-  --flow: 60 50% 50%;
-  --alignment: 150 33% 50%;
-  --needs: 180 100% 30%;
-  --ego: 203 67% 53%;
-  --dynamics: 250 25% 50%;
+  --influence: 0 70% 55%;
+  --attitude: 30 100% 60%;
+  --chaordic: 48 100% 55%;
+  --flow: 85 55% 50%;
+  --alignment: 100 40% 45%;
+  --needs: 180 100% 35%;
+  --ego: 210 60% 50%;
+  --dynamics: 260 35% 50%;
   --radius: .5rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(203 89% 53% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(203 89% 53% / 0.00);
@@ -145,14 +152,14 @@
   --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.20), 0px 8px 10px -1px hsl(0 0% 0% / 0.15);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.20);
   
-  --influence: 0 61% 50%;
-  --attitude: 24 100% 60%;
-  --chaordic: 48 100% 50%;
-  --flow: 60 50% 50%;
-  --alignment: 150 33% 50%;
-  --needs: 180 100% 30%;
-  --ego: 203 67% 53%;
-  --dynamics: 250 25% 50%;
+  --influence: 0 70% 55%;
+  --attitude: 30 100% 60%;
+  --chaordic: 48 100% 55%;
+  --flow: 85 55% 50%;
+  --alignment: 100 40% 45%;
+  --needs: 180 100% 35%;
+  --ego: 210 60% 50%;
+  --dynamics: 260 35% 50%;
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));

@@ -42,14 +42,14 @@ export default function Hero() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <Link href="/arbora">
+          <Link href="/periodic-table">
             <Button 
               size="lg" 
               variant="outline"
               className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10 min-w-[200px]"
-              data-testid="button-explore-arbora"
+              data-testid="button-explore-periodic-table"
             >
-              Explore Arbora Lab
+              Explore Periodic Table
             </Button>
           </Link>
         </div>
