@@ -81,6 +81,15 @@ export default {
           busy: "rgb(239 68 68)",
           offline: "rgb(156 163 175)",
         },
+        // Periodic Table Taxonomy Colors
+        influence: "hsl(var(--influence) / <alpha-value>)",
+        attitude: "hsl(var(--attitude) / <alpha-value>)",
+        chaordic: "hsl(var(--chaordic) / <alpha-value>)",
+        flow: "hsl(var(--flow) / <alpha-value>)",
+        alignment: "hsl(var(--alignment) / <alpha-value>)",
+        needs: "hsl(var(--needs) / <alpha-value>)",
+        ego: "hsl(var(--ego) / <alpha-value>)",
+        dynamics: "hsl(var(--dynamics) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
