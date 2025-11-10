@@ -42,7 +42,7 @@ export default function ChooseYourPathPage() {
   const paths = {
     retreat: {
       title: "Equinoxe Retreat",
-      description: "You're ready for deep transformation in Lapland or Provence",
+      description: "You're ready for deep transformation in Tonttumäki or Aix-en-Provence",
       href: "/retreats",
       icon: Heart,
       color: "needs",

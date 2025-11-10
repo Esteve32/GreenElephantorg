@@ -1,7 +1,8 @@
 import RetreatCard from "@/components/RetreatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import retreatImageUrl from "@assets/generated_images/Retreat_venue_meditation_space_c8b2bd31.png";
+import laplandImageUrl from "@assets/generated_images/Tonttumäki_Finland_northern_lights_retreat_a23361d7.png";
+import provenceImageUrl from "@assets/generated_images/Aix-en-Provence_France_lavender_retreat_85bbb302.png";
 import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
 
 //todo: remove mock functionality
@@ -10,20 +11,20 @@ const retreats = [
     title: "Equinoxe Retreat Lapland",
     season: "Winter Solstice 2024",
     date: "December 20-25, 2024",
-    location: "Lapland, Finland",
+    location: "Tonttumäki, Finland",
     capacity: "Limited to 12 participants",
-    imageUrl: retreatImageUrl,
-    description: "Journey to the Arctic Circle for a transformative winter retreat. Experience the Northern Lights while deepening your conscious communication practice in pristine wilderness.",
+    imageUrl: laplandImageUrl,
+    description: "Journey to the Arctic Circle for a transformative winter retreat in Tonttumäki. Experience the Northern Lights while deepening your conscious communication practice in pristine wilderness.",
     price: "€2,400",
   },
   {
     title: "Equinoxe Retreat Provence",
     season: "Spring Equinox 2025",
     date: "March 18-23, 2025",
-    location: "Provence, France",
+    location: "Aix-en-Provence, France",
     capacity: "Limited to 14 participants",
-    imageUrl: retreatImageUrl,
-    description: "Immerse yourself in the lavender fields and ancient wisdom of Provence. A transformative spring gathering celebrating renewal and conscious dialogue.",
+    imageUrl: provenceImageUrl,
+    description: "Immerse yourself in the lavender fields and ancient wisdom of Aix-en-Provence. A transformative spring gathering celebrating renewal and conscious dialogue.",
     price: "€2,200",
   },
 ];
@@ -38,7 +39,7 @@ export default function RetreatsPage() {
             Equinoxe Retreats
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Two sacred locations - Lapland and Provence - where the rhythms of nature align with the journey of conscious transformation
+            Two sacred locations - Tonttumäki and Aix-en-Provence - where the rhythms of nature align with the journey of conscious transformation
           </p>
         </div>
 
