@@ -1,13 +1,49 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import Stripe from "stripe";
+import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
+
+// Stripe integration from blueprint:javascript_stripe
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2025-10-29.clover",
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  // Stripe payment route for coaching packages (one-time payments)
+  // Server-side price validation to prevent client tampering
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      const { packageId } = req.body;
+      
+      // Validate package exists in server-side catalog
+      if (!packageId || !(packageId in COACHING_PACKAGES)) {
+        return res.status(400).json({ message: "Invalid package" });
+      }
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+      const packageInfo = COACHING_PACKAGES[packageId as PackageId];
+      const amount = packageInfo.price;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: "eur", // GreenElephant pricing is in EUR
+        metadata: {
+          packageId: packageId,
+          packageName: packageInfo.name,
+        },
+      });
+      
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      console.error("Stripe payment intent error:", error);
+      res
+        .status(500)
+        .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
 
   const httpServer = createServer(app);
 

@@ -17,6 +17,8 @@ import ConsultingPage from "@/pages/ConsultingPage";
 import ResourcesPromptsPage from "@/pages/ResourcesPromptsPage";
 import StoriesPage from "@/pages/StoriesPage";
 import ContactPage from "@/pages/ContactPage";
+import CheckoutPage from "@/pages/CheckoutPage";
+import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -37,6 +39,8 @@ function Router() {
         <Route path="/resources" component={ResourcesPromptsPage} />
         <Route path="/stories" component={StoriesPage} />
         <Route path="/contact" component={ContactPage} />
+        <Route path="/checkout" component={CheckoutPage} />
+        <Route path="/payment-success" component={PaymentSuccessPage} />
         <Route component={NotFound} />
       </Switch>
       </main>

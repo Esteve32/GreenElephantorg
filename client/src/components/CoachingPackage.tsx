@@ -2,6 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface CoachingPackageProps {
   title: string;
@@ -11,6 +12,7 @@ interface CoachingPackageProps {
   price: string;
   features: string[];
   highlighted?: boolean;
+  packageId: string;
 }
 
 export default function CoachingPackage({
@@ -21,7 +23,14 @@ export default function CoachingPackage({
   price,
   features,
   highlighted = false,
+  packageId,
 }: CoachingPackageProps) {
+  const [, setLocation] = useLocation();
+
+  const handleBooking = () => {
+    setLocation(`/checkout?package=${packageId}`);
+  };
+
   return (
     <Card className={`backdrop-blur-sm ${highlighted ? 'bg-needs/10 border-needs/40' : 'bg-card/50 border-white/10'} hover-elevate transition-all`}>
       <CardHeader>
@@ -56,12 +65,12 @@ export default function CoachingPackage({
       </CardContent>
       <CardFooter>
         <Button
-          className={`w-full ${highlighted ? 'bg-needs hover:bg-needs/90 text-white' : ''}`}
+          className={`w-full ${highlighted ? 'bg-alignment hover:bg-alignment/90 text-white' : ''}`}
           variant={highlighted ? 'default' : 'outline'}
           data-testid={`button-book-${type.toLowerCase()}`}
-          onClick={() => console.log('Booking coaching package:', title)}
+          onClick={handleBooking}
         >
-          Schedule Session
+          Begin Transformation
         </Button>
       </CardFooter>
     </Card>
