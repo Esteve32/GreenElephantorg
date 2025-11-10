@@ -15,6 +15,7 @@ import CoachingPage from "@/pages/CoachingPage";
 import LabPage from "@/pages/LabPage";
 import ConsultingPage from "@/pages/ConsultingPage";
 import ResourcesPromptsPage from "@/pages/ResourcesPromptsPage";
+import StoriesPage from "@/pages/StoriesPage";
 import ContactPage from "@/pages/ContactPage";
 import NotFound from "@/pages/not-found";
 
@@ -34,6 +35,7 @@ function Router() {
         <Route path="/lab" component={LabPage} />
         <Route path="/consulting" component={ConsultingPage} />
         <Route path="/resources" component={ResourcesPromptsPage} />
+        <Route path="/stories" component={StoriesPage} />
         <Route path="/contact" component={ContactPage} />
         <Route component={NotFound} />
       </Switch>

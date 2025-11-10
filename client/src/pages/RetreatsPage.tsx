@@ -7,34 +7,24 @@ import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
 //todo: remove mock functionality
 const retreats = [
   {
-    title: "Spring Awakening Retreat",
-    season: "Spring 2024",
-    date: "April 15-17, 2024",
-    location: "Lake Como, Italy",
+    title: "Equinoxe Retreat Lapland",
+    season: "Winter Solstice 2024",
+    date: "December 20-25, 2024",
+    location: "Lapland, Finland",
     capacity: "Limited to 12 participants",
     imageUrl: retreatImageUrl,
-    description: "A transformative weekend exploring conscious communication in a serene lakeside setting.",
-    price: "€1,200",
+    description: "Journey to the Arctic Circle for a transformative winter retreat. Experience the Northern Lights while deepening your conscious communication practice in pristine wilderness.",
+    price: "€2,400",
   },
   {
-    title: "Summer Intensive: TEAL Leadership",
-    season: "Summer 2024",
-    date: "July 8-14, 2024",
-    location: "Finnish Archipelago",
-    capacity: "Limited to 16 participants",
-    imageUrl: retreatImageUrl,
-    description: "Week-long deep dive into building TEAL organizations through conscious dialogue.",
-    price: "€2,800",
-  },
-  {
-    title: "Autumn Reflection Retreat",
-    season: "Autumn 2024",
-    date: "September 20-22, 2024",
+    title: "Equinoxe Retreat Provence",
+    season: "Spring Equinox 2025",
+    date: "March 18-23, 2025",
     location: "Provence, France",
-    capacity: "Limited to 10 participants",
+    capacity: "Limited to 14 participants",
     imageUrl: retreatImageUrl,
-    description: "Intimate gathering focused on integrating microhabits for sustained transformation.",
-    price: "€1,400",
+    description: "Immerse yourself in the lavender fields and ancient wisdom of Provence. A transformative spring gathering celebrating renewal and conscious dialogue.",
+    price: "€2,200",
   },
 ];
 
@@ -43,16 +33,16 @@ export default function RetreatsPage() {
     <div className="min-h-screen pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-needs text-white">Seasonal Events</Badge>
+          <Badge className="mb-4 bg-needs text-white">Equinoxe Experiences</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Premium Retreats
+            Equinoxe Retreats
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Transform your communication patterns in serene, intentional spaces designed for deep learning and connection
+            Two sacred locations - Lapland and Provence - where the rhythms of nature align with the journey of conscious transformation
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+        <div className="grid md:grid-cols-2 gap-8 mb-24 max-w-5xl mx-auto">
           {retreats.map((retreat) => (
             <RetreatCard key={retreat.title} {...retreat} />
           ))}

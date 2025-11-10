@@ -39,8 +39,8 @@ export default function Header() {
   const practiceItems = [
     { 
       href: "/retreats", 
-      label: "Retreats",
-      description: "Immersive 3-5 day transformational experiences",
+      label: "Equinoxe Retreats",
+      description: "Sacred gatherings in Lapland and Provence",
       icon: Heart
     },
     { 
@@ -63,6 +63,12 @@ export default function Header() {
       label: "Choose Your Path",
       description: "Take our diagnostic to find your ideal starting point",
       icon: Sparkles
+    },
+    { 
+      href: "/stories", 
+      label: "Stories of Transformation",
+      description: "Real journeys from conflict to connection",
+      icon: Heart
     },
     { 
       href: "/resources", 
@@ -97,22 +103,22 @@ export default function Header() {
                   <ul className="grid w-[400px] gap-3 p-4">
                     {awakenItems.map((item) => (
                       <li key={item.href}>
-                        <Link href={item.href}>
-                          <NavigationMenuLink asChild>
-                            <a
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate"
+                        <NavigationMenuLink asChild>
+                          <Link href={item.href}>
+                            <div
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate cursor-pointer"
                               data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                             >
                               <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-needs" />
+                                <item.icon className="h-4 w-4 text-foreground/70" />
                                 {item.label}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                 {item.description}
                               </p>
-                            </a>
-                          </NavigationMenuLink>
-                        </Link>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
                       </li>
                     ))}
                   </ul>
@@ -127,22 +133,22 @@ export default function Header() {
                   <ul className="grid w-[400px] gap-3 p-4">
                     {practiceItems.map((item) => (
                       <li key={item.href}>
-                        <Link href={item.href}>
-                          <NavigationMenuLink asChild>
-                            <a
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate"
+                        <NavigationMenuLink asChild>
+                          <Link href={item.href}>
+                            <div
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate cursor-pointer"
                               data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                             >
                               <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-alignment" />
+                                <item.icon className="h-4 w-4 text-foreground/70" />
                                 {item.label}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                 {item.description}
                               </p>
-                            </a>
-                          </NavigationMenuLink>
-                        </Link>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
                       </li>
                     ))}
                   </ul>
@@ -157,22 +163,22 @@ export default function Header() {
                   <ul className="grid w-[400px] gap-3 p-4">
                     {integrateItems.map((item) => (
                       <li key={item.href}>
-                        <Link href={item.href}>
-                          <NavigationMenuLink asChild>
-                            <a
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate"
+                        <NavigationMenuLink asChild>
+                          <Link href={item.href}>
+                            <div
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate cursor-pointer"
                               data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                             >
                               <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-flow" />
+                                <item.icon className="h-4 w-4 text-foreground/70" />
                                 {item.label}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                 {item.description}
                               </p>
-                            </a>
-                          </NavigationMenuLink>
-                        </Link>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
                       </li>
                     ))}
                   </ul>
@@ -232,7 +238,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <item.icon className="h-4 w-4 text-needs" />
+                      <item.icon className="h-4 w-4 text-foreground/70" />
                       {item.label}
                     </Button>
                   </Link>
@@ -253,7 +259,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <item.icon className="h-4 w-4 text-alignment" />
+                      <item.icon className="h-4 w-4 text-foreground/70" />
                       {item.label}
                     </Button>
                   </Link>
@@ -274,7 +280,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <item.icon className="h-4 w-4 text-flow" />
+                      <item.icon className="h-4 w-4 text-foreground/70" />
                       {item.label}
                     </Button>
                   </Link>

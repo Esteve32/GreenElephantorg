@@ -41,8 +41,8 @@ export default function ChooseYourPathPage() {
 
   const paths = {
     retreat: {
-      title: "Immersive Retreat",
-      description: "You're ready for deep transformation in a supportive community setting",
+      title: "Equinoxe Retreat",
+      description: "You're ready for deep transformation in Lapland or Provence",
       href: "/retreats",
       icon: Heart,
       color: "needs",
