@@ -5,17 +5,31 @@ import Stripe from "stripe";
 import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
 
 // Stripe integration from blueprint:javascript_stripe
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+// Gracefully handle missing Stripe keys to allow app to start
+const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
+let stripe: Stripe | null = null;
+
+if (STRIPE_KEY) {
+  stripe = new Stripe(STRIPE_KEY, {
+    apiVersion: "2023-10-16" as any, // Using stable version with type assertion
+  });
+  console.log('✓ Stripe initialized successfully');
+} else {
+  console.warn('⚠ Warning: STRIPE_SECRET_KEY not found. Payment functionality will be disabled.');
+  console.warn('  To enable payments, add STRIPE_SECRET_KEY to your deployment secrets.');
 }
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16" as any, // Using stable version with type assertion
-});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe payment route for coaching packages (one-time payments)
   // Server-side price validation to prevent client tampering
   app.post("/api/create-payment-intent", async (req, res) => {
+    // Check if Stripe is configured
+    if (!stripe) {
+      return res.status(503).json({ 
+        message: "Payment processing is currently unavailable. Please contact support." 
+      });
+    }
+
     try {
       const { packageId } = req.body;
       
