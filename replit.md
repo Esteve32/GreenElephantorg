@@ -5,6 +5,15 @@
 GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes ACIM-aligned principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
 
 **Recent Updates (November 2025)**:
+- **Value Proposition Overhaul (Nov 10)**: Implemented comprehensive "Promise → Path → Proof" framework across all 11 pages
+  - Hero section transformed with "Turn Every Conversation Into Sacred Practice" headline
+  - HomePage enhanced with Problem → Promise → Practice three-card section and emotional/spiritual benefits ladder
+  - All pages now feature clear above-the-fold benefits: practical outcome (headline) + emotional relief (subhead) + spiritual invitation (tertiary)
+  - Periodic Table page: Added "How to apply today" 3-step guidance with testimonial for credibility
+  - Coaching page: Pain-focused headline "Stop Repeating the Same Communication Patterns" with persona-specific benefits
+  - Retreats page: Added "What You'll Carry Home" section detailing post-retreat integration support
+  - Prompts/Arbora/Contact/Stories/WhatIs/Signals: All pages enhanced with benefit-driven copy
+  - Architect-verified: Maintains ACIM-aligned tone (compassionate, non-judgmental) without manipulative scarcity cues
 - Implemented Stripe payment integration with secure server-side price validation
 - Created emotionally resonant checkout flow linking problem → pain → solution with "cost of miscommunication" framing
 - Updated retreat locations to specific cities: Tonttumäki, Finland and Aix-en-Provence, France
@@ -48,7 +57,9 @@ Preferred communication style: Simple, everyday language.
 - Retreats: "Equinoxe Retreats" in Lapland (Finland) and Provence (France)
 - Coaching: Package comparison with 1:1 and team options
 - Lab (Arbora): Research articles and insights
+  - Route: `/lab` (canonical), `/arbora` (alias)
 - Resources/Prompts: Filterable prompt library and learning materials
+  - Route: `/resources` (canonical), `/prompts` (alias)
 - Contact: Intent-based contact form with smart routing
 - Stories: Transformation narratives organized by lens
 - "What Is" and "Signals" educational pages
