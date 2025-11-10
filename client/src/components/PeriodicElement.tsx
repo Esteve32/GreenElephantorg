@@ -3,12 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Video } from "lucide-react";
+import { getLensMetadata, type LensType } from "@/constants/lenses";
 
 interface PeriodicElementProps {
   symbol: string;
   name: string;
   number: number;
-  lens: "influence" | "attitude" | "chaordic" | "flow" | "alignment" | "needs" | "ego" | "dynamics";
+  lens: LensType;
   description?: string;
   learningUrl?: string;
 }
@@ -37,6 +38,8 @@ const lensLabels = {
 
 export default function PeriodicElement({ symbol, name, number, lens, description, learningUrl }: PeriodicElementProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const lensMetadata = getLensMetadata(lens);
+  const Icon = lensMetadata.icon;
 
   return (
     <>
@@ -46,6 +49,7 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
         data-testid={`element-${symbol.toLowerCase()}`}
       >
         <div className="flex flex-col items-center gap-1">
+          <Icon className="h-6 w-6 mb-1 text-[hsl(var(--lens-icon))]" />
           <div className="text-xs opacity-80">{number}</div>
           <div className="text-2xl font-bold">{symbol}</div>
           <div className="text-xs opacity-90 text-center line-clamp-1">{name}</div>
@@ -53,7 +57,7 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="backdrop-blur-xl bg-card/95 border-white/20 max-w-2xl">
+        <DialogContent className="backdrop-blur-xl bg-card/95 border-white/20 max-w-2xl" aria-describedby="element-description">
           <DialogHeader>
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -65,13 +69,14 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
                   <span className="text-sm text-muted-foreground">Element #{number}</span>
                 </div>
               </div>
-              <div className={`${lensColors[lens]} rounded-lg p-4 text-white border border-white/20`}>
-                <div className="text-4xl font-bold">{symbol}</div>
+              <div className={`${lensColors[lens]} rounded-lg p-4 border border-white/20 flex flex-col items-center gap-2`}>
+                <Icon className="h-8 w-8 text-[hsl(var(--lens-icon))]" />
+                <div className="text-3xl font-bold text-[hsl(var(--lens-icon))]">{symbol}</div>
               </div>
             </div>
           </DialogHeader>
 
-          <div className="space-y-6 mt-6">
+          <div className="space-y-6 mt-6" id="element-description">
             {description && (
               <div>
                 <h3 className="font-semibold mb-2">About this element</h3>

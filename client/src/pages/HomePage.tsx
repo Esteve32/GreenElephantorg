@@ -1,20 +1,8 @@
 import Hero from "@/components/Hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Heart, Users, Lightbulb, Target, Shield, Sparkles, Compass } from "lucide-react";
+import { LENS_ARRAY } from "@/constants/lenses";
 import networkImageUrl from "@assets/generated_images/Communication_network_sacred_geometry_e5b4bd8a.png";
-
-//todo: remove mock functionality
-const lenses = [
-  { icon: Brain, name: "Ego", color: "bg-ego", description: "Understanding conflict triggers" },
-  { icon: Users, name: "Dynamics", color: "bg-dynamics", description: "Relationships & feedback" },
-  { icon: Target, name: "Influence", color: "bg-influence", description: "Actions & decisions" },
-  { icon: Lightbulb, name: "Attitude", color: "bg-attitude", description: "Growth mindset" },
-  { icon: Sparkles, name: "Chaordic", color: "bg-chaordic", description: "Time use balance" },
-  { icon: Compass, name: "Flow", color: "bg-flow", description: "Motivation radar" },
-  { icon: Shield, name: "Alignment", color: "bg-alignment", description: "Empathy & integrity" },
-  { icon: Heart, name: "Needs", color: "bg-needs", description: "Unlocking factors" },
-];
 
 const benefits = [
   "Boost Emotional Intelligence",
@@ -46,13 +34,13 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-16">
-          {lenses.map((lens) => {
+          {LENS_ARRAY.map((lens) => {
             const Icon = lens.icon;
             return (
               <Card key={lens.name} className="backdrop-blur-sm bg-card/50 border-white/10 hover-elevate transition-all">
                 <CardHeader>
                   <div className={`${lens.color} w-12 h-12 rounded-lg flex items-center justify-center mb-3`}>
-                    <Icon className="h-6 w-6 text-white" />
+                    <Icon className="h-6 w-6 text-[hsl(var(--lens-icon))]" />
                   </div>
                   <CardTitle className="text-lg">{lens.name}</CardTitle>
                 </CardHeader>
