@@ -52,10 +52,13 @@ export default function WhatIsPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-needs text-white">Understanding the Foundation</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6" style={{ fontFamily: 'Archivo, sans-serif' }}>
-            What is Conscious Communication?
+            Stop Letting Words Create Distance
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            A transformative practice rooted in awareness, empathy, and the recognition of our shared humanity
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Learn how conscious communication transforms everyday conversations into moments of genuine connection, mutual understanding, and spiritual growth
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            This isn't about perfect words or techniques. It's about presence, authenticity, and recognizing our shared humanity beneath every interaction.
           </p>
         </div>
 

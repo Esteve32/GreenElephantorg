@@ -51,11 +51,15 @@ export default function PeriodicTablePage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(51,153,204,0.05),transparent_50%)] -z-10" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-12">
+          <Badge className="mb-4 bg-needs text-white">Interactive Framework</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Periodic Table of Conscious Communication
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            An interactive framework organizing communication elements by transformative lenses
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Transform your daily interactions into sacred practice—129 elements organized into 8 transformative lenses
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto mb-8">
+            Each element is a microhabit you can practice immediately. No theory. Just presence, awareness, and compassionate dialogue.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -98,21 +102,38 @@ export default function PeriodicTablePage() {
           </div>
         ))}
 
-        <div className="mt-16 backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10">
-          <h3 className="text-2xl font-bold mb-4 text-center">How to Use the Periodic Table</h3>
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <div>
-              <p className="font-semibold mb-2">1. Explore Elements</p>
-              <p className="text-muted-foreground">Click any element to learn about its role in conscious communication.</p>
+        <div className="mt-16 backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12">
+          <h3 className="text-3xl font-bold mb-6 text-center">How to Apply This Today</h3>
+          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+            The Periodic Table isn't meant to be mastered overnight—it's designed for gradual integration into your life
+          </p>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">1</span>
+              </div>
+              <p className="font-semibold mb-2 text-lg">Start with One Lens</p>
+              <p className="text-sm text-muted-foreground">Choose a lens that resonates with your current challenges. Begin with Needs or Alignment for foundational shifts.</p>
             </div>
-            <div>
-              <p className="font-semibold mb-2">2. Filter by Lens</p>
-              <p className="text-muted-foreground">Use the lens filters to focus on specific aspects of communication.</p>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">2</span>
+              </div>
+              <p className="font-semibold mb-2 text-lg">Practice One Element Daily</p>
+              <p className="text-sm text-muted-foreground">Select a single element and practice it for one week. Notice what shifts in your conversations and relationships.</p>
             </div>
-            <div>
-              <p className="font-semibold mb-2">3. Apply Microhabits</p>
-              <p className="text-muted-foreground">Each element links to practical prompts and learning resources.</p>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">3</span>
+              </div>
+              <p className="font-semibold mb-2 text-lg">Track Your Transformation</p>
+              <p className="text-sm text-muted-foreground">Journal your observations. Where did you notice more connection? Where did you catch yourself in old patterns?</p>
             </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-white/10 text-center">
+            <p className="text-sm text-muted-foreground italic">
+              "I started with just the Empathic Listening element. Within two weeks, my team noticed a difference in how I hold space for conflict." — Marcus T., TEAL Founder
+            </p>
           </div>
         </div>
       </div>

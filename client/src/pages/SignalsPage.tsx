@@ -100,12 +100,15 @@ export default function SignalsPage() {
     <div className="min-h-screen pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-destructive text-white">Recognition & Awareness</Badge>
+          <Badge className="mb-4 bg-destructive text-white">Early Warning System</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6" style={{ fontFamily: 'Archivo, sans-serif' }}>
-            Signals You're Drifting
+            Spot the Disconnection Before It Hardens
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            These patterns indicate when communication is fracturing trust and connection. Recognition is the first step toward transformation.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Learn to recognize the subtle signals when your communication is creating distance instead of connection—before trust erodes beyond repair
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            Awareness is the first step to transformation. When you can name the pattern, you can choose differently.
           </p>
         </div>
 

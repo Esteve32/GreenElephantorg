@@ -22,14 +22,78 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Hero />
 
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-b border-white/10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            From Pain to Peace: Your Path
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Understanding the problem, discovering the promise, and applying the practice
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-destructive">1</span>
+              </div>
+              <CardTitle className="text-2xl text-center">The Problem</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Miscommunication costs you trust, time, and peace. Every misunderstanding compounds, creating cycles of defensiveness, resentment, and disconnection.
+              </p>
+              <p className="text-sm text-foreground font-medium">
+                The average workplace loses <span className="text-destructive">30% productivity</span> to communication breakdowns.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="backdrop-blur-sm bg-needs/10 border-needs/30 ring-2 ring-needs/20">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">2</span>
+              </div>
+              <CardTitle className="text-2xl text-center">The Promise</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Conscious communication transforms conflict into connection. You'll navigate difficult conversations with clarity, set boundaries with compassion, and build relationships on genuine understanding.
+              </p>
+              <p className="text-sm text-foreground font-medium">
+                Peace isn't the absence of conflict—it's the presence of wisdom.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-full bg-alignment/20 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-alignment">3</span>
+              </div>
+              <CardTitle className="text-2xl text-center">The Practice</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Our Periodic Table framework gives you 129 practical elements organized into 8 transformative lenses. Each element is a microhabit you can apply immediately.
+              </p>
+              <p className="text-sm text-foreground font-medium">
+                Small shifts, sustained over time, create lasting transformation.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-needs text-white">Our Framework</Badge>
+          <Badge className="mb-4 bg-needs text-white">The Framework</Badge>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             8 Lenses of Conscious Communication
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our Periodic Table organizes communication elements into eight transformative lenses
+            Each lens reveals a different dimension of how we connect—or disconnect—from ourselves and others
           </p>
         </div>
 
@@ -62,9 +126,12 @@ export default function HomePage() {
         >
           <div className="absolute inset-0 bg-background/85 backdrop-blur-sm"></div>
           <div className="relative z-10">
-            <h3 className="text-3xl md:text-4xl font-bold mb-6">
-              10 Benefits of Conscious Communication
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">
+              What You'll Experience
             </h3>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Practical skills, emotional relief, and spiritual awakening—all from transforming how you communicate
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto">
               {benefits.map((benefit) => (
                 <div
@@ -75,6 +142,9 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+            <p className="text-sm text-muted-foreground/80 mt-8 max-w-3xl mx-auto italic">
+              These aren't just skills to learn—they're invitations to experience peace, connection, and wholeness in every interaction.
+            </p>
           </div>
         </div>
       </section>

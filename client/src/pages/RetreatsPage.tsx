@@ -36,10 +36,13 @@ export default function RetreatsPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-needs text-white">Equinoxe Experiences</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Equinoxe Retreats
+            Step Away to Transform Everything
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Two sacred locations - Tonttumäki and Aix-en-Provence - where the rhythms of nature align with the journey of conscious transformation
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            5-day immersive retreats where nature's rhythms support your journey from reactive communication to conscious connection
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            In Tonttumäki's Arctic silence or Provence's lavender fields, you'll practice microhabits in a held space of deep presence—then return home with sustainable transformation, not just inspiration.
           </p>
         </div>
 
@@ -77,6 +80,43 @@ export default function RetreatsPage() {
                 alt="Microhabit Framework" 
                 className="w-full max-w-md rounded-lg"
               />
+            </div>
+          </div>
+        </div>
+
+        <div className="backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12 mb-16">
+          <h2 className="text-3xl font-bold text-center mb-6">What You'll Carry Home</h2>
+          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+            These retreats don't end when you leave. Here's what supports your continued transformation:
+          </p>
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="flex gap-4">
+              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div>
+                <p className="font-semibold mb-1">Personalized Microhabit Playbook</p>
+                <p className="text-sm text-muted-foreground">Custom-designed practices based on your Satellite Scan and retreat insights</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div>
+                <p className="font-semibold mb-1">90-Day Integration Support</p>
+                <p className="text-sm text-muted-foreground">Weekly group calls and email guidance as you apply what you've learned</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div>
+                <p className="font-semibold mb-1">Alumni Community Access</p>
+                <p className="text-sm text-muted-foreground">Ongoing connection with fellow practitioners for mutual support</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div>
+                <p className="font-semibold mb-1">Recorded Sessions & Materials</p>
+                <p className="text-sm text-muted-foreground">Lifetime access to framework teachings and practice recordings</p>
+              </div>
             </div>
           </div>
         </div>

@@ -46,13 +46,16 @@ export default function StoriesPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-flow text-white">
             <Sparkles className="h-3 w-3 mr-1 inline" />
-            Integration Stories
+            Transformation Journeys
           </Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Stories of Transformation
+            See Yourself in These Stories
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Real journeys from conflict to connection. These aren't overnight miracles—they're the result of sustained practice, microhabits, and the courage to show up differently.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Real people facing the same communication challenges you face—and discovering a path from reactive patterns to conscious connection
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            These aren't overnight miracles. They're the result of sustained practice, compassionate self-awareness, and the willingness to choose differently—one conversation at a time.
           </p>
         </div>
 

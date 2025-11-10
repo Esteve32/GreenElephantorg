@@ -60,10 +60,13 @@ export default function CoachingPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-needs text-white">Personal & Team Coaching</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Coaching Packages
+            Stop Repeating the Same Communication Patterns
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Personalized support for your conscious communication journey
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Personalized coaching transforms your reactive patterns into conscious responses—one conversation at a time
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            Whether you're an Executive Assistant navigating power dynamics, a TEAL founder building collaborative culture, or a designer seeking authentic dialogue—you'll gain practical frameworks and compassionate support.
           </p>
         </div>
 

@@ -49,10 +49,13 @@ export default function ArboraPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-alignment text-white">Research & Insights</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Arbora Research Lab
+            From Research to Daily Liberation
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Weekly thought pieces, research findings, and innovation at the intersection of conscious communication and AI
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Discover how cutting-edge research in neuroscience, organizational psychology, and AI translates into practical freedom from reactive communication
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            Each article bridges the gap between academic insight and everyday practice—helping you understand why conscious communication works and how to apply it immediately.
           </p>
         </div>
 

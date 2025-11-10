@@ -32,10 +32,13 @@ export default function ContactPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-needs text-white">Get in Touch</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Contact Us
+            Your Message Receives Our Full Presence
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Every conversation is a holy encounter. We're here to support your journey toward conscious communication.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Every inquiry is treated as a holy encounter. When you reach out, you'll receive a personalized response within 24 hours—not automation, but genuine human presence.
+          </p>
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+            Whether exploring retreats, coaching, or research collaboration, we'll help you discern which path aligns with your journey.
           </p>
         </div>
 
