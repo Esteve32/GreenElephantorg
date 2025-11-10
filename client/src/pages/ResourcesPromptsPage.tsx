@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, BookOpen, Sparkles } from "lucide-react";
+import { Search, BookOpen, Sparkles, Download } from "lucide-react";
+import periodicTableImageUrl from "@assets/The-Periodic-Table-of-Conscious-Communication@2x_1762813238966.png";
+import influenceStrategiesPdfUrl from "@assets/1101 Influence Communication Strategies_1762813220069.pdf";
+import greenBlueRedPdfUrl from "@assets/1103 GreenBlueRed™_1762813220070.pdf";
+import microHabitPdfUrl from "@assets/2103 Micro-Habit_1762813220070.pdf";
+import chaordicRolesPdfUrl from "@assets/3111 Chaordic Roles (5 promises for each level of collective intelligence)_1762813220070.pdf";
+import nvcGreenBlueRedPdfUrl from "@assets/6104 NonViolentCommunication + 1103 GreenBlueRed_1762813220070.pdf";
+import fiveStagesTeamPdfUrl from "@assets/6106  with the 5 Stages of Team_1762813220070.pdf";
+import blueInfographicImageUrl from "@assets/InfographicSummary_BlueBeingUnderstood_slides _vers3.293_1762813339581.jpeg";
 
 //todo: remove mock functionality
 const prompts = [
@@ -208,10 +216,158 @@ export default function ResourcesPromptsPage() {
           </TabsContent>
 
           <TabsContent value="resources" className="space-y-8">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {resources.map((resource) => (
-                <ResourceCard key={resource.title} {...resource} />
-              ))}
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold mb-4">Downloadable Infographics & Frameworks</h2>
+              <p className="text-muted-foreground mb-6">
+                Visual guides and frameworks to deepen your practice. Download, print, and reference these tools as you develop your conscious communication skills.
+              </p>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Periodic Table of Conscious Communication</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Complete visual reference of all 129 elements organized by the 8 communication lenses.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-periodic-table" asChild>
+                      <a href={periodicTableImageUrl} download="Periodic-Table-Conscious-Communication.png">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PNG
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Influence Communication Strategies</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Master the Influence lens with strategic approaches to authentic persuasion and clear requests.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-influence" asChild>
+                      <a href={influenceStrategiesPdfUrl} download="Influence-Communication-Strategies.pdf">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PDF
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">GreenBlueRed™ Framework</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Three-color system for understanding communication intentions, behaviors, and techniques.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-greenblue" asChild>
+                      <a href={greenBlueRedPdfUrl} download="GreenBlueRed-Framework.pdf">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PDF
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Microhabit Design Framework</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Step-by-step guide to creating sustainable communication microhabits with trigger-action-reward loops.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-microhabit" asChild>
+                      <a href={microHabitPdfUrl} download="Microhabit-Framework.pdf">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PDF
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Chaordic Roles & Collective Intelligence</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Five promises for each level of collective intelligence in self-organizing systems.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-chaordic" asChild>
+                      <a href={chaordicRolesPdfUrl} download="Chaordic-Roles-Collective-Intelligence.pdf">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PDF
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">NVC + GreenBlueRed Integration</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Combining Nonviolent Communication principles with the GreenBlueRed framework.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-nvc" asChild>
+                      <a href={nvcGreenBlueRedPdfUrl} download="NVC-GreenBlueRed-Integration.pdf">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PDF
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">5 Stages of Team Development</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Understanding team dynamics through the lens of developmental stages and communication needs.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-team-stages" asChild>
+                      <a href={fiveStagesTeamPdfUrl} download="5-Stages-Team-Development.pdf">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download PDF
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Blue Communication: Being Understood</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Deep dive into Blue (Ego lens) communication patterns, barriers, and breakthrough techniques.
+                    </p>
+                    <Button className="w-full" variant="outline" data-testid="download-blue" asChild>
+                      <a href={blueInfographicImageUrl} download="Blue-Communication-Being-Understood.jpg">
+                        <Download className="h-4 w-4 mr-2 text-background" />
+                        Download JPG
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-12">
+              <h2 className="text-3xl font-bold mb-6">Learning Resources</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {resources.map((resource) => (
+                  <ResourceCard key={resource.title} {...resource} />
+                ))}
+              </div>
             </div>
           </TabsContent>
         </Tabs>

@@ -35,7 +35,7 @@ export default function Footer() {
             </div>
             <p className="text-muted-foreground mb-6 max-w-md leading-relaxed">
               Transforming conflicts into trust through conscious communication. 
-              Every conversation is a holy encounter.
+              Every conversation is an opportunity for deeper connection and understanding.
             </p>
             <div className="flex items-center gap-3">
               <Button 
@@ -104,7 +104,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2024 GreenElephant.org. Crafted with conscious intention.</p>
+          <p>© 2025 GreenElephant.org. Crafted with conscious intention.</p>
           <div className="flex items-center gap-2">
             <span>Made with</span>
             <Heart className="h-4 w-4 text-needs fill-needs" />

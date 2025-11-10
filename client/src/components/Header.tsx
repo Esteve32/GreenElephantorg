@@ -203,9 +203,9 @@ export default function Header() {
               <Button 
                 size="sm"
                 className="bg-needs hover:bg-needs/90 text-white"
-                data-testid="button-begin-intake"
+                data-testid="button-find-your-path"
               >
-                Begin Intake
+                Find Your Path
               </Button>
             </Link>
           </div>
@@ -304,9 +304,9 @@ export default function Header() {
                 <Button 
                   className="w-full bg-needs hover:bg-needs/90 text-white"
                   onClick={() => setMobileMenuOpen(false)}
-                  data-testid="button-mobile-begin-intake"
+                  data-testid="button-mobile-find-your-path"
                 >
-                  Begin Intake
+                  Find Your Path
                 </Button>
               </Link>
             </div>

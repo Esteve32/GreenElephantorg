@@ -137,7 +137,7 @@ export default function CoachingPage() {
               <h3 className="text-2xl font-bold mb-4">Our Approach</h3>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Every coaching relationship is a sacred space for transformation. We approach each session with ACIM-aligned principles of joining, non-judgment, and shared purpose.
+                  Every coaching relationship is a sacred space for transformation. We approach each session with principles of deep listening, non-judgment, compassionate presence, and shared commitment to growth.
                 </p>
                 <p>
                   Rather than performance pressure, we celebrate willingness and progress. Rather than fixing, we facilitate your innate capacity for conscious communication.

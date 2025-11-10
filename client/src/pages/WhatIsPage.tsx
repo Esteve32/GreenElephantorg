@@ -73,8 +73,8 @@ export default function WhatIsPage() {
               are universal human needs seeking to be met.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              Drawing from Nonviolent Communication (NVC), TEAL organizational principles, and ACIM's teachings on 
-              forgiveness and unity, conscious communication transforms how we relate—to ourselves, to others, and 
+              Drawing from Nonviolent Communication (NVC), TEAL organizational principles, and contemplative wisdom traditions 
+              emphasizing compassion and interconnection, conscious communication transforms how we relate—to ourselves, to others, and 
               to the systems we create together.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed">
