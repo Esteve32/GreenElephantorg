@@ -198,7 +198,7 @@ export default function SignalsPage() {
                 data-testid="button-choose-path"
               >
                 Choose Your Path
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 text-background" />
               </Button>
             </Link>
             <Link href="/periodic-table">

@@ -39,7 +39,7 @@ export default function Hero() {
               data-testid="button-choose-your-path"
             >
               Find Your Path
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-5 w-5 text-background" />
             </Button>
           </Link>
           <Link href="/signals">

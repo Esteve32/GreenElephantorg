@@ -135,11 +135,11 @@ export default function ResourcesPromptsPage() {
         <Tabs defaultValue="prompts" className="mb-16">
           <TabsList className="grid w-full md:w-[400px] mx-auto grid-cols-2 mb-8">
             <TabsTrigger value="prompts" data-testid="tab-prompts">
-              <Sparkles className="h-4 w-4 mr-2" />
+              <Sparkles className="h-4 w-4 mr-2 text-foreground" />
               Prompts
             </TabsTrigger>
             <TabsTrigger value="resources" data-testid="tab-resources">
-              <BookOpen className="h-4 w-4 mr-2" />
+              <BookOpen className="h-4 w-4 mr-2 text-foreground" />
               Resources
             </TabsTrigger>
           </TabsList>

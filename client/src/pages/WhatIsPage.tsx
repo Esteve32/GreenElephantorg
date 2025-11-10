@@ -163,7 +163,7 @@ export default function WhatIsPage() {
               <Link href="/periodic-table">
                 <Button variant="outline" className="mt-4" data-testid="button-explore-table">
                   Explore the Periodic Table
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 text-background" />
                 </Button>
               </Link>
             </CardContent>
@@ -202,7 +202,7 @@ export default function WhatIsPage() {
                 data-testid="button-choose-path"
               >
                 Choose Your Path
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 text-background" />
               </Button>
             </Link>
             <Link href="/signals">

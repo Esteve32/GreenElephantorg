@@ -104,21 +104,27 @@ export default function LabPage() {
         <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl p-8 md:p-12 mb-16">
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Our Research Partners</h2>
+              <h2 className="text-3xl font-bold mb-6">Arbora.partners</h2>
               <p className="text-muted-foreground mb-6">
                 Our Lab collaborates with leading institutions and organizations committed to advancing the science and practice of conscious communication.
               </p>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3 p-3 rounded-lg backdrop-blur-sm bg-white/5">
-                  <div className="w-2 h-2 rounded-full bg-alignment"></div>
+                  <div className="w-8 h-8 rounded-full bg-alignment/20 flex items-center justify-center text-xs font-bold text-alignment">
+                    LOGO
+                  </div>
                   <span>Helsinki University - Cognitive Neuroscience Lab</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-lg backdrop-blur-sm bg-white/5">
-                  <div className="w-2 h-2 rounded-full bg-alignment"></div>
+                  <div className="w-8 h-8 rounded-full bg-alignment/20 flex items-center justify-center text-xs font-bold text-alignment">
+                    LOGO
+                  </div>
                   <span>TEAL Organization Network</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-lg backdrop-blur-sm bg-white/5">
-                  <div className="w-2 h-2 rounded-full bg-alignment"></div>
+                  <div className="w-8 h-8 rounded-full bg-alignment/20 flex items-center justify-center text-xs font-bold text-alignment">
+                    LOGO
+                  </div>
                   <span>Center for Nonviolent Communication</span>
                 </div>
               </div>

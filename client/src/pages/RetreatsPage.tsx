@@ -9,18 +9,18 @@ import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
 const retreats = [
   {
     title: "Equinoxe Retreat Lapland",
-    season: "Winter Solstice 2024",
-    date: "December 20-25, 2024",
+    season: "Autumn Equinox 2028",
+    date: "September 20-25, 2028",
     location: "Tonttumäki, Finland",
     capacity: "Limited to 12 participants",
     imageUrl: laplandImageUrl,
-    description: "Journey to the Arctic Circle for a transformative winter retreat in Tonttumäki. Experience the Northern Lights while deepening your conscious communication practice in pristine wilderness.",
+    description: "Journey to the Arctic Circle for a transformative autumn retreat in Tonttumäki. Experience the Northern Lights while deepening your conscious communication practice in pristine wilderness.",
     price: "€2,400",
   },
   {
     title: "Equinoxe Retreat Provence",
-    season: "Spring Equinox 2025",
-    date: "March 18-23, 2025",
+    season: "Spring Equinox 2028",
+    date: "March 18-23, 2028",
     location: "Aix-en-Provence, France",
     capacity: "Limited to 14 participants",
     imageUrl: provenceImageUrl,
