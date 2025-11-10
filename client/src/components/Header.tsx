@@ -1,52 +1,213 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Microscope, Heart, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/periodic-table", label: "Periodic Table" },
-    { href: "/prompts", label: "Prompt Library" },
-    { href: "/retreats", label: "Retreats" },
-    { href: "/coaching", label: "Coaching" },
-    { href: "/lab", label: "Lab" },
-    { href: "/consulting", label: "Consulting" },
-    { href: "/resources", label: "Resources" },
-    { href: "/contact", label: "Contact" },
+  const awakenItems = [
+    { 
+      href: "/what-is-conscious-communication", 
+      label: "What is Conscious Communication?",
+      description: "Discover the transformative power of conscious dialogue",
+      icon: Sparkles
+    },
+    { 
+      href: "/signals", 
+      label: "Signals You're Drifting",
+      description: "Recognize the patterns that fracture trust and connection",
+      icon: AlertCircle
+    },
+    { 
+      href: "/periodic-table", 
+      label: "Science & Proof",
+      description: "Our Periodic Table framework backed by research",
+      icon: Microscope
+    },
+  ];
+
+  const practiceItems = [
+    { 
+      href: "/retreats", 
+      label: "Retreats",
+      description: "Immersive 3-5 day transformational experiences",
+      icon: Heart
+    },
+    { 
+      href: "/coaching", 
+      label: "Coaching",
+      description: "1:1 and group guidance for sustainable change",
+      icon: Users
+    },
+    { 
+      href: "/consulting", 
+      label: "Consulting",
+      description: "High-touch transformation for TEAL organizations",
+      icon: Sparkles
+    },
+  ];
+
+  const integrateItems = [
+    { 
+      href: "/choose-your-path", 
+      label: "Choose Your Path",
+      description: "Take our diagnostic to find your ideal starting point",
+      icon: Sparkles
+    },
+    { 
+      href: "/resources", 
+      label: "Resources & Prompts",
+      description: "Microhabits and tools structured by the 8 lenses",
+      icon: BookOpen
+    },
+    { 
+      href: "/lab", 
+      label: "Collaborate",
+      description: "LinkedIn community and research partnerships",
+      icon: Microscope
+    },
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/60 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between" style={{ height: '72px' }}>
           <Link href="/" className="flex items-center gap-3 hover-elevate rounded-md px-2 py-1">
-            <img src={logoUrl} alt="GreenElephant" className="h-8 w-8" />
+            <img src={logoUrl} alt="GreenElephant" className="h-10 w-10" />
             <span className="text-lg font-semibold tracking-tight">GreenElephant</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  data-testid={`link-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="text-sm"
-                >
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
-          </nav>
+          <NavigationMenu className="hidden lg:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="backdrop-blur-sm" data-testid="nav-awaken">
+                  Why It Matters
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4">
+                    {awakenItems.map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href}>
+                          <NavigationMenuLink asChild>
+                            <a
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate"
+                              data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
+                                <item.icon className="h-4 w-4 text-needs" />
+                                {item.label}
+                              </div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {item.description}
+                              </p>
+                            </a>
+                          </NavigationMenuLink>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="backdrop-blur-sm" data-testid="nav-practice">
+                  How We Guide You
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4">
+                    {practiceItems.map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href}>
+                          <NavigationMenuLink asChild>
+                            <a
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate"
+                              data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
+                                <item.icon className="h-4 w-4 text-alignment" />
+                                {item.label}
+                              </div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {item.description}
+                              </p>
+                            </a>
+                          </NavigationMenuLink>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="backdrop-blur-sm" data-testid="nav-integrate">
+                  Start Your Ritual
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4">
+                    {integrateItems.map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href}>
+                          <NavigationMenuLink asChild>
+                            <a
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate"
+                              data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
+                                <item.icon className="h-4 w-4 text-flow" />
+                                {item.label}
+                              </div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {item.description}
+                              </p>
+                            </a>
+                          </NavigationMenuLink>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          <div className="hidden lg:flex items-center gap-3">
+            <Link href="/contact">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                data-testid="button-talk-to-facilitator"
+                className="gap-2"
+              >
+                <PhoneCall className="h-4 w-4" />
+                Talk to a Facilitator
+              </Button>
+            </Link>
+            <Link href="/choose-your-path">
+              <Button 
+                size="sm"
+                className="bg-needs hover:bg-needs/90 text-white"
+                data-testid="button-begin-intake"
+              >
+                Begin Intake
+              </Button>
+            </Link>
+          </div>
 
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             data-testid="button-mobile-menu"
           >
@@ -56,20 +217,93 @@ export default function Header() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden backdrop-blur-lg bg-card/95 border-t border-white/10">
-          <nav className="px-4 py-4 space-y-2">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
+        <div className="lg:hidden backdrop-blur-lg bg-card/95 border-t border-white/10">
+          <nav className="px-4 py-4 space-y-4">
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+                Why It Matters
+              </h3>
+              <div className="space-y-1">
+                {awakenItems.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                      data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <item.icon className="h-4 w-4 text-needs" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+                How We Guide You
+              </h3>
+              <div className="space-y-1">
+                {practiceItems.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                      data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <item.icon className="h-4 w-4 text-alignment" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+                Start Your Ritual
+              </h3>
+              <div className="space-y-1">
+                {integrateItems.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                      data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <item.icon className="h-4 w-4 text-flow" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-white/10 space-y-2">
+              <Link href="/contact">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-center gap-2"
                   onClick={() => setMobileMenuOpen(false)}
-                  data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                  data-testid="button-mobile-talk-to-facilitator"
                 >
-                  {item.label}
+                  <PhoneCall className="h-4 w-4" />
+                  Talk to a Facilitator
                 </Button>
               </Link>
-            ))}
+              <Link href="/choose-your-path">
+                <Button 
+                  className="w-full bg-needs hover:bg-needs/90 text-white"
+                  onClick={() => setMobileMenuOpen(false)}
+                  data-testid="button-mobile-begin-intake"
+                >
+                  Begin Intake
+                </Button>
+              </Link>
+            </div>
           </nav>
         </div>
       )}
