@@ -110,7 +110,7 @@ export default function Header() {
                               data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                             >
                               <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-foreground/70" />
+                                <item.icon className="h-4 w-4 text-white" />
                                 {item.label}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
@@ -140,7 +140,7 @@ export default function Header() {
                               data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                             >
                               <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-foreground/70" />
+                                <item.icon className="h-4 w-4 text-white" />
                                 {item.label}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
@@ -170,7 +170,7 @@ export default function Header() {
                               data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                             >
                               <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-foreground/70" />
+                                <item.icon className="h-4 w-4 text-white" />
                                 {item.label}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
@@ -238,7 +238,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <item.icon className="h-4 w-4 text-foreground/70" />
+                      <item.icon className="h-4 w-4 text-white" />
                       {item.label}
                     </Button>
                   </Link>
@@ -259,7 +259,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <item.icon className="h-4 w-4 text-foreground/70" />
+                      <item.icon className="h-4 w-4 text-white" />
                       {item.label}
                     </Button>
                   </Link>
@@ -280,7 +280,7 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <item.icon className="h-4 w-4 text-foreground/70" />
+                      <item.icon className="h-4 w-4 text-white" />
                       {item.label}
                     </Button>
                   </Link>
