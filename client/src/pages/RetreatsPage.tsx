@@ -1,6 +1,7 @@
 import RetreatCard from "@/components/RetreatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BookOpen, Calendar, Users, Video } from "lucide-react";
 import laplandImageUrl from "@assets/generated_images/Tonttumäki_Finland_northern_lights_retreat_a23361d7.png";
 import provenceImageUrl from "@assets/generated_images/Aix-en-Provence_France_lavender_retreat_85bbb302.png";
 import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
@@ -91,28 +92,36 @@ export default function RetreatsPage() {
           </p>
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div className="flex gap-4">
-              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div className="w-12 h-12 rounded-full bg-needs/20 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="h-6 w-6 text-needs" />
+              </div>
               <div>
                 <p className="font-semibold mb-1">Personalized Microhabit Playbook</p>
                 <p className="text-sm text-muted-foreground">Custom-designed practices based on your Satellite Scan and retreat insights</p>
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div className="w-12 h-12 rounded-full bg-needs/20 flex items-center justify-center flex-shrink-0">
+                <Calendar className="h-6 w-6 text-needs" />
+              </div>
               <div>
                 <p className="font-semibold mb-1">90-Day Integration Support</p>
                 <p className="text-sm text-muted-foreground">Weekly group calls and email guidance as you apply what you've learned</p>
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div className="w-12 h-12 rounded-full bg-needs/20 flex items-center justify-center flex-shrink-0">
+                <Users className="h-6 w-6 text-needs" />
+              </div>
               <div>
                 <p className="font-semibold mb-1">Alumni Community Access</p>
                 <p className="text-sm text-muted-foreground">Ongoing connection with fellow practitioners for mutual support</p>
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="w-2 h-2 rounded-full bg-needs mt-2 flex-shrink-0"></div>
+              <div className="w-12 h-12 rounded-full bg-needs/20 flex items-center justify-center flex-shrink-0">
+                <Video className="h-6 w-6 text-needs" />
+              </div>
               <div>
                 <p className="font-semibold mb-1">Recorded Sessions & Materials</p>
                 <p className="text-sm text-muted-foreground">Lifetime access to framework teachings and practice recordings</p>
