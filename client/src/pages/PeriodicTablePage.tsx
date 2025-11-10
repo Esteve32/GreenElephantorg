@@ -96,6 +96,7 @@ export default function PeriodicTablePage() {
                   number={element.code}
                   lens={element.lens}
                   description={element.description}
+                  examplePrompt={element.examplePrompt}
                 />
               ))}
             </div>

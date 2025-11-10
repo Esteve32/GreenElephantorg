@@ -11,6 +11,7 @@ interface PeriodicElementProps {
   number: number;
   lens: LensType;
   description?: string;
+  examplePrompt?: string;
   learningUrl?: string;
 }
 
@@ -36,7 +37,7 @@ const lensLabels = {
   dynamics: "Dynamics",
 };
 
-export default function PeriodicElement({ symbol, name, number, lens, description, learningUrl }: PeriodicElementProps) {
+export default function PeriodicElement({ symbol, name, number, lens, description, examplePrompt, learningUrl }: PeriodicElementProps) {
   const [isOpen, setIsOpen] = useState(false);
   const lensMetadata = getLensMetadata(lens);
   const Icon = lensMetadata.icon;
@@ -82,6 +83,15 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
               <div>
                 <h3 className="font-semibold mb-2">About this element</h3>
                 <p className="text-muted-foreground leading-relaxed">{description}</p>
+              </div>
+            )}
+
+            {examplePrompt && (
+              <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-lg p-4">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <span className="text-sm uppercase tracking-wide text-muted-foreground">Example Prompt</span>
+                </h3>
+                <p className="text-foreground leading-relaxed italic">&ldquo;{examplePrompt}&rdquo;</p>
               </div>
             )}
 
