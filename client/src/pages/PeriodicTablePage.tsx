@@ -22,6 +22,28 @@ export default function PeriodicTablePage() {
     ? ALL_ELEMENTS
     : ALL_ELEMENTS.filter(el => el.lens === selectedLens);
 
+  // Group elements by category
+  const groupedElements = filteredElements.reduce((acc, element) => {
+    const category = element.category || "Core Concepts";
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(element);
+    return acc;
+  }, {} as Record<string, typeof ALL_ELEMENTS>);
+
+  const categoryOrder = [
+    "Core Concepts",
+    "SAY & WRITE",
+    "DO & MOVE",
+    "FEEL & INTEND",
+    "THINK & UNDERSTAND",
+    "EGO ROLES",
+    "COLLECTIVELY INTELLIGENT ROLES"
+  ];
+
+  const sortedCategories = categoryOrder.filter(cat => groupedElements[cat]);
+
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,18 +77,23 @@ export default function PeriodicTablePage() {
           </Badge>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
-          {filteredElements.map((element) => (
-            <PeriodicElement
-              key={element.code}
-              symbol={element.symbol}
-              name={element.name}
-              number={element.code}
-              lens={element.lens}
-              description={element.description}
-            />
-          ))}
-        </div>
+        {sortedCategories.map((category) => (
+          <div key={category} className="mb-12">
+            <h2 className="text-2xl font-bold mb-4 text-center">{category}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+              {groupedElements[category].map((element) => (
+                <PeriodicElement
+                  key={element.code}
+                  symbol={element.symbol}
+                  name={element.name}
+                  number={element.code}
+                  lens={element.lens}
+                  description={element.description}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
 
         <div className="mt-16 backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10">
           <h3 className="text-2xl font-bold mb-4 text-center">How to Use the Periodic Table</h3>
