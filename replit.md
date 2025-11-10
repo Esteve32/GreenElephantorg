@@ -4,6 +4,13 @@
 
 GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes ACIM-aligned principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
 
+**Recent Updates (November 2025)**:
+- Implemented Stripe payment integration with secure server-side price validation
+- Created emotionally resonant checkout flow linking problem → pain → solution with "cost of miscommunication" framing
+- Updated retreat locations to specific cities: Tonttumäki, Finland and Aix-en-Provence, France
+- Applied 66% opacity to periodic table element backgrounds for more elegant, translucent appearance
+- Fixed icon contrast to 95% lightness ensuring visibility on all colored lens backgrounds
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -114,11 +121,15 @@ Preferred communication style: Simple, everyday language.
 - ESLint and formatting (configured via Replit plugins)
 - Hot module replacement in development
 
-**Third-Party Services** (Planned):
-- Neon Database: PostgreSQL hosting
-- Google APIs: Dynamic content sourcing
-- Notion API: Content management and updates
-- Typeform/VideoAsk: Interactive client onboarding and feedback
+**Third-Party Services**:
+- **Stripe**: Payment processing for coaching packages and retreats (ACTIVE)
+  - Secure server-side price validation via COACHING_PACKAGES catalog
+  - EUR currency for European pricing
+  - Three coaching packages: Single Session (€180), Transformation Package (€840), Team Workshop (€1,200)
+- Neon Database: PostgreSQL hosting (Planned)
+- Google APIs: Dynamic content sourcing (Planned)
+- Notion API: Content management and updates (Planned)
+- Typeform/VideoAsk: Interactive client onboarding and feedback (Planned)
 - Custom domain: www.greenelephant.org
 
 **Data Fetching**:
