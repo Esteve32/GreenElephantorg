@@ -2,9 +2,15 @@
 
 ## Overview
 
-GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes ACIM-aligned principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
+GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes inclusive spiritual principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
 
 **Recent Updates (November 2025)**:
+- **Content & Language Updates (Nov 10)**:
+  - Updated copyright year to 2025 in Footer
+  - Replaced ACIM-specific references with inclusive mainstream spiritual language
+  - Changed header CTA from "Begin Intake" to "Find Your Path" for improved clarity
+  - Added 8 downloadable resources to Resources page (periodic table PNG + 7 PDF/image infographics)
+  - Download buttons use accessible `asChild` pattern with proper semantic HTML
 - **Value Proposition Overhaul (Nov 10)**: Implemented comprehensive "Promise → Path → Proof" framework across all 11 pages
   - Hero section transformed with "Turn Every Conversation Into Sacred Practice" headline
   - HomePage enhanced with Problem → Promise → Practice three-card section and emotional/spiritual benefits ladder
@@ -13,7 +19,7 @@ GreenElephant.org is a spiritual transformation platform focused on conscious co
   - Coaching page: Pain-focused headline "Stop Repeating the Same Communication Patterns" with persona-specific benefits
   - Retreats page: Added "What You'll Carry Home" section detailing post-retreat integration support
   - Prompts/Arbora/Contact/Stories/WhatIs/Signals: All pages enhanced with benefit-driven copy
-  - Architect-verified: Maintains ACIM-aligned tone (compassionate, non-judgmental) without manipulative scarcity cues
+  - Architect-verified: Maintains compassionate, non-judgmental tone without manipulative scarcity cues
 - Implemented Stripe payment integration with secure server-side price validation
 - Created emotionally resonant checkout flow linking problem → pain → solution with "cost of miscommunication" framing
 - Updated retreat locations to specific cities: Tonttumäki, Finland and Aix-en-Provence, France
