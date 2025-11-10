@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, AlertTriangle } from "lucide-react";
 import heroImageUrl from "@assets/generated_images/Spiritual_hero_background_light_80674a87.png";
 
 export default function Hero() {
@@ -39,7 +39,7 @@ export default function Hero() {
               data-testid="button-choose-your-path"
             >
               Find Your Path
-              <ArrowRight className="ml-2 h-5 w-5 text-background" />
+              <ArrowRight className="ml-2 h-5 w-5 text-white" />
             </Button>
           </Link>
           <Link href="/signals">
@@ -49,6 +49,7 @@ export default function Hero() {
               className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10 min-w-[220px]"
               data-testid="button-recognize-signals"
             >
+              <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
               Recognize the Signals
             </Button>
           </Link>
