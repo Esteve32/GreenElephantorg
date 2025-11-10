@@ -2,19 +2,20 @@ import Hero from "@/components/Hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LENS_ARRAY } from "@/constants/lenses";
+import { Brain, Shield, Users, HandHeart, ShieldCheck, Repeat, Scale, Target, Anchor, Feather } from "lucide-react";
 import networkImageUrl from "@assets/generated_images/Communication_network_sacred_geometry_e5b4bd8a.png";
 
 const benefits = [
-  "Boost Emotional Intelligence",
-  "Clarify Boundaries",
-  "Solve Problems Collectively",
-  "Turn Conflicts Into Trust",
-  "Prevent Unnecessary Drama",
-  "Create Healthy Habits",
-  "Balance Empathy With Self-Respect",
-  "Identify Critical Needs",
-  "Increase Self-Reliance",
-  "Detach From Ego",
+  { text: "Boost Emotional Intelligence", icon: Brain },
+  { text: "Clarify Boundaries", icon: Shield },
+  { text: "Solve Problems Collectively", icon: Users },
+  { text: "Turn Conflicts Into Trust", icon: HandHeart },
+  { text: "Prevent Unnecessary Drama", icon: ShieldCheck },
+  { text: "Create Healthy Habits", icon: Repeat },
+  { text: "Balance Empathy With Self-Respect", icon: Scale },
+  { text: "Identify Critical Needs", icon: Target },
+  { text: "Increase Self-Reliance", icon: Anchor },
+  { text: "Detach From Ego", icon: Feather },
 ];
 
 export default function HomePage() {
@@ -133,14 +134,18 @@ export default function HomePage() {
               Practical skills, emotional relief, and spiritual awakening—all from transforming how you communicate
             </p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto">
-              {benefits.map((benefit) => (
-                <div
-                  key={benefit}
-                  className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10 hover-elevate"
-                >
-                  <p className="text-sm font-medium">{benefit}</p>
-                </div>
-              ))}
+              {benefits.map((benefit) => {
+                const Icon = benefit.icon;
+                return (
+                  <div
+                    key={benefit.text}
+                    className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10 hover-elevate"
+                  >
+                    <Icon className="h-5 w-5 mb-2 mx-auto text-needs" />
+                    <p className="text-sm font-medium">{benefit.text}</p>
+                  </div>
+                );
+              })}
             </div>
             <p className="text-sm text-muted-foreground/80 mt-8 max-w-3xl mx-auto italic">
               These aren't just skills to learn—they're invitations to experience peace, connection, and wholeness in every interaction.
