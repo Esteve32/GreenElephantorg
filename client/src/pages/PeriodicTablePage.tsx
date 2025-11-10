@@ -45,8 +45,11 @@ export default function PeriodicTablePage() {
   const sortedCategories = categoryOrder.filter(cat => groupedElements[cat]);
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-24 pb-16 relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-card/30 -z-10" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,179,179,0.05),transparent_50%)] -z-10" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(51,153,204,0.05),transparent_50%)] -z-10" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Periodic Table of Conscious Communication

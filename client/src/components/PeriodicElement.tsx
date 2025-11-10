@@ -45,7 +45,8 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`${lensColors[lens]} hover-elevate active-elevate-2 rounded-md p-3 text-white border border-white/20 transition-all duration-200 hover:scale-105 group`}
+        className={`${lensColors[lens]} hover-elevate active-elevate-2 rounded-md p-3 text-white border border-white/20 transition-all duration-200 hover:scale-105 group bg-opacity-66`}
+        style={{ backgroundColor: `${lensMetadata.hexColor}aa` }}
         data-testid={`element-${symbol.toLowerCase()}`}
       >
         <div className="flex flex-col items-center gap-1">
@@ -69,7 +70,7 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
                   <span className="text-sm text-muted-foreground">Element #{number}</span>
                 </div>
               </div>
-              <div className={`${lensColors[lens]} rounded-lg p-4 border border-white/20 flex flex-col items-center gap-2`}>
+              <div className={`${lensColors[lens]} rounded-lg p-4 border border-white/20 flex flex-col items-center gap-2`} style={{ backgroundColor: `${lensMetadata.hexColor}aa` }}>
                 <Icon className="h-8 w-8 text-[hsl(var(--lens-icon))]" />
                 <div className="text-3xl font-bold text-[hsl(var(--lens-icon))]">{symbol}</div>
               </div>
