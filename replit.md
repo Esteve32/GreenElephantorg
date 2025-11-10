@@ -21,19 +21,29 @@ Preferred communication style: Simple, everyday language.
 
 **Design System**:
 - Dark mode first with HUD aesthetic (dark backgrounds, semi-transparent white overlays)
-- Custom color palette based on 8 communication lenses (Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics)
+- Custom color palette based on 8 communication lenses with exact taxonomy hex codes:
+  - Influence (#cc3333 / Red) - Code 1100
+  - Attitude (#ff9933 / Orange) - Code 2100
+  - Chaordic (#ffcc00 / Yellow) - Code 3100
+  - Flow (#cccc33 / Green) - Code 4100
+  - Alignment (#669966 / Green) - Code 5100
+  - Needs (#009999 / Teal) - Code 6100
+  - Ego (#3399cc / Blue) - Code 7100
+  - Dynamics (#666699 / Purple) - Code 8100
 - Typography: Archivo for headlines, Lato for body text
 - Spacing follows 4/8/12/16/24/32 pixel scale
 - Glass-morphism effects with backdrop blur for modals and navigation
+- Icon system: Light icons (95% lightness) for optimal contrast on colored lens backgrounds
 
 **Key Pages**:
 - Home: Hero section with framework overview and lens visualization
-- Periodic Table: Interactive grid of communication elements, filterable by lens
-- Retreats: Seasonal event showcases (Lapland/Provence)
+- Periodic Table: Comprehensive 129-element taxonomy with hierarchical category organization
+- Retreats: "Equinoxe Retreats" in Lapland (Finland) and Provence (France)
 - Coaching: Package comparison with 1:1 and team options
 - Lab (Arbora): Research articles and insights
 - Resources/Prompts: Filterable prompt library and learning materials
 - Contact: Intent-based contact form with smart routing
+- Stories: Transformation narratives organized by lens
 - "What Is" and "Signals" educational pages
 
 **Component Architecture**:
