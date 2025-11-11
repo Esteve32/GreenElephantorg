@@ -70,7 +70,7 @@ export default function CoachingPage() {
             Personalized coaching transforms your reactive patterns into conscious responses—one conversation at a time
           </p>
           <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
-            Whether you're an Executive Assistant navigating power dynamics, a TEAL founder building collaborative culture, or a designer seeking authentic dialogue—you'll gain practical frameworks and compassionate support.
+            Whether you're an Executive Assistant navigating power dynamics, a <a href="https://en.wikipedia.org/wiki/Teal_organisation" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">TEAL</a> founder building collaborative culture, or a designer seeking authentic dialogue—you'll gain practical frameworks and compassionate support.
           </p>
         </div>
 
@@ -78,44 +78,6 @@ export default function CoachingPage() {
           {packages.map((pkg) => (
             <CoachingPackage key={pkg.title} {...pkg} />
           ))}
-        </div>
-
-        <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl overflow-hidden mb-16">
-          <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12">
-            <div className="flex items-center justify-center">
-              <img 
-                src={coachImageUrl} 
-                alt="Estève Pannetier" 
-                className="rounded-2xl w-full max-w-sm"
-              />
-            </div>
-            <div className="flex flex-col justify-center">
-              <h2 className="text-3xl font-bold mb-4">Meet Your Coach</h2>
-              <h3 className="text-xl text-needs mb-4">Estève Pannetier</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                With over a decade of experience in design thinking, UX research, and conscious communication, 
-                Estève brings a unique blend of analytical rigor and compassionate facilitation to every session.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Co-founder of GreenElephant and Head of AI & UX Research at Arbora, Estève has supported 
-                hundreds of leaders in transforming their communication patterns through the microhabit methodology.
-              </p>
-              <div className="space-y-2 text-sm">
-                <p className="flex items-center gap-2">
-                  <span className="text-needs">✓</span>
-                  <span>Certified in Nonviolent Communication (NVC)</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="text-needs">✓</span>
-                  <span>Design Thinking Strategist</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="text-needs">✓</span>
-                  <span>Human Factors & Ergonomics Expert</span>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12 mb-16">
@@ -155,19 +117,38 @@ export default function CoachingPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
           <Card className="backdrop-blur-sm bg-card/50 border-white/10">
             <CardContent className="pt-6">
-              <h3 className="text-2xl font-bold mb-4">What to Expect</h3>
+              <h3 className="text-2xl font-bold mb-4">Your Personalized SMART Goal</h3>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">Clarity Session:</strong> We begin with deep listening to understand your communication challenges and aspirations.
+                  Every coaching journey begins with co-creating your unique transformation goal using the SMART framework:
                 </p>
-                <p>
-                  <strong className="text-foreground">Ongoing Sessions:</strong> Biweekly 2-hour deep dives with practice assignments between sessions.
-                </p>
-                <p>
-                  <strong className="text-foreground">Support:</strong> Unlimited 20-minute check-ins and messaging support when you need guidance.
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs font-semibold mt-0.5">S</span>
+                    <span><strong className="text-foreground">Specific:</strong> Crystal-clear communication outcomes tailored to your context</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs font-semibold mt-0.5">M</span>
+                    <span><strong className="text-foreground">Measurable:</strong> Concrete indicators you can track and celebrate</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs font-semibold mt-0.5">A</span>
+                    <span><strong className="text-foreground">Achievable:</strong> Ambitious yet realistic within your current life</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs font-semibold mt-0.5">R</span>
+                    <span><strong className="text-foreground">Relevant:</strong> Aligned with your deepest values and aspirations</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs font-semibold mt-0.5">T</span>
+                    <span><strong className="text-foreground">Time-bound:</strong> Clear milestones with realistic timeframes</span>
+                  </li>
+                </ul>
+                <p className="pt-2 text-foreground font-medium">
+                  We continue coaching until you reach your goal—not for a fixed duration.
                 </p>
               </div>
             </CardContent>
@@ -175,17 +156,44 @@ export default function CoachingPage() {
 
           <Card className="backdrop-blur-sm bg-card/50 border-white/10">
             <CardContent className="pt-6">
-              <h3 className="text-2xl font-bold mb-4">Our Approach</h3>
+              <h3 className="text-2xl font-bold mb-4">Total Communication Transformation</h3>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Every coaching relationship is a sacred space for transformation. We approach each session with principles of deep listening, non-judgment, compassionate presence, and shared commitment to growth.
+                  This isn't just coaching—it's personal transformation that ripples through every aspect of your life:
                 </p>
-                <p>
-                  Rather than performance pressure, we celebrate willingness and progress. Rather than fixing, we facilitate your innate capacity for conscious communication.
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs mt-1">•</span>
+                    <span><strong className="text-foreground">Human Conversations:</strong> Navigate difficult dialogues with colleagues, partners, family with confidence and clarity</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs mt-1">•</span>
+                    <span><strong className="text-foreground">AI Prompting:</strong> Learn to communicate with AI tools in ways that unlock deeper insights and better outcomes</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs mt-1">•</span>
+                    <span><strong className="text-foreground">Self-Talk:</strong> Transform your inner dialogue from criticism to compassionate self-leadership</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-needs mt-1">•</span>
+                    <span><strong className="text-foreground">Written Communication:</strong> Craft emails, messages, and documents that land with impact and empathy</span>
+                  </li>
+                </ul>
+                <p className="pt-2">
+                  Whether you're prompting ChatGPT or presenting to your board, the same conscious communication principles apply—and transform everything.
                 </p>
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl p-8 md:p-12 text-center">
+          <h3 className="text-2xl font-bold mb-4">Limited Availability</h3>
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            We limit coaching engagements to ensure each partnership receives the depth of attention it deserves. 
+            Our commitment is to your transformation, not volume—which means working with a select number of 
+            clients who are ready for meaningful change.
+          </p>
         </div>
       </div>
     </div>
