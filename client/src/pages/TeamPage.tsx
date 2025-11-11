@@ -28,7 +28,7 @@ const coaches = [
   },
   {
     name: "Estève Pannetier",
-    title: "COO at Arbora | TEDx Speaker | UX Ethnographer",
+    title: "Coach | TEDx Speaker | UX Ethnographer",
     location: "Helsinki, Finland",
     photo: estevePhoto,
     linkedin: "https://www.linkedin.com/in/estève-pannetier-3a883217",
