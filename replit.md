@@ -5,6 +5,24 @@
 GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes inclusive spiritual principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
 
 **Recent Updates (November 2025)**:
+- **Coaching & Consulting Page Redesign (Nov 11 - Latest)**:
+  - **Coaching Page Transformation**:
+    - Removed Estève Pannetier coach profile section (previously displayed with image and full bio)
+    - Added **SMART Goal Framework** section: Explains Specific, Measurable, Achievable, Relevant, Time-bound methodology
+    - Added **Total Communication Transformation** section: Emphasizes AI Prompting (ChatGPT, etc.), human conversations, self-talk, and written communication
+    - Added **Limited Availability** message: "We limit coaching engagements to ensure each partnership receives the depth of attention it deserves"
+    - Clarified coaching continues until goal is reached (not fixed duration)
+    - Added TEAL Wikipedia link (https://en.wikipedia.org/wiki/Teal_organisation) in hero section
+  
+  - **Consulting Page Overhaul**:
+    - **Reordered Packages**: Executive Leadership Intensive (€18k) → TEAL Organization Transformation (€28k) → Innovation Team Design Sprint (€12k)
+    - **Pricing Reduction**: Lowered from €50k/€25k/€15k to €28k/€18k/€12k to align with professional consultant retainers
+    - **Psychological Anchoring**: Added comparison pricing showing traditional costs (€120k+ change management, €30k/month retainers, €25k+ 2-week engagements)
+    - **Problem/Solution Framework**: Created "The Hidden Cost of Communication Breakdown" section with red destructive styling for problems vs teal success styling for solutions
+    - **Visual Enhancements**: Added icons (Sparkles, Users, TrendingDown), Framer Motion animations, hover effects, "Most Popular" badge on Executive Leadership
+    - **CEO/CFO/TEAL Targeting**: Content now speaks directly to financial decision-makers with specific cost breakdowns (€500k-2M productivity loss, €150k+ turnover costs)
+    - **TEAL Wikipedia Links**: All 3 TEAL mentions now link to https://en.wikipedia.org/wiki/Teal_organisation
+  
 - **UX Enhancements & Button Harmonization (Nov 11 - Late)**:
   - **Button Icons Harmonized**: All buttons now use `currentColor` inheritance for icons/arrows (ArrowRight, Download, AlertTriangle) ensuring automatic color matching with button text across all pages
   - **Enhanced Recommendation Flow**: Transformed "Choose Your Path" into 4-stage interactive experience:
