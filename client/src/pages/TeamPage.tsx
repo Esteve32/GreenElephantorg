@@ -104,22 +104,22 @@ export default function TeamPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
             >
-              <Card className="overflow-hidden backdrop-blur-sm bg-card/50 hover-elevate">
-                <div className="grid md:grid-cols-[300px,1fr] gap-8">
+              <Card className="backdrop-blur-sm bg-card/50 hover-elevate">
+                <div className="grid md:grid-cols-[220px,1fr] gap-6">
                   {/* Photo Section */}
-                  <div className="relative">
-                    <div className="aspect-[3/4] md:aspect-auto md:h-full overflow-hidden">
+                  <div className="flex items-start justify-center p-6 md:p-8">
+                    <div className="w-48 h-48 flex-shrink-0">
                       <img
                         src={coach.photo}
                         alt={coach.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-lg"
                         data-testid={`img-coach-${coach.name.toLowerCase().replace(/\s+/g, '-')}`}
                       />
                     </div>
                   </div>
 
                   {/* Content Section */}
-                  <div className="p-6 md:p-8 space-y-6">
+                  <div className="p-6 md:pr-8 md:py-8 space-y-6">
                     <div>
                       <h2 className="text-3xl font-bold mb-2 font-['Archivo']" data-testid={`text-coach-name-${coach.name.toLowerCase().replace(/\s+/g, '-')}`}>
                         {coach.name}
