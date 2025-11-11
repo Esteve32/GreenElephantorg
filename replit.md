@@ -1,232 +1,88 @@
 # GreenElephant.org - Conscious Communication Platform
 
 ## Overview
+GreenElephant.org is a spiritual transformation platform centered on conscious communication, utilizing the "Periodic Table of Conscious Communication" framework. It targets Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The platform promotes inclusive spiritual principles and features a unique "Head-Up Display" (HUD) design aesthetic with dark backgrounds and semi-transparent white overlays. The business vision is to foster authentic connection and meaningful relationships by transforming conflicts into trust and positioning communication as a critical human interface beyond AI automation.
 
-GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes inclusive spiritual principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
+## Recent Changes (November 11, 2025)
 
-**Recent Updates (November 2025)**:
-- **Coaching & Consulting Page Redesign (Nov 11 - Latest)**:
-  - **Coaching Page Transformation**:
-    - Removed Estève Pannetier coach profile section (previously displayed with image and full bio)
-    - Added **SMART Goal Framework** section: Explains Specific, Measurable, Achievable, Relevant, Time-bound methodology
-    - Added **Total Communication Transformation** section: Emphasizes AI Prompting (ChatGPT, etc.), human conversations, self-talk, and written communication
-    - Added **Limited Availability** message: "We limit coaching engagements to ensure each partnership receives the depth of attention it deserves"
-    - Clarified coaching continues until goal is reached (not fixed duration)
-    - Added TEAL Wikipedia link (https://en.wikipedia.org/wiki/Teal_organisation) in hero section
-  
-  - **Consulting Page Overhaul**:
-    - **Reordered Packages**: Executive Leadership Intensive (€18k) → TEAL Organization Transformation (€28k) → Innovation Team Design Sprint (€12k)
-    - **Pricing Reduction**: Lowered from €50k/€25k/€15k to €28k/€18k/€12k to align with professional consultant retainers
-    - **Psychological Anchoring**: Added comparison pricing showing traditional costs (€120k+ change management, €30k/month retainers, €25k+ 2-week engagements)
-    - **Problem/Solution Framework**: Created "The Hidden Cost of Communication Breakdown" section with red destructive styling for problems vs teal success styling for solutions
-    - **Visual Enhancements**: Added icons (Sparkles, Users, TrendingDown), Framer Motion animations, hover effects, "Most Popular" badge on Executive Leadership
-    - **CEO/CFO/TEAL Targeting**: Content now speaks directly to financial decision-makers with specific cost breakdowns (€500k-2M productivity loss, €150k+ turnover costs)
-    - **TEAL Wikipedia Links**: All 3 TEAL mentions now link to https://en.wikipedia.org/wiki/Teal_organisation
-  
-- **UX Enhancements & Button Harmonization (Nov 11 - Late)**:
-  - **Button Icons Harmonized**: All buttons now use `currentColor` inheritance for icons/arrows (ArrowRight, Download, AlertTriangle) ensuring automatic color matching with button text across all pages
-  - **Enhanced Recommendation Flow**: Transformed "Choose Your Path" into 4-stage interactive experience:
-    - **Stage 1 (Questionnaire)**: Progress indicator showing "X of 3 completed" with disabled CTA until all questions answered
-    - **Stage 2 (Calculating)**: Framer Motion breathing animation (2.5s) with `useReducedMotion` fallback for accessibility
-    - **Stage 3 (Results)**: Personalized recommendation + inline gratitude form (name, email, phone, preferred contact time)
-    - **Stage 4 (Submitted)**: Success banner with option to retake assessment
-  - **Backend Support**: POST /api/recommendations endpoint with Zod validation, MemStorage persistence, recommendationSubmissions schema
-  - **Form Features**: Select dropdown for preferred contact time (Morning/Afternoon/Evening), inline error display, toast notifications, retry capability on error
-  
-- **Major Content Overhaul (Nov 11)**:
-  - **Hero & Messaging**: Transformed main headline from "Transform Conflicts Into Trust" to "Turn Every Conversation Into Sacred Practice"
-  - **AI vs Human Narrative**: Added powerful positioning: "Communication is not soft. It's the only interface AI cannot automate for you."
-  - **Navigation Reordering**: Services now ordered as Coaching, Consulting, Retreats (previously Retreats, Coaching, Consulting)
-  - **Email Migration**: All contact points updated to anu@greenelephant.org throughout the site
-  - **Social Links**: Added LinkedIn (greenelephant-org) and YouTube playlist integration to footer
-  - **Direct Booking**: Added Calendly link (anu-greenelephant/call-with-anu) to Contact page
-  - **Content Refinement**: Removed "healing" from "healing and authentic connection" - replaced with "authentic connection and meaningful relationships"
-  
-- **Coaching Packages Major Update (Nov 11)**:
-  - **Coaching Journey** (NEW): €2,980, ~6 months, unlimited sessions with AI-powered Satellite Scan™
-  - **Single Session**: Updated to 120 minutes (from 90), €295 (from €180)
-  - **Team Workshop**: Confirmed half-day intensive for up to 10 people at €1,200
-  - **Coaching Process Section**: Added 4-step Discovery → Design → Practice → Mastery framework
-  - Server-side pricing catalog updated for secure validation
-  
-- **Retreats Transformation (Nov 11)**:
-  - **Dates Switched**: September = Provence, March = Lapland (previously reversed)
-  - **Location Update**: Changed from "Tonttumäki" to "Levi" (well-known ski resort) for credibility
-  - **Removed Northern Lights**: Now emphasizes "peace and quiet of Finnish nature" (no unguaranteed promises)
-  - **Pricing**: Increased to €2,890 (from €2,200-2,400) with clear "Excludes food, accommodation & travel" note
-  - **Focus Shift**: Reframed around conflict transformation: "Transform how you see conflict" with specific outcomes
+### Team Page Enhancement
+- Reordered coaches: Anu Timmerbacka → Jonas Pannetier → Estève Pannetier
+- Added "Unique Superpower" badges for each coach highlighting their transformative strengths
+- Added "How to Talk 'Green' to [Name]" sections with personalized communication guidance based on LinkedIn profiles
+- Fixed languages display bug with defensive Array.isArray guard
 
-- **Periodic Table Enhancements (Nov 11)**:
-  - **Copy-to-Clipboard**: Added one-click copy button for all 129 example prompts with toast confirmation
-  - **Category Reorganization**: Moved all "THINK & UNDERSTAND" items into "FEEL & INTEND" category
-  - **Example Prompts**: All 129 elements now have NVC-based, emotionally intelligent example prompts
-  
-- **Partner Updates (Nov 11)**:
-  - Removed: Helsinki University
-  - Added: Aalto Design Factory
-  - Newsletter signup language: Removed frequency promises ("weekly" → generic "insights")
+### Retreat Waitlist Funnel
+- Complete GDPR-compliant email collection system
+- Removed "Learn More" button, replaced with single "Join Waitlist" CTA
+- WaitlistDialog component with scarcity messaging (limited spots, fills within 3 weeks)
+- Form validation: Name, Email, Motivation (minLength=10), GDPR consent checkbox
+- Backend: POST /api/waitlist endpoint creates atomically linked contact + waitlist entry
+- Automated e2e tests confirm full funnel functionality ✅
 
-- **Previous Updates (Nov 10)**:
-  - **Value Proposition Overhaul**: Implemented comprehensive "Promise → Path → Proof" framework across all 11 pages
-  - **Periodic Table**: Added "How to apply today" 3-step guidance with testimonial for credibility
-  - Stripe payment integration with secure server-side price validation
-  - 8 downloadable resources (periodic table PNG + 7 PDF/image infographics)
-  - Applied 66% opacity to periodic table element backgrounds
-  - Fixed icon contrast to 95% lightness for visibility on colored lens backgrounds
+### Backend Infrastructure
+- GDPR-compliant contact schema with consent tracking (contacts, waitlist_entries, newsletter_subscriptions, signals_quiz_results tables)
+- Feature-specific storage interfaces and API endpoints
+- Quiz scoring validation with 0-100 bounds and NaN safeguards
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
 ### Frontend Architecture
+The frontend is built with React and TypeScript, using Vite for bundling. Wouter handles client-side routing, and `shadcn/ui` (built on Radix UI) provides the component library. State management relies on TanStack Query for server-side data, and React Hook Form with Zod is used for form handling and validation. Styling is implemented with Tailwind CSS and a custom design system.
 
-**Framework**: React with TypeScript using Vite as the build tool
-- Client-side routing via Wouter (lightweight alternative to React Router)
-- Component library: shadcn/ui built on Radix UI primitives
-- State management: TanStack Query (React Query) for server state
-- Form handling: React Hook Form with Zod validation resolvers
-- Styling: Tailwind CSS with custom design system
+The design system is dark mode-first, featuring a HUD aesthetic with dark backgrounds and semi-transparent white overlays. It uses a custom color palette based on 8 communication lenses, a specific typography (Archivo for headlines, Lato for body), and a 4/8/12/16/24/32 pixel spacing scale. Glass-morphism effects with backdrop blur are used for modals and navigation. Icons are light (95% lightness) for optimal contrast on colored backgrounds.
 
-**Design System**:
-- Dark mode first with HUD aesthetic (dark backgrounds, semi-transparent white overlays)
-- Custom color palette based on 8 communication lenses with exact taxonomy hex codes:
-  - Influence (#cc3333 / Red) - Code 1100
-  - Attitude (#ff9933 / Orange) - Code 2100
-  - Chaordic (#ffcc00 / Yellow) - Code 3100
-  - Flow (#cccc33 / Green) - Code 4100
-  - Alignment (#669966 / Green) - Code 5100
-  - Needs (#009999 / Teal) - Code 6100
-  - Ego (#3399cc / Blue) - Code 7100
-  - Dynamics (#666699 / Purple) - Code 8100
-- Typography: Archivo for headlines, Lato for body text
-- Spacing follows 4/8/12/16/24/32 pixel scale
-- Glass-morphism effects with backdrop blur for modals and navigation
-- Icon system: Light icons (95% lightness) for optimal contrast on colored lens backgrounds
-
-**Key Pages**:
-- Home: Hero with "AI vs Human" narrative and framework overview
-- Periodic Table: 129 elements with copy-to-clipboard functionality and NVC-based example prompts
-- Retreats: "Equinoxe Retreats" - Sept (Provence), March (Levi, Finland) at €2,890
-- Coaching: 3 packages including new Coaching Journey (€2,980, 6 months, unlimited sessions)
-- Team: Meet the 3 coaches (Jonas Pannetier - Marseille, Estève Pannetier - Helsinki, Anu Timmerbacka - Helsinki)
-  - Professional profiles with LinkedIn integration
-  - Specialties, experience, languages, and coaching approaches
-  - Direct contact buttons for each coach
-- Lab (Arbora): Research articles with Aalto Design Factory partnership
-  - Route: `/lab` (canonical), `/arbora` (alias)
-- Resources/Prompts: Filterable prompt library with downloadable materials
-  - Route: `/resources` (canonical), `/prompts` (alias)
-- Contact: Intent-based form with direct Calendly booking (anu@greenelephant.org)
-- Stories: Transformation narratives organized by lens
-- "What Is" and "Signals" educational pages
-
-**Component Architecture**:
-- Modular, reusable components (PeriodicElement, PromptCard, RetreatCard, CoachingPackage, etc.)
-- Shared UI components from shadcn/ui in `client/src/components/ui/`
-- Custom components in `client/src/components/`
-- Example components for development reference in `client/src/components/examples/`
+Key pages include Home, Periodic Table (with 129 elements and NVC-based prompts), Retreats, Coaching, Team, Lab, Resources/Prompts, Contact, Stories, "What Is", and "Signals" educational pages. The architecture emphasizes modular, reusable components.
 
 ### Backend Architecture
-
-**Server Framework**: Express.js with TypeScript
-- Minimal REST API setup (routes defined in `server/routes.ts`)
-- Session management preparation with `connect-pg-simple`
-- Development server with Vite middleware integration for HMR
-- Production build via esbuild with ESM output
-
-**Storage Layer**:
-- Abstract storage interface (`IStorage`) for database operations
-- In-memory implementation (`MemStorage`) as default
-- Designed for easy migration to Drizzle ORM with PostgreSQL
-- User model defined in shared schema
-
-**API Design**:
-- All routes prefixed with `/api`
-- JSON request/response format
-- Request logging middleware with duration tracking
-- Raw body preservation for webhook support
+The backend uses Express.js with TypeScript, providing a minimal REST API. It includes an abstract storage interface (`IStorage`) with an in-memory implementation (`MemStorage`) for development, designed for future migration to Drizzle ORM with PostgreSQL. All API routes are prefixed with `/api`, use JSON for requests/responses, and include request logging.
 
 ### Data Storage Solutions
-
-**Database**: Prepared for PostgreSQL via Neon serverless
-- Drizzle ORM configured but not yet fully implemented
-- Schema defined in `shared/schema.ts` with Zod validation
-- Migration support via `drizzle-kit`
-- Current fallback: In-memory storage for development
-
-**Schema Design**:
-- Users table with UUID primary keys
-- Schema validation via `drizzle-zod` for type safety
-- Shared types between client and server in `shared/` directory
-
-**Future Integrations**:
-- Google API for dynamic content management
-- Notion API for product/pricing updates and testimonials
-- Typeform/VideoAsk embeddings for client interactions
+The project is prepared for PostgreSQL using Neon serverless, with Drizzle ORM configured. Schema definitions are in `shared/schema.ts` with Zod validation. The current fallback is in-memory storage. The schema includes a Users table with UUID primary keys and uses `drizzle-zod` for type safety.
 
 ### Authentication and Authorization
+A basic user model is prepared, but authentication is not yet implemented. The planned architecture involves session-based authentication using `express-session` and a PostgreSQL session store via `connect-pg-simple`.
 
-**Current State**: Basic user model prepared but no authentication implemented
+## External Dependencies
 
-**Planned Architecture**:
-- Session-based authentication using `express-session`
-- PostgreSQL session store via `connect-pg-simple`
-- Password hashing (library not yet included)
-- User credentials in users table
+### UI Framework
+- shadcn/ui (Radix UI primitives)
+- Tailwind CSS
+- Lucide React (icons)
+- Google Fonts: Archivo, Lato
 
-### External Dependencies
+### Development Tools
+- Vite
+- TypeScript
+- ESLint
 
-**UI Framework**:
-- shadcn/ui component library (Radix UI primitives)
-- Tailwind CSS with custom configuration
-- Lucide React for icons
-- Custom fonts: Archivo, Lato (Google Fonts)
-
-**Development Tools**:
-- Vite for build and development server
-- TypeScript with strict mode enabled
-- ESLint and formatting (configured via Replit plugins)
-- Hot module replacement in development
-
-**Third-Party Services**:
-- **Stripe**: Payment processing for coaching packages and retreats (ACTIVE)
-  - Secure server-side price validation via COACHING_PACKAGES catalog in `shared/packages.ts`
-  - EUR currency for European pricing
-  - Three coaching packages: Single Session (€295), Coaching Journey (€2,980), Team Workshop (€1,200)
+### Third-Party Services
+- **Stripe**: Payment processing for coaching packages and retreats (ACTIVE, EUR currency, server-side price validation)
 - **Calendly**: Direct booking integration (anu-greenelephant/call-with-anu)
-- **YouTube**: Playlist integration for community access
+- **YouTube**: Playlist integration
 - **LinkedIn**: Company page (greenelephant-org)
-- Neon Database: PostgreSQL hosting (Planned)
-- Google APIs: Dynamic content sourcing (Planned)
-- Notion API: Content management and updates (Planned)
-- Typeform/VideoAsk: Interactive client onboarding and feedback (Planned)
-- Custom domain: www.greenelephant.org
+- **Neon Database**: PostgreSQL hosting (Planned)
+- **Google APIs**: Dynamic content sourcing (Planned)
+- **Notion API**: Content management and updates (Planned)
+- **Typeform/VideoAsk**: Interactive client onboarding and feedback (Planned)
 
-**Data Fetching**:
-- TanStack Query for server state with custom fetch wrapper
-- Credential-based requests for session handling
-- Error handling with automatic toast notifications
+### Data Fetching
+- TanStack Query
 
-**Design Assets**:
-- Generated images stored in `attached_assets/generated_images/`
-- Logo and icons in `attached_assets/`
-- Image imports via Vite aliases (`@assets`)
+### Styling Utilities
+- `class-variance-authority`
+- `clsx`
+- `tailwind-merge`
 
-**Styling Utilities**:
-- `class-variance-authority` for component variant management
-- `clsx` and `tailwind-merge` for conditional class names
-- Custom Tailwind theme extending base colors with lens taxonomy
+### Form Management
+- React Hook Form
+- Zod
 
-**Form Management**:
-- React Hook Form for form state
-- Zod schemas for validation
-- `@hookform/resolvers` for integration
+### Date Handling
+- `date-fns`
 
-**Date Handling**:
-- `date-fns` for date formatting and manipulation
-
-**Carousel/Interactive Elements**:
-- `embla-carousel-react` for image carousels
-- `cmdk` for command palette components
+### Interactive Elements
+- `embla-carousel-react`
+- `cmdk`
