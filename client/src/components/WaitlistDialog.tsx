@@ -164,6 +164,7 @@ export default function WaitlistDialog({ open, onOpenChange, retreatTitle, retre
               placeholder="Share what you hope to transform or discover..."
               className="min-h-[100px] resize-none"
               required
+              minLength={10}
               data-testid="textarea-waitlist-motivation"
             />
             <p className="text-xs text-muted-foreground">
