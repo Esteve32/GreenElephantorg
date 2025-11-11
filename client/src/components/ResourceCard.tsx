@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, ExternalLink, FileText } from "lucide-react";
+import { ExternalLink, FileText } from "lucide-react";
 
 interface ResourceCardProps {
   title: string;
