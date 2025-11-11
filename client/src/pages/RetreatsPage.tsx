@@ -6,7 +6,6 @@ import laplandImageUrl from "@assets/generated_images/Tonttumäki_Finland_northe
 import provenceImageUrl from "@assets/generated_images/Aix-en-Provence_France_lavender_retreat_85bbb302.png";
 import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
 
-//todo: remove mock functionality
 const retreats = [
   {
     title: "Equinoxe Retreat Provence",
@@ -18,6 +17,7 @@ const retreats = [
     description: "Transform how you see conflict in the lavender fields of Provence. This 5-day immersive experience (approx. 25 hours) focuses on seeing conflicts differently, looking beyond ego and triggers, and building trust regardless of emotional temperature.",
     price: "€2,890",
     priceNote: "Excludes food, accommodation & travel",
+    retreatType: "provence" as const,
   },
   {
     title: "Equinoxe Retreat Lapland",
@@ -29,6 +29,7 @@ const retreats = [
     description: "Journey to Levi's Arctic serenity for a transformative spring retreat. Experience the peace and quiet of Finnish nature while deepening your conscious communication practice in pristine wilderness.",
     price: "€2,890",
     priceNote: "Excludes food, accommodation & travel",
+    retreatType: "lapland" as const,
   },
 ];
 
