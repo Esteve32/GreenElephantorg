@@ -83,24 +83,26 @@ export default function CheckoutPage() {
   const packages: Record<string, { name: string; price: number; features: string[]; savings?: string }> = {
     '1on1-single': {
       name: "1:1 Single Session",
-      price: 180,
+      price: 295,
       features: [
-        "90-minute deep-dive session",
+        "120-minute deep-dive session",
         "Personalized framework analysis",
         "Action plan with 3 micro-habits",
         "Session recording & transcript"
       ]
     },
-    '1on1-package': {
-      name: "1:1 Transformation Package",
-      price: 840,
-      savings: "Save €240 vs. single sessions",
+    'coaching-journey': {
+      name: "Coaching Journey",
+      price: 2980,
       features: [
-        "6 x 90-minute sessions over 3 months",
-        "Complete periodic table mastery",
-        "Weekly practice assignments",
-        "Email support between sessions",
-        "Lifetime access to session recordings"
+        "AI-powered Satellite Scan™ (90 questions, ~120 min)",
+        "Clarity & goal-setting session",
+        "Biweekly coaching sessions (2 hours each)",
+        "Unlimited 20-min check-in calls",
+        "Ongoing messaging support",
+        "Personalized micro-habit plan",
+        "Lens video library access",
+        "Support until objectives are reached"
       ]
     },
     'team-workshop': {

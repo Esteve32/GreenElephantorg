@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Video } from "lucide-react";
+import { ExternalLink, Video, Copy, Check } from "lucide-react";
 import { getLensMetadata, type LensType } from "@/constants/lenses";
+import { useToast } from "@/hooks/use-toast";
 
 interface PeriodicElementProps {
   symbol: string;
@@ -39,8 +40,22 @@ const lensLabels = {
 
 export default function PeriodicElement({ symbol, name, number, lens, description, examplePrompt, learningUrl }: PeriodicElementProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
   const lensMetadata = getLensMetadata(lens);
   const Icon = lensMetadata.icon;
+
+  const handleCopyPrompt = () => {
+    if (examplePrompt) {
+      navigator.clipboard.writeText(examplePrompt);
+      setCopied(true);
+      toast({
+        title: "Copied to clipboard",
+        description: "Example prompt copied successfully",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <>
@@ -88,9 +103,30 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
 
             {examplePrompt && (
               <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-lg p-4">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-sm uppercase tracking-wide text-muted-foreground">Example Prompt</span>
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <span className="text-sm uppercase tracking-wide text-muted-foreground">Example Prompt</span>
+                  </h3>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 gap-2"
+                    onClick={handleCopyPrompt}
+                    data-testid="button-copy-prompt"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4 text-needs" />
+                        <span className="text-xs">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" />
+                        <span className="text-xs">Copy</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <p className="text-foreground leading-relaxed italic">&ldquo;{examplePrompt}&rdquo;</p>
               </div>
             )}

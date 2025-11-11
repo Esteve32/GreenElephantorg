@@ -66,7 +66,7 @@ export default function PaymentSuccessPage() {
           </div>
 
           <p className="text-sm text-muted-foreground pt-4">
-            Questions? We're here to help at hello@greenelephant.org
+            Questions? We're here to help at anu@greenelephant.org
           </p>
         </CardContent>
       </Card>

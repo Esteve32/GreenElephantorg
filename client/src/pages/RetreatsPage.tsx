@@ -9,24 +9,26 @@ import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
 //todo: remove mock functionality
 const retreats = [
   {
-    title: "Equinoxe Retreat Lapland",
+    title: "Equinoxe Retreat Provence",
     season: "Autumn Equinox 2028",
     date: "September 20-25, 2028",
-    location: "Tonttumäki, Finland",
-    capacity: "Limited to 12 participants",
-    imageUrl: laplandImageUrl,
-    description: "Journey to the Arctic Circle for a transformative autumn retreat in Tonttumäki. Experience the Northern Lights while deepening your conscious communication practice in pristine wilderness.",
-    price: "€2,400",
-  },
-  {
-    title: "Equinoxe Retreat Provence",
-    season: "Spring Equinox 2028",
-    date: "March 18-23, 2028",
     location: "Aix-en-Provence, France",
     capacity: "Limited to 14 participants",
     imageUrl: provenceImageUrl,
-    description: "Immerse yourself in the lavender fields and ancient wisdom of Aix-en-Provence. A transformative spring gathering celebrating renewal and conscious dialogue.",
-    price: "€2,200",
+    description: "Transform how you see conflict in the lavender fields of Provence. This 5-day immersive experience (approx. 25 hours) focuses on seeing conflicts differently, looking beyond ego and triggers, and building trust regardless of emotional temperature.",
+    price: "€2,890",
+    priceNote: "Excludes food, accommodation & travel",
+  },
+  {
+    title: "Equinoxe Retreat Lapland",
+    season: "Spring Equinox 2028",
+    date: "March 18-23, 2028",
+    location: "Levi, Finland",
+    capacity: "Limited to 12 participants",
+    imageUrl: laplandImageUrl,
+    description: "Journey to Levi's Arctic serenity for a transformative spring retreat. Experience the peace and quiet of Finnish nature while deepening your conscious communication practice in pristine wilderness.",
+    price: "€2,890",
+    priceNote: "Excludes food, accommodation & travel",
   },
 ];
 
@@ -37,13 +39,13 @@ export default function RetreatsPage() {
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-needs text-white">Equinoxe Experiences</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Step Away to Transform Everything
+            Transform How You See Conflict
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            5-day immersive retreats where nature's rhythms support your journey from reactive communication to conscious connection
+            5-day immersive retreats (approx. 25 hours) focusing on seeing conflicts differently, looking beyond ego and triggers, and building trust regardless of emotional temperature
           </p>
           <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
-            In Tonttumäki's Arctic silence or Provence's lavender fields, you'll practice microhabits in a held space of deep presence—then return home with sustainable transformation, not just inspiration.
+            In Levi's Arctic serenity or Provence's lavender fields, you'll practice microhabits in a held space of deep presence—then return home with your personalized playbook and sustainable transformation, not just inspiration.
           </p>
         </div>
 

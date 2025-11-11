@@ -2,24 +2,26 @@
 export const COACHING_PACKAGES = {
   '1on1-single': {
     name: "1:1 Single Session",
-    price: 180, // EUR
+    price: 295, // EUR
     features: [
-      "90-minute deep-dive session",
+      "120-minute deep-dive session",
       "Personalized framework analysis",
       "Action plan with 3 micro-habits",
       "Session recording & transcript"
     ]
   },
-  '1on1-package': {
-    name: "1:1 Transformation Package",
-    price: 840, // EUR
-    savings: "Save €240 vs. single sessions",
+  'coaching-journey': {
+    name: "Coaching Journey - Communication Clarity & Influence Boost",
+    price: 2980, // EUR
     features: [
-      "6 x 90-minute sessions over 3 months",
-      "Complete periodic table mastery",
-      "Weekly practice assignments",
-      "Email support between sessions",
-      "Lifetime access to session recordings"
+      "AI-powered Satellite Scan™ (90 questions, ~120 min)",
+      "Clarity & goal-setting session",
+      "Biweekly coaching sessions (2 hours each)",
+      "Unlimited 20-min check-in calls",
+      "Ongoing messaging support",
+      "Personalized micro-habit plan",
+      "Lens video library access",
+      "Support until objectives are reached"
     ]
   },
   'team-workshop': {

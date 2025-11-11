@@ -111,7 +111,7 @@ export default function ArboraPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3 p-3 rounded-lg backdrop-blur-sm bg-white/5">
                   <div className="w-2 h-2 rounded-full bg-alignment"></div>
-                  <span>Helsinki University - Cognitive Neuroscience Lab</span>
+                  <span>Aalto Design Factory</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-lg backdrop-blur-sm bg-white/5">
                   <div className="w-2 h-2 rounded-full bg-alignment"></div>
@@ -130,7 +130,7 @@ export default function ArboraPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Receive weekly insights and early access to research findings.
+                  Receive insights and early access to research findings.
                 </p>
                 <div className="space-y-2">
                   <Input 

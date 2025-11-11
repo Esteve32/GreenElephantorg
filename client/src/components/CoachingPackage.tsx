@@ -6,17 +6,20 @@ import { useLocation } from "wouter";
 
 interface CoachingPackageProps {
   title: string;
+  subtitle?: string;
   type: "1:1" | "Team";
-  sessions: number;
+  sessions: number | string;
   duration: string;
   price: string;
   features: string[];
   highlighted?: boolean;
   packageId: string;
+  idealFor?: string;
 }
 
 export default function CoachingPackage({
   title,
+  subtitle,
   type,
   sessions,
   duration,
@@ -24,6 +27,7 @@ export default function CoachingPackage({
   features,
   highlighted = false,
   packageId,
+  idealFor,
 }: CoachingPackageProps) {
   const [, setLocation] = useLocation();
 
@@ -45,6 +49,7 @@ export default function CoachingPackage({
           )}
         </div>
         <CardTitle className="text-2xl">{title}</CardTitle>
+        {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
         <div className="mt-4">
           <span className="text-4xl font-bold">{price}</span>
           <span className="text-muted-foreground ml-2">/ {duration}</span>
@@ -52,8 +57,15 @@ export default function CoachingPackage({
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          {sessions} session{sessions > 1 ? 's' : ''} • {duration}
+          {typeof sessions === 'number' ? `${sessions} session${sessions > 1 ? 's' : ''}` : sessions} • {duration}
         </p>
+        {idealFor && (
+          <div className="pt-2 border-t border-white/10">
+            <p className="text-xs text-muted-foreground">
+              <span className="font-semibold">Ideal for:</span> {idealFor}
+            </p>
+          </div>
+        )}
         <div className="space-y-3">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-3">

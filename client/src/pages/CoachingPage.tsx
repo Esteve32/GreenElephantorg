@@ -9,31 +9,35 @@ const packages = [
     type: "1:1" as const,
     sessions: 1,
     duration: "one-time",
-    price: "€180",
+    price: "€295",
     packageId: "1on1-single",
     features: [
-      "90-minute deep-dive session",
+      "120-minute deep-dive session",
       "Personalized framework analysis",
       "Action plan with 3 micro-habits",
       "Session recording & transcript",
     ],
   },
   {
-    title: "Transformation Package",
+    title: "Coaching Journey",
+    subtitle: "Communication Clarity & Influence Boost",
     type: "1:1" as const,
-    sessions: 6,
-    duration: "3 months",
-    price: "€840",
-    packageId: "1on1-package",
+    sessions: "Unlimited",
+    duration: "~6 months",
+    price: "€2,980",
+    packageId: "coaching-journey",
     features: [
-      "6 x 90-minute sessions",
-      "Complete periodic table mastery",
-      "Weekly practice assignments",
-      "Email support between sessions",
-      "Lifetime access to recordings",
-      "Save €240 vs. single sessions",
+      "AI-powered Satellite Scan™ (90 questions, ~120 min)",
+      "Clarity & goal-setting session",
+      "Biweekly coaching sessions (2 hours each)",
+      "Unlimited 20-min check-in calls",
+      "Ongoing messaging support",
+      "Personalized micro-habit plan",
+      "Lens video library access",
+      "Support until objectives are reached",
     ],
     highlighted: true,
+    idealFor: "Executive Assistants, Office Managers, Admin Professionals & Team Enablers",
   },
   {
     title: "Team Workshop",
@@ -114,19 +118,56 @@ export default function CoachingPage() {
           </div>
         </div>
 
+        <div className="backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12 mb-16">
+          <h2 className="text-3xl font-bold text-center mb-6">The Coaching Process</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            A systematic journey from awareness to transformation, supported every step of the way
+          </p>
+          <div className="grid md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">1</span>
+              </div>
+              <h3 className="font-semibold mb-2 text-lg">Discovery</h3>
+              <p className="text-sm text-muted-foreground">AI-powered Satellite Scan™ reveals your unique communication patterns and blindspots</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">2</span>
+              </div>
+              <h3 className="font-semibold mb-2 text-lg">Design</h3>
+              <p className="text-sm text-muted-foreground">Together we create personalized microhabits aligned with your goals and context</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">3</span>
+              </div>
+              <h3 className="font-semibold mb-2 text-lg">Practice</h3>
+              <p className="text-sm text-muted-foreground">Biweekly sessions and ongoing support as you integrate new patterns into daily life</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-needs/30 flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl font-bold text-needs">4</span>
+              </div>
+              <h3 className="font-semibold mb-2 text-lg">Mastery</h3>
+              <p className="text-sm text-muted-foreground">Sustained transformation with video library access and integration until objectives are met</p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8">
           <Card className="backdrop-blur-sm bg-card/50 border-white/10">
             <CardContent className="pt-6">
               <h3 className="text-2xl font-bold mb-4">What to Expect</h3>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">Session 1:</strong> We begin with deep listening to understand your communication challenges and aspirations.
+                  <strong className="text-foreground">Clarity Session:</strong> We begin with deep listening to understand your communication challenges and aspirations.
                 </p>
                 <p>
-                  <strong className="text-foreground">Sessions 2-3:</strong> Together we design personalized microhabits aligned with your Satellite Scan results.
+                  <strong className="text-foreground">Ongoing Sessions:</strong> Biweekly 2-hour deep dives with practice assignments between sessions.
                 </p>
                 <p>
-                  <strong className="text-foreground">Ongoing:</strong> Practice, reflect, and refine as we witness your transformation unfold.
+                  <strong className="text-foreground">Support:</strong> Unlimited 20-minute check-ins and messaging support when you need guidance.
                 </p>
               </div>
             </CardContent>

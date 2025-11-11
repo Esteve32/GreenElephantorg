@@ -5,26 +5,46 @@
 GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes inclusive spiritual principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
 
 **Recent Updates (November 2025)**:
-- **Content & Language Updates (Nov 10)**:
-  - Updated copyright year to 2025 in Footer
-  - Replaced ACIM-specific references with inclusive mainstream spiritual language
-  - Changed header CTA from "Begin Intake" to "Find Your Path" for improved clarity
-  - Added 8 downloadable resources to Resources page (periodic table PNG + 7 PDF/image infographics)
-  - Download buttons use accessible `asChild` pattern with proper semantic HTML
-- **Value Proposition Overhaul (Nov 10)**: Implemented comprehensive "Promise → Path → Proof" framework across all 11 pages
-  - Hero section transformed with "Turn Every Conversation Into Sacred Practice" headline
-  - HomePage enhanced with Problem → Promise → Practice three-card section and emotional/spiritual benefits ladder
-  - All pages now feature clear above-the-fold benefits: practical outcome (headline) + emotional relief (subhead) + spiritual invitation (tertiary)
-  - Periodic Table page: Added "How to apply today" 3-step guidance with testimonial for credibility
-  - Coaching page: Pain-focused headline "Stop Repeating the Same Communication Patterns" with persona-specific benefits
-  - Retreats page: Added "What You'll Carry Home" section detailing post-retreat integration support
-  - Prompts/Arbora/Contact/Stories/WhatIs/Signals: All pages enhanced with benefit-driven copy
-  - Architect-verified: Maintains compassionate, non-judgmental tone without manipulative scarcity cues
-- Implemented Stripe payment integration with secure server-side price validation
-- Created emotionally resonant checkout flow linking problem → pain → solution with "cost of miscommunication" framing
-- Updated retreat locations to specific cities: Tonttumäki, Finland and Aix-en-Provence, France
-- Applied 66% opacity to periodic table element backgrounds for more elegant, translucent appearance
-- Fixed icon contrast to 95% lightness ensuring visibility on all colored lens backgrounds
+- **Major Content Overhaul (Nov 11)**:
+  - **Hero & Messaging**: Transformed main headline from "Transform Conflicts Into Trust" to "Turn Every Conversation Into Sacred Practice"
+  - **AI vs Human Narrative**: Added powerful positioning: "Communication is not soft. It's the only interface AI cannot automate for you."
+  - **Navigation Reordering**: Services now ordered as Coaching, Consulting, Retreats (previously Retreats, Coaching, Consulting)
+  - **Email Migration**: All contact points updated to anu@greenelephant.org throughout the site
+  - **Social Links**: Added LinkedIn (greenelephant-org) and YouTube playlist integration to footer
+  - **Direct Booking**: Added Calendly link (anu-greenelephant/call-with-anu) to Contact page
+  - **Content Refinement**: Removed "healing" from "healing and authentic connection" - replaced with "authentic connection and meaningful relationships"
+  
+- **Coaching Packages Major Update (Nov 11)**:
+  - **Coaching Journey** (NEW): €2,980, ~6 months, unlimited sessions with AI-powered Satellite Scan™
+  - **Single Session**: Updated to 120 minutes (from 90), €295 (from €180)
+  - **Team Workshop**: Confirmed half-day intensive for up to 10 people at €1,200
+  - **Coaching Process Section**: Added 4-step Discovery → Design → Practice → Mastery framework
+  - Server-side pricing catalog updated for secure validation
+  
+- **Retreats Transformation (Nov 11)**:
+  - **Dates Switched**: September = Provence, March = Lapland (previously reversed)
+  - **Location Update**: Changed from "Tonttumäki" to "Levi" (well-known ski resort) for credibility
+  - **Removed Northern Lights**: Now emphasizes "peace and quiet of Finnish nature" (no unguaranteed promises)
+  - **Pricing**: Increased to €2,890 (from €2,200-2,400) with clear "Excludes food, accommodation & travel" note
+  - **Focus Shift**: Reframed around conflict transformation: "Transform how you see conflict" with specific outcomes
+
+- **Periodic Table Enhancements (Nov 11)**:
+  - **Copy-to-Clipboard**: Added one-click copy button for all 129 example prompts with toast confirmation
+  - **Category Reorganization**: Moved all "THINK & UNDERSTAND" items into "FEEL & INTEND" category
+  - **Example Prompts**: All 129 elements now have NVC-based, emotionally intelligent example prompts
+  
+- **Partner Updates (Nov 11)**:
+  - Removed: Helsinki University
+  - Added: Aalto Design Factory
+  - Newsletter signup language: Removed frequency promises ("weekly" → generic "insights")
+
+- **Previous Updates (Nov 10)**:
+  - **Value Proposition Overhaul**: Implemented comprehensive "Promise → Path → Proof" framework across all 11 pages
+  - **Periodic Table**: Added "How to apply today" 3-step guidance with testimonial for credibility
+  - Stripe payment integration with secure server-side price validation
+  - 8 downloadable resources (periodic table PNG + 7 PDF/image infographics)
+  - Applied 66% opacity to periodic table element backgrounds
+  - Fixed icon contrast to 95% lightness for visibility on colored lens backgrounds
 
 ## User Preferences
 
@@ -58,15 +78,15 @@ Preferred communication style: Simple, everyday language.
 - Icon system: Light icons (95% lightness) for optimal contrast on colored lens backgrounds
 
 **Key Pages**:
-- Home: Hero section with framework overview and lens visualization
-- Periodic Table: Comprehensive 129-element taxonomy with hierarchical category organization
-- Retreats: "Equinoxe Retreats" in Lapland (Finland) and Provence (France)
-- Coaching: Package comparison with 1:1 and team options
-- Lab (Arbora): Research articles and insights
+- Home: Hero with "AI vs Human" narrative and framework overview
+- Periodic Table: 129 elements with copy-to-clipboard functionality and NVC-based example prompts
+- Retreats: "Equinoxe Retreats" - Sept (Provence), March (Levi, Finland) at €2,890
+- Coaching: 3 packages including new Coaching Journey (€2,980, 6 months, unlimited sessions)
+- Lab (Arbora): Research articles with Aalto Design Factory partnership
   - Route: `/lab` (canonical), `/arbora` (alias)
-- Resources/Prompts: Filterable prompt library and learning materials
+- Resources/Prompts: Filterable prompt library with downloadable materials
   - Route: `/resources` (canonical), `/prompts` (alias)
-- Contact: Intent-based contact form with smart routing
+- Contact: Intent-based form with direct Calendly booking (anu@greenelephant.org)
 - Stories: Transformation narratives organized by lens
 - "What Is" and "Signals" educational pages
 
@@ -140,9 +160,12 @@ Preferred communication style: Simple, everyday language.
 
 **Third-Party Services**:
 - **Stripe**: Payment processing for coaching packages and retreats (ACTIVE)
-  - Secure server-side price validation via COACHING_PACKAGES catalog
+  - Secure server-side price validation via COACHING_PACKAGES catalog in `shared/packages.ts`
   - EUR currency for European pricing
-  - Three coaching packages: Single Session (€180), Transformation Package (€840), Team Workshop (€1,200)
+  - Three coaching packages: Single Session (€295), Coaching Journey (€2,980), Team Workshop (€1,200)
+- **Calendly**: Direct booking integration (anu-greenelephant/call-with-anu)
+- **YouTube**: Playlist integration for community access
+- **LinkedIn**: Company page (greenelephant-org)
 - Neon Database: PostgreSQL hosting (Planned)
 - Google APIs: Dynamic content sourcing (Planned)
 - Notion API: Content management and updates (Planned)

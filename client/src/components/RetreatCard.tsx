@@ -12,6 +12,7 @@ interface RetreatCardProps {
   imageUrl: string;
   description: string;
   price: string;
+  priceNote?: string;
 }
 
 export default function RetreatCard({
@@ -23,6 +24,7 @@ export default function RetreatCard({
   imageUrl,
   description,
   price,
+  priceNote,
 }: RetreatCardProps) {
   return (
     <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-white/10 hover-elevate transition-all">
@@ -36,7 +38,10 @@ export default function RetreatCard({
       <CardHeader>
         <div className="flex items-start justify-between gap-2 mb-2">
           <Badge className="bg-needs text-white">{season}</Badge>
-          <span className="text-sm font-semibold text-needs">{price}</span>
+          <div className="text-right">
+            <div className="text-sm font-semibold text-needs">{price}</div>
+            {priceNote && <div className="text-xs text-muted-foreground">{priceNote}</div>}
+          </div>
         </div>
         <CardTitle className="text-xl">{title}</CardTitle>
       </CardHeader>

@@ -20,15 +20,15 @@ export default function Hero() {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text">
-          Transform Conflicts Into Trust
+          Turn Every Conversation<br />Into Sacred Practice
         </h1>
 
         <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto leading-relaxed">
-          We're grateful for your willingness to explore conscious communication
+          Communication is not soft. It's the only interface AI cannot automate for you.
         </p>
 
         <p className="text-lg text-muted-foreground/80 mb-12 max-w-2xl mx-auto">
-          Join Executive Assistants, TEAL startup founders, and Design & Innovation students in learning the art of transformative dialogue through our Periodic Table of Conscious Communication.
+          AI makes us productive. But it can't teach us to handle differences in opinion, diversity of values, or how to have constructive, critical conversations. We specialize in the human-to-human relational interface—where real transformation happens.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

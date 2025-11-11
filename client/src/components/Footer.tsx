@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Mail, Linkedin, Heart } from "lucide-react";
+import { Mail, Linkedin, Heart, Youtube } from "lucide-react";
 import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
 
 export default function Footer() {
@@ -8,8 +8,8 @@ export default function Footer() {
     explore: [
       { label: "Periodic Table", href: "/periodic-table" },
       { label: "Prompt Library", href: "/prompts" },
-      { label: "Retreats", href: "/retreats" },
       { label: "Coaching", href: "/coaching" },
+      { label: "Retreats", href: "/retreats" },
     ],
     learn: [
       { label: "Lab", href: "/lab" },
@@ -42,17 +42,31 @@ export default function Footer() {
                 size="icon" 
                 variant="ghost"
                 data-testid="button-linkedin"
-                onClick={() => console.log('Open LinkedIn')}
+                asChild
               >
-                <Linkedin className="h-5 w-5" />
+                <a href="https://www.linkedin.com/company/greenelephant-org/?viewAsMember=true" target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="h-5 w-5" />
+                </a>
+              </Button>
+              <Button 
+                size="icon" 
+                variant="ghost"
+                data-testid="button-youtube"
+                asChild
+              >
+                <a href="https://www.youtube.com/playlist?list=PLYvfWnYASrYd73lpzWsFnTSLa2K2lTN9d" target="_blank" rel="noopener noreferrer">
+                  <Youtube className="h-5 w-5" />
+                </a>
               </Button>
               <Button 
                 size="icon" 
                 variant="ghost"
                 data-testid="button-email"
-                onClick={() => console.log('Open email')}
+                asChild
               >
-                <Mail className="h-5 w-5" />
+                <a href="mailto:anu@greenelephant.org">
+                  <Mail className="h-5 w-5" />
+                </a>
               </Button>
             </div>
           </div>

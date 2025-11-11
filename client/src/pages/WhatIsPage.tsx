@@ -183,7 +183,7 @@ export default function WhatIsPage() {
                 <li>• Executive Assistants managing stakeholder relationships</li>
                 <li>• Design & innovation teams collaborating under pressure</li>
                 <li>• Coaches and facilitators deepening their practice</li>
-                <li>• Anyone committed to healing and authentic connection</li>
+                <li>• Anyone committed to authentic connection and meaningful relationships</li>
               </ul>
             </CardContent>
           </Card>

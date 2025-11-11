@@ -38,12 +38,6 @@ export default function Header() {
 
   const practiceItems = [
     { 
-      href: "/retreats", 
-      label: "Equinoxe Retreats",
-      description: "Sacred gatherings in Lapland and Provence",
-      icon: Heart
-    },
-    { 
       href: "/coaching", 
       label: "Coaching",
       description: "1:1 and group guidance for sustainable change",
@@ -54,6 +48,12 @@ export default function Header() {
       label: "Consulting",
       description: "High-touch transformation for TEAL organizations",
       icon: Sparkles
+    },
+    { 
+      href: "/retreats", 
+      label: "Equinoxe Retreats",
+      description: "Sacred gatherings in Lapland and Provence",
+      icon: Heart
     },
   ];
 

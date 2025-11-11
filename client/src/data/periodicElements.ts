@@ -152,12 +152,12 @@ export const egoElements: PeriodicElement[] = [
   { code: 7303, symbol: "BBL", name: "Blue Body-Language", lens: "ego", category: "DO & MOVE", examplePrompt: "[Cross arms thoughtfully, look upward]: I'm processing what you've said. Give me a moment to formulate my response." },
   { code: 7304, symbol: "BR", name: "Blue Rhythm", lens: "ego", category: "DO & MOVE", examplePrompt: "[Create deliberate pauses between thoughts]: Let's... take this... point by point... so we don't miss anything." },
   { code: 7305, symbol: "BT", name: "Blue Timing", lens: "ego", category: "DO & MOVE", examplePrompt: "I need time to process this before responding. Can I share my thoughts with you [specific time] after I've reflected?" },
-  { code: 7401, symbol: "Ln", name: "Learning", lens: "ego", category: "THINK & UNDERSTAND", examplePrompt: "What's the learning edge for me here? What is this situation trying to teach me that I've been resisting?" },
-  { code: 7402, symbol: "Pg", name: "Pragmatism", lens: "ego", category: "THINK & UNDERSTAND", examplePrompt: "Let's be pragmatic: given our constraints, what's the most practical path forward that still honors our values?" },
-  { code: 7403, symbol: "Pl", name: "Philautia", lens: "ego", category: "THINK & UNDERSTAND", examplePrompt: "I need to practice self-compassion here. What would I say to a dear friend in this situation?" },
-  { code: 7404, symbol: "Eg", name: "Ego", lens: "ego", category: "THINK & UNDERSTAND", examplePrompt: "I notice my ego is activated—wanting to be right, look good, or stay in control. What if I let that go?" },
-  { code: 7405, symbol: "Gt", name: "Gratitude", lens: "ego", category: "THINK & UNDERSTAND", examplePrompt: "Even in this difficulty, what can I appreciate? What am I grateful for in you, in me, in this moment?" },
-  { code: 7406, symbol: "Rb", name: "Responsibilities", lens: "ego", category: "THINK & UNDERSTAND", examplePrompt: "Let me own my part in this. I'm responsible for [specific actions/impact]. What are you responsible for?" },
+  { code: 7401, symbol: "Ln", name: "Learning", lens: "ego", category: "FEEL & INTEND", examplePrompt: "What's the learning edge for me here? What is this situation trying to teach me that I've been resisting?" },
+  { code: 7402, symbol: "Pg", name: "Pragmatism", lens: "ego", category: "FEEL & INTEND", examplePrompt: "Let's be pragmatic: given our constraints, what's the most practical path forward that still honors our values?" },
+  { code: 7403, symbol: "Pl", name: "Philautia", lens: "ego", category: "FEEL & INTEND", examplePrompt: "I need to practice self-compassion here. What would I say to a dear friend in this situation?" },
+  { code: 7404, symbol: "Eg", name: "Ego", lens: "ego", category: "FEEL & INTEND", examplePrompt: "I notice my ego is activated—wanting to be right, look good, or stay in control. What if I let that go?" },
+  { code: 7405, symbol: "Gt", name: "Gratitude", lens: "ego", category: "FEEL & INTEND", examplePrompt: "Even in this difficulty, what can I appreciate? What am I grateful for in you, in me, in this moment?" },
+  { code: 7406, symbol: "Rb", name: "Responsibilities", lens: "ego", category: "FEEL & INTEND", examplePrompt: "Let me own my part in this. I'm responsible for [specific actions/impact]. What are you responsible for?" },
 ];
 
 // DYNAMICS LENS (🟣 PURPLE #666699) - Code 8100

@@ -164,10 +164,12 @@ export default function ContactPage() {
                 variant="outline"
                 className="w-full backdrop-blur-sm bg-white/5"
                 data-testid="button-calendar"
-                onClick={() => console.log('Opening calendar')}
+                asChild
               >
-                <Calendar className="h-4 w-4 mr-2" />
-                View Calendar
+                <a href="https://calendly.com/anu-greenelephant/call-with-anu" target="_blank" rel="noopener noreferrer">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Book a Call with Anu
+                </a>
               </Button>
             </CardContent>
           </Card>
