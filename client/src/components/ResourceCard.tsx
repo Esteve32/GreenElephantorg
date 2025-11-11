@@ -67,17 +67,8 @@ export default function ResourceCard({
           data-testid={`button-download-${type.toLowerCase().replace(/\s+/g, '-')}`}
           onClick={() => console.log('Accessing resource:', title)}
         >
-          {type === "Ebook" ? (
-            <>
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </>
-          ) : (
-            <>
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Access Resource
-            </>
-          )}
+          <ExternalLink className="h-4 w-4 mr-2" />
+          Access Resource
         </Button>
       </CardFooter>
     </Card>
