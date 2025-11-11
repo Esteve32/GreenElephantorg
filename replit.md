@@ -5,6 +5,16 @@
 GreenElephant.org is a spiritual transformation platform focused on conscious communication, built around the "Periodic Table of Conscious Communication" framework. The platform serves Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The application emphasizes inclusive spiritual principles with a unique "Head-Up Display" (HUD) design aesthetic featuring dark backgrounds with semi-transparent white overlays.
 
 **Recent Updates (November 2025)**:
+- **UX Enhancements & Button Harmonization (Nov 11 - Late)**:
+  - **Button Icons Harmonized**: All buttons now use `currentColor` inheritance for icons/arrows (ArrowRight, Download, AlertTriangle) ensuring automatic color matching with button text across all pages
+  - **Enhanced Recommendation Flow**: Transformed "Choose Your Path" into 4-stage interactive experience:
+    - **Stage 1 (Questionnaire)**: Progress indicator showing "X of 3 completed" with disabled CTA until all questions answered
+    - **Stage 2 (Calculating)**: Framer Motion breathing animation (2.5s) with `useReducedMotion` fallback for accessibility
+    - **Stage 3 (Results)**: Personalized recommendation + inline gratitude form (name, email, phone, preferred contact time)
+    - **Stage 4 (Submitted)**: Success banner with option to retake assessment
+  - **Backend Support**: POST /api/recommendations endpoint with Zod validation, MemStorage persistence, recommendationSubmissions schema
+  - **Form Features**: Select dropdown for preferred contact time (Morning/Afternoon/Evening), inline error display, toast notifications, retry capability on error
+  
 - **Major Content Overhaul (Nov 11)**:
   - **Hero & Messaging**: Transformed main headline from "Transform Conflicts Into Trust" to "Turn Every Conversation Into Sacred Practice"
   - **AI vs Human Narrative**: Added powerful positioning: "Communication is not soft. It's the only interface AI cannot automate for you."

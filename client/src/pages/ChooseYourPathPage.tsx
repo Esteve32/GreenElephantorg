@@ -328,9 +328,9 @@ export default function ChooseYourPathPage() {
               >
                 <Card className="backdrop-blur-sm bg-card/50 border-needs/30">
                   <CardHeader>
-                    <CardTitle className="text-2xl text-center">We're Honored to Guide Your Journey</CardTitle>
+                    <CardTitle className="text-2xl text-center">Begin Your Transformation</CardTitle>
                     <p className="text-muted-foreground text-center">
-                      Share your details and we'll reach out within 24 hours to begin your transformation
+                      Share your details below and we'll reach out within 24 hours
                     </p>
                   </CardHeader>
                   <CardContent>
