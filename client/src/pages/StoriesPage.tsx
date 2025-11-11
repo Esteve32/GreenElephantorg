@@ -110,7 +110,7 @@ export default function StoriesPage() {
                 data-testid="button-find-your-path"
               >
                 Find Your Path
-                <ArrowRight className="ml-2 h-5 w-5 text-background" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/contact">

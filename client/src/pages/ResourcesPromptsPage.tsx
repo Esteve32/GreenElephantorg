@@ -233,7 +233,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-periodic-table" asChild>
                       <a href={periodicTableImageUrl} download="Periodic-Table-Conscious-Communication.png">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PNG
                       </a>
                     </Button>
@@ -250,7 +250,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-influence" asChild>
                       <a href={influenceStrategiesPdfUrl} download="Influence-Communication-Strategies.pdf">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PDF
                       </a>
                     </Button>
@@ -267,7 +267,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-greenblue" asChild>
                       <a href={greenBlueRedPdfUrl} download="GreenBlueRed-Framework.pdf">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PDF
                       </a>
                     </Button>
@@ -284,7 +284,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-microhabit" asChild>
                       <a href={microHabitPdfUrl} download="Microhabit-Framework.pdf">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PDF
                       </a>
                     </Button>
@@ -301,7 +301,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-chaordic" asChild>
                       <a href={chaordicRolesPdfUrl} download="Chaordic-Roles-Collective-Intelligence.pdf">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PDF
                       </a>
                     </Button>
@@ -318,7 +318,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-nvc" asChild>
                       <a href={nvcGreenBlueRedPdfUrl} download="NVC-GreenBlueRed-Integration.pdf">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PDF
                       </a>
                     </Button>
@@ -335,7 +335,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-team-stages" asChild>
                       <a href={fiveStagesTeamPdfUrl} download="5-Stages-Team-Development.pdf">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download PDF
                       </a>
                     </Button>
@@ -352,7 +352,7 @@ export default function ResourcesPromptsPage() {
                     </p>
                     <Button className="w-full" variant="outline" data-testid="download-blue" asChild>
                       <a href={blueInfographicImageUrl} download="Blue-Communication-Being-Understood.jpg">
-                        <Download className="h-4 w-4 mr-2 text-background" />
+                        <Download className="h-4 w-4 mr-2" />
                         Download JPG
                       </a>
                     </Button>

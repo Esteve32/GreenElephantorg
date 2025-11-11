@@ -39,17 +39,17 @@ export default function Hero() {
               data-testid="button-choose-your-path"
             >
               Find Your Path
-              <ArrowRight className="ml-2 h-5 w-5 text-white" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           <Link href="/signals">
             <Button 
               size="lg" 
               variant="outline"
-              className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10 min-w-[220px]"
+              className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10 text-destructive min-w-[220px]"
               data-testid="button-recognize-signals"
             >
-              <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
+              <AlertTriangle className="mr-2 h-5 w-5" />
               Recognize the Signals
             </Button>
           </Link>
