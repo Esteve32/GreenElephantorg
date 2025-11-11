@@ -42,7 +42,7 @@ const coaches = [
       "Innovation Ecosystem Building"
     ],
     experience: "15+ years",
-    languages: ["English", "French", "Finnish", "Polish", "German"],
+    languages: "English and French with basic Finnish, Polish and German",
     approach: "Estève believes true leadership is participatory—that we grow through dialogue and the most powerful questions are the ones we ask each other. As a Guest Lecturer at Aalto Design Factory and former trainer at Futurice across 6 European offices, he's helped thousands discover their authentic communication voice."
   },
   {
@@ -159,7 +159,11 @@ export default function TeamPage() {
                           <h3 className="text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
                             Languages
                           </h3>
-                          <p className="text-sm">{coach.languages.join(", ")}</p>
+                          <p className="text-sm">
+                            {Array.isArray(coach.languages) 
+                              ? coach.languages.join(", ") 
+                              : coach.languages}
+                          </p>
                         </div>
                       </div>
                     </div>
