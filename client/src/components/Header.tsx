@@ -55,6 +55,12 @@ export default function Header() {
       description: "Sacred gatherings in Lapland and Provence",
       icon: Heart
     },
+    { 
+      href: "/team", 
+      label: "Meet the Team",
+      description: "The coaches guiding your transformation",
+      icon: Users
+    },
   ];
 
   const integrateItems = [

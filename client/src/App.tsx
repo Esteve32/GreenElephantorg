@@ -12,6 +12,7 @@ import ChooseYourPathPage from "@/pages/ChooseYourPathPage";
 import PeriodicTablePage from "@/pages/PeriodicTablePage";
 import RetreatsPage from "@/pages/RetreatsPage";
 import CoachingPage from "@/pages/CoachingPage";
+import TeamPage from "@/pages/TeamPage";
 import LabPage from "@/pages/LabPage";
 import ConsultingPage from "@/pages/ConsultingPage";
 import ResourcesPromptsPage from "@/pages/ResourcesPromptsPage";
@@ -34,6 +35,7 @@ function Router() {
         <Route path="/periodic-table" component={PeriodicTablePage} />
         <Route path="/retreats" component={RetreatsPage} />
         <Route path="/coaching" component={CoachingPage} />
+        <Route path="/team" component={TeamPage} />
         <Route path="/lab" component={LabPage} />
         <Route path="/consulting" component={ConsultingPage} />
         <Route path="/resources" component={ResourcesPromptsPage} />
