@@ -3,7 +3,13 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
 import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
-import { insertRecommendationSubmissionSchema } from "@shared/schema";
+import { 
+  insertRecommendationSubmissionSchema, 
+  insertContactSchema,
+  insertWaitlistEntrySchema,
+  insertNewsletterSubscriptionSchema,
+  insertSignalsQuizResultSchema
+} from "@shared/schema";
 import { fromError } from "zod-validation-error";
 
 // Stripe integration from blueprint:javascript_stripe
@@ -86,6 +92,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Recommendation submission error:", error);
       res.status(500).json({ 
         message: "We encountered an issue saving your information. Please try again." 
+      });
+    }
+  });
+
+  // Waitlist submission endpoint - creates contact + waitlist entry
+  app.post("/api/waitlist", async (req, res) => {
+    try {
+      const { email, name, motivation, retreatType, consentText } = req.body;
+      
+      // Validate contact data
+      const contactValidation = insertContactSchema.safeParse({
+        email,
+        name,
+        consentGiven: "true",
+        consentText,
+        source: "waitlist"
+      });
+
+      if (!contactValidation.success) {
+        const validationError = fromError(contactValidation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      // Check if contact already exists
+      let contact = await storage.getContactByEmail(email);
+      if (!contact) {
+        contact = await storage.createContact(contactValidation.data);
+      }
+
+      // Validate waitlist entry
+      const entryValidation = insertWaitlistEntrySchema.safeParse({
+        contactId: contact.id,
+        motivation,
+        retreatType
+      });
+
+      if (!entryValidation.success) {
+        const validationError = fromError(entryValidation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      const entry = await storage.createWaitlistEntry(entryValidation.data);
+
+      res.status(201).json({
+        message: "You're on the list! We'll reach out when spots open up.",
+        entry: { id: entry.id }
+      });
+    } catch (error: any) {
+      console.error("Waitlist submission error:", error);
+      res.status(500).json({
+        message: "We encountered an issue. Please try again."
+      });
+    }
+  });
+
+  // Newsletter subscription endpoint
+  app.post("/api/newsletter", async (req, res) => {
+    try {
+      const { email, name, consentText } = req.body;
+
+      const contactValidation = insertContactSchema.safeParse({
+        email,
+        name,
+        consentGiven: "true",
+        consentText,
+        source: "newsletter"
+      });
+
+      if (!contactValidation.success) {
+        const validationError = fromError(contactValidation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      // Check if contact already exists
+      let contact = await storage.getContactByEmail(email);
+      if (!contact) {
+        contact = await storage.createContact(contactValidation.data);
+      }
+
+      const subscription = await storage.createNewsletterSubscription({
+        contactId: contact.id
+      });
+
+      res.status(201).json({
+        message: "Welcome to the community!",
+        subscription: { id: subscription.id }
+      });
+    } catch (error: any) {
+      console.error("Newsletter subscription error:", error);
+      res.status(500).json({
+        message: "We encountered an issue. Please try again."
+      });
+    }
+  });
+
+  // Signals quiz submission endpoint
+  app.post("/api/signals-quiz", async (req, res) => {
+    try {
+      const { score, answers, email, name, consentText } = req.body;
+
+      let contactId = null;
+
+      // If email provided, create/get contact
+      if (email) {
+        const contactValidation = insertContactSchema.safeParse({
+          email,
+          name,
+          consentGiven: "true",
+          consentText: consentText || "I consent to receive my quiz results",
+          source: "quiz"
+        });
+
+        if (contactValidation.success) {
+          let contact = await storage.getContactByEmail(email);
+          if (!contact) {
+            contact = await storage.createContact(contactValidation.data);
+          }
+          contactId = contact.id;
+        }
+      }
+
+      const quizValidation = insertSignalsQuizResultSchema.safeParse({
+        contactId,
+        score: score.toString(),
+        answers
+      });
+
+      if (!quizValidation.success) {
+        const validationError = fromError(quizValidation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      const result = await storage.createSignalsQuizResult(quizValidation.data);
+      const averageScore = await storage.getQuizAverageScore();
+
+      res.status(201).json({
+        message: "Quiz complete!",
+        result: {
+          id: result.id,
+          score: parseInt(result.score),
+          averageScore
+        }
+      });
+    } catch (error: any) {
+      console.error("Signals quiz submission error:", error);
+      res.status(500).json({
+        message: "We encountered an issue. Please try again."
+      });
+    }
+  });
+
+  // Get signals quiz average score
+  app.get("/api/signals-quiz/average", async (_req, res) => {
+    try {
+      const averageScore = await storage.getQuizAverageScore();
+      res.json({ averageScore });
+    } catch (error: any) {
+      console.error("Quiz average fetch error:", error);
+      res.status(500).json({
+        message: "Could not fetch average score"
       });
     }
   });
