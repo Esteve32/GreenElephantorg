@@ -44,3 +44,89 @@ export const insertRecommendationSubmissionSchema = createInsertSchema(recommend
 
 export type InsertRecommendationSubmission = z.infer<typeof insertRecommendationSubmissionSchema>;
 export type RecommendationSubmission = typeof recommendationSubmissions.$inferSelect;
+
+// Central contacts table with GDPR consent tracking
+export const contacts = pgTable("contacts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  consentGiven: text("consent_given").notNull(), // Boolean stored as text "true" or "false"
+  consentText: text("consent_text").notNull(), // Legal copy they agreed to
+  consentedAt: timestamp("consented_at").defaultNow().notNull(),
+  source: text("source").notNull(), // "waitlist", "newsletter", "recommendation", "quiz"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertContactSchema = createInsertSchema(contacts).pick({
+  email: true,
+  name: true,
+  consentGiven: true,
+  consentText: true,
+  source: true,
+}).extend({
+  email: z.string().email("Please enter a valid email address"),
+  name: z.string().min(2).optional(),
+  consentGiven: z.string(),
+  consentText: z.string(),
+  source: z.enum(["waitlist", "newsletter", "recommendation", "quiz"]),
+});
+
+export type InsertContact = z.infer<typeof insertContactSchema>;
+export type Contact = typeof contacts.$inferSelect;
+
+// Retreat waitlist entries
+export const waitlistEntries = pgTable("waitlist_entries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contactId: varchar("contact_id").notNull(),
+  motivation: text("motivation").notNull(),
+  retreatType: text("retreat_type"), // "provence" or "lapland"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWaitlistEntrySchema = createInsertSchema(waitlistEntries).pick({
+  contactId: true,
+  motivation: true,
+  retreatType: true,
+}).extend({
+  motivation: z.string().min(10, "Please share a bit more about your motivation (at least 10 characters)"),
+  retreatType: z.enum(["provence", "lapland"]).optional(),
+});
+
+export type InsertWaitlistEntry = z.infer<typeof insertWaitlistEntrySchema>;
+export type WaitlistEntry = typeof waitlistEntries.$inferSelect;
+
+// Newsletter subscriptions
+export const newsletterSubscriptions = pgTable("newsletter_subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contactId: varchar("contact_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterSubscriptions).pick({
+  contactId: true,
+});
+
+export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
+export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
+
+// Signals quiz results with aggregate tracking
+export const signalsQuizResults = pgTable("signals_quiz_results", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contactId: varchar("contact_id"),
+  score: text("score").notNull(), // Stored as text, convert to number
+  answers: jsonb("answers").notNull(), // Raw quiz responses
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSignalsQuizResultSchema = createInsertSchema(signalsQuizResults).pick({
+  contactId: true,
+  score: true,
+  answers: true,
+}).extend({
+  contactId: z.string().optional(),
+  score: z.string(),
+  answers: z.record(z.any()),
+});
+
+export type InsertSignalsQuizResult = z.infer<typeof insertSignalsQuizResultSchema>;
+export type SignalsQuizResult = typeof signalsQuizResults.$inferSelect;

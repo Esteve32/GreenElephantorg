@@ -8,6 +8,28 @@ import anuPhoto from "@assets/Anu Timmerbacka Photo_1762897955119.jpeg";
 
 const coaches = [
   {
+    name: "Anu Timmerbacka",
+    title: "Executive Assistant Coach | EA Empowerment Specialist",
+    location: "Helsinki, Finland",
+    photo: anuPhoto,
+    linkedin: "https://www.linkedin.com/in/anutimmerbacka",
+    email: "anu@greenelephant.org",
+    bio: "Anu turns quiet competence into visible leadership. Specializing in Executive Assistants and Admin Professionals, she helps exceptional support staff gain the confidence and presence to influence strategic decisions and lead with calm clarity.",
+    superpower: "Invisible Leadership Architect",
+    superpowerDescription: "She transforms overlooked competence into visible executive presence—making the brilliant work of support professionals finally seen, heard, and valued.",
+    howToTalkGreen: "Direct and measurable. Anu values concrete outcomes and visible transformation. Speak in terms of specific results, executive presence, and the courage to lead from where you are.",
+    specialties: [
+      "Executive Assistant Leadership",
+      "Communication Confidence Building",
+      "Strategic Presence Development",
+      "Difficult Conversation Navigation",
+      "Workplace Influence & Recognition"
+    ],
+    experience: "15+ years",
+    languages: ["Finnish", "English", "Swedish"],
+    approach: "Anu's work delivers measurable results: a guaranteed 50% boost in communication confidence and executive presence. Born and raised in Finland with a deep love for nature and Afrobeat, she brings structure, clarity, warmth, and deep respect for the often-invisible emotional labor that support professionals carry."
+  },
+  {
     name: "Jonas Pannetier",
     title: "Clinical Psychologist, Trainer & Communication Coach",
     location: "Marseille, France",
@@ -15,6 +37,9 @@ const coaches = [
     linkedin: "https://www.linkedin.com/in/jonas-pannetier-6a7728134",
     email: "jonaspannetier@hotmail.co.uk",
     bio: "Jonas brings therapeutic depth to conscious communication. As Head of Research at GreenElephant, he bridges clinical psychology with corporate training, helping individuals reduce anxiety and teams navigate conflict with evidence-based approaches.",
+    superpower: "Scientific Translator",
+    superpowerDescription: "He bridges academic research with lived human experience—giving scientific validity to the conscious communication methodology while keeping it deeply practical and soulful.",
+    howToTalkGreen: "Thoughtful and evidence-based. Jonas appreciates depth, research, and holistic connection. Speak with intellectual curiosity, respect for the therapeutic process, and an openness to nature's wisdom.",
     specialties: [
       "Clinical Psychology & Psychotherapy",
       "Expat & Cross-Cultural Support",
@@ -34,6 +59,9 @@ const coaches = [
     linkedin: "https://www.linkedin.com/in/estève-pannetier-3a883217",
     email: "esteve@greenelephant.org",
     bio: "With 15+ years across innovation ecosystems, Estève supports product managers, faculty, and founders in growing their voice and building cultures where collective intelligence flows naturally. His approach blends structure with softness—rooted in research, always human.",
+    superpower: "Collective Intelligence Designer",
+    superpowerDescription: "He creates the conditions where collaboration flows naturally—blending participatory leadership, design thinking, and UX ethnography to help teams discover emergent possibilities together.",
+    howToTalkGreen: "Participatory and systems-aware. Estève values co-creation and emergent possibilities. Speak in terms of collective intelligence, design thinking, and the balance between structure and flow.",
     specialties: [
       "Collective Intelligence Cultivation",
       "AI-Powered Communication Tools",
@@ -44,25 +72,6 @@ const coaches = [
     experience: "15+ years",
     languages: "English and French with basic Finnish, Polish and German",
     approach: "Estève believes true leadership is participatory—that we grow through dialogue and the most powerful questions are the ones we ask each other. As a Guest Lecturer at Aalto Design Factory and former trainer at Futurice across 6 European offices, he's helped thousands discover their authentic communication voice."
-  },
-  {
-    name: "Anu Timmerbacka",
-    title: "Executive Assistant Coach | EA Empowerment Specialist",
-    location: "Helsinki, Finland",
-    photo: anuPhoto,
-    linkedin: "https://www.linkedin.com/in/anutimmerbacka",
-    email: "anu@greenelephant.org",
-    bio: "Anu turns quiet competence into visible leadership. Specializing in Executive Assistants and Admin Professionals, she helps exceptional support staff gain the confidence and presence to influence strategic decisions and lead with calm clarity.",
-    specialties: [
-      "Executive Assistant Leadership",
-      "Communication Confidence Building",
-      "Strategic Presence Development",
-      "Difficult Conversation Navigation",
-      "Workplace Influence & Recognition"
-    ],
-    experience: "15+ years",
-    languages: ["Finnish", "English", "Swedish"],
-    approach: "Anu's work delivers measurable results: a guaranteed 50% boost in communication confidence and executive presence. Born and raised in Finland with a deep love for nature and Afrobeat, she brings structure, clarity, warmth, and deep respect for the often-invisible emotional labor that support professionals carry."
   }
 ];
 
@@ -131,6 +140,31 @@ export default function TeamPage() {
                     <p className="text-base leading-relaxed">
                       {coach.bio}
                     </p>
+
+                    {/* Unique Superpower */}
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Sparkles className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h3 className="text-sm font-semibold mb-1 text-primary">
+                            Unique Superpower: {coach.superpower}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {coach.superpowerDescription}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* How to Talk Green */}
+                    <div className="bg-needs/5 border border-needs/20 rounded-lg p-4">
+                      <h3 className="text-sm font-semibold mb-2 text-needs">
+                        How to Talk "Green" to {coach.name.split(' ')[0]}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {coach.howToTalkGreen}
+                      </p>
+                    </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
