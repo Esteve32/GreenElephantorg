@@ -153,10 +153,12 @@ export class MemStorage implements IStorage {
   // Signals quiz methods
   async createSignalsQuizResult(insertResult: InsertSignalsQuizResult): Promise<SignalsQuizResult> {
     const id = randomUUID();
+    // Score is validated as number by Zod, convert to string for storage
     const result: SignalsQuizResult = {
-      ...insertResult,
       id,
       contactId: insertResult.contactId || null,
+      score: insertResult.score.toString(),
+      answers: insertResult.answers,
       createdAt: new Date(),
     };
     this.signalsQuizResults.set(id, result);
@@ -169,8 +171,18 @@ export class MemStorage implements IStorage {
     if (results.length === 0) {
       return 0;
     }
-    const total = results.reduce((sum, result) => sum + parseFloat(result.score), 0);
-    return Math.round(total / results.length);
+    
+    // Filter out any invalid scores and calculate average safely
+    const validScores = results
+      .map(result => parseFloat(result.score))
+      .filter(score => !isNaN(score) && isFinite(score));
+    
+    if (validScores.length === 0) {
+      return 0;
+    }
+    
+    const total = validScores.reduce((sum, score) => sum + score, 0);
+    return Math.round(total / validScores.length);
   }
 
   async getAllSignalsQuizResults(): Promise<SignalsQuizResult[]> {

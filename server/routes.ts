@@ -215,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const quizValidation = insertSignalsQuizResultSchema.safeParse({
         contactId,
-        score: score.toString(),
+        score, // Zod will coerce to number and validate bounds (0-100)
         answers
       });
 
