@@ -92,6 +92,10 @@ Preferred communication style: Simple, everyday language.
 - Periodic Table: 129 elements with copy-to-clipboard functionality and NVC-based example prompts
 - Retreats: "Equinoxe Retreats" - Sept (Provence), March (Levi, Finland) at €2,890
 - Coaching: 3 packages including new Coaching Journey (€2,980, 6 months, unlimited sessions)
+- Team: Meet the 3 coaches (Jonas Pannetier - Marseille, Estève Pannetier - Helsinki, Anu Timmerbacka - Helsinki)
+  - Professional profiles with LinkedIn integration
+  - Specialties, experience, languages, and coaching approaches
+  - Direct contact buttons for each coach
 - Lab (Arbora): Research articles with Aalto Design Factory partnership
   - Route: `/lab` (canonical), `/arbora` (alias)
 - Resources/Prompts: Filterable prompt library with downloadable materials
