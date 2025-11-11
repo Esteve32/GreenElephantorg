@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
 import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
+import { insertRecommendationSubmissionSchema } from "@shared/schema";
+import { fromError } from "zod-validation-error";
 
 // Stripe integration from blueprint:javascript_stripe
 // Gracefully handle missing Stripe keys to allow app to start
@@ -56,6 +58,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res
         .status(500)
         .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Recommendation submission endpoint
+  app.post("/api/recommendations", async (req, res) => {
+    try {
+      const validationResult = insertRecommendationSubmissionSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        const validationError = fromError(validationResult.error);
+        return res.status(400).json({ 
+          message: validationError.message 
+        });
+      }
+
+      const submission = await storage.createRecommendationSubmission(validationResult.data);
+      
+      res.status(201).json({ 
+        message: "We're honored to guide your journey. You'll hear from us within 24 hours.",
+        submission: {
+          id: submission.id,
+          recommendedPath: submission.recommendedPath,
+        }
+      });
+    } catch (error: any) {
+      console.error("Recommendation submission error:", error);
+      res.status(500).json({ 
+        message: "We encountered an issue saving your information. Please try again." 
+      });
     }
   });
 
