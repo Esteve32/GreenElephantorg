@@ -44,7 +44,7 @@ export default function SignalsQuizPage() {
 
   // Submit quiz mutation
   const submitMutation = useMutation({
-    mutationFn: async (data: { score: number; answers: string; email?: string; name?: string; consentText?: string }) => {
+    mutationFn: async (data: { score: number; answers: Record<string, number>; email?: string; name?: string; consentText?: string }) => {
       const res = await apiRequest("POST", "/api/signals-quiz", data);
       return await res.json();
     },
@@ -71,7 +71,7 @@ export default function SignalsQuizPage() {
       // Submit to backend (without email initially)
       submitMutation.mutate({
         score: calculatedScore,
-        answers: JSON.stringify(answers),
+        answers: answers,
       });
 
       // After animation, show results
@@ -96,7 +96,7 @@ export default function SignalsQuizPage() {
     // Submit with email
     submitMutation.mutate({
       score,
-      answers: JSON.stringify(answers),
+      answers: answers,
       email,
       name,
       consentText: "I consent to receive personalized guidance based on my quiz results",

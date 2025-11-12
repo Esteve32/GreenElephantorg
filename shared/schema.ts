@@ -123,7 +123,7 @@ export const insertSignalsQuizResultSchema = createInsertSchema(signalsQuizResul
   score: true,
   answers: true,
 }).extend({
-  contactId: z.string().optional(),
+  contactId: z.string().nullish(), // Allow string, null, or undefined
   score: z.coerce.number().min(0, "Score must be at least 0").max(100, "Score cannot exceed 100"),
   answers: z.record(z.any()),
 });
