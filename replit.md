@@ -3,15 +3,36 @@
 ## Overview
 GreenElephant.org is a spiritual transformation platform centered on conscious communication, utilizing the "Periodic Table of Conscious Communication" framework. It targets Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The platform promotes inclusive spiritual principles and features a unique "Head-Up Display" (HUD) design aesthetic with dark backgrounds and semi-transparent white overlays. The business vision is to foster authentic connection and meaningful relationships by transforming conflicts into trust and positioning communication as a critical human interface beyond AI automation.
 
-## Recent Changes (November 11, 2025)
+## Recent Changes (November 12, 2025)
 
-### Team Page Enhancement
+### Signals Early Warning Quiz - Complete Implementation ✅
+- **4-Stage Interactive Flow**: Questionnaire (6 questions) → Processing (2.5s animation) → Results → Social Share
+- **Scoring System**: 5-point Likert scale (Never=0, Rarely=25, Sometimes=50, Often=75, Always=100) with lens-specific modifiers
+  - Base score: Average of all answers (0-100)
+  - Modifier: +5 if two or more answers ≥75 (drift indicator)
+  - Final score clamped to 0-100 range
+- **Results Display**: 
+  - Personal drift score vs community average comparison
+  - 3-tier guidance system: Grounded (≤35), Drifting (36-70), Red Alert (>70)
+  - Top risk lenses identification (highest two scores)
+  - Personalized next steps with actionable guidance
+- **Social Sharing**: LinkedIn, X (Twitter), copy-to-clipboard functionality with shareable URLs
+- **GDPR-Compliant Email Capture**: Optional follow-up form with name, email, consent checkbox
+  - Creates/links contact records automatically
+  - Stores quiz results with contactId linkage for personalized follow-up
+- **Data Validation**: 
+  - Schema fix: `contactId: z.string().nullish()` (handles null/undefined/string)
+  - Answers stored as JSONB object (not JSON string)
+  - Score validation: z.coerce.number().min(0).max(100)
+- **End-to-End Testing**: Complete flow validated including quiz submission, score calculation, social share, and email capture ✅
+
+### Team Page Enhancement (November 11, 2025)
 - Reordered coaches: Anu Timmerbacka → Jonas Pannetier → Estève Pannetier
 - Added "Unique Superpower" badges for each coach highlighting their transformative strengths
 - Added "How to Talk 'Green' to [Name]" sections with personalized communication guidance based on LinkedIn profiles
 - Fixed languages display bug with defensive Array.isArray guard
 
-### Retreat Waitlist Funnel
+### Retreat Waitlist Funnel (November 11, 2025)
 - Complete GDPR-compliant email collection system
 - Removed "Learn More" button, replaced with single "Join Waitlist" CTA
 - WaitlistDialog component with scarcity messaging (limited spots, fills within 3 weeks)

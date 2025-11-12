@@ -21,7 +21,7 @@ import {
   type QuizQuestion,
 } from "@/data/signalsQuiz";
 
-type QuizStage = "questionnaire" | "processing" | "results" | "shared";
+type QuizStage = "questionnaire" | "processing" | "results";
 
 export default function SignalsQuizPage() {
   const { toast } = useToast();
