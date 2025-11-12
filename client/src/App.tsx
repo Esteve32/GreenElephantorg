@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HomePage from "@/pages/HomePage";
 import WhatIsPage from "@/pages/WhatIsPage";
-import SignalsPage from "@/pages/SignalsPage";
+import SignalsQuizPage from "@/pages/SignalsQuizPage";
 import ChooseYourPathPage from "@/pages/ChooseYourPathPage";
 import PeriodicTablePage from "@/pages/PeriodicTablePage";
 import RetreatsPage from "@/pages/RetreatsPage";
@@ -30,7 +30,7 @@ function Router() {
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/what-is-conscious-communication" component={WhatIsPage} />
-        <Route path="/signals" component={SignalsPage} />
+        <Route path="/signals" component={SignalsQuizPage} />
         <Route path="/choose-your-path" component={ChooseYourPathPage} />
         <Route path="/periodic-table" component={PeriodicTablePage} />
         <Route path="/retreats" component={RetreatsPage} />
