@@ -3,9 +3,23 @@
 ## Overview
 GreenElephant.org is a spiritual transformation platform centered on conscious communication, utilizing the "Periodic Table of Conscious Communication" framework. It targets Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The platform promotes inclusive spiritual principles and features a unique "Head-Up Display" (HUD) design aesthetic with dark backgrounds and semi-transparent white overlays. The business vision is to foster authentic connection and meaningful relationships by transforming conflicts into trust and positioning communication as a critical human interface beyond AI automation.
 
-## Recent Changes (November 12, 2025)
+## Recent Changes (November 13, 2025)
 
-### Signals Early Warning Quiz - Complete Implementation ✅
+### Interview Coaching Landing Page - LinkedIn Organic Traffic ✅
+- **Targeted Landing Page**: Separate page for 40+ professionals seeking interview coaching
+- **3-Session Bundle**: Visual 3-step process (Calibration → Live Roleplay → Final Polish) at €795
+- **Trust-Building Elements**: 
+  - Estève's credentials (15+ years, 200+ professionals, TEDx speaker)
+  - Micro-habits methodology explanation
+  - Live practice approach with recordings
+  - 6 FAQ items addressing common concerns
+- **Accessibility Focus**: Clear language for non-native English speakers, simple explanations
+- **Calendly Integration**: Placeholder links ready for actual booking URLs
+- **Subdomain Ready**: Complete setup guide for `interviews.greenelephant.org` deployment
+- **Route**: `/interview-coaching` (accessible for LinkedIn profile linking)
+- **Design**: HUD aesthetic with ego/needs/flow lens colors, glass-morphism effects
+
+### Signals Early Warning Quiz - Complete Implementation ✅ (November 12, 2025)
 - **4-Stage Interactive Flow**: Questionnaire (6 questions) → Processing (2.5s animation) → Results → Social Share
 - **Scoring System**: 5-point Likert scale (Never=0, Rarely=25, Sometimes=50, Often=75, Always=100) with lens-specific modifiers
   - Base score: Average of all answers (0-100)
