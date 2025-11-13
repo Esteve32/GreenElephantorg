@@ -20,6 +20,7 @@ import StoriesPage from "@/pages/StoriesPage";
 import ContactPage from "@/pages/ContactPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
+import InterviewCoachingPage from "@/pages/InterviewCoachingPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -43,6 +44,7 @@ function Router() {
         <Route path="/arbora" component={LabPage} />
         <Route path="/stories" component={StoriesPage} />
         <Route path="/contact" component={ContactPage} />
+        <Route path="/interview-coaching" component={InterviewCoachingPage} />
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/payment-success" component={PaymentSuccessPage} />
         <Route component={NotFound} />
