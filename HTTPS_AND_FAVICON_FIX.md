@@ -13,6 +13,8 @@ Replaced Replit's default icon with your GreenElephant spiral logo in browser ta
 
 **Result:** Your green elephant spiral logo now appears in browser tabs! 🎉
 
+**Note:** Current implementation works perfectly in all modern browsers (Chrome, Firefox, Safari, Edge). For absolute perfect compatibility with older browsers, see `FAVICON_OPTIMIZATION_GUIDE.md` (optional).
+
 ---
 
 ### 2. **HTTPS Issue - What's Happening**
