@@ -21,14 +21,24 @@ interface SignalCheck {
 
 const SIGNAL_CHECKS: SignalCheck[] = [
   {
-    id: "ego_defensive",
+    id: "ego_expression",
     lens: "Ego",
     lensColor: "ego",
     lensColorClass: "text-ego",
     icon: Brain,
-    question: "When someone gives you critical feedback",
-    greenBehavior: "I pause and genuinely listen before responding",
-    redBehavior: "I immediately justify, explain, or counter-argue",
+    question: "Expressing what I need",
+    greenBehavior: "I state my needs and wants directly and clearly",
+    redBehavior: "I rarely express directly—I hint, manage, or stay silent",
+  },
+  {
+    id: "dynamics_leadership",
+    lens: "Dynamics",
+    lensColor: "dynamics",
+    lensColorClass: "text-dynamics",
+    icon: TrendingDown,
+    question: "Leading and following in conversations",
+    greenBehavior: "I fluidly shift between leading and following based on context",
+    redBehavior: "I only lead or only follow—I'm stuck in one mode",
   },
   {
     id: "influence_space",
@@ -39,6 +49,16 @@ const SIGNAL_CHECKS: SignalCheck[] = [
     question: "In group conversations",
     greenBehavior: "I balance speaking and listening fluidly",
     redBehavior: "I consistently dominate or completely withdraw",
+  },
+  {
+    id: "flow_engagement",
+    lens: "Flow",
+    lensColor: "flow",
+    lensColorClass: "text-flow",
+    icon: Zap,
+    question: "When engaged in challenging work",
+    greenBehavior: "I balance challenge with my skills—fully engaged and motivated",
+    redBehavior: "I'm either overwhelmed (anxiety) or bored (disengaged)",
   },
   {
     id: "alignment_expectations",
@@ -60,27 +80,22 @@ const SIGNAL_CHECKS: SignalCheck[] = [
     greenBehavior: "I can identify my underlying needs in the moment",
     redBehavior: "I'm unaware—I just react automatically",
   },
-  {
-    id: "dynamics_conflict",
-    lens: "Dynamics",
-    lensColor: "dynamics",
-    lensColorClass: "text-dynamics",
-    icon: TrendingDown,
-    question: "When conflict arises",
-    greenBehavior: "I stay present and engage with curiosity",
-    redBehavior: "I consistently avoid or escalate defensively",
-  },
-  {
-    id: "flow_honesty",
-    lens: "Flow",
-    lensColor: "flow",
-    lensColorClass: "text-flow",
-    icon: Zap,
-    question: "Expressing what I need",
-    greenBehavior: "I state my needs and wants directly and clearly",
-    redBehavior: "I rarely express directly—I hint, manage, or stay silent",
-  },
 ];
+
+// Static border and background classes for each lens
+const getLensBorderClasses = (lensColor: string, isSelected: boolean) => {
+  if (!isSelected) return "border-white/10";
+  
+  switch (lensColor) {
+    case "ego": return "border-ego bg-ego/10";
+    case "dynamics": return "border-dynamics bg-dynamics/10";
+    case "influence": return "border-influence bg-influence/10";
+    case "flow": return "border-flow bg-flow/10";
+    case "alignment": return "border-alignment bg-alignment/10";
+    case "needs": return "border-needs bg-needs/10";
+    default: return "border-white/10";
+  }
+};
 
 export default function SignalsQuizPage() {
   const [responses, setResponses] = useState<Record<string, string>>({});
@@ -170,7 +185,7 @@ export default function SignalsQuizPage() {
                         </div>
                       </div>
                       {response === "green" ? (
-                        <CheckCircle2 className="h-6 w-6 text-alignment flex-shrink-0" />
+                        <CheckCircle2 className={`h-6 w-6 ${check.lensColorClass} flex-shrink-0`} />
                       ) : (
                         <XCircle className="h-6 w-6 text-destructive flex-shrink-0" />
                       )}
@@ -323,16 +338,12 @@ export default function SignalsQuizPage() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <button
                       onClick={() => handleResponseChange(check.id, "green")}
-                      className={`flex items-start gap-3 p-4 rounded-lg border-2 text-left transition-all hover-elevate ${
-                        selected === "green"
-                          ? "border-alignment bg-alignment/10"
-                          : "border-white/10"
-                      }`}
+                      className={`flex items-start gap-3 p-4 rounded-lg border-2 text-left transition-all hover-elevate ${getLensBorderClasses(check.lensColor, selected === "green")}`}
                       data-testid={`button-green-${check.id}`}
                     >
                       <CheckCircle2 
                         className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
-                          selected === "green" ? "text-alignment" : "text-muted-foreground"
+                          selected === "green" ? check.lensColorClass : "text-muted-foreground"
                         }`} 
                       />
                       <div>
