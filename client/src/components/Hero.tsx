@@ -12,7 +12,6 @@ export default function Hero() {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background"></div>
       </div>
-
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style={{ paddingTop: '88px', paddingBottom: '128px' }}>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-8">
           <Sparkles className="h-4 w-4 text-needs" />
@@ -23,9 +22,7 @@ export default function Hero() {
           Turn Every Conversation<br />Into Sacred Practice
         </h1>
 
-        <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto leading-relaxed">
-          Communication is not soft. It's the only interface AI cannot automate for you.
-        </p>
+        <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto leading-relaxed">Communication is not soft. It's the only interface AI cannot fully automate for you.</p>
 
         <p className="text-lg text-muted-foreground/80 mb-12 max-w-2xl mx-auto">
           AI makes us productive. But it can't teach us to handle differences in opinion, diversity of values, or how to have constructive, critical conversations. We specialize in the human-to-human relational interface—where real transformation happens.
@@ -55,7 +52,6 @@ export default function Hero() {
           </Link>
         </div>
       </div>
-
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
     </section>
   );

@@ -1,0 +1,53 @@
+### Terms and Conditions — Green Elephant Oy
+
+Use this block at the top of the project page and as the canonical copy for a public “Terms & Conditions” page on [GreenElephant.org](http://GreenElephant.org).
+
+— Last updated: <mention-date start="2025-11-17"/>
+
+#### 1) Scope of Services
+- Coaching, training, workshops, advisory, and related services (“Services”).
+
+#### 2) Scheduling and Delivery
+- Sessions are scheduled via Calendly.
+- Where applicable (e.g., student coaching), unused budget can be carried forward within the programme window.
+
+#### 3) Fees and Invoicing
+- Invoices are issued on agreement or milestone acceptance.
+- Payment due within 14 days unless otherwise agreed.
+
+#### 4) Cancellations and Rescheduling
+- Sessions may be rescheduled with reasonable notice.
+- Workshops cancelled within an agreed window may incur a fee.
+
+#### 5) Feedback and Quality
+- Non‑anonymous feedback is welcomed to improve pedagogy and content.
+
+#### 6) Confidentiality
+- Each party keeps confidential information secure and uses it solely for delivering the Services.
+
+#### 7) IP and Materials
+- Pre‑existing IP remains with the originating party.
+- Training materials are licensed for internal use by the client team.
+
+#### 8) Data Protection
+- Personal data is processed in line with applicable law. See Privacy Notice for details.
+
+#### 9) Marketing
+- Use of logos or testimonials requires prior written approval.
+
+#### 10) Liability and Warranties
+- Services are delivered with reasonable skill and care.
+- No guarantee of specific outcomes; KPIs set where relevant.
+
+#### 11) Governing Law and Disputes
+- Finland. Good‑faith negotiation before other remedies.
+
+#### 12) Company Information
+- Green Elephant Oy  
+- Kasavuorentie 20–22, 02700 Kauniainen, Finland  
+- Business ID (VAT): FI 2732829‑2  
+- E‑invoice operator: Apix Messaging Oy  
+- OVT/Online invoice address: 003727328292
+
+Suggested public link text for proposals:
+- Terms & Conditions — Green Elephant Oy (greenelephant.org/terms)
