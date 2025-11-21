@@ -10,9 +10,17 @@ import {
   type NewsletterSubscription,
   type InsertNewsletterSubscription,
   type SignalsQuizResult,
-  type InsertSignalsQuizResult
+  type InsertSignalsQuizResult,
+  users,
+  recommendationSubmissions,
+  contacts,
+  waitlistEntries,
+  newsletterSubscriptions,
+  signalsQuizResults
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, avg } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -190,4 +198,96 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// PostgreSQL-based storage using Drizzle ORM
+export class DatabaseStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async createRecommendationSubmission(insertSubmission: InsertRecommendationSubmission): Promise<RecommendationSubmission> {
+    const [submission] = await db.insert(recommendationSubmissions).values(insertSubmission).returning();
+    console.log(`✓ Recommendation submission stored: ${insertSubmission.name} → ${insertSubmission.recommendedPath}`);
+    return submission;
+  }
+
+  async getAllRecommendationSubmissions(): Promise<RecommendationSubmission[]> {
+    return await db.select().from(recommendationSubmissions);
+  }
+
+  async createContact(insertContact: InsertContact): Promise<Contact> {
+    const [contact] = await db.insert(contacts).values(insertContact).returning();
+    console.log(`✓ Contact created: ${insertContact.email} (${insertContact.source})`);
+    return contact;
+  }
+
+  async getContactByEmail(email: string): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).where(eq(contacts.email, email)).limit(1);
+    return contact;
+  }
+
+  async createWaitlistEntry(insertEntry: InsertWaitlistEntry): Promise<WaitlistEntry> {
+    const [entry] = await db.insert(waitlistEntries).values(insertEntry).returning();
+    console.log(`✓ Waitlist entry created: ${insertEntry.contactId}`);
+    return entry;
+  }
+
+  async getAllWaitlistEntries(): Promise<WaitlistEntry[]> {
+    return await db.select().from(waitlistEntries);
+  }
+
+  async createNewsletterSubscription(insertSubscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    const [subscription] = await db.insert(newsletterSubscriptions).values(insertSubscription).returning();
+    console.log(`✓ Newsletter subscription created: ${insertSubscription.contactId}`);
+    return subscription;
+  }
+
+  async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
+    return await db.select().from(newsletterSubscriptions);
+  }
+
+  async createSignalsQuizResult(insertResult: InsertSignalsQuizResult): Promise<SignalsQuizResult> {
+    const [result] = await db.insert(signalsQuizResults).values({
+      contactId: insertResult.contactId || null,
+      score: insertResult.score.toString(),
+      answers: insertResult.answers,
+    }).returning();
+    console.log(`✓ Signals quiz result stored: score ${insertResult.score}`);
+    return result;
+  }
+
+  async getQuizAverageScore(): Promise<number> {
+    const results = await db.select().from(signalsQuizResults);
+    if (results.length === 0) {
+      return 0;
+    }
+    
+    const validScores = results
+      .map(result => parseFloat(result.score))
+      .filter(score => !isNaN(score) && isFinite(score));
+    
+    if (validScores.length === 0) {
+      return 0;
+    }
+    
+    const total = validScores.reduce((sum, score) => sum + score, 0);
+    return Math.round(total / validScores.length);
+  }
+
+  async getAllSignalsQuizResults(): Promise<SignalsQuizResult[]> {
+    return await db.select().from(signalsQuizResults);
+  }
+}
+
+// Use PostgreSQL storage (persistent) instead of MemStorage
+export const storage = new DatabaseStorage();
