@@ -35,6 +35,7 @@ export default function ContactPage() {
       toast({
         title: "We're grateful for your message",
         description: "We'll respond with care and attention within 24 hours.",
+        duration: 6000,
       });
       // Reset form
       setName("");

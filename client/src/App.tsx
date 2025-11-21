@@ -40,7 +40,7 @@ function Router() {
         Skip to main content
       </a>
       <Header />
-      <main id="main" className="pt-[72px]">
+      <main id="main" tabIndex={-1} className="pt-[72px]">
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/what-is-conscious-communication" component={WhatIsPage} />
