@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Microscope, Heart, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [location] = useLocation();
 
   const awakenItems = [
     { 
@@ -90,6 +91,21 @@ export default function Header() {
     },
   ];
 
+  // Helper to check if menu section is active (supports nested routes, query params, hashes, trailing slashes)
+  const isMenuActive = (items: typeof awakenItems) => {
+    // Normalize current location (remove trailing slash, hash, query params for comparison)
+    const normalizedLocation = location.split('?')[0].split('#')[0].replace(/\/$/, '');
+    
+    return items.some(item => {
+      const normalizedHref = item.href.replace(/\/$/, '');
+      // Exact match
+      if (normalizedLocation === normalizedHref) return true;
+      // Prefix match for nested routes (e.g., /coaching/bundle matches /coaching)
+      if (normalizedLocation.startsWith(normalizedHref + '/')) return true;
+      return false;
+    });
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/60 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +118,10 @@ export default function Header() {
           <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="backdrop-blur-sm" data-testid="nav-awaken">
+                <NavigationMenuTrigger 
+                  className={`backdrop-blur-sm ${isMenuActive(awakenItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-awaken"
+                >
                   Why It Matters
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -132,7 +151,10 @@ export default function Header() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="backdrop-blur-sm" data-testid="nav-practice">
+                <NavigationMenuTrigger 
+                  className={`backdrop-blur-sm ${isMenuActive(practiceItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-practice"
+                >
                   How We Guide You
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -162,7 +184,10 @@ export default function Header() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="backdrop-blur-sm" data-testid="nav-integrate">
+                <NavigationMenuTrigger 
+                  className={`backdrop-blur-sm ${isMenuActive(integrateItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-integrate"
+                >
                   Start Your Ritual
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>

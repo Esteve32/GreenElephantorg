@@ -13,13 +13,16 @@ import {
   type InsertSignalsQuizResult,
   type Purchase,
   type InsertPurchase,
+  type ContactMessage,
+  type InsertContactMessage,
   users,
   recommendationSubmissions,
   contacts,
   waitlistEntries,
   newsletterSubscriptions,
   signalsQuizResults,
-  purchases
+  purchases,
+  contactMessages
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -57,6 +60,10 @@ export interface IStorage {
   createPurchase(purchase: InsertPurchase): Promise<Purchase>;
   getPurchaseByPaymentIntent(paymentIntentId: string): Promise<Purchase | undefined>;
   getAllPurchases(): Promise<Purchase[]>;
+  
+  // Contact messages (general inquiries)
+  createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
+  getAllContactMessages(): Promise<ContactMessage[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -67,6 +74,7 @@ export class MemStorage implements IStorage {
   private newsletterSubscriptions: Map<string, NewsletterSubscription>;
   private signalsQuizResults: Map<string, SignalsQuizResult>;
   private purchases: Map<string, Purchase>;
+  private contactMessages: Map<string, ContactMessage>;
 
   constructor() {
     this.users = new Map();
@@ -76,6 +84,7 @@ export class MemStorage implements IStorage {
     this.newsletterSubscriptions = new Map();
     this.signalsQuizResults = new Map();
     this.purchases = new Map();
+    this.contactMessages = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -236,6 +245,24 @@ export class MemStorage implements IStorage {
   async getAllPurchases(): Promise<Purchase[]> {
     return Array.from(this.purchases.values());
   }
+
+  // Contact message methods
+  async createContactMessage(insertMessage: InsertContactMessage): Promise<ContactMessage> {
+    const id = randomUUID();
+    const message: ContactMessage = {
+      ...insertMessage,
+      id,
+      intent: insertMessage.intent || null,
+      createdAt: new Date(),
+    };
+    this.contactMessages.set(id, message);
+    console.log(`✓ Contact message created: ${insertMessage.name} (${insertMessage.email})`);
+    return message;
+  }
+
+  async getAllContactMessages(): Promise<ContactMessage[]> {
+    return Array.from(this.contactMessages.values());
+  }
 }
 
 // PostgreSQL-based storage using Drizzle ORM
@@ -347,6 +374,17 @@ export class DatabaseStorage implements IStorage {
 
   async getAllPurchases(): Promise<Purchase[]> {
     return await db.select().from(purchases);
+  }
+
+  // Contact message methods
+  async createContactMessage(insertMessage: InsertContactMessage): Promise<ContactMessage> {
+    const [message] = await db.insert(contactMessages).values(insertMessage).returning();
+    console.log(`✓ Contact message created: ${insertMessage.name} (${insertMessage.email})`);
+    return message;
+  }
+
+  async getAllContactMessages(): Promise<ContactMessage[]> {
+    return await db.select().from(contactMessages);
   }
 }
 

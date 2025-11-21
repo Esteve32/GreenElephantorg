@@ -10,7 +10,8 @@ import {
   insertWaitlistEntrySchema,
   insertNewsletterSubscriptionSchema,
   insertSignalsQuizResultSchema,
-  insertPurchaseSchema
+  insertPurchaseSchema,
+  insertContactMessageSchema
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
 import { sendPurchaseNotification } from "./email-notifications";
@@ -252,6 +253,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Waitlist submission error:", error);
+      res.status(500).json({
+        message: "We encountered an issue. Please try again."
+      });
+    }
+  });
+
+  // Contact form submission endpoint
+  app.post("/api/contacts", async (req, res) => {
+    try {
+      const { name, email, message, intent } = req.body;
+      
+      // Validate contact message data
+      const validation = insertContactMessageSchema.safeParse({
+        name,
+        email,
+        message,
+        intent
+      });
+
+      if (!validation.success) {
+        const validationError = fromError(validation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      const contactMessage = await storage.createContactMessage(validation.data);
+
+      res.status(201).json({
+        message: "We're grateful for your message. We'll respond with care and attention within 24 hours.",
+        contactMessage: { id: contactMessage.id }
+      });
+    } catch (error: any) {
+      console.error("Contact form submission error:", error);
       res.status(500).json({
         message: "We encountered an issue. Please try again."
       });

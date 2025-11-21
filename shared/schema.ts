@@ -165,3 +165,28 @@ export const insertPurchaseSchema = createInsertSchema(purchases).pick({
 
 export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
 export type Purchase = typeof purchases.$inferSelect;
+
+// Contact form messages (general inquiries)
+export const contactMessages = pgTable("contact_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  message: text("message").notNull(),
+  intent: text("intent"), // "retreats", "coaching", "research", or null
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertContactMessageSchema = createInsertSchema(contactMessages).pick({
+  name: true,
+  email: true,
+  message: true,
+  intent: true,
+}).extend({
+  name: z.string().min(2, "Please enter your name"),
+  email: z.string().email("Please enter a valid email address"),
+  message: z.string().min(10, "Please share a bit more detail (at least 10 characters)"),
+  intent: z.enum(["retreats", "coaching", "research", "general"]).default("general"), // Default to "general" if not selected
+});
+
+export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+export type ContactMessage = typeof contactMessages.$inferSelect;
