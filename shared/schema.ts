@@ -130,3 +130,38 @@ export const insertSignalsQuizResultSchema = createInsertSchema(signalsQuizResul
 
 export type InsertSignalsQuizResult = z.infer<typeof insertSignalsQuizResultSchema>;
 export type SignalsQuizResult = typeof signalsQuizResults.$inferSelect;
+
+// Coaching package purchases
+export const purchases = pgTable("purchases", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerEmail: text("customer_email").notNull(),
+  customerName: text("customer_name"),
+  packageId: text("package_id").notNull(), // foundation, transformation, team
+  packageName: text("package_name").notNull(),
+  amount: text("amount").notNull(), // Price in EUR (stored as text, e.g., "795")
+  stripePaymentIntentId: text("stripe_payment_intent_id").notNull().unique(),
+  status: text("status").notNull(), // succeeded, pending, failed
+  calendlyBooked: text("calendly_booked").default("false").notNull(), // Track if they've booked
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPurchaseSchema = createInsertSchema(purchases).pick({
+  customerEmail: true,
+  customerName: true,
+  packageId: true,
+  packageName: true,
+  amount: true,
+  stripePaymentIntentId: true,
+  status: true,
+}).extend({
+  customerEmail: z.string().email("Please enter a valid email address"),
+  customerName: z.string().optional(),
+  packageId: z.string(),
+  packageName: z.string(),
+  amount: z.string(),
+  stripePaymentIntentId: z.string(),
+  status: z.enum(["succeeded", "pending", "failed"]),
+});
+
+export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
+export type Purchase = typeof purchases.$inferSelect;

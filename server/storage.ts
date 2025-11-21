@@ -11,12 +11,15 @@ import {
   type InsertNewsletterSubscription,
   type SignalsQuizResult,
   type InsertSignalsQuizResult,
+  type Purchase,
+  type InsertPurchase,
   users,
   recommendationSubmissions,
   contacts,
   waitlistEntries,
   newsletterSubscriptions,
-  signalsQuizResults
+  signalsQuizResults,
+  purchases
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -49,6 +52,11 @@ export interface IStorage {
   createSignalsQuizResult(result: InsertSignalsQuizResult): Promise<SignalsQuizResult>;
   getQuizAverageScore(): Promise<number>;
   getAllSignalsQuizResults(): Promise<SignalsQuizResult[]>;
+  
+  // Purchases
+  createPurchase(purchase: InsertPurchase): Promise<Purchase>;
+  getPurchaseByPaymentIntent(paymentIntentId: string): Promise<Purchase | undefined>;
+  getAllPurchases(): Promise<Purchase[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -58,6 +66,7 @@ export class MemStorage implements IStorage {
   private waitlistEntries: Map<string, WaitlistEntry>;
   private newsletterSubscriptions: Map<string, NewsletterSubscription>;
   private signalsQuizResults: Map<string, SignalsQuizResult>;
+  private purchases: Map<string, Purchase>;
 
   constructor() {
     this.users = new Map();
@@ -66,6 +75,7 @@ export class MemStorage implements IStorage {
     this.waitlistEntries = new Map();
     this.newsletterSubscriptions = new Map();
     this.signalsQuizResults = new Map();
+    this.purchases = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -201,6 +211,31 @@ export class MemStorage implements IStorage {
   async getAllSignalsQuizResults(): Promise<SignalsQuizResult[]> {
     return Array.from(this.signalsQuizResults.values());
   }
+
+  // Purchase methods
+  async createPurchase(insertPurchase: InsertPurchase): Promise<Purchase> {
+    const id = randomUUID();
+    const purchase: Purchase = {
+      ...insertPurchase,
+      id,
+      customerName: insertPurchase.customerName || null,
+      calendlyBooked: "false",
+      createdAt: new Date(),
+    };
+    this.purchases.set(id, purchase);
+    console.log(`✓ Purchase created: ${insertPurchase.customerEmail} → ${insertPurchase.packageName} (€${insertPurchase.amount})`);
+    return purchase;
+  }
+
+  async getPurchaseByPaymentIntent(paymentIntentId: string): Promise<Purchase | undefined> {
+    return Array.from(this.purchases.values()).find(
+      (purchase) => purchase.stripePaymentIntentId === paymentIntentId,
+    );
+  }
+
+  async getAllPurchases(): Promise<Purchase[]> {
+    return Array.from(this.purchases.values());
+  }
 }
 
 // PostgreSQL-based storage using Drizzle ORM
@@ -295,6 +330,23 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSignalsQuizResults(): Promise<SignalsQuizResult[]> {
     return await db.select().from(signalsQuizResults);
+  }
+
+  async createPurchase(insertPurchase: InsertPurchase): Promise<Purchase> {
+    const [purchase] = await db.insert(purchases).values(insertPurchase).returning();
+    console.log(`✓ Purchase created: ${insertPurchase.customerEmail} → ${insertPurchase.packageName} (€${insertPurchase.amount})`);
+    return purchase;
+  }
+
+  async getPurchaseByPaymentIntent(paymentIntentId: string): Promise<Purchase | undefined> {
+    const [purchase] = await db.select().from(purchases)
+      .where(eq(purchases.stripePaymentIntentId, paymentIntentId))
+      .limit(1);
+    return purchase;
+  }
+
+  async getAllPurchases(): Promise<Purchase[]> {
+    return await db.select().from(purchases);
   }
 }
 
