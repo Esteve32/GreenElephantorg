@@ -5,6 +5,24 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
 
 ## Recent Changes (November 21, 2025)
 
+### Client References Page Implementation ✅
+- **New Page**: Created dedicated `/references` page showcasing 37 clients
+- **Organization**: Clients organized into 9 categories (Tech & Startups: 9, Financial Services: 5, Industrial: 4, Government: 2, Transportation: 3, Education: 6, Consulting: 5, Hospitality/Telecom: 2, Innovation Hubs: 1)
+- **Interactive Design**: Clickable client boxes with hover elevation effects
+- **External Links**: Each client box links to their website (opens in new tab)
+- **Hover Effects**: External link icon fades in on hover, background elevates
+- **Categories**: Tech & Startups, Financial Services, Industrial, Government, Transportation, Education, Consulting, Hospitality, Innovation Hubs
+- **CTA Section**: Bottom section with links to Consulting and Contact pages
+- **Responsive Grid**: 2-5 columns depending on screen size for optimal viewing
+
+### Retreats Page Updates ✅
+- **Pricing**: Changed from "Excludes food, accommodation & travel" to "Price excludes travel only"
+- **Bottom Section Redesign**: Replaced static cards with three interactive sections:
+  - **Agent Bios** → Links to Team page to meet Anu and Jonas
+  - **Methodology** → Links to Lab page for research-backed frameworks
+  - **Open Data** → Links to Lab page for research updates subscription
+- **Research Partners**: Added clean badge presentation for Aalto Design Factory, TEAL Organizations, and Center for Nonviolent Communication
+
 ### Font System Update - Poppins Font Implementation ✅
 - **Headings**: All h1-h6 now use Poppins font (modern geometric sans-serif from Google Fonts)
 - **Body Text**: Continues to use Lato for optimal readability
@@ -80,7 +98,7 @@ The frontend is built with React and TypeScript, using Vite for bundling. Wouter
 
 The design system is dark mode-first, featuring a HUD aesthetic with dark backgrounds and semi-transparent white overlays. It uses a custom color palette based on 8 communication lenses, a specific typography (Poppins for headlines, Lato for body), and a 4/8/12/16/24/32 pixel spacing scale. Glass-morphism effects with backdrop blur are used for modals and navigation. Icons are light (95% lightness) for optimal contrast on colored backgrounds.
 
-Key pages include Home, Periodic Table (with 129 elements and NVC-based prompts), Retreats, Coaching, Team, Lab, Resources/Prompts, Contact, Stories, "What Is", and "Signals" educational pages. The architecture emphasizes modular, reusable components.
+Key pages include Home, Periodic Table (with 129 elements and NVC-based prompts), Retreats, Coaching, Team, Lab, Resources/Prompts, Contact, Stories, References (37 clients), "What Is", and "Signals" educational pages. The architecture emphasizes modular, reusable components.
 
 ### Backend Architecture
 The backend uses Express.js with TypeScript, providing a minimal REST API. It includes an abstract storage interface (`IStorage`) with an in-memory implementation (`MemStorage`) for development, designed for future migration to Drizzle ORM with PostgreSQL. All API routes are prefixed with `/api`, use JSON for requests/responses, and include request logging.

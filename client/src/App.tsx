@@ -17,6 +17,7 @@ import LabPage from "@/pages/LabPage";
 import ConsultingPage from "@/pages/ConsultingPage";
 import ResourcesPromptsPage from "@/pages/ResourcesPromptsPage";
 import StoriesPage from "@/pages/StoriesPage";
+import ReferencesPage from "@/pages/ReferencesPage";
 import ContactPage from "@/pages/ContactPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
@@ -48,6 +49,7 @@ function Router() {
         <Route path="/prompts" component={ResourcesPromptsPage} />
         <Route path="/arbora" component={LabPage} />
         <Route path="/stories" component={StoriesPage} />
+        <Route path="/references" component={ReferencesPage} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/interview-coaching" component={InterviewCoachingPage} />
         <Route path="/checkout" component={CheckoutPage} />
