@@ -40,9 +40,23 @@ export default function PaymentSuccessPage() {
               <Calendar className="h-5 w-5 text-alignment shrink-0 mt-0.5" />
               <div>
                 <div className="font-semibold mb-1">Schedule your first session</div>
-                <p className="text-sm text-muted-foreground">
-                  Use the calendar link in your email to book a time that works for you.
+                <p className="text-sm text-muted-foreground mb-3">
+                  Book your first coaching session with Anu now. Choose a time that works best for you.
                 </p>
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-alignment hover:bg-alignment/90 text-white"
+                  data-testid="button-book-session"
+                >
+                  <a 
+                    href="https://calendly.com/anu-greenelephant/call-with-anu" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Book with Anu
+                  </a>
+                </Button>
               </div>
             </div>
           </div>

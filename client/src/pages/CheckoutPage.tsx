@@ -7,9 +7,9 @@ import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 
-// Stripe integration from blueprint:javascript_stripe
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
 }
@@ -73,13 +73,16 @@ const CheckoutForm = ({ packageInfo }: CheckoutFormProps) => {
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  const { toast } = useToast();
   const [, setLocation] = useLocation();
   
-  // Get package info from URL params or default
   const urlParams = new URLSearchParams(window.location.search);
   const packageType = urlParams.get('package') || '1on1-single';
   
-  // Import from shared catalog - single source of truth
   const packages: Record<string, { name: string; price: number; features: string[]; savings?: string }> = {
     '1on1-single': {
       name: "1:1 Single Session",
@@ -124,29 +127,46 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!selectedPackage) {
       setLocation('/coaching');
+    }
+  }, [packageType, selectedPackage, setLocation]);
+
+  const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!customerEmail) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
       return;
     }
 
-    // Create PaymentIntent with server-side price validation
-    apiRequest("POST", "/api/create-payment-intent", { 
-      packageId: packageType 
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setClientSecret(data.clientSecret);
-      })
-      .catch((error) => {
-        console.error('Payment intent error:', error);
-        setLocation('/coaching');
-      });
-  }, [packageType, selectedPackage, setLocation]);
+    setIsCreatingIntent(true);
 
-  if (!clientSecret) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-24">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading"/>
-      </div>
-    );
+    try {
+      const response = await apiRequest("POST", "/api/create-payment-intent", { 
+        packageId: packageType,
+        customerEmail,
+        customerName
+      });
+      const data = await response.json();
+      setClientSecret(data.clientSecret);
+      setShowPaymentForm(true);
+    } catch (error) {
+      console.error('Payment intent error:', error);
+      toast({
+        title: "Error",
+        description: "Unable to prepare payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingIntent(false);
+    }
+  };
+
+  if (!selectedPackage) {
+    return null;
   }
 
   return (
@@ -211,18 +231,67 @@ export default function CheckoutPage() {
             </CardContent>
           </Card>
 
-          {/* Payment Form */}
+          {/* Customer Info & Payment Form */}
           <Card className="backdrop-blur-sm bg-card/95">
             <CardHeader>
-              <CardTitle>Complete Your Investment</CardTitle>
+              <CardTitle>{showPaymentForm ? "Complete Your Payment" : "Your Information"}</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Secure payment powered by Stripe. Your transformation starts today.
+                {showPaymentForm 
+                  ? "Secure payment powered by Stripe. Your transformation starts today."
+                  : "We'll send your receipt and session details to this email."
+                }
               </p>
             </CardHeader>
             <CardContent>
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <CheckoutForm packageInfo={selectedPackage} />
-              </Elements>
+              {!showPaymentForm ? (
+                <form onSubmit={handleCustomerInfoSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium">
+                      Email Address *
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      required
+                      className="backdrop-blur-sm bg-white/5"
+                      data-testid="input-customer-email"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Full Name (Optional)
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="Your name"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="backdrop-blur-sm bg-white/5"
+                      data-testid="input-customer-name"
+                    />
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-alignment text-white hover:opacity-90"
+                    disabled={isCreatingIntent}
+                    data-testid="button-continue-to-payment"
+                  >
+                    {isCreatingIntent ? "Loading..." : "Continue to Payment"}
+                  </Button>
+                </form>
+              ) : (
+                clientSecret && (
+                  <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <CheckoutForm packageInfo={selectedPackage} />
+                  </Elements>
+                )
+              )}
             </CardContent>
           </Card>
         </div>
@@ -230,7 +299,7 @@ export default function CheckoutPage() {
         {/* Trust signals */}
         <div className="mt-12 text-center text-sm text-muted-foreground space-y-2">
           <p>Secure payment processing · 100% satisfaction guarantee</p>
-          <p>Questions? Email hello@greenelephant.org</p>
+          <p>Questions? Email esteve@greenelephant.org</p>
         </div>
       </div>
     </div>

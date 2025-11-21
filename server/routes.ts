@@ -9,7 +9,8 @@ import {
   insertContactSchema,
   insertWaitlistEntrySchema,
   insertNewsletterSubscriptionSchema,
-  insertSignalsQuizResultSchema
+  insertSignalsQuizResultSchema,
+  insertPurchaseSchema
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
 
@@ -40,7 +41,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { packageId } = req.body;
+      const { packageId, customerEmail, customerName } = req.body;
       
       // Validate package exists in server-side catalog
       if (!packageId || !(packageId in COACHING_PACKAGES)) {
@@ -56,7 +57,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         metadata: {
           packageId: packageId,
           packageName: packageInfo.name,
+          customerEmail: customerEmail || '',
+          customerName: customerName || '',
         },
+        receipt_email: customerEmail || undefined,
       });
       
       res.json({ clientSecret: paymentIntent.client_secret });
@@ -65,6 +69,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res
         .status(500)
         .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Stripe webhook to capture successful payments
+  app.post("/api/webhooks/stripe", async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ message: "Stripe not configured" });
+    }
+
+    try {
+      const event = req.body;
+
+      // Handle successful payment
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
+        
+        // Extract metadata
+        const { packageId, packageName, customerEmail, customerName } = paymentIntent.metadata;
+        const amount = (paymentIntent.amount / 100).toString(); // Convert cents to EUR
+
+        // Check if purchase already exists
+        const existingPurchase = await storage.getPurchaseByPaymentIntent(paymentIntent.id);
+        
+        if (!existingPurchase) {
+          // Store purchase in database
+          const purchase = await storage.createPurchase({
+            customerEmail: customerEmail || 'unknown@greenelephant.org',
+            customerName: customerName || undefined,
+            packageId: packageId,
+            packageName: packageName,
+            amount: amount,
+            stripePaymentIntentId: paymentIntent.id,
+            status: 'succeeded',
+          });
+
+          // Log for manual notification (since we're not using email service)
+          console.log('🎉 NEW PURCHASE! 🎉');
+          console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          console.log(`Customer: ${customerName || 'Not provided'}`);
+          console.log(`Email: ${customerEmail}`);
+          console.log(`Package: ${packageName}`);
+          console.log(`Amount: €${amount}`);
+          console.log(`Payment ID: ${paymentIntent.id}`);
+          console.log(`Purchase ID: ${purchase.id}`);
+          console.log(`Time: ${new Date().toISOString()}`);
+          console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
+          console.log('👉 View in admin: /admin/purchases');
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Webhook error:", error);
+      res.status(400).json({ message: error.message });
     }
   });
 
