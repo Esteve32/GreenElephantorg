@@ -32,8 +32,15 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <>
+      <a 
+        href="#main" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
+        data-testid="link-skip-to-main"
+      >
+        Skip to main content
+      </a>
       <Header />
-      <main className="pt-[72px]">
+      <main id="main" className="pt-[72px]">
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/what-is-conscious-communication" component={WhatIsPage} />
