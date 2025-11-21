@@ -38,7 +38,6 @@ const clientCategories = [
   {
     title: "Government & Public Sector",
     clients: [
-      { name: "Dubai DED", url: "https://dubaided.gov.ae" },
       { name: "CERN Geneva", url: "https://home.cern" },
     ],
   },
@@ -68,7 +67,6 @@ const clientCategories = [
       { name: "arbora.partners", url: "https://arbora.partners" },
       { name: "Futurice", url: "https://futurice.com" },
       { name: "Vincit", url: "https://vincit.com" },
-      { name: "IDEO", url: "https://ideo.com" },
     ],
   },
   {

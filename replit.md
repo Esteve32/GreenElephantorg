@@ -6,14 +6,26 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
 ## Recent Changes (November 21, 2025)
 
 ### Client References Page Implementation ✅
-- **New Page**: Created dedicated `/references` page showcasing 37 clients
-- **Organization**: Clients organized into 9 categories (Tech & Startups: 9, Financial Services: 5, Industrial: 4, Government: 2, Transportation: 3, Education: 6, Consulting: 5, Hospitality/Telecom: 2, Innovation Hubs: 1)
+- **New Page**: Created dedicated `/references` page showcasing 35 clients
+- **Organization**: Clients organized into 9 categories (Tech & Startups: 9, Financial Services: 5, Industrial: 4, Government: 1, Transportation: 3, Education: 6, Consulting: 4, Hospitality/Telecom: 2, Innovation Hubs: 1)
 - **Interactive Design**: Clickable client boxes with hover elevation effects
 - **External Links**: Each client box links to their website (opens in new tab)
 - **Hover Effects**: External link icon fades in on hover, background elevates
-- **Categories**: Tech & Startups, Financial Services, Industrial, Government, Transportation, Education, Consulting, Hospitality, Innovation Hubs
+- **Featured Clients Moved**: IDEO and Dubai DED now displayed on HomePage under "Who We Serve with Gratitude"
 - **CTA Section**: Bottom section with links to Consulting and Contact pages
 - **Responsive Grid**: 2-5 columns depending on screen size for optimal viewing
+
+### Lab Page Updates ✅
+- **Research Section Renamed**: "Arbora.partners" renamed to "Research Updates"
+- **ACX Research Integration**: Added explanation of collaboration with arbora.partners on ACX research
+- **Research Focus**: Explores conscious communication and AI in workplace, organizational culture effects
+- **External Link**: Links to arbora.partners/nest for full research details
+
+### CTA Button Navigation Fixes ✅
+- **Team Page**: "Book a Session" → "Talk to a Facilitator" (links to /contact)
+- **Team Page**: "Explore Coaching" → correctly links to /coaching
+- **Consulting Page**: "Schedule Discovery Call" → links to /contact
+- **All Pages**: Verified all major CTAs navigate to correct destinations
 
 ### Retreats Page Updates ✅
 - **Pricing**: Changed from "Excludes food, accommodation & travel" to "Price excludes travel only"
@@ -22,6 +34,10 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
   - **Methodology** → Links to Lab page for research-backed frameworks
   - **Open Data** → Links to Lab page for research updates subscription
 - **Research Partners**: Added clean badge presentation for Aalto Design Factory, TEAL Organizations, and Center for Nonviolent Communication
+
+### HomePage Updates ✅
+- **Featured Partners Section**: Added IDEO and Dubai DED as special collaborators under "Who We Serve with Gratitude"
+- **Clickable Partner Boxes**: Both partners link to their websites with hover effects
 
 ### Font System Update - Poppins Font Implementation ✅
 - **Headings**: All h1-h6 now use Poppins font (modern geometric sans-serif from Google Fonts)
@@ -98,7 +114,7 @@ The frontend is built with React and TypeScript, using Vite for bundling. Wouter
 
 The design system is dark mode-first, featuring a HUD aesthetic with dark backgrounds and semi-transparent white overlays. It uses a custom color palette based on 8 communication lenses, a specific typography (Poppins for headlines, Lato for body), and a 4/8/12/16/24/32 pixel spacing scale. Glass-morphism effects with backdrop blur are used for modals and navigation. Icons are light (95% lightness) for optimal contrast on colored backgrounds.
 
-Key pages include Home, Periodic Table (with 129 elements and NVC-based prompts), Retreats, Coaching, Team, Lab, Resources/Prompts, Contact, Stories, References (37 clients), "What Is", and "Signals" educational pages. The architecture emphasizes modular, reusable components.
+Key pages include Home, Periodic Table (with 129 elements and NVC-based prompts), Retreats, Coaching, Team, Lab, Resources/Prompts, Contact, Stories, References (35 clients), "What Is", and "Signals" educational pages. The architecture emphasizes modular, reusable components.
 
 ### Backend Architecture
 The backend uses Express.js with TypeScript, providing a minimal REST API. It includes an abstract storage interface (`IStorage`) with an in-memory implementation (`MemStorage`) for development, designed for future migration to Drizzle ORM with PostgreSQL. All API routes are prefixed with `/api`, use JSON for requests/responses, and include request logging.

@@ -104,9 +104,12 @@ export default function LabPage() {
         <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl p-8 md:p-12 mb-16">
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Arbora.partners</h2>
+              <h2 className="text-3xl font-bold mb-6">Research Updates</h2>
+              <p className="text-muted-foreground mb-4">
+                GreenElephant collaborates with <a href="https://arbora.partners/nest" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline font-medium">arbora.partners</a> on ACX research exploring conscious communication and AI in the workplace.
+              </p>
               <p className="text-muted-foreground mb-6">
-                Our Lab collaborates with leading institutions and organizations committed to advancing the science and practice of conscious communication.
+                This research examines how AI tools affect organizational culture, communication patterns, and human connection—helping teams integrate technology while preserving authentic dialogue.
               </p>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3 p-3 rounded-lg backdrop-blur-sm bg-white/5">

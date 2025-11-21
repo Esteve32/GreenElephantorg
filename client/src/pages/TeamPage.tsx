@@ -261,9 +261,9 @@ export default function TeamPage() {
               Whether you're seeking therapeutic support, organizational transformation, or executive presence—our team is here to guide you.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button size="lg" asChild data-testid="button-book-session">
-                <a href="https://calendly.com/anu-greenelephant/call-with-anu" target="_blank" rel="noopener noreferrer">
-                  Book a Session
+              <Button size="lg" asChild data-testid="button-talk-to-facilitator">
+                <a href="/contact">
+                  Talk to a Facilitator
                 </a>
               </Button>
               <Button size="lg" variant="outline" asChild data-testid="button-explore-coaching">

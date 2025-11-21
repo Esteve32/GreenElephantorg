@@ -320,10 +320,12 @@ export default function ConsultingPage() {
             size="lg"
             className="bg-needs hover:bg-needs/90 text-white"
             data-testid="button-schedule-call"
-            onClick={() => console.log('Schedule discovery call')}
+            asChild
           >
-            Schedule Discovery Call
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <a href="/contact">
+              Schedule Discovery Call
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </a>
           </Button>
         </div>
       </div>
