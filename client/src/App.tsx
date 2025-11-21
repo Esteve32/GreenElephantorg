@@ -24,6 +24,8 @@ import InterviewCoachingPage from "@/pages/InterviewCoachingPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import CookiePolicyPage from "@/pages/CookiePolicyPage";
+import AdminLoginPage from "@/pages/AdminLoginPage";
+import AdminSubmissionsPage from "@/pages/AdminSubmissionsPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -53,6 +55,8 @@ function Router() {
         <Route path="/privacy" component={PrivacyPolicyPage} />
         <Route path="/terms" component={TermsOfServicePage} />
         <Route path="/cookies" component={CookiePolicyPage} />
+        <Route path="/admin/login" component={AdminLoginPage} />
+        <Route path="/admin/submissions" component={AdminSubmissionsPage} />
         <Route component={NotFound} />
       </Switch>
       </main>

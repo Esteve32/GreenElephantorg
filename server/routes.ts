@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { requireAdminAuth, verifyAdminPassword } from "./auth";
 import Stripe from "stripe";
 import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
 import { 
@@ -253,6 +254,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         message: "Could not fetch average score"
       });
+    }
+  });
+
+  // Admin login endpoint
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      if (!password) {
+        return res.status(400).json({ message: "Password required" });
+      }
+      
+      if (verifyAdminPassword(password)) {
+        // Set admin session
+        if (req.session) {
+          req.session.isAdmin = true;
+        }
+        res.json({ message: "Login successful" });
+      } else {
+        res.status(401).json({ message: "Incorrect password" });
+      }
+    } catch (error: any) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Admin logout endpoint
+  app.post("/api/admin/logout", async (req, res) => {
+    if (req.session) {
+      req.session.isAdmin = false;
+    }
+    res.json({ message: "Logged out successfully" });
+  });
+
+  // Check admin authentication status
+  app.get("/api/admin/check", async (req, res) => {
+    const isAuthenticated = req.session && req.session.isAdmin === true;
+    res.json({ isAuthenticated });
+  });
+
+  // Admin endpoints for viewing submissions (protected)
+  app.get("/api/admin/waitlist", requireAdminAuth, async (_req, res) => {
+    try {
+      const entries = await storage.getAllWaitlistEntries();
+      res.json(entries);
+    } catch (error: any) {
+      console.error("Admin waitlist fetch error:", error);
+      res.status(500).json({ message: "Could not fetch waitlist entries" });
+    }
+  });
+
+  app.get("/api/admin/newsletter", requireAdminAuth, async (_req, res) => {
+    try {
+      const subscriptions = await storage.getAllNewsletterSubscriptions();
+      res.json(subscriptions);
+    } catch (error: any) {
+      console.error("Admin newsletter fetch error:", error);
+      res.status(500).json({ message: "Could not fetch newsletter subscriptions" });
+    }
+  });
+
+  app.get("/api/admin/quiz", requireAdminAuth, async (_req, res) => {
+    try {
+      const results = await storage.getAllSignalsQuizResults();
+      res.json(results);
+    } catch (error: any) {
+      console.error("Admin quiz fetch error:", error);
+      res.status(500).json({ message: "Could not fetch quiz results" });
+    }
+  });
+
+  app.get("/api/admin/recommendations", requireAdminAuth, async (_req, res) => {
+    try {
+      const submissions = await storage.getAllRecommendationSubmissions();
+      res.json(submissions);
+    } catch (error: any) {
+      console.error("Admin recommendations fetch error:", error);
+      res.status(500).json({ message: "Could not fetch recommendations" });
+    }
+  });
+
+  app.get("/api/admin/contacts", requireAdminAuth, async (_req, res) => {
+    try {
+      const contacts = await storage.getAllContacts();
+      res.json(contacts);
+    } catch (error: any) {
+      console.error("Admin contacts fetch error:", error);
+      res.status(500).json({ message: "Could not fetch contacts" });
     }
   });
 

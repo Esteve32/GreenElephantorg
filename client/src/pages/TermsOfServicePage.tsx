@@ -267,8 +267,8 @@ export default function TermsOfServicePage() {
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
                 If you have concerns about our services, please contact us first at{" "}
-                <a href="mailto:sdev@greenelephant.org" className="text-needs hover:underline">
-                  sdev@greenelephant.org
+                <a href="mailto:esteve@greenelephant.org" className="text-needs hover:underline">
+                  esteve@greenelephant.org
                 </a>
                 . We are committed to resolving issues amicably.
               </p>
@@ -298,10 +298,10 @@ export default function TermsOfServicePage() {
               We're here to clarify any questions you have about our terms and your rights.
             </p>
             <a 
-              href="mailto:sdev@greenelephant.org"
+              href="mailto:esteve@greenelephant.org"
               className="text-needs hover:underline text-lg font-semibold"
             >
-              sdev@greenelephant.org
+              esteve@greenelephant.org
             </a>
           </div>
         </div>

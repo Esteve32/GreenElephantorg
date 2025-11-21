@@ -254,10 +254,10 @@ export default function CookiePolicyPage() {
               We're committed to transparency. If you have questions about our use of cookies, contact us.
             </p>
             <a 
-              href="mailto:sdev@greenelephant.org"
+              href="mailto:esteve@greenelephant.org"
               className="text-needs hover:underline text-lg font-semibold"
             >
-              sdev@greenelephant.org
+              esteve@greenelephant.org
             </a>
           </div>
         </div>

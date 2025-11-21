@@ -31,8 +31,8 @@ export default function PrivacyPolicyPage() {
               </ul>
               <p>
                 For privacy inquiries, contact us at:{" "}
-                <a href="mailto:sdev@greenelephant.org" className="text-needs hover:underline">
-                  sdev@greenelephant.org
+                <a href="mailto:esteve@greenelephant.org" className="text-needs hover:underline">
+                  esteve@greenelephant.org
                 </a>
               </p>
             </CardContent>
@@ -176,8 +176,8 @@ export default function PrivacyPolicyPage() {
               </ul>
               <p className="mt-4">
                 To exercise your rights, email us at{" "}
-                <a href="mailto:sdev@greenelephant.org" className="text-needs hover:underline">
-                  sdev@greenelephant.org
+                <a href="mailto:esteve@greenelephant.org" className="text-needs hover:underline">
+                  esteve@greenelephant.org
                 </a>
                 . We will respond within 30 days.
               </p>
@@ -250,10 +250,10 @@ export default function PrivacyPolicyPage() {
               We're committed to transparency and protecting your rights. Contact us anytime.
             </p>
             <a 
-              href="mailto:sdev@greenelephant.org"
+              href="mailto:esteve@greenelephant.org"
               className="text-needs hover:underline text-lg font-semibold"
             >
-              sdev@greenelephant.org
+              esteve@greenelephant.org
             </a>
           </div>
         </div>

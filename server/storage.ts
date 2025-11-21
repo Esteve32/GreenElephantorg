@@ -35,6 +35,7 @@ export interface IStorage {
   // Contact management with GDPR support
   createContact(contact: InsertContact): Promise<Contact>;
   getContactByEmail(email: string): Promise<Contact | undefined>;
+  getAllContacts(): Promise<Contact[]>;
   
   // Waitlist entries
   createWaitlistEntry(entry: InsertWaitlistEntry): Promise<WaitlistEntry>;
@@ -121,6 +122,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.contacts.values()).find(
       (contact) => contact.email === email,
     );
+  }
+
+  async getAllContacts(): Promise<Contact[]> {
+    return Array.from(this.contacts.values());
   }
 
   // Waitlist entry methods
@@ -234,6 +239,10 @@ export class DatabaseStorage implements IStorage {
   async getContactByEmail(email: string): Promise<Contact | undefined> {
     const [contact] = await db.select().from(contacts).where(eq(contacts.email, email)).limit(1);
     return contact;
+  }
+
+  async getAllContacts(): Promise<Contact[]> {
+    return await db.select().from(contacts);
   }
 
   async createWaitlistEntry(insertEntry: InsertWaitlistEntry): Promise<WaitlistEntry> {
