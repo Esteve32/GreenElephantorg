@@ -384,9 +384,11 @@ export default function ResourcesPromptsPage() {
               <Button 
                 className="w-full bg-needs hover:bg-needs/90"
                 data-testid="button-take-assessment"
-                onClick={() => console.log('Taking assessment')}
+                asChild
               >
-                Take Assessment
+                <a href="/signals">
+                  Take Assessment
+                </a>
               </Button>
             </CardContent>
           </Card>
@@ -403,9 +405,11 @@ export default function ResourcesPromptsPage() {
                 variant="outline"
                 className="w-full backdrop-blur-sm bg-white/5"
                 data-testid="button-join-community"
-                onClick={() => console.log('Joining community')}
+                asChild
               >
-                Join LinkedIn Community
+                <a href="https://www.linkedin.com/groups/9263616/" target="_blank" rel="noopener noreferrer">
+                  Join LinkedIn Community
+                </a>
               </Button>
             </CardContent>
           </Card>

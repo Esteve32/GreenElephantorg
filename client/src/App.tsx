@@ -21,6 +21,9 @@ import ContactPage from "@/pages/ContactPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
 import InterviewCoachingPage from "@/pages/InterviewCoachingPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import TermsOfServicePage from "@/pages/TermsOfServicePage";
+import CookiePolicyPage from "@/pages/CookiePolicyPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -47,6 +50,9 @@ function Router() {
         <Route path="/interview-coaching" component={InterviewCoachingPage} />
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/payment-success" component={PaymentSuccessPage} />
+        <Route path="/privacy" component={PrivacyPolicyPage} />
+        <Route path="/terms" component={TermsOfServicePage} />
+        <Route path="/cookies" component={CookiePolicyPage} />
         <Route component={NotFound} />
       </Switch>
       </main>
