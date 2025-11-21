@@ -116,6 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`Time: ${new Date().toISOString()}`);
           console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
+          console.log('👉 Include Calendly link: https://calendly.com/greenelephant/discovery-call-with-esteve-clone');
           console.log('👉 View in admin: /admin/purchases');
         }
       }

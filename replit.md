@@ -13,9 +13,9 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
   - Displays: Customer name, email, package, amount, payment ID, timestamp
   - Action prompt: Email customer manually at their address
   - View purchases in database or future admin panel
-- **Calendly Integration**: Payment success page includes "Book with Anu" button
-  - Direct link: https://calendly.com/anu-greenelephant/call-with-anu
-  - Opens in new tab for immediate session scheduling
+- **Calendly Integration**: Payment success page includes "Book Discovery Call" button
+  - Direct link: https://calendly.com/greenelephant/discovery-call-with-esteve-clone
+  - Opens in new tab for immediate Satellite Scan™ scheduling with Estève
 - **Customer Data**: PaymentIntent metadata includes customerEmail, customerName for post-purchase follow-up
 - **Note**: Email automation dismissed - requires manual follow-up via esteve@greenelephant.org
 
