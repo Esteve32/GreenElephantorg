@@ -14,14 +14,15 @@
     <!-- Font Loading: Using display=swap for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800;900&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://db.onlinewebfonts.com/c/08aae9f020949051ff8331be100607cb?family=Archive" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     
     <!-- Font Loading Detection Script -->
     <script>
       (function() {
         if ('fonts' in document) {
           Promise.all([
-            document.fonts.load('700 1em Archivo'),
+            document.fonts.load('400 1em Archive'),
             document.fonts.load('400 1em Lato')
           ]).then(function() {
             console.log('Fonts loaded successfully');
