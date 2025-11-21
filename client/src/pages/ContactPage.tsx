@@ -45,8 +45,9 @@ export default function ContactPage() {
     onError: (error: any) => {
       toast({
         title: "Unable to send message",
-        description: error.message || "Please try again or email esteve@greenelephant.org",
+        description: error.message ? `${error.message}. Please try again or email esteve@greenelephant.org directly.` : "Network error. Please try again in a moment or contact us directly at esteve@greenelephant.org",
         variant: "destructive",
+        duration: 10000,
       });
     },
   });

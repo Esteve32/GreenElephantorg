@@ -187,6 +187,45 @@ export default function CoachingPage() {
           </Card>
         </div>
 
+        <div className="backdrop-blur-sm bg-destructive/10 border border-destructive/20 rounded-2xl p-8 md:p-12 mb-16">
+          <h3 className="text-2xl font-bold mb-4 text-center">Important: Coaching Is Not Therapy</h3>
+          <div className="max-w-3xl mx-auto space-y-4 text-sm">
+            <p className="leading-relaxed">
+              Our coaching supports personal and professional growth through conscious communication practice. 
+              However, it is <strong>not a substitute for mental health treatment</strong>.
+            </p>
+            <p className="leading-relaxed">
+              <strong>If you're experiencing:</strong>
+            </p>
+            <ul className="space-y-2 ml-6">
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1">•</span>
+                <span>Severe depression, anxiety, or persistent emotional distress</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1">•</span>
+                <span>Thoughts of self-harm or suicide</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1">•</span>
+                <span>Trauma that requires clinical intervention</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1">•</span>
+                <span>Substance abuse or addiction challenges</span>
+              </li>
+            </ul>
+            <p className="leading-relaxed">
+              <strong>Please contact a licensed mental health professional first.</strong> Our coaching can 
+              complement ongoing therapy, but we recommend discussing this with your therapist.
+            </p>
+            <p className="text-xs text-muted-foreground mt-4">
+              <strong>Crisis Resources:</strong> If you're in crisis, contact your local emergency services, 
+              call a suicide prevention hotline, or visit your nearest emergency room. EU Helpline: 116 123
+            </p>
+          </div>
+        </div>
+
         <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl p-8 md:p-12 text-center">
           <h3 className="text-2xl font-bold mb-4">Limited Availability</h3>
           <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">

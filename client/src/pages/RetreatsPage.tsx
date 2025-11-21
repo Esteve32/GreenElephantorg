@@ -52,10 +52,76 @@ export default function RetreatsPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-24 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 mb-16 max-w-5xl mx-auto">
           {retreats.map((retreat) => (
             <RetreatCard key={retreat.title} {...retreat} />
           ))}
+        </div>
+
+        <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl p-8 md:p-12 mb-24 max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-6 text-center">Pricing Transparency</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-4 text-needs">What's Included in €2,890</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>5 nights accommodation (shared room)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>All meals (breakfast, lunch, dinner)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>25 hours of facilitated sessions</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>Retreat materials & personalized playbook</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>90-day integration support</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>Alumni community access</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-needs mt-1">✓</span>
+                  <span>Recorded sessions & lifetime materials access</span>
+                </li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-4">
+                <strong>Not included:</strong> Travel to/from location. Single room upgrade available for +€400.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4 text-destructive">Cancellation & Refund Policy</h3>
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">60+ days:</span>
+                  <span>Full refund minus €100 admin fee</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">30-59 days:</span>
+                  <span>50% refund</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">&lt;30 days:</span>
+                  <span>No refund (credit toward future retreat)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">Emergency:</span>
+                  <span>Medical/family emergencies reviewed case-by-case with documentation</span>
+                </li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-4">
+                We hold your spot with care. If you need to cancel, we'll work with you to find the best solution.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-2xl overflow-hidden mb-16">
