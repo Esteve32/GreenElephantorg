@@ -198,32 +198,6 @@ export default function HomePage() {
             </CardContent>
           </Card>
         </div>
-
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground mb-6 max-w-2xl mx-auto">
-            We've had the honor of collaborating with organizations committed to conscious communication:
-          </p>
-          <div className="flex flex-wrap justify-center gap-6">
-            <a
-              href="https://ideo.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-lg px-6 py-3 hover-elevate active-elevate-2 transition-all duration-200"
-              data-testid="link-partner-ideo"
-            >
-              <span className="font-semibold">IDEO</span>
-            </a>
-            <a
-              href="https://dubaided.gov.ae"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="backdrop-blur-sm bg-card/50 border border-white/10 rounded-lg px-6 py-3 hover-elevate active-elevate-2 transition-all duration-200"
-              data-testid="link-partner-dubai-ded"
-            >
-              <span className="font-semibold">Dubai Department of Economic Development</span>
-            </a>
-          </div>
-        </div>
       </section>
     </div>
   );

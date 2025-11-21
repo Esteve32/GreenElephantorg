@@ -11,7 +11,6 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
 - **Interactive Design**: Clickable client boxes with hover elevation effects
 - **External Links**: Each client box links to their website (opens in new tab)
 - **Hover Effects**: External link icon fades in on hover, background elevates
-- **Featured Clients Moved**: IDEO and Dubai DED now displayed on HomePage under "Who We Serve with Gratitude"
 - **CTA Section**: Bottom section with links to Consulting and Contact pages
 - **Responsive Grid**: 2-5 columns depending on screen size for optimal viewing
 
@@ -35,9 +34,6 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
   - **Open Data** → Links to Lab page for research updates subscription
 - **Research Partners**: Added clean badge presentation for Aalto Design Factory, TEAL Organizations, and Center for Nonviolent Communication
 
-### HomePage Updates ✅
-- **Featured Partners Section**: Added IDEO and Dubai DED as special collaborators under "Who We Serve with Gratitude"
-- **Clickable Partner Boxes**: Both partners link to their websites with hover effects
 
 ### Font System Update - Poppins Font Implementation ✅
 - **Headings**: All h1-h6 now use Poppins font (modern geometric sans-serif from Google Fonts)
