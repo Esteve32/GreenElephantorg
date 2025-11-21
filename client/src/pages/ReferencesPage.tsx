@@ -65,7 +65,7 @@ const clientCategories = [
     title: "Consulting & Design",
     clients: [
       { name: "Trainers' House", url: "https://trainershouse.fi" },
-      { name: "Green Elephant", url: "https://greenelephant.org" },
+      { name: "arbora.partners", url: "https://arbora.partners" },
       { name: "Futurice", url: "https://futurice.com" },
       { name: "Vincit", url: "https://vincit.com" },
       { name: "IDEO", url: "https://ideo.com" },
