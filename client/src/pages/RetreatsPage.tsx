@@ -1,7 +1,9 @@
 import RetreatCard from "@/components/RetreatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Calendar, Users, Video } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Calendar, Users, Video, FlaskConical, BookText } from "lucide-react";
+import { Link } from "wouter";
 import laplandImageUrl from "@assets/generated_images/Tonttumäki_Finland_northern_lights_retreat_a23361d7.png";
 import provenceImageUrl from "@assets/generated_images/Aix-en-Provence_France_lavender_retreat_85bbb302.png";
 import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
@@ -16,7 +18,7 @@ const retreats = [
     imageUrl: provenceImageUrl,
     description: "Transform how you see conflict in the lavender fields of Provence. This 5-day immersive experience (approx. 25 hours) focuses on seeing conflicts differently, looking beyond ego and triggers, and building trust regardless of emotional temperature.",
     price: "€2,890",
-    priceNote: "Excludes food, accommodation & travel",
+    priceNote: "Price excludes travel only",
     retreatType: "provence" as const,
   },
   {
@@ -28,7 +30,7 @@ const retreats = [
     imageUrl: laplandImageUrl,
     description: "Journey to Levi's Arctic serenity for a transformative spring retreat. Experience the peace and quiet of Finnish nature while deepening your conscious communication practice in pristine wilderness.",
     price: "€2,890",
-    priceNote: "Excludes food, accommodation & travel",
+    priceNote: "Price excludes travel only",
     retreatType: "lapland" as const,
   },
 ];
@@ -133,39 +135,79 @@ export default function RetreatsPage() {
           </div>
         </div>
 
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-4">Research Partners</h2>
+          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Our methodology is developed in collaboration with leading institutions
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+            <Badge variant="outline" className="px-6 py-3 text-base border-white/20 bg-card/30">
+              Aalto Design Factory
+            </Badge>
+            <Badge variant="outline" className="px-6 py-3 text-base border-white/20 bg-card/30">
+              TEAL Organizations
+            </Badge>
+            <Badge variant="outline" className="px-6 py-3 text-base border-white/20 bg-card/30">
+              Center for Nonviolent Communication
+            </Badge>
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="backdrop-blur-sm bg-card/50 border-white/10">
             <CardHeader>
-              <CardTitle>What's Included</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Agent Bios
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>✓ All meals and accommodation</p>
-              <p>✓ Daily practice sessions</p>
-              <p>✓ Personalized microhabit plans</p>
-              <p>✓ Satellite Scan assessment</p>
-              <p>✓ Post-retreat support community</p>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Meet Anu and Jonas, your guides through this transformative journey. Each brings unique expertise in conscious communication.
+              </p>
+              <Link href="/team" data-testid="link-team">
+                <Button variant="outline" className="w-full" data-testid="button-agent-bios">
+                  Meet the Team
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
           <Card className="backdrop-blur-sm bg-card/50 border-white/10">
             <CardHeader>
-              <CardTitle>Who Should Attend</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BookText className="h-5 w-5" />
+                Methodology
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>• Executive Assistants seeking deeper impact</p>
-              <p>• TEAL organization leaders</p>
-              <p>• Design & Innovation students</p>
-              <p>• Anyone committed to transformation</p>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Our microhabit framework is research-backed and proven. Small, consistent practices that rewire communication patterns.
+              </p>
+              <Link href="/lab" data-testid="link-lab">
+                <Button variant="outline" className="w-full" data-testid="button-methodology">
+                  Explore the Science
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
           <Card className="backdrop-blur-sm bg-card/50 border-white/10">
             <CardHeader>
-              <CardTitle>Testimonials</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FlaskConical className="h-5 w-5" />
+                Open Data
+              </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground italic">
-              "This retreat transformed how I navigate difficult conversations. The microhabit approach made sustainable change actually possible."
-              <p className="mt-2 not-italic font-medium">- Sarah K., Executive Assistant</p>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Access our research findings, case studies, and open-source frameworks. Subscribe for updates from our lab.
+              </p>
+              <Link href="/lab" data-testid="link-lab-data">
+                <Button variant="outline" className="w-full" data-testid="button-open-data">
+                  Subscribe to Research
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
