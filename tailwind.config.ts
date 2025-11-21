@@ -93,7 +93,7 @@ export default {
       },
       fontFamily: {
         sans: ['var(--font-sans)'],
-        archive: ['Archive', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        poppins: ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif'],
         serif: ['var(--font-serif)'],
         mono: ['var(--font-mono)'],
       },

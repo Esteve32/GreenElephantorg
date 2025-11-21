@@ -5,14 +5,14 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
 
 ## Recent Changes (November 21, 2025)
 
-### Font System Update - Archive Font Implementation ✅
-- **Headings**: All h1-h6 now use Archive font (geometric sans-serif by Slava Kirilenko/Fontfabric)
+### Font System Update - Poppins Font Implementation ✅
+- **Headings**: All h1-h6 now use Poppins font (modern geometric sans-serif from Google Fonts)
 - **Body Text**: Continues to use Lato for optimal readability
-- **Font Source**: Free commercial license from Fontfabric via OnlineWebFonts CDN
-- **Characteristics**: Archive provides bold, geometric letterforms perfect for headlines and display text
+- **Font Source**: Free commercial license from Google Fonts (100% reliable)
+- **Characteristics**: Poppins provides bold, clean letterforms perfect for headlines and display text
 - **Font Loading**: Optimized with preconnect and font loading detection script
 - **Fallback Stack**: Proper system font fallbacks if web fonts fail to load
-- **Tailwind Integration**: Custom `font-archive` utility class available for special use cases
+- **Tailwind Integration**: Custom `font-poppins` utility class available for special use cases
 
 ## Recent Changes (November 13, 2025)
 
@@ -78,7 +78,7 @@ Preferred communication style: Simple, everyday language.
 ### Frontend Architecture
 The frontend is built with React and TypeScript, using Vite for bundling. Wouter handles client-side routing, and `shadcn/ui` (built on Radix UI) provides the component library. State management relies on TanStack Query for server-side data, and React Hook Form with Zod is used for form handling and validation. Styling is implemented with Tailwind CSS and a custom design system.
 
-The design system is dark mode-first, featuring a HUD aesthetic with dark backgrounds and semi-transparent white overlays. It uses a custom color palette based on 8 communication lenses, a specific typography (Archive for headlines, Lato for body), and a 4/8/12/16/24/32 pixel spacing scale. Glass-morphism effects with backdrop blur are used for modals and navigation. Icons are light (95% lightness) for optimal contrast on colored backgrounds.
+The design system is dark mode-first, featuring a HUD aesthetic with dark backgrounds and semi-transparent white overlays. It uses a custom color palette based on 8 communication lenses, a specific typography (Poppins for headlines, Lato for body), and a 4/8/12/16/24/32 pixel spacing scale. Glass-morphism effects with backdrop blur are used for modals and navigation. Icons are light (95% lightness) for optimal contrast on colored backgrounds.
 
 Key pages include Home, Periodic Table (with 129 elements and NVC-based prompts), Retreats, Coaching, Team, Lab, Resources/Prompts, Contact, Stories, "What Is", and "Signals" educational pages. The architecture emphasizes modular, reusable components.
 
