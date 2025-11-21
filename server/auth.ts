@@ -16,7 +16,7 @@ export function verifyAdminPassword(password: string): boolean {
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (!ADMIN_PASSWORD) {
-    console.error("⚠ ADMIN_PASSWORD not set in environment variables");
+    console.error("ADMIN_PASSWORD not set in environment variables");
     return false;
   }
   

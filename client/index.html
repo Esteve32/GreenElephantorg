@@ -10,9 +10,28 @@
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
     
     <title>GreenElephant | Conscious Communication for Transformation</title>
+    
+    <!-- Font Loading: Using display=swap for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800;900&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Loading Detection Script -->
+    <script>
+      (function() {
+        if ('fonts' in document) {
+          Promise.all([
+            document.fonts.load('700 1em Archivo'),
+            document.fonts.load('400 1em Lato')
+          ]).then(function() {
+            console.log('Fonts loaded successfully');
+          }).catch(function(error) {
+            console.warn('Font loading failed:', error);
+            document.documentElement.classList.add('fonts-failed');
+          });
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

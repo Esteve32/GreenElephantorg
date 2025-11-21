@@ -92,9 +92,10 @@ export default {
         dynamics: "hsl(var(--dynamics) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
-        serif: ["var(--font-serif)"],
-        mono: ["var(--font-mono)"],
+        sans: ['var(--font-sans)'],
+        archivo: ['Archivo', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        serif: ['var(--font-serif)'],
+        mono: ['var(--font-mono)'],
       },
       keyframes: {
         "accordion-down": {

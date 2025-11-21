@@ -10,8 +10,11 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Create connection pool
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Create Neon connection pool for Drizzle AND session store
+const neonPool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 // Initialize Drizzle with schema
-export const db = drizzle(pool, { schema });
+export const db = drizzle(neonPool, { schema });
+
+// Export the same pool for connect-pg-simple (session store) to avoid duplicate connections
+export const pool = neonPool;
