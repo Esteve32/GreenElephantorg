@@ -23,10 +23,6 @@ localPort = 34459
 externalPort = 3001
 
 [[ports]]
-localPort = 37847
-externalPort = 6000
-
-[[ports]]
 localPort = 40179
 externalPort = 3002
 
@@ -80,3 +76,9 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_stripe:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+TESTING_VITE_STRIPE_PUBLIC_KEY = "pk_live_51IxWW3EnscXDGx5SHGHnaPX0dqxWjDrtSZG3qqxxcevXxeeysB2s24IQEgAQvDbiIm3OswA4t7GdOjxUxpll7Nlw005FaSJkgJ"
+TESTING_STRIPE_SECRET_KEY = "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"

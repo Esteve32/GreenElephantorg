@@ -5,6 +5,20 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
 
 ## Recent Changes (November 21, 2025)
 
+### Payment System & Notifications Implementation ✅
+- **Two-Step Checkout**: Collects customer email/name first, then shows Stripe payment form
+- **Purchase Tracking**: New `purchases` table stores all successful payments with customer info
+- **Webhook Handler**: `/api/webhooks/stripe` captures payment_intent.succeeded events
+- **Console Notifications**: Prominent logs when purchases occur (no email service to keep costs zero)
+  - Displays: Customer name, email, package, amount, payment ID, timestamp
+  - Action prompt: Email customer manually at their address
+  - View purchases in database or future admin panel
+- **Calendly Integration**: Payment success page includes "Book with Anu" button
+  - Direct link: https://calendly.com/anu-greenelephant/call-with-anu
+  - Opens in new tab for immediate session scheduling
+- **Customer Data**: PaymentIntent metadata includes customerEmail, customerName for post-purchase follow-up
+- **Note**: Email automation dismissed - requires manual follow-up via esteve@greenelephant.org
+
 ### Client References Page Implementation ✅
 - **New Page**: Created dedicated `/references` page showcasing 35 clients
 - **Organization**: Clients organized into 9 categories (Tech & Startups: 9, Financial Services: 5, Industrial: 4, Government: 1, Transportation: 3, Education: 6, Consulting: 4, Hospitality/Telecom: 2, Innovation Hubs: 1)
