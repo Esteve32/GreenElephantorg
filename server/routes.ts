@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { requireAdminAuth, verifyAdminPassword } from "./auth";
@@ -13,6 +13,7 @@ import {
   insertPurchaseSchema
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
+import { sendPurchaseNotification } from "./email-notifications";
 
 // Stripe integration from blueprint:javascript_stripe
 // Gracefully handle missing Stripe keys to allow app to start
@@ -73,38 +74,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe webhook to capture successful payments
+  // IMPORTANT: This endpoint uses raw body for signature verification
   app.post("/api/webhooks/stripe", async (req, res) => {
     if (!stripe) {
       return res.status(503).json({ message: "Stripe not configured" });
     }
 
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    
     try {
-      const event = req.body;
+      let event: Stripe.Event;
+
+      // Verify webhook signature for security
+      if (webhookSecret) {
+        const signature = req.headers['stripe-signature'];
+        if (!signature) {
+          console.error('⚠️ Webhook signature missing');
+          return res.status(400).json({ message: 'Missing stripe-signature header' });
+        }
+
+        try {
+          // Verify the event using Stripe's library
+          event = stripe.webhooks.constructEvent(
+            (req as any).rawBody,
+            signature,
+            webhookSecret
+          );
+          console.log('✅ Webhook signature verified');
+        } catch (err: any) {
+          console.error('❌ Webhook signature verification failed:', err.message);
+          return res.status(400).json({ message: `Webhook signature verification failed: ${err.message}` });
+        }
+      } else {
+        // No signature verification (development/testing only)
+        console.warn('⚠️ STRIPE_WEBHOOK_SECRET not set - signature verification disabled (NOT SECURE FOR PRODUCTION)');
+        event = req.body;
+      }
 
       // Handle successful payment
       if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object;
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
         
         // Extract metadata
         const { packageId, packageName, customerEmail, customerName } = paymentIntent.metadata;
         const amount = (paymentIntent.amount / 100).toString(); // Convert cents to EUR
 
-        // Check if purchase already exists
+        // Validate required metadata
+        if (!customerEmail || !packageName) {
+          console.error('❌ Missing required metadata in payment intent:', paymentIntent.id);
+          return res.status(400).json({ message: 'Invalid payment intent metadata' });
+        }
+
+        // Check if purchase already exists (idempotency)
         const existingPurchase = await storage.getPurchaseByPaymentIntent(paymentIntent.id);
         
         if (!existingPurchase) {
           // Store purchase in database
           const purchase = await storage.createPurchase({
-            customerEmail: customerEmail || 'unknown@greenelephant.org',
+            customerEmail: customerEmail,
             customerName: customerName || undefined,
-            packageId: packageId,
+            packageId: packageId || 'unknown',
             packageName: packageName,
             amount: amount,
             stripePaymentIntentId: paymentIntent.id,
             status: 'succeeded',
           });
 
-          // Log for manual notification (since we're not using email service)
           console.log('🎉 NEW PURCHASE! 🎉');
           console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           console.log(`Customer: ${customerName || 'Not provided'}`);
@@ -115,9 +150,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`Purchase ID: ${purchase.id}`);
           console.log(`Time: ${new Date().toISOString()}`);
           console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-          console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
-          console.log('👉 Include Calendly link: https://calendly.com/greenelephant/satellite-scan-session');
-          console.log('👉 View in admin: /admin/purchases');
+
+          // Send email notification to admin
+          const emailSent = await sendPurchaseNotification({
+            customerEmail,
+            customerName: customerName || null,
+            packageName,
+            amount,
+            paymentIntentId: paymentIntent.id,
+            purchaseId: purchase.id,
+          });
+
+          if (!emailSent) {
+            console.log('⚠️ Email notification failed - manual follow-up required');
+            console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
+            console.log('👉 Include Calendly link: https://calendly.com/greenelephant/satellite-scan-session');
+          }
+        } else {
+          console.log('ℹ️ Duplicate webhook event received for payment:', paymentIntent.id);
         }
       }
 
