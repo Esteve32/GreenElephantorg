@@ -50,11 +50,11 @@ export default function PaymentSuccessPage() {
                   data-testid="button-book-session"
                 >
                   <a 
-                    href="https://calendly.com/greenelephant/discovery-call-with-esteve-clone" 
+                    href="https://calendly.com/greenelephant/satellite-scan-session" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
-                    Book Discovery Call
+                    Book Satellite Scan
                   </a>
                 </Button>
               </div>
