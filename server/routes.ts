@@ -15,7 +15,7 @@ import {
   insertSatellitescanPurchaseSchema
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
-import { sendPurchaseNotification, sendSatellitescanPurchaseEmail } from "./email-notifications";
+import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail } from "./email-notifications";
 
 // Stripe integration from blueprint:javascript_stripe
 // Gracefully handle missing Stripe keys to allow app to start
@@ -624,6 +624,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Admin satellitescan fetch error:", error);
       res.status(500).json({ message: "Could not fetch satellitescan purchases" });
+    }
+  });
+
+  // Admin endpoint to send reminder emails for overdue satellitescan completions
+  // Should be triggered by external cron service (cron-job.org, GitHub Actions, etc.)
+  // Example: Daily at 10:00 AM UTC
+  // Idempotency: Only processes purchases with remindersCount=0, increment happens BEFORE send
+  // Rate limiting: Recommend max 1 call per 24h to prevent accidental duplicate processing
+  app.post("/api/admin/satellitescan/send-reminders", requireAdminAuth, async (_req, res) => {
+    try {
+      // Find purchases older than 72 hours (3 days) with no typeform completion and no reminders sent
+      const hoursThreshold = 72;
+      const overduePurchases = await storage.getOverdueSatellitescanPurchases(hoursThreshold);
+      
+      console.log(`📧 Checking for overdue satellitescan purchases (older than ${hoursThreshold}h)...`);
+      console.log(`Found ${overduePurchases.length} purchases needing reminders (remindersCount=0)`);
+
+      if (overduePurchases.length === 0) {
+        return res.json({ 
+          success: true, 
+          message: 'No overdue purchases found',
+          sent: 0,
+          failed: 0
+        });
+      }
+
+      const results = {
+        sent: 0,
+        failed: 0,
+        details: [] as Array<{ email: string; success: boolean; error?: string }>
+      };
+
+      // Send reminder emails with idempotency protection
+      // Increment count BEFORE sending to prevent double-sends on network failures
+      for (const purchase of overduePurchases) {
+        try {
+          // Increment reminder count BEFORE sending to prevent double-sends
+          const currentCount = parseInt(purchase.remindersCount);
+          await storage.updateSatellitescanReminderCount(purchase.id, currentCount + 1);
+          
+          // Now attempt to send email
+          const emailSent = await sendSatellitescanReminderEmail(
+            purchase.customerEmail,
+            purchase.customerName
+          );
+
+          if (emailSent) {
+            results.sent++;
+            results.details.push({ email: purchase.customerEmail, success: true });
+            console.log(`✅ Reminder sent to: ${purchase.customerEmail}`);
+          } else {
+            // Email failed to send, but count is already incremented (prevents retry spam)
+            results.failed++;
+            results.details.push({ email: purchase.customerEmail, success: false, error: 'Email send failed (count incremented to prevent retry)' });
+            console.log(`⚠️ Email failed for ${purchase.customerEmail}, but count incremented to prevent future retries`);
+          }
+        } catch (error: any) {
+          // Error during processing - count may or may not be incremented depending on where failure occurred
+          results.failed++;
+          results.details.push({ email: purchase.customerEmail, success: false, error: error.message });
+          console.error(`❌ Failed to process reminder for ${purchase.customerEmail}:`, error);
+        }
+      }
+
+      console.log(`📊 Reminder summary: ${results.sent} sent, ${results.failed} failed`);
+      
+      res.json({
+        success: true,
+        message: `Processed ${overduePurchases.length} overdue purchases`,
+        sent: results.sent,
+        failed: results.failed,
+        details: results.details
+      });
+    } catch (error: any) {
+      console.error("Send reminders error:", error);
+      res.status(500).json({ message: "Could not send reminder emails", error: error.message });
     }
   });
 

@@ -157,3 +157,61 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
     return false;
   }
 }
+
+export async function sendSatellitescanReminderEmail(customerEmail: string, customerName: string | null) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    
+    await client.emails.send({
+      from: fromEmail,
+      to: customerEmail,
+      subject: "Haven't forgotten about you - Your Satellitescan awaits 🎯",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Your Communication Dashboard Is Waiting</h2>
+          
+          <p>Hi ${customerName || 'there'},</p>
+          
+          <p>
+            I noticed you haven't completed your Satellitescan Typeform yet. No pressure - but I wanted to 
+            make sure the link didn't get lost in your inbox.
+          </p>
+          
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1e40af;">Complete Your 90-Minute Scan</h3>
+            <p>Click here to start: <a href="https://greenelephantorg.typeform.com/individualscan" style="color: #2563eb; font-weight: bold;">Take the Satellitescan</a></p>
+            <p style="margin-bottom: 0; color: #1e3a8a;">
+              <strong>Remember:</strong>
+              <ul style="margin-top: 8px;">
+                <li>60-90 minutes of focused time</li>
+                <li>Best done in one sitting</li>
+                <li>Your personalized dashboard delivered within 3-5 business days after completion</li>
+              </ul>
+            </p>
+          </div>
+          
+          <p>
+            If you have questions or want to chat before diving in, just reply to this email.
+          </p>
+          
+          <p>
+            Looking forward to mapping your communication patterns,<br>
+            <strong>Estève</strong><br>
+            GreenElephant.org
+          </p>
+          
+          <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+            You're receiving this because you purchased Satellitescan Beta. If you'd like to cancel or have 
+            questions, reply to this email and I'll help you out.
+          </p>
+        </div>
+      `,
+    });
+    
+    console.log(`✅ Reminder email sent to: ${customerEmail}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send reminder email to ${customerEmail}:`, error);
+    return false;
+  }
+}

@@ -29,7 +29,7 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, avg } from "drizzle-orm";
+import { eq, avg, and, lt, sql } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -72,6 +72,8 @@ export interface IStorage {
   createSatellitescanPurchase(purchase: InsertSatellitescanPurchase): Promise<SatellitescanPurchase>;
   getSatellitescanPurchaseByPaymentIntent(paymentIntentId: string): Promise<SatellitescanPurchase | undefined>;
   getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]>;
+  getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]>;
+  updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -300,6 +302,30 @@ export class MemStorage implements IStorage {
   async getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]> {
     return Array.from(this.satellitescanPurchases.values());
   }
+
+  async getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]> {
+    const now = new Date();
+    const thresholdMs = hoursThreshold * 60 * 60 * 1000;
+    
+    return Array.from(this.satellitescanPurchases.values()).filter(purchase => {
+      const createdAt = new Date(purchase.createdAt);
+      const ageMs = now.getTime() - createdAt.getTime();
+      
+      return (
+        purchase.typeformCompleted === "false" &&
+        parseInt(purchase.remindersCount) === 0 &&
+        ageMs >= thresholdMs
+      );
+    });
+  }
+
+  async updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void> {
+    const purchase = this.satellitescanPurchases.get(purchaseId);
+    if (purchase) {
+      purchase.remindersCount = count.toString();
+      this.satellitescanPurchases.set(purchaseId, purchase);
+    }
+  }
 }
 
 // PostgreSQL-based storage using Drizzle ORM
@@ -440,6 +466,24 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]> {
     return await db.select().from(satellitescanPurchases);
+  }
+
+  async getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]> {
+    const thresholdDate = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000);
+    
+    return await db.select().from(satellitescanPurchases).where(
+      and(
+        eq(satellitescanPurchases.typeformCompleted, "false"),
+        eq(satellitescanPurchases.remindersCount, "0"),
+        lt(satellitescanPurchases.createdAt, thresholdDate)
+      )
+    );
+  }
+
+  async updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void> {
+    await db.update(satellitescanPurchases)
+      .set({ remindersCount: count.toString() })
+      .where(eq(satellitescanPurchases.id, purchaseId));
   }
 }
 
