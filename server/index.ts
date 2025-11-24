@@ -104,5 +104,78 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Set up automatic daily reminder scheduler
+    // Runs every 24 hours to check for overdue Satellitescan purchases
+    setupDailyReminderScheduler();
   });
 })();
+
+// Automatic daily reminder scheduler for Satellitescan purchases
+async function setupDailyReminderScheduler() {
+  const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  
+  console.log('🔔 Daily reminder scheduler initialized');
+  console.log('⏰ Will check for overdue Satellitescan purchases every 24 hours');
+  
+  // Run immediately on startup (optional - comment out if you don't want this)
+  // await checkAndSendReminders();
+  
+  // Then run every 24 hours
+  setInterval(async () => {
+    await checkAndSendReminders();
+  }, TWENTY_FOUR_HOURS);
+}
+
+async function checkAndSendReminders() {
+  try {
+    console.log('\n📧 Running scheduled reminder check...');
+    
+    // Import storage and email functions
+    const { storage } = await import('./storage');
+    const { sendSatellitescanReminderEmail } = await import('./email-notifications');
+    
+    // Find purchases older than 72 hours with no typeform completion and no reminders sent
+    const hoursThreshold = 72;
+    const overduePurchases = await storage.getOverdueSatellitescanPurchases(hoursThreshold);
+    
+    console.log(`Found ${overduePurchases.length} overdue purchases needing reminders`);
+    
+    if (overduePurchases.length === 0) {
+      console.log('✅ No overdue purchases - all customers are up to date!');
+      return;
+    }
+    
+    let sent = 0;
+    let failed = 0;
+    
+    for (const purchase of overduePurchases) {
+      try {
+        // Increment reminder count BEFORE sending to prevent double-sends
+        const currentCount = parseInt(purchase.remindersCount);
+        await storage.updateSatellitescanReminderCount(purchase.id, currentCount + 1);
+        
+        // Now attempt to send email
+        const emailSent = await sendSatellitescanReminderEmail(
+          purchase.customerEmail,
+          purchase.customerName
+        );
+        
+        if (emailSent) {
+          sent++;
+          console.log(`✅ Reminder sent to: ${purchase.customerEmail}`);
+        } else {
+          failed++;
+          console.log(`⚠️ Email failed for ${purchase.customerEmail} (count incremented to prevent retry)`);
+        }
+      } catch (error: any) {
+        failed++;
+        console.error(`❌ Error processing ${purchase.customerEmail}:`, error.message);
+      }
+    }
+    
+    console.log(`📊 Reminder summary: ${sent} sent, ${failed} failed\n`);
+  } catch (error: any) {
+    console.error('❌ Scheduled reminder check failed:', error);
+  }
+}
