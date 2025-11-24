@@ -67,6 +67,11 @@ export interface IStorage {
   // Contact messages (general inquiries)
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   getAllContactMessages(): Promise<ContactMessage[]>;
+  
+  // Satellite Scan purchases
+  createSatellitescanPurchase(purchase: InsertSatellitescanPurchase): Promise<SatellitescanPurchase>;
+  getSatellitescanPurchaseByPaymentIntent(paymentIntentId: string): Promise<SatellitescanPurchase | undefined>;
+  getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]>;
 }
 
 export class MemStorage implements IStorage {
