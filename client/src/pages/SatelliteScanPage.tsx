@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Timer, Sparkles, Target, Users, Brain, ArrowRight, Clock, Gift, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, useNavigate } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 
 export default function SatelliteScanPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
 
   // SEO Meta Tags
   useEffect(() => {
