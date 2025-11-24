@@ -45,6 +45,12 @@ export default function Header() {
       icon: Sparkles
     },
     { 
+      href: "/interview-coaching", 
+      label: "Interview Coaching",
+      description: "3-session bundle for confident interview mastery (€795)",
+      icon: Users
+    },
+    { 
       href: "/retreats", 
       label: "Equinoxe Retreats",
       description: "Sacred gatherings in Lapland and Provence",
