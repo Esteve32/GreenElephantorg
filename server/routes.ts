@@ -11,10 +11,11 @@ import {
   insertNewsletterSubscriptionSchema,
   insertSignalsQuizResultSchema,
   insertPurchaseSchema,
-  insertContactMessageSchema
+  insertContactMessageSchema,
+  insertSatellitescanPurchaseSchema
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
-import { sendPurchaseNotification } from "./email-notifications";
+import { sendPurchaseNotification, sendSatellitescanPurchaseEmail } from "./email-notifications";
 
 // Stripe integration from blueprint:javascript_stripe
 // Gracefully handle missing Stripe keys to allow app to start
@@ -492,6 +493,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Admin contacts fetch error:", error);
       res.status(500).json({ message: "Could not fetch contacts" });
+    }
+  });
+
+  // Satellitescan payment route (beta product €29.99)
+  app.post("/api/satellitescan/create-payment-intent", async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ 
+        message: "Payment processing is currently unavailable. Please contact support." 
+      });
+    }
+
+    try {
+      const { customerEmail, customerName } = req.body;
+      
+      // Beta pricing: €29.99 (server-side validation)
+      const BETA_PRICE = 29.99;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(BETA_PRICE * 100), // Convert to cents
+        currency: "eur",
+        metadata: {
+          product: "satellitescan",
+          customerEmail: customerEmail || '',
+          customerName: customerName || '',
+        },
+        receipt_email: customerEmail || undefined,
+      });
+      
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      console.error("Satellitescan payment intent error:", error);
+      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Extended webhook handler for satellitescan purchases
+  app.post("/api/webhooks/stripe-satellitescan", async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ message: "Stripe not configured" });
+    }
+
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    
+    try {
+      let event: Stripe.Event;
+
+      if (webhookSecret) {
+        const signature = req.headers['stripe-signature'];
+        if (!signature) {
+          console.error('⚠️ Webhook signature missing');
+          return res.status(400).json({ message: 'Missing stripe-signature header' });
+        }
+
+        try {
+          event = stripe.webhooks.constructEvent(
+            (req as any).rawBody,
+            signature,
+            webhookSecret
+          );
+          console.log('✅ Webhook signature verified (satellitescan)');
+        } catch (err: any) {
+          console.error('❌ Webhook signature verification failed:', err.message);
+          return res.status(400).json({ message: `Webhook signature verification failed: ${err.message}` });
+        }
+      } else {
+        console.warn('⚠️ STRIPE_WEBHOOK_SECRET not set - signature verification disabled');
+        event = req.body;
+      }
+
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        
+        const { product, customerEmail, customerName } = paymentIntent.metadata;
+        const amount = (paymentIntent.amount / 100).toString();
+
+        if (product === 'satellitescan' && customerEmail) {
+          const existingPurchase = await storage.getSatellitescanPurchaseByPaymentIntent(paymentIntent.id);
+          
+          if (!existingPurchase) {
+            const purchase = await storage.createSatellitescanPurchase({
+              customerEmail: customerEmail,
+              customerName: customerName || undefined,
+              amount: amount,
+              stripePaymentIntentId: paymentIntent.id,
+              status: 'succeeded',
+            });
+
+            console.log('🎉 NEW SATELLITESCAN PURCHASE! 🎉');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log(`Customer: ${customerName || 'Not provided'}`);
+            console.log(`Email: ${customerEmail}`);
+            console.log(`Amount: €${amount}`);
+            console.log(`Payment ID: ${paymentIntent.id}`);
+            console.log(`Purchase ID: ${purchase.id}`);
+            console.log(`Time: ${new Date().toISOString()}`);
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+            const emailSent = await sendSatellitescanPurchaseEmail({
+              customerEmail,
+              customerName: customerName || null,
+              amount,
+              paymentIntentId: paymentIntent.id,
+              purchaseId: purchase.id,
+            });
+
+            if (!emailSent) {
+              console.log('⚠️ Email notification failed - manual follow-up required');
+              console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
+              console.log('👉 Include Typeform link: https://greenelephantorg.typeform.com/individualscan');
+            }
+          } else {
+            console.log('ℹ️ Duplicate webhook event received for satellitescan payment:', paymentIntent.id);
+          }
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Satellitescan webhook error:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin endpoint for satellitescan purchases
+  app.get("/api/admin/satellitescan", requireAdminAuth, async (_req, res) => {
+    try {
+      const purchases = await storage.getAllSatellitescanPurchases();
+      res.json(purchases);
+    } catch (error: any) {
+      console.error("Admin satellitescan fetch error:", error);
+      res.status(500).json({ message: "Could not fetch satellitescan purchases" });
     }
   });
 

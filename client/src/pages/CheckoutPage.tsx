@@ -81,7 +81,11 @@ export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   
   const urlParams = new URLSearchParams(window.location.search);
+  const productType = urlParams.get('product');
   const packageType = urlParams.get('package') || '1on1-single';
+  
+  // Detect if this is a satellitescan purchase
+  const isSatellitescan = productType === 'satellitescan';
   
   const packages: Record<string, { name: string; price: number; features: string[]; savings?: string }> = {
     '1on1-single': {
@@ -119,16 +123,27 @@ export default function CheckoutPage() {
         "Custom micro-habit playbook",
         "30-day follow-up session included"
       ]
+    },
+    'satellitescan': {
+      name: "Satellitescan Beta",
+      price: 29.99,
+      features: [
+        "90-minute AI-powered Typeform scan",
+        "Personalized dashboard by Estève (manual creation)",
+        "3-5 actionable micro-habits",
+        "Video tutorials for each lens",
+        "Dashboard delivered in 3-5 business days"
+      ]
     }
   };
 
-  const selectedPackage = packages[packageType];
+  const selectedPackage = isSatellitescan ? packages['satellitescan'] : packages[packageType];
 
   useEffect(() => {
     if (!selectedPackage) {
-      setLocation('/coaching');
+      setLocation(isSatellitescan ? '/satellitescan' : '/coaching');
     }
-  }, [packageType, selectedPackage, setLocation]);
+  }, [packageType, selectedPackage, setLocation, isSatellitescan]);
 
   const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,11 +160,15 @@ export default function CheckoutPage() {
     setIsCreatingIntent(true);
 
     try {
-      const response = await apiRequest("POST", "/api/create-payment-intent", { 
-        packageId: packageType,
-        customerEmail,
-        customerName
-      });
+      const endpoint = isSatellitescan 
+        ? "/api/satellitescan/create-payment-intent" 
+        : "/api/create-payment-intent";
+      
+      const payload = isSatellitescan
+        ? { customerEmail, customerName }
+        : { packageId: packageType, customerEmail, customerName };
+      
+      const response = await apiRequest("POST", endpoint, payload);
       const data = await response.json();
       setClientSecret(data.clientSecret);
       setShowPaymentForm(true);
@@ -176,12 +195,12 @@ export default function CheckoutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          onClick={() => setLocation('/coaching')}
+          onClick={() => setLocation(isSatellitescan ? '/satellitescan' : '/coaching')}
           className="mb-6"
           data-testid="button-back-to-coaching"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Coaching
+          {isSatellitescan ? 'Back to Satellitescan' : 'Back to Coaching'}
         </Button>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -189,7 +208,7 @@ export default function CheckoutPage() {
           <Card className="backdrop-blur-sm bg-card/95 h-fit sticky top-24">
             <CardHeader>
               <Badge className="w-fit mb-2 bg-alignment text-white">
-                Conscious Communication Coaching
+                {isSatellitescan ? 'Satellitescan Beta' : 'Conscious Communication Coaching'}
               </Badge>
               <CardTitle className="text-2xl">{selectedPackage.name}</CardTitle>
             </CardHeader>

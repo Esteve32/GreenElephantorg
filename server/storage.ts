@@ -83,6 +83,7 @@ export class MemStorage implements IStorage {
   private signalsQuizResults: Map<string, SignalsQuizResult>;
   private purchases: Map<string, Purchase>;
   private contactMessages: Map<string, ContactMessage>;
+  private satellitescanPurchases: Map<string, SatellitescanPurchase>;
 
   constructor() {
     this.users = new Map();
@@ -93,6 +94,7 @@ export class MemStorage implements IStorage {
     this.signalsQuizResults = new Map();
     this.purchases = new Map();
     this.contactMessages = new Map();
+    this.satellitescanPurchases = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -271,6 +273,33 @@ export class MemStorage implements IStorage {
   async getAllContactMessages(): Promise<ContactMessage[]> {
     return Array.from(this.contactMessages.values());
   }
+
+  // Satellite Scan purchase methods
+  async createSatellitescanPurchase(insertPurchase: InsertSatellitescanPurchase): Promise<SatellitescanPurchase> {
+    const id = randomUUID();
+    const purchase: SatellitescanPurchase = {
+      ...insertPurchase,
+      id,
+      customerName: insertPurchase.customerName || null,
+      typeformCompleted: "false",
+      dashboardSent: "false",
+      remindersCount: "0",
+      createdAt: new Date(),
+    };
+    this.satellitescanPurchases.set(id, purchase);
+    console.log(`✓ Satellitescan purchase created: ${insertPurchase.customerEmail} (€${insertPurchase.amount})`);
+    return purchase;
+  }
+
+  async getSatellitescanPurchaseByPaymentIntent(paymentIntentId: string): Promise<SatellitescanPurchase | undefined> {
+    return Array.from(this.satellitescanPurchases.values()).find(
+      (purchase) => purchase.stripePaymentIntentId === paymentIntentId,
+    );
+  }
+
+  async getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]> {
+    return Array.from(this.satellitescanPurchases.values());
+  }
 }
 
 // PostgreSQL-based storage using Drizzle ORM
@@ -393,6 +422,24 @@ export class DatabaseStorage implements IStorage {
 
   async getAllContactMessages(): Promise<ContactMessage[]> {
     return await db.select().from(contactMessages);
+  }
+
+  // Satellite Scan purchase methods
+  async createSatellitescanPurchase(insertPurchase: InsertSatellitescanPurchase): Promise<SatellitescanPurchase> {
+    const [purchase] = await db.insert(satellitescanPurchases).values(insertPurchase).returning();
+    console.log(`✓ Satellitescan purchase created: ${insertPurchase.customerEmail} (€${insertPurchase.amount})`);
+    return purchase;
+  }
+
+  async getSatellitescanPurchaseByPaymentIntent(paymentIntentId: string): Promise<SatellitescanPurchase | undefined> {
+    const [purchase] = await db.select().from(satellitescanPurchases)
+      .where(eq(satellitescanPurchases.stripePaymentIntentId, paymentIntentId))
+      .limit(1);
+    return purchase;
+  }
+
+  async getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]> {
+    return await db.select().from(satellitescanPurchases);
   }
 }
 

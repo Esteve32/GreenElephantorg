@@ -22,6 +22,7 @@ import ContactPage from "@/pages/ContactPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
 import InterviewCoachingPage from "@/pages/InterviewCoachingPage";
+import SatelliteScanPage from "@/pages/SatelliteScanPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import CookiePolicyPage from "@/pages/CookiePolicyPage";
@@ -59,6 +60,7 @@ function Router() {
         <Route path="/references" component={ReferencesPage} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/interview-coaching" component={InterviewCoachingPage} />
+        <Route path="/satellitescan" component={SatelliteScanPage} />
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/payment-success" component={PaymentSuccessPage} />
         <Route path="/privacy" component={PrivacyPolicyPage} />
