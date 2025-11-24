@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Timer, Sparkles, Target, Users, Brain, ArrowRight, Clock, Gift, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useNavigate } from "wouter";
 import { useState, useEffect } from "react";
 
 export default function SatelliteScanPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const navigate = useNavigate();
 
   // SEO Meta Tags
   useEffect(() => {
@@ -381,12 +382,15 @@ export default function SatelliteScanPage() {
           </div>
 
           <div className="space-y-5 flex flex-col items-center pt-4">
-            <Link href="/checkout?product=satellitescan">
-              <Button size="lg" className="w-full max-w-md text-lg font-bold py-7" data-testid="button-checkout">
-                Get Access Now - €29.99
-                <ArrowRight className="ml-3 w-5 h-5" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="w-full max-w-md text-lg font-bold py-7" 
+              data-testid="button-checkout"
+              onClick={() => navigate("/checkout?product=satellitescan")}
+            >
+              Get Access Now - €29.99
+              <ArrowRight className="ml-3 w-5 h-5" />
+            </Button>
             
             <p className="text-xs text-muted-foreground max-w-sm">
               Secure payment via Stripe • You'll receive the Typeform link immediately • Full refund policy
@@ -395,7 +399,7 @@ export default function SatelliteScanPage() {
 
           <div className="pt-8 border-t">
             <p className="text-sm text-muted-foreground">
-              Questions? <Link href="/contact"><a className="text-primary hover:underline">Contact Estève directly</a></Link>
+              Questions? <Link href="/contact" className="text-primary hover:underline">Contact Estève directly</Link>
             </p>
           </div>
         </div>
@@ -421,12 +425,15 @@ export default function SatelliteScanPage() {
               Join 500+ early adopters using version 12 to transform their communication. Real insights from 3 years of real-world testing.
             </p>
           </div>
-          <Link href="/checkout?product=satellitescan">
-            <Button size="lg" className="text-lg font-bold px-10 py-7" data-testid="button-cta-bottom">
-              Get Access Now - €29.99
-              <ArrowRight className="ml-3 w-5 h-5" />
-            </Button>
-          </Link>
+          <Button 
+            size="lg" 
+            className="text-lg font-bold px-10 py-7" 
+            data-testid="button-cta-bottom"
+            onClick={() => navigate("/checkout?product=satellitescan")}
+          >
+            Get Access Now - €29.99
+            <ArrowRight className="ml-3 w-5 h-5" />
+          </Button>
         </div>
       </section>
     </div>
