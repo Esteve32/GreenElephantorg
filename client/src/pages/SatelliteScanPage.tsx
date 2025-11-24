@@ -296,9 +296,9 @@ export default function SatelliteScanPage() {
         </div>
       </section>
 
-      {/* AI Transparency */}
+      {/* AI Transparency & GDPR */}
       <section className="py-20 px-4">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto space-y-6">
           <Card className="p-8 border-[hsl(var(--ego))]">
             <div className="flex items-start gap-4">
               <Sparkles className="w-8 h-8 text-[hsl(var(--ego))] flex-shrink-0 mt-1" />
@@ -314,7 +314,32 @@ export default function SatelliteScanPage() {
                     <strong className="text-foreground">I (Estève) handle:</strong> Dashboard creation, pattern identification, micro-habit recommendations, and video tutorials. This manual work is the €670 value—and why beta pricing is 96% off.
                   </p>
                   <p className="text-sm italic">
-                    We're testing whether conscious professionals value AI-assisted reflection paired with human expertise. Your participation shapes the future of this product.
+                    We're testing whether conscious professionals value AI-assisted reflection paired with human expertise. Your participation shapes the future of this product. In line with our <a href="https://arbora.partners/nest" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ACX commitment</a>, human agency remains paramount—AI supports, never replaces, your self-reflection.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-8 border-[hsl(var(--needs))]/20 bg-[hsl(var(--needs))]/5">
+            <div className="flex items-start gap-4">
+              <Brain className="w-8 h-8 text-[hsl(var(--needs))] flex-shrink-0 mt-1" />
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold" data-testid="heading-data-privacy">
+                  Your Data Stays Yours (GDPR-Protected)
+                </h2>
+                <div className="space-y-3 text-muted-foreground text-sm">
+                  <p>
+                    <strong className="text-foreground">What we collect:</strong> Your email, name (optional), and your 100+ survey responses about communication patterns.
+                  </p>
+                  <p>
+                    <strong className="text-foreground">Why we collect it:</strong> To deliver your Typeform link, create your personalized dashboard, and send your results and video tutorials.
+                  </p>
+                  <p>
+                    <strong className="text-foreground">How it's protected:</strong> Your data is encrypted, GDPR-compliant, and stored securely. We never share it with third parties. Only Estève reviews your responses to create your dashboard.
+                  </p>
+                  <p>
+                    <strong className="text-foreground">Your rights:</strong> You can request access to or deletion of your data anytime by emailing esteve@greenelephant.org.
                   </p>
                 </div>
               </div>
@@ -359,6 +384,14 @@ export default function SatelliteScanPage() {
               {
                 q: "What makes this different from regular communication coaching?",
                 a: "You get a personalized visual map of your communication patterns, specific micro-habits you can practice right away, and videos explaining everything. It's like having a communication mirror held up by an expert."
+              },
+              {
+                q: "What happens after I pay?",
+                a: "You'll receive a confirmation email within seconds with: (1) your Typeform link to start the scan, (2) instructions for best results, (3) your customer support email. Complete the scan whenever you're ready—there's no time limit. After you submit, Estève personally reviews your answers and creates your custom dashboard within 3-5 business days."
+              },
+              {
+                q: "What about my privacy and data?",
+                a: "Your email and name help us send your Typeform link and deliver your dashboard. We never share your data. All communication is GDPR-compliant and encrypted. Your survey responses are securely stored and only reviewed by Estève for your dashboard. Read our full privacy policy for details."
               },
               {
                 q: "What happens after the beta period?",

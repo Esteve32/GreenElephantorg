@@ -3,7 +3,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -256,8 +256,8 @@ export default function CheckoutPage() {
               <CardTitle>{showPaymentForm ? "Complete Your Payment" : "Your Information"}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {showPaymentForm 
-                  ? "Secure payment powered by Stripe. Your transformation starts today."
-                  : "We'll send your receipt and session details to this email."
+                  ? "Secure payment powered by Stripe. All transactions encrypted and PCI-DSS compliant."
+                  : "We collect your email to deliver your service and send receipts. Your data stays private (GDPR protected)."
                 }
               </p>
             </CardHeader>
@@ -315,10 +315,18 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* Trust signals */}
-        <div className="mt-12 text-center text-sm text-muted-foreground space-y-2">
-          <p>Secure payment processing · 100% satisfaction guarantee</p>
-          <p>Questions? Email esteve@greenelephant.org</p>
+        {/* GDPR & Trust Signals */}
+        <div className="mt-12 space-y-6">
+          <Card className="bg-ego/5 border-ego/20 p-4">
+            <p className="text-xs text-muted-foreground">
+              <strong className="text-foreground">Your Privacy Matters:</strong> We collect your email and name to send your receipt, deliver your service, and follow up on your transformation. We'll never share your data. Learn more in our <Link href="/privacy" className="text-primary hover:underline">privacy policy</Link>.
+            </p>
+          </Card>
+          <div className="text-center text-sm text-muted-foreground space-y-2">
+            <p><strong className="text-foreground">After Payment:</strong> You'll receive a confirmation email within seconds with next steps</p>
+            <p className="text-xs">Secure payment by Stripe · EU AI Act compliant · GDPR protected</p>
+            <p>Questions? Email esteve@greenelephant.org</p>
+          </div>
         </div>
       </div>
     </div>

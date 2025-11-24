@@ -62,8 +62,8 @@ export default function InterviewCoachingPage() {
                 data-testid="button-book-bundle"
                 asChild
               >
-                <a href="#booking">
-                  Book Your 3-Session Journey
+                <a href="/checkout?package=interview-coaching-3sessions">
+                  Book Your 3-Session Journey - €795
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
