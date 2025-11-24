@@ -15,6 +15,8 @@ import {
   type InsertPurchase,
   type ContactMessage,
   type InsertContactMessage,
+  type SatellitescanPurchase,
+  type InsertSatellitescanPurchase,
   users,
   recommendationSubmissions,
   contacts,
@@ -22,7 +24,8 @@ import {
   newsletterSubscriptions,
   signalsQuizResults,
   purchases,
-  contactMessages
+  contactMessages,
+  satellitescanPurchases
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";

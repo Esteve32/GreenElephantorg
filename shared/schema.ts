@@ -190,3 +190,34 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).pi
 
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
+
+// Satellite Scan purchases (beta product)
+export const satellitescanPurchases = pgTable("satellitescan_purchases", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerEmail: text("customer_email").notNull(),
+  customerName: text("customer_name"),
+  amount: text("amount").notNull(), // Price in EUR (stored as text, e.g., "29.99")
+  stripePaymentIntentId: text("stripe_payment_intent_id").notNull().unique(),
+  status: text("status").notNull(), // "succeeded", "pending", "failed"
+  typeformCompleted: text("typeform_completed").default("false").notNull(), // Track if they completed Typeform
+  dashboardSent: text("dashboard_sent").default("false").notNull(), // Track if dashboard sent
+  remindersCount: text("reminders_count").default("0").notNull(), // Track how many reminders sent
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSatellitescanPurchaseSchema = createInsertSchema(satellitescanPurchases).pick({
+  customerEmail: true,
+  customerName: true,
+  amount: true,
+  stripePaymentIntentId: true,
+  status: true,
+}).extend({
+  customerEmail: z.string().email("Please enter a valid email address"),
+  customerName: z.string().optional(),
+  amount: z.string(),
+  stripePaymentIntentId: z.string(),
+  status: z.enum(["succeeded", "pending", "failed"]),
+});
+
+export type InsertSatellitescanPurchase = z.infer<typeof insertSatellitescanPurchaseSchema>;
+export type SatellitescanPurchase = typeof satellitescanPurchases.$inferSelect;
