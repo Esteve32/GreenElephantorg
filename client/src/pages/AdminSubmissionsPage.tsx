@@ -54,6 +54,19 @@ interface RecommendationSubmission {
   createdAt: string;
 }
 
+interface SatellitescanPurchase {
+  id: string;
+  customerEmail: string;
+  customerName: string | null;
+  amount: string;
+  stripePaymentIntentId: string;
+  status: string;
+  typeformCompleted: string;
+  dashboardSent: string;
+  remindersCount: string;
+  createdAt: string;
+}
+
 export default function AdminSubmissionsPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -91,6 +104,11 @@ export default function AdminSubmissionsPage() {
 
   const { data: contactsData, isLoading: contactsLoading } = useQuery<Contact[]>({
     queryKey: ['/api/admin/contacts'],
+    enabled: authStatus?.isAuthenticated === true,
+  });
+
+  const { data: satellitescanData, isLoading: satellitescanLoading } = useQuery<SatellitescanPurchase[]>({
+    queryKey: ['/api/admin/satellitescan'],
     enabled: authStatus?.isAuthenticated === true,
   });
 
@@ -147,7 +165,11 @@ export default function AdminSubmissionsPage() {
         </div>
 
         <Tabs defaultValue="waitlist" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-6 mb-8">
+            <TabsTrigger value="satellitescan" data-testid="tab-satellitescan">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Satellitescan ({satellitescanData?.length || 0})
+            </TabsTrigger>
             <TabsTrigger value="waitlist" data-testid="tab-waitlist">
               <Users className="h-4 w-4 mr-2" />
               Waitlist ({waitlistData?.length || 0})
@@ -169,6 +191,78 @@ export default function AdminSubmissionsPage() {
               All Contacts ({contactsData?.length || 0})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="satellitescan" className="space-y-6">
+            <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+              <CardHeader>
+                <CardTitle>Satellitescan Purchases</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {satellitescanLoading && <p className="text-muted-foreground">Loading...</p>}
+                {!satellitescanLoading && (!satellitescanData || satellitescanData.length === 0) && (
+                  <p className="text-muted-foreground">No satellitescan purchases yet.</p>
+                )}
+                {!satellitescanLoading && satellitescanData && satellitescanData.length > 0 && (
+                  <div className="space-y-4">
+                    {satellitescanData.map((purchase) => (
+                      <div key={purchase.id} className="p-6 rounded-lg bg-background/50 border border-white/10 space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <p className="font-semibold text-lg">{purchase.customerName || "No name provided"}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                              <Mail className="h-3 w-3" />
+                              <a href={`mailto:${purchase.customerEmail}`} className="hover:underline">
+                                {purchase.customerEmail}
+                              </a>
+                            </p>
+                          </div>
+                          <Badge className="bg-alignment text-white">
+                            €{purchase.amount}
+                          </Badge>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className={`h-4 w-4 ${purchase.typeformCompleted === 'true' ? 'text-green-500' : 'text-muted-foreground'}`} />
+                            <span className="text-sm">
+                              Typeform: {purchase.typeformCompleted === 'true' ? 'Done' : 'Pending'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className={`h-4 w-4 ${purchase.dashboardSent === 'true' ? 'text-green-500' : 'text-muted-foreground'}`} />
+                            <span className="text-sm">
+                              Dashboard: {purchase.dashboardSent === 'true' ? 'Sent' : 'Pending'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              Reminders: {purchase.remindersCount}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {purchase.status}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(purchase.createdAt)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Payment ID: {purchase.stripePaymentIntentId.substring(0, 20)}...
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="waitlist" className="space-y-6">
             <Card className="backdrop-blur-sm bg-card/50 border-white/10">

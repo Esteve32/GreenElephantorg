@@ -3,16 +3,65 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Timer, Sparkles, Target, Users, Brain, ArrowRight, Clock, Gift } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SatelliteScanPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
+  // SEO Meta Tags
+  useEffect(() => {
+    document.title = "Satellitescan Beta - €29.99 | Map Your Communication Patterns | GreenElephant";
+    
+    // Meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève for conscious leaders, coaches, and therapists. Beta: €29.99 (Regular: €697).');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève for conscious leaders, coaches, and therapists. Beta: €29.99 (Regular: €697).';
+      document.head.appendChild(meta);
+    }
+
+    // Open Graph tags
+    const ogTags = [
+      { property: 'og:title', content: 'Satellitescan Beta - Map Your Communication Patterns in 90 Minutes' },
+      { property: 'og:description', content: 'AI-powered communication scan + manual dashboard creation by Estève. For conscious leaders, coaches & therapists. Christmas Beta: €29.99 (Regular: €697).' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://greenelephant.org/satellitescan' },
+      { property: 'og:image', content: 'https://greenelephant.org/satellitescan-og-image.png' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Satellitescan Beta - €29.99 | Communication Mapping for Conscious Leaders' },
+      { name: 'twitter:description', content: '90-min AI scan + personalized dashboard by Estève. For TEAL leaders, coaches, therapists.' },
+    ];
+
+    ogTags.forEach(tag => {
+      const existing = document.querySelector(`meta[${tag.property ? 'property' : 'name'}="${tag.property || tag.name}"]`);
+      if (existing) {
+        existing.setAttribute('content', tag.content);
+      } else {
+        const meta = document.createElement('meta');
+        if (tag.property) {
+          meta.setAttribute('property', tag.property);
+        } else {
+          meta.setAttribute('name', tag.name!);
+        }
+        meta.content = tag.content;
+        document.head.appendChild(meta);
+      }
+    });
+
+    // Cleanup on unmount
+    return () => {
+      document.title = 'GreenElephant - Conscious Communication';
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" role="main" aria-label="Satellitescan landing page">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--needs))] via-[hsl(var(--ego))] to-[hsl(var(--flow))] opacity-10"></div>
+      <section className="relative py-20 px-4 overflow-hidden" aria-labelledby="hero-heading">
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--needs))] via-[hsl(var(--ego))] to-[hsl(var(--flow))] opacity-10" aria-hidden="true"></div>
         
         <div className="relative max-w-4xl mx-auto text-center space-y-6">
           <Badge className="mb-4" data-testid="badge-beta">
@@ -20,7 +69,7 @@ export default function SatelliteScanPage() {
             Christmas Beta Launch
           </Badge>
           
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight" data-testid="heading-hero">
+          <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold tracking-tight" data-testid="heading-hero">
             Map Your Communication Patterns in 90 Minutes
           </h1>
           
@@ -60,18 +109,19 @@ export default function SatelliteScanPage() {
                 checkoutSection?.scrollIntoView({ behavior: 'smooth' });
               }}
               data-testid="button-cta-hero"
+              aria-label="Scroll to checkout section to purchase Satellitescan beta access for 29.99 euros"
             >
               Get Beta Access - €29.99
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
             </Button>
           </div>
         </div>
       </section>
 
       {/* What You Get */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="py-20 px-4 bg-muted/30" aria-labelledby="what-you-get-heading">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12" data-testid="heading-what-you-get">
+          <h2 id="what-you-get-heading" className="text-3xl font-bold text-center mb-12" data-testid="heading-what-you-get">
             What's Included in Your Satellitescan
           </h2>
           

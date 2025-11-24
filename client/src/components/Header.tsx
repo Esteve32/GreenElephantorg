@@ -39,6 +39,12 @@ export default function Header() {
 
   const practiceItems = [
     { 
+      href: "/satellitescan", 
+      label: "Satellitescan Beta",
+      description: "90-min AI scan + personalized dashboard (€29.99)",
+      icon: Sparkles
+    },
+    { 
       href: "/coaching", 
       label: "Coaching",
       description: "1:1 and group guidance for sustainable change",
