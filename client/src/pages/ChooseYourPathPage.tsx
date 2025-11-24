@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import { ArrowRight, Heart, Users, Sparkles, CheckCircle2, Loader2, CheckCircle } from "lucide-react";
+import { ArrowRight, Heart, Users, Sparkles, CheckCircle2, Loader2, CheckCircle, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
@@ -38,9 +38,10 @@ export default function ChooseYourPathPage() {
   const diagnosticQuestions = [
     {
       id: 1,
-      question: "What's your primary goal with conscious communication?",
+      question: "What's your primary goal?",
       options: [
         { value: "deep-transformation", label: "Deep personal transformation", path: "retreat" },
+        { value: "interview-success", label: "Master interviews and land my next role (40+)", path: "interview-coaching" },
         { value: "ongoing-support", label: "Ongoing support and accountability", path: "coaching" },
         { value: "organizational-change", label: "Transform my entire organization", path: "consulting" },
       ],
@@ -50,6 +51,7 @@ export default function ChooseYourPathPage() {
       question: "How much time can you dedicate?",
       options: [
         { value: "intensive", label: "I want an intensive immersive experience", path: "retreat" },
+        { value: "short-term", label: "3 focused sessions over 6-8 weeks", path: "interview-coaching" },
         { value: "weekly", label: "Weekly sessions over several months", path: "coaching" },
         { value: "strategic", label: "Strategic partnership over 6-12 months", path: "consulting" },
       ],
@@ -59,6 +61,7 @@ export default function ChooseYourPathPage() {
       question: "What's your budget range?",
       options: [
         { value: "retreat-budget", label: "€2,500 - €6,000", path: "retreat" },
+        { value: "interview-budget", label: "€795 for 3-session bundle", path: "interview-coaching" },
         { value: "coaching-budget", label: "€500 - €2,000 per month", path: "coaching" },
         { value: "consulting-budget", label: "€15,000+", path: "consulting" },
       ],
@@ -72,6 +75,13 @@ export default function ChooseYourPathPage() {
       href: "/retreats",
       icon: Heart,
       color: "needs",
+    },
+    "interview-coaching": {
+      title: "Interview Coaching",
+      description: "Master modern interviews with proven techniques (€795, 3 sessions)",
+      href: "/interview-coaching",
+      icon: Trophy,
+      color: "ego",
     },
     coaching: {
       title: "Personal Coaching",
@@ -135,7 +145,7 @@ export default function ChooseYourPathPage() {
   };
 
   const calculatePath = () => {
-    const pathCounts: Record<string, number> = { retreat: 0, coaching: 0, consulting: 0 };
+    const pathCounts: Record<string, number> = { retreat: 0, "interview-coaching": 0, coaching: 0, consulting: 0 };
     
     diagnosticQuestions.forEach((q) => {
       const answer = answers[q.id];
