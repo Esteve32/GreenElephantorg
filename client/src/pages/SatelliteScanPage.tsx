@@ -95,7 +95,7 @@ export default function SatelliteScanPage() {
               <div className="bg-[hsl(var(--ego))]/5 rounded-lg p-4 border border-[hsl(var(--ego))]/20 hover-elevate transition-all">
                 <p className="flex items-start gap-3">
                   <Sparkles className="w-5 h-5 text-[hsl(var(--ego))] flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-foreground">Smart Questionnaire (€30):</strong> <span className="text-muted-foreground">AI helps you answer 40 real-life communication questions in about 90 minutes</span></span>
+                  <span><strong className="text-foreground">Smart Questionnaire (€30):</strong> <span className="text-muted-foreground">AI helps you answer over 100 real-life communication questions in about 90 minutes</span></span>
                 </p>
               </div>
               <div className="bg-[hsl(var(--needs))]/5 rounded-lg p-4 border border-[hsl(var(--needs))]/20 hover-elevate transition-all">
