@@ -45,9 +45,24 @@ export default function Header() {
       icon: Sparkles
     },
     { 
+      href: "/retreats", 
+      label: "Equinoxe Retreats",
+      description: "Sacred gatherings in Lapland and Provence",
+      icon: Heart
+    },
+    { 
       href: "/coaching", 
       label: "Coaching",
       description: "1:1 and group guidance for sustainable change",
+      icon: Users
+    },
+  ];
+
+  const connectItems = [
+    { 
+      href: "/team", 
+      label: "Meet the Team",
+      description: "The coaches guiding your transformation",
       icon: Users
     },
     { 
@@ -56,17 +71,17 @@ export default function Header() {
       description: "High-touch transformation for TEAL organizations",
       icon: Sparkles
     },
-    { 
-      href: "/retreats", 
-      label: "Equinoxe Retreats",
-      description: "Sacred gatherings in Lapland and Provence",
+    {
+      href: "/references",
+      label: "Client References",
+      description: "35+ organizations we've partnered with",
       icon: Heart
     },
-    { 
-      href: "/team", 
-      label: "Meet the Team",
-      description: "The coaches guiding your transformation",
-      icon: Users
+    {
+      href: "/contact",
+      label: "Get in Touch",
+      description: "Start your conscious communication journey",
+      icon: PhoneCall
     },
   ];
 
@@ -191,6 +206,39 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
+                  className={`backdrop-blur-sm ${isMenuActive(connectItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-connect"
+                >
+                  Connect With Us
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4">
+                    {connectItems.map((item) => (
+                      <li key={item.href}>
+                        <NavigationMenuLink asChild>
+                          <Link href={item.href}>
+                            <div
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate cursor-pointer"
+                              data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
+                                <item.icon className="h-4 w-4 text-white" />
+                                {item.label}
+                              </div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {item.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
                   className={`backdrop-blur-sm ${isMenuActive(integrateItems) ? 'bg-white/10' : ''}`}
                   data-testid="nav-integrate"
                 >
@@ -289,6 +337,27 @@ export default function Header() {
               </h3>
               <div className="space-y-1">
                 {practiceItems.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                      data-testid={`link-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <item.icon className="h-4 w-4 text-white" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+                Connect With Us
+              </h3>
+              <div className="space-y-1">
+                {connectItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
