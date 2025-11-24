@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Timer, Sparkles, Target, Users, Brain, ArrowRight, Clock, Gift } from "lucide-react";
+import { CheckCircle2, Timer, Sparkles, Target, Users, Brain, ArrowRight, Clock, Gift, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 
@@ -70,8 +70,11 @@ export default function SatelliteScanPage() {
           </Badge>
           
           <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold tracking-tight" data-testid="heading-hero">
-            Map Your Communication Patterns in 90 Minutes
+            🛰️ The Satellite Scan
           </h1>
+          <p className="text-2xl font-semibold text-muted-foreground">
+            Map Your Communication Patterns in 90 Minutes
+          </p>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-subtitle">
             The Satellitescan gives conscious leaders, coaches, and therapists a personalized dashboard of their communication strengths and blind spots across 8 research-backed lenses.
@@ -84,26 +87,30 @@ export default function SatelliteScanPage() {
               <span className="text-2xl text-muted-foreground line-through" data-testid="text-regular-price">€697</span>
             </div>
             
-            <div className="max-w-md space-y-2 text-sm text-muted-foreground">
-              <p className="flex items-center justify-center gap-2">
-                <Sparkles className="w-4 h-4 text-[hsl(var(--ego))]" />
-                <span><strong>€30 value:</strong> AI-powered 90-minute Typeform scan</span>
-              </p>
-              <p className="flex items-center justify-center gap-2">
-                <Brain className="w-4 h-4 text-[hsl(var(--needs))]" />
-                <span><strong>€670 value:</strong> Manual dashboard creation by Estève + video guidance</span>
-              </p>
+            <div className="max-w-md space-y-3 text-sm">
+              <div className="bg-[hsl(var(--ego))]/5 rounded-lg p-3 border border-[hsl(var(--ego))]/20">
+                <p className="flex items-start gap-2">
+                  <Sparkles className="w-4 h-4 text-[hsl(var(--ego))] flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-foreground">Smart Questionnaire (€30):</strong> <span className="text-muted-foreground">AI helps you answer 40 real-life communication questions in about 90 minutes</span></span>
+                </p>
+              </div>
+              <div className="bg-[hsl(var(--needs))]/5 rounded-lg p-3 border border-[hsl(var(--needs))]/20">
+                <p className="flex items-start gap-2">
+                  <Brain className="w-4 h-4 text-[hsl(var(--needs))] flex-shrink-0 mt-0.5" />
+                  <span><strong className="text-foreground">Your Personal Dashboard (€670):</strong> <span className="text-muted-foreground">Estève reviews your answers and creates a custom visual map of your communication style, plus video tutorials you can watch right away</span></span>
+                </p>
+              </div>
             </div>
 
             <p className="text-sm text-muted-foreground italic" data-testid="text-beta-notice">
-              Beta pricing ends when we validate demand. If we get 40+ sign-ups, price returns to €697.
+              Beta pricing ends when we validate demand. The regular price will be €697.
             </p>
           </div>
 
           <div className="pt-8">
             <Button 
               size="lg" 
-              className="text-lg px-8 py-6"
+              className="text-lg font-bold px-8 py-6"
               onClick={() => {
                 const checkoutSection = document.getElementById('checkout');
                 checkoutSection?.scrollIntoView({ behavior: 'smooth' });
@@ -192,19 +199,31 @@ export default function SatelliteScanPage() {
             Perfect for Conscious Professionals
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "TEAL Leaders",
-                description: "Founders building self-organizing teams who communicate beyond hierarchy."
+                title: "Executive Assistants",
+                description: "Managing complex team dynamics and keeping everyone aligned. You hold the threads together."
+              },
+              {
+                title: "Operational Leaders",
+                description: "Running the systems that make organizations work. You need crystal-clear communication to be effective."
+              },
+              {
+                title: "Innovation Managers",
+                description: "Leading teams through change and uncertainty. Strong communication is your superpower."
+              },
+              {
+                title: "TEAL Leaders & Founders",
+                description: "Building teams that self-organize. You communicate beyond hierarchy and power."
               },
               {
                 title: "Coaches & Facilitators",
-                description: "Helping clients navigate complex relational dynamics with precision."
+                description: "Helping people navigate their toughest conversations and relational moments."
               },
               {
                 title: "Therapists & Teachers",
-                description: "Using communication daily to create trust and foster growth."
+                description: "Using communication daily to build trust and help people grow and heal."
               }
             ].map((persona, i) => (
               <Card key={i} className="p-6 text-center space-y-3">
@@ -298,28 +317,36 @@ export default function SatelliteScanPage() {
           <div className="space-y-6">
             {[
               {
-                q: "How long does the scan take?",
-                a: "60-90 minutes. We recommend doing it in one sitting for the most coherent results, but you can pause if needed."
+                q: "How long does it take to complete the Satellite Scan?",
+                a: "Plan for about 60-90 minutes. It's best to do it all at once in a quiet space where you can think clearly, but you can save your progress and come back if you need to."
               },
               {
                 q: "When will I get my dashboard?",
-                a: "Within 3-5 business days after you complete the Typeform. I personally review every submission and create each dashboard manually."
+                a: "Within 3-5 business days. Estève personally reads every single response and creates your custom dashboard by hand—it's not automated."
               },
               {
-                q: "What if I don't complete the Typeform right away?",
-                a: "No problem! You'll receive a friendly reminder email after 3-4 days. The link doesn't expire."
+                q: "What if I don't complete the scan right away?",
+                a: "No problem! After a few days you'll get a friendly reminder email. Your link never expires, so finish it whenever you're ready."
               },
               {
-                q: "Can I share my dashboard with my team?",
-                a: "Absolutely. Many coaches and leaders use their Satellitescan as a conversation starter with teams or clients."
+                q: "What exactly is this? Is it a personality test like Myers-Briggs?",
+                a: "No. This is NOT a personality test. It's a behavior snapshot self-assessment for self-aware people who want to calibrate their communication style. Instead of putting you in a box (like \"You're an introvert\"), we map out your actual communication patterns based on real situations you've been in."
               },
               {
-                q: "Is this different from personality tests like Myers-Briggs?",
-                a: "Yes. We don't categorize you into types. Instead, we map your actual communication behaviors across 8 lenses based on real scenarios you've experienced."
+                q: "Who should actually do this Satellite Scan?",
+                a: "If you're already self-aware and curious about how you show up in conversations—and you're willing to be honest about it—this is for you. It's not for people looking for a quick personality label. It's for people who want real insights to improve."
               },
               {
-                q: "What happens after the beta?",
-                a: "If we validate demand (40+ purchases), the price returns to €697. Early adopters get lifetime access to dashboard updates and new video content as we refine the product."
+                q: "Can I share my dashboard with my team or my clients?",
+                a: "Absolutely. Many coaches and leaders use their Satellite Scan dashboard as a starting point for conversations with their teams or clients."
+              },
+              {
+                q: "What makes this different from regular communication coaching?",
+                a: "You get a personalized visual map of your communication patterns, specific micro-habits you can practice right away, and videos explaining everything. It's like having a communication mirror held up by an expert."
+              },
+              {
+                q: "What happens after the beta period?",
+                a: "Beta pricing is special—we're testing this with early adopters to see if it's genuinely useful. When we reach a certain number of people, the price will go to the regular amount (€697). Early adopters get lifetime access to all updates and new videos we create as the product evolves."
               }
             ].map((faq, i) => (
               <Card key={i} className="p-6">
@@ -346,14 +373,14 @@ export default function SatelliteScanPage() {
               Regular price: €697 (96% off during beta)
             </p>
             <p className="text-sm text-muted-foreground italic">
-              Price increases after we validate demand with 40+ conscious leaders
+              Limited beta spots available
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 flex flex-col items-center">
             <Link href="/checkout?product=satellitescan">
-              <Button size="lg" className="w-full max-w-md text-lg py-6" data-testid="button-checkout">
-                Get Beta Access Now - €29.99
+              <Button size="lg" className="w-full max-w-md text-lg font-bold py-6" data-testid="button-checkout">
+                Get Access Now - €29.99
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
@@ -371,6 +398,15 @@ export default function SatelliteScanPage() {
         </div>
       </section>
 
+      {/* Testimonials Carousel */}
+      <section className="py-20 px-4 bg-muted/30">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Real People, Real Changes</h2>
+          
+          <TestimonialCarousel />
+        </div>
+      </section>
+
       {/* Bottom CTA */}
       <section className="py-16 px-4 bg-gradient-to-br from-[hsl(var(--needs))]/10 via-[hsl(var(--ego))]/10 to-[hsl(var(--flow))]/10">
         <div className="max-w-3xl mx-auto text-center space-y-6">
@@ -378,16 +414,101 @@ export default function SatelliteScanPage() {
             Invest 90 Minutes Once. Get Insights Forever.
           </h2>
           <p className="text-lg text-muted-foreground">
-            Beta pricing won't last. Be among the first conscious leaders mapping their communication DNA.
+            Real insights from real communication patterns. Starting at €29.99 for the beta.
           </p>
           <Link href="/checkout?product=satellitescan">
-            <Button size="lg" className="text-lg px-8 py-6" data-testid="button-cta-bottom">
-              Get Beta Access - €29.99
+            <Button size="lg" className="text-lg font-bold px-8 py-6" data-testid="button-cta-bottom">
+              Get Access Now - €29.99
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
         </div>
       </section>
+    </div>
+  );
+}
+
+function TestimonialCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  const testimonials = [
+    {
+      name: "Sarah M.",
+      role: "Executive Assistant, Tech Company",
+      quote: "I used the micro-habits from my Satellite Scan to redesign our morning team rituals. Now everyone shows up more present. The dashboard was like finally understanding why certain conversations felt stuck.",
+      habit: "Morning Ritual Redesign"
+    },
+    {
+      name: "James L.",
+      role: "Operations Director, Startup",
+      quote: "The communication check-in ritual we implemented after seeing my dashboard changed everything. My team went from avoiding difficult conversations to naming them directly. That's worth way more than €29.99.",
+      habit: "Weekly Communication Check-ins"
+    },
+    {
+      name: "Elena K.",
+      role: "Coach & Facilitator",
+      quote: "I introduced the thumbs voting ritual for team decision-making. Instead of the loudest voice winning, now every perspective gets heard. My clients say it's the simplest thing that shifted everything.",
+      habit: "Thumbs Voting Decisions"
+    }
+  ];
+  
+  const next = () => setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  const prev = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  
+  return (
+    <div className="space-y-8">
+      <Card className="p-8 min-h-64 flex flex-col justify-center">
+        <div className="space-y-4">
+          <p className="text-lg leading-relaxed">
+            "{testimonials[currentIndex].quote}"
+          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-base">{testimonials[currentIndex].name}</p>
+              <p className="text-sm text-muted-foreground">{testimonials[currentIndex].role}</p>
+              <Badge className="mt-3 bg-primary/10 text-primary border-primary/20">
+                {testimonials[currentIndex].habit}
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </Card>
+      
+      <div className="flex items-center justify-center gap-4">
+        <Button 
+          size="icon" 
+          variant="outline" 
+          onClick={prev}
+          data-testid="button-testimonial-prev"
+          aria-label="Previous testimonial"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        
+        <div className="flex gap-2">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                i === currentIndex ? 'bg-primary w-6' : 'bg-muted-foreground/30'
+              }`}
+              aria-label={`Go to testimonial ${i + 1}`}
+              data-testid={`button-testimonial-dot-${i}`}
+            />
+          ))}
+        </div>
+        
+        <Button 
+          size="icon" 
+          variant="outline" 
+          onClick={next}
+          data-testid="button-testimonial-next"
+          aria-label="Next testimonial"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 }
