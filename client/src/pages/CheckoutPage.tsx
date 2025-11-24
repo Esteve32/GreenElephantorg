@@ -84,7 +84,7 @@ export default function CheckoutPage() {
   const productType = urlParams.get('product');
   const packageType = urlParams.get('package') || '1on1-single';
   
-  // Detect if this is a satellitescan purchase
+  // Detect if this is a Satellite Scan purchase
   const isSatellitescan = productType === 'satellitescan';
   
   const packages: Record<string, { name: string; price: number; features: string[]; savings?: string }> = {
@@ -102,7 +102,7 @@ export default function CheckoutPage() {
       name: "Coaching Journey",
       price: 2980,
       features: [
-        "AI-powered Satellite Scan™ (90 questions, ~120 min)",
+        "AI-powered Satellite Scan (90 questions, ~120 min)",
         "Clarity & goal-setting session",
         "Biweekly coaching sessions (2 hours each)",
         "Unlimited 20-min check-in calls",

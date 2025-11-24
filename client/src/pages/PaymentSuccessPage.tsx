@@ -39,7 +39,7 @@ export default function PaymentSuccessPage() {
             <div className="flex items-start gap-3">
               <Calendar className="h-5 w-5 text-alignment shrink-0 mt-0.5" />
               <div>
-                <div className="font-semibold mb-1">Schedule your Satellite Scan™</div>
+                <div className="font-semibold mb-1">Schedule your Satellite Scan</div>
                 <p className="text-sm text-muted-foreground mb-3">
                   Book your discovery call with Estève now to begin your AI-powered assessment. Choose a time that works best for you.
                 </p>
