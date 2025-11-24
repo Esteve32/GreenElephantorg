@@ -16,24 +16,24 @@ export default function SatelliteScanPage() {
     // Meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève for conscious leaders, coaches, and therapists. Beta: €29.99 (Regular: €697).');
+      metaDescription.setAttribute('content', 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals. Beta: €29.99 (Regular: €697).');
     } else {
       const meta = document.createElement('meta');
       meta.name = 'description';
-      meta.content = 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève for conscious leaders, coaches, and therapists. Beta: €29.99 (Regular: €697).';
+      meta.content = 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals. Beta: €29.99 (Regular: €697).';
       document.head.appendChild(meta);
     }
 
     // Open Graph tags
     const ogTags = [
       { property: 'og:title', content: 'Satellitescan Beta - Map Your Communication Patterns in 90 Minutes' },
-      { property: 'og:description', content: 'AI-powered communication scan + manual dashboard creation by Estève. For conscious leaders, coaches & therapists. Christmas Beta: €29.99 (Regular: €697).' },
+      { property: 'og:description', content: 'AI-powered communication scan + manual dashboard creation by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders. Beta: €29.99 (Regular: €697).' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://greenelephant.org/satellitescan' },
       { property: 'og:image', content: 'https://greenelephant.org/satellitescan-og-image.png' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: 'Satellitescan Beta - €29.99 | Communication Mapping for Conscious Leaders' },
-      { name: 'twitter:description', content: '90-min AI scan + personalized dashboard by Estève. For TEAL leaders, coaches, therapists.' },
+      { name: 'twitter:description', content: '90-min AI scan + personalized dashboard by Estève. For product leaders, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals.' },
     ];
 
     ogTags.forEach(tag => {
@@ -81,7 +81,7 @@ export default function SatelliteScanPage() {
           </p>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" data-testid="text-subtitle">
-            The Satellitescan gives conscious leaders, coaches, and therapists a personalized dashboard of their communication strengths and blind spots across 8 research-backed lenses.
+            The Satellite Scan gives product leaders, operational experts, coaches, therapists, educators, TEAL founders, and conscious professionals a personalized dashboard of their communication strengths and blind spots across 8 research-backed lenses.
           </p>
 
           {/* Pricing - Transparent AI Split */}
@@ -206,28 +206,40 @@ export default function SatelliteScanPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "Executive Assistants",
-                description: "Managing complex team dynamics and keeping everyone aligned. You hold the threads together."
+                title: "Product Leaders & Founders",
+                description: "Building and shipping products with teams. Navigate the crucial conversations around strategy, priorities, and vision."
               },
               {
-                title: "Operational Leaders",
-                description: "Running the systems that make organizations work. You need crystal-clear communication to be effective."
+                title: "Executive Assistants",
+                description: "Managing complex stakeholder dynamics and keeping leadership aligned. You're the connective tissue of the organization."
+              },
+              {
+                title: "Operations & Ops Leaders",
+                description: "Running the systems that make organizations work. You need crystal-clear communication to coordinate across functions."
               },
               {
                 title: "Innovation Managers",
-                description: "Leading teams through change and uncertainty. Strong communication is your superpower."
+                description: "Leading teams through change and uncertainty. Communication is how you build psychological safety for experimentation."
               },
               {
-                title: "TEAL Leaders & Founders",
-                description: "Building teams that self-organize. You communicate beyond hierarchy and power."
+                title: "TEAL Leaders & Self-Organizing Teams",
+                description: "Building organizations beyond hierarchy. You communicate through consent-based decisions and distributed authority."
+              },
+              {
+                title: "Educators & Program Directors",
+                description: "Teaching and designing learning experiences. Your communication shapes how students show up to learn and grow."
               },
               {
                 title: "Coaches & Facilitators",
-                description: "Helping people navigate their toughest conversations and relational moments."
+                description: "Guiding people through transformation. Your communication is the container where breakthroughs happen."
               },
               {
-                title: "Therapists & Teachers",
-                description: "Using communication daily to build trust and help people grow and heal."
+                title: "Therapists & Healthcare Professionals",
+                description: "Holding sacred space for healing. Communication is your primary tool for building trust and facilitating growth."
+              },
+              {
+                title: "Consultants & Change Agents",
+                description: "Helping organizations navigate transformation. You need to speak clearly across hierarchies and cultures."
               }
             ].map((persona, i) => (
               <Card key={i} className="p-6 text-center space-y-3">
