@@ -7,7 +7,8 @@ export default function Footer() {
   const footerLinks = {
     explore: [
       { label: "Periodic Table", href: "/periodic-table" },
-      { label: "Prompt Library", href: "/prompts" },
+      { label: "Satellite Scan", href: "/satellitescan" },
+      { label: "Interview Coaching", href: "/interview-coaching" },
       { label: "Coaching", href: "/coaching" },
       { label: "Retreats", href: "/retreats" },
     ],
