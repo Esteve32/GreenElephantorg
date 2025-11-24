@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Microscope, Heart, PhoneCall } from "lucide-react";
+import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Microscope, Heart, PhoneCall, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -48,7 +48,7 @@ export default function Header() {
       href: "/interview-coaching", 
       label: "Interview Coaching",
       description: "3-session bundle for confident interview mastery (€795)",
-      icon: Users
+      icon: Trophy
     },
     { 
       href: "/retreats", 
