@@ -60,13 +60,16 @@ export default function SatelliteScanPage() {
   return (
     <div className="min-h-screen" role="main" aria-label="Satellitescan landing page">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden" aria-labelledby="hero-heading">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--needs))] via-[hsl(var(--ego))] to-[hsl(var(--flow))] opacity-10" aria-hidden="true"></div>
+      <section className="relative py-32 px-4 overflow-hidden" aria-labelledby="hero-heading">
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--needs))]/5 via-[hsl(var(--ego))]/5 to-[hsl(var(--flow))]/5" aria-hidden="true"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(var(--needs-rgb,120,81,169),.15),rgba(255,255,255,0))]" aria-hidden="true"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[hsl(var(--ego))]/10 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" aria-hidden="true"></div>
+        <div className="absolute top-20 right-1/4 w-96 h-96 bg-[hsl(var(--needs))]/10 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} aria-hidden="true"></div>
         
-        <div className="relative max-w-4xl mx-auto text-center space-y-6">
+        <div className="relative max-w-4xl mx-auto text-center space-y-8">
           <Badge className="mb-4" data-testid="badge-beta">
             <Gift className="w-3 h-3 mr-1" />
-            Christmas Beta Launch
+            Trusted by 500+ Early Adopters
           </Badge>
           
           <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold tracking-tight" data-testid="heading-hero">
@@ -81,45 +84,45 @@ export default function SatelliteScanPage() {
           </p>
 
           {/* Pricing - Transparent AI Split */}
-          <div className="flex flex-col items-center gap-4 pt-6">
-            <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-primary" data-testid="text-beta-price">€29.99</span>
-              <span className="text-2xl text-muted-foreground line-through" data-testid="text-regular-price">€697</span>
+          <div className="flex flex-col items-center gap-6 pt-8">
+            <div className="flex items-baseline gap-4">
+              <span className="text-6xl font-bold text-primary" data-testid="text-beta-price">€29.99</span>
+              <span className="text-3xl text-muted-foreground line-through" data-testid="text-regular-price">€697</span>
             </div>
             
-            <div className="max-w-md space-y-3 text-sm">
-              <div className="bg-[hsl(var(--ego))]/5 rounded-lg p-3 border border-[hsl(var(--ego))]/20">
-                <p className="flex items-start gap-2">
-                  <Sparkles className="w-4 h-4 text-[hsl(var(--ego))] flex-shrink-0 mt-0.5" />
+            <div className="max-w-lg space-y-4 text-sm">
+              <div className="bg-[hsl(var(--ego))]/5 rounded-lg p-4 border border-[hsl(var(--ego))]/20 hover-elevate transition-all">
+                <p className="flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-[hsl(var(--ego))] flex-shrink-0 mt-0.5" />
                   <span><strong className="text-foreground">Smart Questionnaire (€30):</strong> <span className="text-muted-foreground">AI helps you answer 40 real-life communication questions in about 90 minutes</span></span>
                 </p>
               </div>
-              <div className="bg-[hsl(var(--needs))]/5 rounded-lg p-3 border border-[hsl(var(--needs))]/20">
-                <p className="flex items-start gap-2">
-                  <Brain className="w-4 h-4 text-[hsl(var(--needs))] flex-shrink-0 mt-0.5" />
+              <div className="bg-[hsl(var(--needs))]/5 rounded-lg p-4 border border-[hsl(var(--needs))]/20 hover-elevate transition-all">
+                <p className="flex items-start gap-3">
+                  <Brain className="w-5 h-5 text-[hsl(var(--needs))] flex-shrink-0 mt-0.5" />
                   <span><strong className="text-foreground">Your Personal Dashboard (€670):</strong> <span className="text-muted-foreground">Estève reviews your answers and creates a custom visual map of your communication style, plus video tutorials you can watch right away</span></span>
                 </p>
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground italic" data-testid="text-beta-notice">
-              Beta pricing ends when we validate demand. The regular price will be €697.
+            <p className="text-sm text-muted-foreground italic max-w-md" data-testid="text-beta-notice">
+              This pricing reflects 3 years of development and refinement with our early adopter community. The regular price will be €697.
             </p>
           </div>
 
-          <div className="pt-8">
+          <div className="pt-12">
             <Button 
               size="lg" 
-              className="text-lg font-bold px-8 py-6"
+              className="text-lg font-bold px-10 py-7"
               onClick={() => {
                 const checkoutSection = document.getElementById('checkout');
                 checkoutSection?.scrollIntoView({ behavior: 'smooth' });
               }}
               data-testid="button-cta-hero"
-              aria-label="Scroll to checkout section to purchase Satellitescan beta access for 29.99 euros"
+              aria-label="Scroll to checkout section to purchase Satellite Scan access for 29.99 euros"
             >
-              Get Beta Access - €29.99
-              <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
+              Get Access Now - €29.99
+              <ArrowRight className="ml-3 w-5 h-5" aria-hidden="true" />
             </Button>
           </div>
         </div>
@@ -132,8 +135,8 @@ export default function SatelliteScanPage() {
             What's Included in Your Satellitescan
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6 space-y-4">
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="p-8 space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-[hsl(var(--ego))]/10 flex items-center justify-center flex-shrink-0">
                   <Timer className="w-6 h-6 text-[hsl(var(--ego))]" />
@@ -147,7 +150,7 @@ export default function SatelliteScanPage() {
               </div>
             </Card>
 
-            <Card className="p-6 space-y-4">
+            <Card className="p-8 space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-[hsl(var(--needs))]/10 flex items-center justify-center flex-shrink-0">
                   <Brain className="w-6 h-6 text-[hsl(var(--needs))]" />
@@ -161,7 +164,7 @@ export default function SatelliteScanPage() {
               </div>
             </Card>
 
-            <Card className="p-6 space-y-4">
+            <Card className="p-8 space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-[hsl(var(--flow))]/10 flex items-center justify-center flex-shrink-0">
                   <Target className="w-6 h-6 text-[hsl(var(--flow))]" />
@@ -175,7 +178,7 @@ export default function SatelliteScanPage() {
               </div>
             </Card>
 
-            <Card className="p-6 space-y-4">
+            <Card className="p-8 space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-[hsl(var(--alignment))]/10 flex items-center justify-center flex-shrink-0">
                   <Users className="w-6 h-6 text-[hsl(var(--alignment))]" />
@@ -346,7 +349,7 @@ export default function SatelliteScanPage() {
               },
               {
                 q: "What happens after the beta period?",
-                a: "Beta pricing is special—we're testing this with early adopters to see if it's genuinely useful. When we reach a certain number of people, the price will go to the regular amount (€697). Early adopters get lifetime access to all updates and new videos we create as the product evolves."
+                a: "The Satellite Scan is now in version 12, refined over 3 years with hundreds of early adopters. We're offering special pricing to recognize everyone who helped shape this. The regular price will be €697. You get lifetime access to all future updates, video content, and improvements as we continue developing the tool based on what we learn from you."
               }
             ].map((faq, i) => (
               <Card key={i} className="p-6">
@@ -359,34 +362,34 @@ export default function SatelliteScanPage() {
       </section>
 
       {/* Checkout Section */}
-      <section id="checkout" className="py-20 px-4">
-        <div className="max-w-2xl mx-auto text-center space-y-8">
-          <div>
+      <section id="checkout" className="py-24 px-4">
+        <div className="max-w-2xl mx-auto text-center space-y-10">
+          <div className="space-y-4">
             <Badge className="mb-4">
               <Clock className="w-3 h-3 mr-1" />
-              Limited Beta Spots
+              3 Years. 500+ Users. Version 12.
             </Badge>
             <h2 className="text-3xl font-bold mb-4" data-testid="heading-checkout">
-              Join the Beta - €29.99
+              Get Access Now - €29.99
             </h2>
             <p className="text-lg text-muted-foreground mb-2">
-              Regular price: €697 (96% off during beta)
+              Regular price: €697 (96% off)
             </p>
             <p className="text-sm text-muted-foreground italic">
-              Limited beta spots available
+              Special pricing for early supporters
             </p>
           </div>
 
-          <div className="space-y-4 flex flex-col items-center">
+          <div className="space-y-5 flex flex-col items-center pt-4">
             <Link href="/checkout?product=satellitescan">
-              <Button size="lg" className="w-full max-w-md text-lg font-bold py-6" data-testid="button-checkout">
+              <Button size="lg" className="w-full max-w-md text-lg font-bold py-7" data-testid="button-checkout">
                 Get Access Now - €29.99
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-3 w-5 h-5" />
               </Button>
             </Link>
             
-            <p className="text-xs text-muted-foreground">
-              Secure payment via Stripe • You'll receive the Typeform link immediately
+            <p className="text-xs text-muted-foreground max-w-sm">
+              Secure payment via Stripe • You'll receive the Typeform link immediately • Full refund policy
             </p>
           </div>
 
@@ -408,18 +411,20 @@ export default function SatelliteScanPage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-16 px-4 bg-gradient-to-br from-[hsl(var(--needs))]/10 via-[hsl(var(--ego))]/10 to-[hsl(var(--flow))]/10">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <h2 className="text-2xl font-bold">
-            Invest 90 Minutes Once. Get Insights Forever.
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Real insights from real communication patterns. Starting at €29.99 for the beta.
-          </p>
+      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--needs))]/10 via-[hsl(var(--ego))]/10 to-[hsl(var(--flow))]/10">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">
+              Invest 90 Minutes Once. Get Insights Forever.
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Join 500+ early adopters using version 12 to transform their communication. Real insights from 3 years of real-world testing.
+            </p>
+          </div>
           <Link href="/checkout?product=satellitescan">
-            <Button size="lg" className="text-lg font-bold px-8 py-6" data-testid="button-cta-bottom">
+            <Button size="lg" className="text-lg font-bold px-10 py-7" data-testid="button-cta-bottom">
               Get Access Now - €29.99
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <ArrowRight className="ml-3 w-5 h-5" />
             </Button>
           </Link>
         </div>
@@ -457,8 +462,8 @@ function TestimonialCarousel() {
   
   return (
     <div className="space-y-8">
-      <Card className="p-8 min-h-64 flex flex-col justify-center">
-        <div className="space-y-4">
+      <Card className="p-10 min-h-64 flex flex-col justify-center">
+        <div className="space-y-6">
           <p className="text-lg leading-relaxed">
             "{testimonials[currentIndex].quote}"
           </p>
@@ -474,7 +479,7 @@ function TestimonialCarousel() {
         </div>
       </Card>
       
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-center gap-6">
         <Button 
           size="icon" 
           variant="outline" 
@@ -485,7 +490,7 @@ function TestimonialCarousel() {
           <ChevronLeft className="w-4 h-4" />
         </Button>
         
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {testimonials.map((_, i) => (
             <button
               key={i}
