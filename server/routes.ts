@@ -16,6 +16,8 @@ import {
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
 import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail } from "./email-notifications";
+import { getSheetData } from "./lib/googleSheets";
+import { generateDashboardUI } from "./lib/thesysApi";
 
 // Stripe integration from blueprint:javascript_stripe
 // Gracefully handle missing Stripe keys to allow app to start
@@ -855,6 +857,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Get coupons error:", error);
       res.status(500).json({ message: "Error fetching coupons" });
+    }
+  });
+
+  // Dashboard API - Get lens data from Google Sheets
+  app.get("/api/dashboard/lens-data", async (req, res) => {
+    try {
+      const spreadsheetId = req.query.spreadsheetId as string;
+      const range = (req.query.range as string) || 'Sheet1!A1:Z100';
+      
+      if (!spreadsheetId) {
+        return res.status(400).json({ message: "spreadsheetId is required" });
+      }
+
+      const data = await getSheetData(spreadsheetId, range);
+      res.json({ data });
+    } catch (error: any) {
+      console.error("Dashboard lens data error:", error);
+      res.status(500).json({ message: "Error fetching lens data", error: error.message });
+    }
+  });
+
+  // Dashboard API - Generate UI with Thesys
+  app.post("/api/dashboard/generate-ui", async (req, res) => {
+    try {
+      const { prompt, data } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ message: "prompt is required" });
+      }
+
+      const uiContent = await generateDashboardUI(prompt, data);
+      res.json({ content: uiContent });
+    } catch (error: any) {
+      console.error("Dashboard UI generation error:", error);
+      res.status(500).json({ message: "Error generating dashboard UI", error: error.message });
     }
   });
 

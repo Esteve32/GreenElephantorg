@@ -28,6 +28,7 @@ import TermsOfServicePage from "@/pages/TermsOfServicePage";
 import CookiePolicyPage from "@/pages/CookiePolicyPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import AdminSubmissionsPage from "@/pages/AdminSubmissionsPage";
+import DashboardPage from "@/pages/DashboardPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -68,6 +69,7 @@ function Router() {
         <Route path="/cookies" component={CookiePolicyPage} />
         <Route path="/admin/login" component={AdminLoginPage} />
         <Route path="/admin/submissions" component={AdminSubmissionsPage} />
+        <Route path="/dashboard" component={DashboardPage} />
         <Route component={NotFound} />
       </Switch>
       </main>
