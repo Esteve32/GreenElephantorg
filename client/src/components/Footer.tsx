@@ -78,7 +78,7 @@ export default function Footer() {
               {footerLinks.explore.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <Button variant="link" className="h-auto p-0 text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" className="h-auto p-0 text-muted-foreground hover:text-foreground hover:bg-transparent">
                       {link.label}
                     </Button>
                   </Link>
@@ -93,7 +93,7 @@ export default function Footer() {
               {footerLinks.learn.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <Button variant="link" className="h-auto p-0 text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" className="h-auto p-0 text-muted-foreground hover:text-foreground hover:bg-transparent">
                       {link.label}
                     </Button>
                   </Link>
@@ -108,7 +108,7 @@ export default function Footer() {
               {footerLinks.legal.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <Button variant="link" className="h-auto p-0 text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" className="h-auto p-0 text-muted-foreground hover:text-foreground hover:bg-transparent">
                       {link.label}
                     </Button>
                   </Link>

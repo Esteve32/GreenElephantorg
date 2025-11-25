@@ -1,9 +1,92 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CheckCircle2, Timer, Sparkles, Target, Users, Brain, ArrowRight, Clock, Gift, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
+
+// FAQ data for both rendering and schema markup
+const faqData = [
+  {
+    q: "How long does it take to complete the Satellite Scan?",
+    a: "Plan for about 60-90 minutes. It's best to do it all at once in a quiet space where you can think clearly, but you can save your progress and come back if you need to."
+  },
+  {
+    q: "When will I get my dashboard?",
+    a: "Within 3-5 business days. Estève personally reads every single response and creates your custom dashboard by hand—it's not automated."
+  },
+  {
+    q: "What if I don't complete the scan right away?",
+    a: "No problem! After a few days you'll get a friendly reminder email. Your link never expires, so finish it whenever you're ready."
+  },
+  {
+    q: "What exactly is this? Is it a personality test like Myers-Briggs?",
+    a: "No. This is NOT a personality test. It's a behavior snapshot self-assessment for self-aware people who want to calibrate their communication style. Instead of putting you in a box (like \"You're an introvert\"), we map out your actual communication patterns based on real situations you've been in."
+  },
+  {
+    q: "Who should actually do this Satellite Scan?",
+    a: "If you're already self-aware and curious about how you show up in conversations—and you're willing to be honest about it—this is for you. It's not for people looking for a quick personality label. It's for people who want real insights to improve."
+  },
+  {
+    q: "Can I share my dashboard with my team or my clients?",
+    a: "Absolutely. Many coaches and leaders use their Satellite Scan dashboard as a starting point for conversations with their teams or clients."
+  },
+  {
+    q: "What makes this different from regular communication coaching?",
+    a: "You get a personalized visual map of your communication patterns, specific micro-habits you can practice right away, and videos explaining everything. It's like having a communication mirror held up by an expert."
+  },
+  {
+    q: "What happens after I pay?",
+    a: "You'll receive a confirmation email within seconds with: (1) your Typeform link to start the scan, (2) instructions for best results, (3) your customer support email. Complete the scan whenever you're ready—there's no time limit. After you submit, Estève personally reviews your answers and creates your custom dashboard within 3-5 business days."
+  },
+  {
+    q: "What about my privacy and data?",
+    a: "Your email and name help us send your Typeform link and deliver your dashboard. We never share your data. All communication is GDPR-compliant. Your survey responses are securely collected via Typeform and only reviewed by Estève for your dashboard creation. Read our full privacy policy for details."
+  },
+  {
+    q: "What happens after the beta period?",
+    a: "The Satellite Scan is now in version 12, refined over 3 years with hundreds of early adopters. We're offering special pricing to recognize everyone who helped shape this. The regular price will be €697. You get lifetime access to all future updates, video content, and improvements as we continue developing the tool based on what we learn from you."
+  },
+  {
+    q: "How does AI fit into the Satellite Scan? Is this AI-driven?",
+    a: "AI structures the 90-minute questionnaire (the €30 component) to collect data efficiently. But AI doesn't analyze your responses. Estève personally reviews all 100+ answers and creates your dashboard (the €670 value). This isn't automating communication—it's augmenting it. You get the efficiency of AI questioning plus the human expertise of manual dashboard creation."
+  },
+  {
+    q: "Can the Satellite Scan replace AI communication training?",
+    a: "No—and that's the point. The Satellite Scan maps your current patterns. To transform them, you need micro-habits, practice, and feedback. Unlike generic AI chatbots, your personalized dashboard shows you exactly where communication breaks down *for you* and what specific changes work best."
+  },
+  {
+    q: "Is this about Non-Violent Communication (NVC)?",
+    a: "NVC is one of several frameworks we use. The Satellite Scan integrates NVC principles (empathetic listening, needs clarity) alongside systems thinking, behavioral psychology, and design thinking. It's broader than NVC alone—it's about designing your entire communication style."
+  },
+  {
+    q: "How does this help with AI communication safety and prompt engineering?",
+    a: "Strong human-to-human communication is the foundation for human-AI collaboration. If you can't clarify expectations, navigate disagreement, or give precise feedback with people, you can't do it with AI either. The micro-habits from your Satellite Scan directly improve how you prompt, brief, and iterate with AI tools."
+  },
+  {
+    q: "What's the connection to Personal Development?",
+    a: "Communication patterns reflect how you see yourself, others, and conflict. The Satellite Scan shows blind spots—gaps between how you think you communicate and how you actually show up. That's personal development. You'll discover habits you didn't know you had and practices that create the impact you want."
+  },
+  {
+    q: "Will this help me be a better leader?",
+    a: "Leadership is mostly communication. The Satellite Scan reveals where you create psychological safety, where you shut people down, how you handle disagreement, and where you assume instead of asking. That awareness compounds quickly into better team dynamics, less drama, and faster decision-making."
+  }
+];
+
+// FAQAccordion component for SEO-friendly collapsible FAQ items
+function FAQAccordion({ question, answer }: { question: string; answer: string }) {
+  return (
+    <AccordionItem value={question} className="border border-border/50 rounded-lg px-4 mb-2 bg-card/30">
+      <AccordionTrigger className="text-left font-semibold hover:no-underline py-4" data-testid={`faq-trigger-${question.slice(0, 20).toLowerCase().replace(/\s+/g, '-')}`}>
+        {question}
+      </AccordionTrigger>
+      <AccordionContent className="text-muted-foreground pb-4">
+        {answer}
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
 
 export default function SatelliteScanPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -52,9 +135,36 @@ export default function SatelliteScanPage() {
       }
     });
 
+    // FAQPage JSON-LD Schema for GEO optimization
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqData.map(faq => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.a
+        }
+      }))
+    };
+
+    // Add or update FAQ schema script
+    let faqSchemaScript = document.querySelector('script[data-schema="faq"]');
+    if (!faqSchemaScript) {
+      faqSchemaScript = document.createElement('script');
+      faqSchemaScript.setAttribute('type', 'application/ld+json');
+      faqSchemaScript.setAttribute('data-schema', 'faq');
+      document.head.appendChild(faqSchemaScript);
+    }
+    faqSchemaScript.textContent = JSON.stringify(faqSchema);
+
     // Cleanup on unmount
     return () => {
       document.title = 'GreenElephant - Conscious Communication';
+      // Remove FAQ schema on unmount
+      const schemaScript = document.querySelector('script[data-schema="faq"]');
+      if (schemaScript) schemaScript.remove();
     };
   }, []);
 
@@ -355,76 +465,11 @@ export default function SatelliteScanPage() {
             Frequently Asked Questions
           </h2>
           
-          <div className="space-y-3">
-            {[
-              {
-                q: "How long does it take to complete the Satellite Scan?",
-                a: "Plan for about 60-90 minutes. It's best to do it all at once in a quiet space where you can think clearly, but you can save your progress and come back if you need to."
-              },
-              {
-                q: "When will I get my dashboard?",
-                a: "Within 3-5 business days. Estève personally reads every single response and creates your custom dashboard by hand—it's not automated."
-              },
-              {
-                q: "What if I don't complete the scan right away?",
-                a: "No problem! After a few days you'll get a friendly reminder email. Your link never expires, so finish it whenever you're ready."
-              },
-              {
-                q: "What exactly is this? Is it a personality test like Myers-Briggs?",
-                a: "No. This is NOT a personality test. It's a behavior snapshot self-assessment for self-aware people who want to calibrate their communication style. Instead of putting you in a box (like \"You're an introvert\"), we map out your actual communication patterns based on real situations you've been in."
-              },
-              {
-                q: "Who should actually do this Satellite Scan?",
-                a: "If you're already self-aware and curious about how you show up in conversations—and you're willing to be honest about it—this is for you. It's not for people looking for a quick personality label. It's for people who want real insights to improve."
-              },
-              {
-                q: "Can I share my dashboard with my team or my clients?",
-                a: "Absolutely. Many coaches and leaders use their Satellite Scan dashboard as a starting point for conversations with their teams or clients."
-              },
-              {
-                q: "What makes this different from regular communication coaching?",
-                a: "You get a personalized visual map of your communication patterns, specific micro-habits you can practice right away, and videos explaining everything. It's like having a communication mirror held up by an expert."
-              },
-              {
-                q: "What happens after I pay?",
-                a: "You'll receive a confirmation email within seconds with: (1) your Typeform link to start the scan, (2) instructions for best results, (3) your customer support email. Complete the scan whenever you're ready—there's no time limit. After you submit, Estève personally reviews your answers and creates your custom dashboard within 3-5 business days."
-              },
-              {
-                q: "What about my privacy and data?",
-                a: "Your email and name help us send your Typeform link and deliver your dashboard. We never share your data. All communication is GDPR-compliant. Your survey responses are securely collected via Typeform and only reviewed by Estève for your dashboard creation. Read our full privacy policy for details."
-              },
-              {
-                q: "What happens after the beta period?",
-                a: "The Satellite Scan is now in version 12, refined over 3 years with hundreds of early adopters. We're offering special pricing to recognize everyone who helped shape this. The regular price will be €697. You get lifetime access to all future updates, video content, and improvements as we continue developing the tool based on what we learn from you."
-              },
-              {
-                q: "How does AI fit into the Satellite Scan? Is this AI-driven?",
-                a: "AI structures the 90-minute questionnaire (the €30 component) to collect data efficiently. But AI doesn't analyze your responses. Estève personally reviews all 100+ answers and creates your dashboard (the €670 value). This isn't automating communication—it's augmenting it. You get the efficiency of AI questioning plus the human expertise of manual dashboard creation."
-              },
-              {
-                q: "Can the Satellite Scan replace AI communication training?",
-                a: "No—and that's the point. The Satellite Scan maps your current patterns. To transform them, you need micro-habits, practice, and feedback. Unlike generic AI chatbots, your personalized dashboard shows you exactly where communication breaks down *for you* and what specific changes work best."
-              },
-              {
-                q: "Is this about Non-Violent Communication (NVC)?",
-                a: "NVC is one of several frameworks we use. The Satellite Scan integrates NVC principles (empathetic listening, needs clarity) alongside systems thinking, behavioral psychology, and design thinking. It's broader than NVC alone—it's about designing your entire communication style."
-              },
-              {
-                q: "How does this help with AI communication safety and prompt engineering?",
-                a: "Strong human-to-human communication is the foundation for human-AI collaboration. If you can't clarify expectations, navigate disagreement, or give precise feedback with people, you can't do it with AI either. The micro-habits from your Satellite Scan directly improve how you prompt, brief, and iterate with AI tools."
-              },
-              {
-                q: "What's the connection to Personal Development?",
-                a: "Communication patterns reflect how you see yourself, others, and conflict. The Satellite Scan shows blind spots—gaps between how you think you communicate and how you actually show up. That's personal development. You'll discover habits you didn't know you had and practices that create the impact you want."
-              },
-              {
-                q: "Will this help me be a better leader?",
-                a: "Leadership is mostly communication. The Satellite Scan reveals where you create psychological safety, where you shut people down, how you handle disagreement, and where you assume instead of asking. That awareness compounds quickly into better team dynamics, less drama, and faster decision-making."
-              }
-            ].map((faq, i) => (
+          <Accordion type="single" collapsible className="space-y-2">
+            {faqData.map((faq, i) => (
               <FAQAccordion key={i} question={faq.q} answer={faq.a} />
             ))}
-          </div>
+          </Accordion>
         </div>
       </section>
 
