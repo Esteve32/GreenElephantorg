@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import jonasPhoto from "@assets/Jonas Pannetier Best Photo_1762898039160.jpeg";
-import estevePhoto from "@assets/Esteve Pannetier photo_1762897955119.jpg";
+import estevePhoto from "@assets/Esteve purple blue gradient full_1764110536036.png";
 import anuPhoto from "@assets/Anu Timmerbacka Photo_1762897955119.jpeg";
 
 const coaches = [

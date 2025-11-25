@@ -5,9 +5,8 @@ const clientCategories = [
   {
     title: "Tech & Startups",
     clients: [
-      { name: "xEdu", url: "https://xedu.fi" },
+      { name: "xEdu", url: "https://www.xedu.co" },
       { name: "Fuzu", url: "https://fuzu.com" },
-      { name: "358", url: "https://358.fi" },
       { name: "Naava", url: "https://naava.io" },
       { name: "Psyon Games", url: "https://psyon.co" },
       { name: "Ubisoft", url: "https://ubisoft.com" },
@@ -22,16 +21,13 @@ const clientCategories = [
       { name: "Allianz", url: "https://allianz.com" },
       { name: "iptiQ", url: "https://iptiq.com" },
       { name: "SwissRE", url: "https://swissre.com" },
-      { name: "Credit Suisse", url: "https://credit-suisse.com" },
-      { name: "S-Pankki", url: "https://s-pankki.fi" },
+      { name: "UBS", url: "https://www.ubs.com/ch/en.html" },
     ],
   },
   {
     title: "Industrial & Manufacturing",
     clients: [
       { name: "Metsä", url: "https://metsagroup.com" },
-      { name: "Kone", url: "https://kone.com" },
-      { name: "Valio", url: "https://valio.com" },
       { name: "Vinci Construction", url: "https://vinci-construction.com" },
     ],
   },
@@ -45,8 +41,6 @@ const clientCategories = [
     title: "Transportation & Logistics",
     clients: [
       { name: "Finnair", url: "https://finnair.com" },
-      { name: "SNCF", url: "https://sncf.com" },
-      { name: "Total", url: "https://totalenergies.com" },
     ],
   },
   {
@@ -67,13 +61,6 @@ const clientCategories = [
       { name: "arbora.partners", url: "https://arbora.partners" },
       { name: "Futurice", url: "https://futurice.com" },
       { name: "Vincit", url: "https://vincit.com" },
-    ],
-  },
-  {
-    title: "Hospitality & Telecom",
-    clients: [
-      { name: "Scandic Hotels", url: "https://scandichotels.com" },
-      { name: "Orange", url: "https://orange.com" },
     ],
   },
   {

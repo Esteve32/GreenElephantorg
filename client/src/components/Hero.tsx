@@ -19,7 +19,7 @@ export default function Hero() {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text">
-          Turn Every Conversation<br />Into Sacred Practice
+          Design the Human Conversations<br />AI Cannot Automate
         </h1>
 
         <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto leading-relaxed">Communication is not soft. It's the only interface AI cannot fully automate for you.</p>

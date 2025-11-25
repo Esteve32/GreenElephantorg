@@ -262,28 +262,28 @@ export default function SatelliteScanPage() {
           <div className="space-y-8">
             {[
               {
-                step: "1",
+                step: "📧",
                 title: "Purchase & Receive Link",
                 description: "After payment, you'll get an email with the Typeform link and instructions. Set aside 60-90 minutes in a quiet space."
               },
               {
-                step: "2",
+                step: "🧠",
                 title: "Complete the Scan",
                 description: "Answer questions about real communication scenarios. The AI structures your responses across 8 lenses, but there's no automated analysis—this is data collection only."
               },
               {
-                step: "3",
+                step: "🎨",
                 title: "Estève Creates Your Dashboard",
                 description: "I personally review your answers, identify patterns, and build a custom visual dashboard with specific micro-habits. This takes 3-5 business days."
               },
               {
-                step: "4",
+                step: "🏃",
                 title: "Watch Videos & Apply",
                 description: "You'll receive your dashboard with video tutorials explaining each insight. Start practicing your personalized micro-habits immediately."
               }
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-2xl flex-shrink-0">
                   {step.step}
                 </div>
                 <div className="flex-1">
@@ -336,7 +336,7 @@ export default function SatelliteScanPage() {
                     <strong className="text-foreground">Why we collect it:</strong> To deliver your Typeform link, create your personalized dashboard, and send your results and video tutorials.
                   </p>
                   <p>
-                    <strong className="text-foreground">How it's protected:</strong> Your data is encrypted, GDPR-compliant, and stored securely. We never share it with third parties. Only Estève reviews your responses to create your dashboard.
+                    <strong className="text-foreground">How it's protected:</strong> Your responses are collected via Typeform (GDPR-compliant, TLS 1.3 encrypted in transit). Stored securely with limited access. We never share it with third parties—only Estève reviews your responses to create your dashboard.
                   </p>
                   <p>
                     <strong className="text-foreground">Your rights:</strong> You can request access to or deletion of your data anytime by emailing esteve@greenelephant.org.
@@ -355,7 +355,7 @@ export default function SatelliteScanPage() {
             Frequently Asked Questions
           </h2>
           
-          <div className="space-y-6">
+          <div className="space-y-3">
             {[
               {
                 q: "How long does it take to complete the Satellite Scan?",
@@ -391,17 +391,38 @@ export default function SatelliteScanPage() {
               },
               {
                 q: "What about my privacy and data?",
-                a: "Your email and name help us send your Typeform link and deliver your dashboard. We never share your data. All communication is GDPR-compliant and encrypted. Your survey responses are securely stored and only reviewed by Estève for your dashboard. Read our full privacy policy for details."
+                a: "Your email and name help us send your Typeform link and deliver your dashboard. We never share your data. All communication is GDPR-compliant. Your survey responses are securely collected via Typeform and only reviewed by Estève for your dashboard creation. Read our full privacy policy for details."
               },
               {
                 q: "What happens after the beta period?",
                 a: "The Satellite Scan is now in version 12, refined over 3 years with hundreds of early adopters. We're offering special pricing to recognize everyone who helped shape this. The regular price will be €697. You get lifetime access to all future updates, video content, and improvements as we continue developing the tool based on what we learn from you."
+              },
+              {
+                q: "How does AI fit into the Satellite Scan? Is this AI-driven?",
+                a: "AI structures the 90-minute questionnaire (the €30 component) to collect data efficiently. But AI doesn't analyze your responses. Estève personally reviews all 100+ answers and creates your dashboard (the €670 value). This isn't automating communication—it's augmenting it. You get the efficiency of AI questioning plus the human expertise of manual dashboard creation."
+              },
+              {
+                q: "Can the Satellite Scan replace AI communication training?",
+                a: "No—and that's the point. The Satellite Scan maps your current patterns. To transform them, you need micro-habits, practice, and feedback. Unlike generic AI chatbots, your personalized dashboard shows you exactly where communication breaks down *for you* and what specific changes work best."
+              },
+              {
+                q: "Is this about Non-Violent Communication (NVC)?",
+                a: "NVC is one of several frameworks we use. The Satellite Scan integrates NVC principles (empathetic listening, needs clarity) alongside systems thinking, behavioral psychology, and design thinking. It's broader than NVC alone—it's about designing your entire communication style."
+              },
+              {
+                q: "How does this help with AI communication safety and prompt engineering?",
+                a: "Strong human-to-human communication is the foundation for human-AI collaboration. If you can't clarify expectations, navigate disagreement, or give precise feedback with people, you can't do it with AI either. The micro-habits from your Satellite Scan directly improve how you prompt, brief, and iterate with AI tools."
+              },
+              {
+                q: "What's the connection to Personal Development?",
+                a: "Communication patterns reflect how you see yourself, others, and conflict. The Satellite Scan shows blind spots—gaps between how you think you communicate and how you actually show up. That's personal development. You'll discover habits you didn't know you had and practices that create the impact you want."
+              },
+              {
+                q: "Will this help me be a better leader?",
+                a: "Leadership is mostly communication. The Satellite Scan reveals where you create psychological safety, where you shut people down, how you handle disagreement, and where you assume instead of asking. That awareness compounds quickly into better team dynamics, less drama, and faster decision-making."
               }
             ].map((faq, i) => (
-              <Card key={i} className="p-6">
-                <h3 className="font-semibold text-lg mb-3">{faq.q}</h3>
-                <p className="text-muted-foreground">{faq.a}</p>
-              </Card>
+              <FAQAccordion key={i} question={faq.q} answer={faq.a} />
             ))}
           </div>
         </div>

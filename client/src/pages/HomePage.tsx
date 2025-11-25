@@ -131,7 +131,7 @@ export default function HomePage() {
               What You'll Experience
             </h3>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Practical skills, emotional relief, and spiritual awakening—all from transforming how you communicate
+              Practical skills, measurable confidence, and human connection—all from transforming how you communicate
             </p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto">
               {benefits.map((benefit) => {
@@ -148,7 +148,7 @@ export default function HomePage() {
               })}
             </div>
             <p className="text-sm text-muted-foreground/80 mt-8 max-w-3xl mx-auto italic">
-              These aren't just skills to learn—they're invitations to experience peace, connection, and wholeness in every interaction.
+              Small shifts in communication ergonomics create lasting transformation. These aren't just skills—they're behavioral micro-habits designed for durable change.
             </p>
           </div>
         </div>
