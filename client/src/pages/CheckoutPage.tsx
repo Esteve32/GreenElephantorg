@@ -375,7 +375,7 @@ export default function CheckoutPage() {
         <div className="mt-12 space-y-6">
           <Card className="bg-ego/5 border-ego/20 p-4">
             <p className="text-xs text-muted-foreground">
-              <strong className="text-foreground">Your Privacy Matters:</strong> We collect your email and name to send your receipt, deliver your service, and follow up on your transformation. We'll never share your data. Learn more in our <Link href="/privacy" className="text-primary hover:underline">privacy policy</Link>.
+              <strong className="text-foreground">Your Privacy Matters:</strong> We collect your email and name to send your receipt, deliver your service, and follow up on your transformation. We'll never share your data. Learn more in our <Link to="/privacy" className="text-primary hover:underline">privacy policy</Link>.
             </p>
           </Card>
           <div className="text-center text-sm text-muted-foreground space-y-2">
