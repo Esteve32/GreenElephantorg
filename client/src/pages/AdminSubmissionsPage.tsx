@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut } from "lucide-react";
+import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -67,6 +67,17 @@ interface SatellitescanPurchase {
   createdAt: string;
 }
 
+interface Coupon {
+  id: string;
+  code: string;
+  discountAmount: string;
+  category: string;
+  isActive: string;
+  maxUses: string | null;
+  usedCount: string;
+  createdAt: string;
+}
+
 export default function AdminSubmissionsPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -112,6 +123,11 @@ export default function AdminSubmissionsPage() {
     enabled: authStatus?.isAuthenticated === true,
   });
 
+  const { data: couponsData, isLoading: couponsLoading, refetch: refetchCoupons } = useQuery<Coupon[]>({
+    queryKey: ['/api/admin/coupons'],
+    enabled: authStatus?.isAuthenticated === true,
+  });
+
   const handleLogout = async () => {
     try {
       await apiRequest("POST", "/api/admin/logout", {});
@@ -134,6 +150,29 @@ export default function AdminSubmissionsPage() {
       return format(new Date(dateString), "MMM dd, yyyy 'at' HH:mm");
     } catch {
       return dateString;
+    }
+  };
+
+  const handleCreateCoupon = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const code = (form.elements.namedItem('code') as HTMLInputElement)?.value;
+    const discountAmount = (form.elements.namedItem('discountAmount') as HTMLInputElement)?.value;
+    const category = (form.elements.namedItem('category') as HTMLSelectElement)?.value;
+    const maxUses = (form.elements.namedItem('maxUses') as HTMLInputElement)?.value;
+
+    try {
+      await apiRequest("POST", "/api/admin/coupons", {
+        code: code.toUpperCase(),
+        discountAmount: parseFloat(discountAmount),
+        category,
+        maxUses: maxUses ? parseInt(maxUses) : null
+      });
+      toast({ title: "Coupon created!", description: `${code.toUpperCase()} saved` });
+      form.reset();
+      refetchCoupons();
+    } catch (error) {
+      toast({ title: "Error", description: "Could not create coupon", variant: "destructive" });
     }
   };
 
@@ -164,8 +203,12 @@ export default function AdminSubmissionsPage() {
           </p>
         </div>
 
-        <Tabs defaultValue="waitlist" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-6 mb-8">
+        <Tabs defaultValue="coupons" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-7 mb-8">
+            <TabsTrigger value="coupons" data-testid="tab-coupons">
+              <Ticket className="h-4 w-4 mr-2" />
+              Coupons ({couponsData?.length || 0})
+            </TabsTrigger>
             <TabsTrigger value="satellitescan" data-testid="tab-satellitescan">
               <Sparkles className="h-4 w-4 mr-2" />
               Satellitescan ({satellitescanData?.length || 0})
@@ -191,6 +234,78 @@ export default function AdminSubmissionsPage() {
               All Contacts ({contactsData?.length || 0})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="coupons" className="space-y-6">
+            <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Ticket className="h-5 w-5" />
+                  Create New Coupon
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCreateCoupon} className="space-y-4 max-w-md">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Coupon Code</label>
+                    <Input name="code" placeholder="e.g., STUDENT50" required data-testid="input-coupon-code" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Discount Amount (€)</label>
+                    <Input name="discountAmount" type="number" placeholder="29.99" step="0.01" required data-testid="input-discount-amount" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Category</label>
+                    <select name="category" className="w-full px-3 py-2 rounded-md bg-background/50 border border-white/10" required data-testid="select-category">
+                      <option value="student">Student</option>
+                      <option value="startup">Startup</option>
+                      <option value="social_enterprise">Social Enterprise</option>
+                      <option value="unemployed">Unemployed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Max Uses (Leave blank for unlimited)</label>
+                    <Input name="maxUses" type="number" placeholder="100" data-testid="input-max-uses" />
+                  </div>
+                  <Button type="submit" className="w-full bg-alignment text-white" data-testid="button-create-coupon">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Coupon
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+              <CardHeader>
+                <CardTitle>All Coupons</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {couponsLoading && <p className="text-muted-foreground">Loading...</p>}
+                {!couponsLoading && (!couponsData || couponsData.length === 0) && (
+                  <p className="text-muted-foreground">No coupons yet. Create one to get started!</p>
+                )}
+                {!couponsLoading && couponsData && couponsData.length > 0 && (
+                  <div className="space-y-3">
+                    {couponsData.map((coupon) => (
+                      <div key={coupon.id} className="p-4 rounded-lg bg-background/50 border border-white/10 flex items-start justify-between">
+                        <div className="space-y-1">
+                          <p className="font-semibold text-lg">{coupon.code}</p>
+                          <div className="flex gap-4 text-sm text-muted-foreground">
+                            <span>€{coupon.discountAmount} discount</span>
+                            <span className="capitalize">{coupon.category}</span>
+                            <span>{coupon.usedCount} of {coupon.maxUses || '∞'} uses</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{formatDate(coupon.createdAt)}</p>
+                        </div>
+                        <Badge className={coupon.isActive === 'true' ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}>
+                          {coupon.isActive === 'true' ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="satellitescan" className="space-y-6">
             <Card className="backdrop-blur-sm bg-card/50 border-white/10">
