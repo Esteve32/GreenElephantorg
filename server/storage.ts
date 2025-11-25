@@ -17,6 +17,8 @@ import {
   type InsertContactMessage,
   type SatellitescanPurchase,
   type InsertSatellitescanPurchase,
+  type Coupon,
+  type InsertCoupon,
   users,
   recommendationSubmissions,
   contacts,
@@ -25,7 +27,8 @@ import {
   signalsQuizResults,
   purchases,
   contactMessages,
-  satellitescanPurchases
+  satellitescanPurchases,
+  coupons
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -74,6 +77,12 @@ export interface IStorage {
   getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]>;
   getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]>;
   updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void>;
+
+  // Coupons
+  getCouponByCode(code: string): Promise<Coupon | undefined>;
+  createCoupon(coupon: InsertCoupon): Promise<Coupon>;
+  getAllCoupons(): Promise<Coupon[]>;
+  incrementCouponUsage(couponId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {

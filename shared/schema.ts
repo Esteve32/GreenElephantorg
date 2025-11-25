@@ -221,3 +221,32 @@ export const insertSatellitescanPurchaseSchema = createInsertSchema(satellitesca
 
 export type InsertSatellitescanPurchase = z.infer<typeof insertSatellitescanPurchaseSchema>;
 export type SatellitescanPurchase = typeof satellitescanPurchases.$inferSelect;
+
+// Coupons for free/discounted scans
+export const coupons = pgTable("coupons", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull().unique(), // e.g., "STUDENT50", "STARTUP100"
+  discountAmount: text("discount_amount").notNull(), // Amount in EUR as text (e.g., "29.99" for free, "14.99" for 50% off)
+  category: text("category").notNull(), // "student", "startup", "social_enterprise", "unemployed"
+  isActive: text("is_active").default("true").notNull(), // "true" or "false"
+  maxUses: text("max_uses"), // null for unlimited, or number as text
+  usedCount: text("used_count").default("0").notNull(), // How many times coupon has been used
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCouponSchema = createInsertSchema(coupons).pick({
+  code: true,
+  discountAmount: true,
+  category: true,
+  isActive: true,
+  maxUses: true,
+}).extend({
+  code: z.string().min(3).toUpperCase(),
+  discountAmount: z.string(),
+  category: z.enum(["student", "startup", "social_enterprise", "unemployed"]),
+  isActive: z.string().default("true"),
+  maxUses: z.string().optional(),
+});
+
+export type InsertCoupon = z.infer<typeof insertCouponSchema>;
+export type Coupon = typeof coupons.$inferSelect;
