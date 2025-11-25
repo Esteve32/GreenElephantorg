@@ -21,9 +21,10 @@ interface CheckoutFormProps {
     price: number;
     features: string[];
   };
+  finalPrice: number;
 }
 
-const CheckoutForm = ({ packageInfo }: CheckoutFormProps) => {
+const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -65,7 +66,7 @@ const CheckoutForm = ({ packageInfo }: CheckoutFormProps) => {
         disabled={!stripe || isProcessing}
         data-testid="button-complete-payment"
       >
-        {isProcessing ? "Processing..." : `Complete Payment - €${packageInfo.price}`}
+        {isProcessing ? "Processing..." : `Complete Payment - €${finalPrice.toFixed(2)}`}
       </Button>
     </form>
   );
@@ -163,7 +164,10 @@ export default function CheckoutPage() {
       const data = await response.json();
       
       if (data.valid) {
-        setDiscountAmount(data.discountAmount);
+        // Parse as number to avoid string comparison issues
+        const discount = parseFloat(data.discountAmount) || 0;
+        setDiscountAmount(discount);
+        console.log('[Coupon] Applied discount:', discount, 'New final price:', Math.max(0, selectedPackage.price - discount));
         toast({ title: "Coupon Applied!", description: data.message });
       } else {
         toast({ title: "Invalid Coupon", description: data.message, variant: "destructive" });
@@ -186,16 +190,22 @@ export default function CheckoutPage() {
     }
 
     setIsCreatingIntent(true);
+    
+    // Check if this is a free purchase (price is essentially zero)
+    const isFreeCheckout = finalPrice < 0.01 && isSatellitescan && couponCode;
+    console.log('[Checkout] finalPrice:', finalPrice, 'isFreeCheckout:', isFreeCheckout);
 
     try {
       // If finalPrice is 0 (100% discount), skip Stripe and process free order
-      if (finalPrice === 0 && isSatellitescan && couponCode) {
+      if (isFreeCheckout) {
+        console.log('[Checkout] Processing FREE purchase with coupon:', couponCode);
         const response = await apiRequest("POST", "/api/satellitescan/free-purchase", {
           customerEmail,
           customerName,
           couponCode
         });
         const data = await response.json();
+        console.log('[Checkout] Free purchase response:', data);
         
         if (data.success) {
           toast({
@@ -205,6 +215,8 @@ export default function CheckoutPage() {
           // Redirect to success page
           setLocation("/payment-success?free=true");
           return;
+        } else {
+          throw new Error(data.error || 'Free purchase failed');
         }
       }
       
@@ -377,13 +389,13 @@ export default function CheckoutPage() {
                     disabled={isCreatingIntent}
                     data-testid="button-continue-to-payment"
                   >
-                    {isCreatingIntent ? "Loading..." : `Continue to Payment - €${finalPrice.toFixed(2)}`}
+                    {isCreatingIntent ? "Loading..." : (finalPrice < 0.01 ? "Get Free Access" : `Continue to Payment - €${finalPrice.toFixed(2)}`)}
                   </Button>
                 </form>
               ) : (
                 clientSecret && (
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm packageInfo={selectedPackage} />
+                    <CheckoutForm packageInfo={selectedPackage} finalPrice={finalPrice} />
                   </Elements>
                 )
               )}
