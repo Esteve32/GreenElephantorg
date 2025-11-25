@@ -494,6 +494,39 @@ export class DatabaseStorage implements IStorage {
       .set({ remindersCount: count.toString() })
       .where(eq(satellitescanPurchases.id, purchaseId));
   }
+
+  // Coupon methods
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
+    const [coupon] = await db.select().from(coupons)
+      .where(eq(coupons.code, code.toUpperCase()))
+      .limit(1);
+    return coupon;
+  }
+
+  async createCoupon(insertCoupon: InsertCoupon): Promise<Coupon> {
+    const [coupon] = await db.insert(coupons).values({
+      code: insertCoupon.code.toUpperCase(),
+      discountAmount: insertCoupon.discountAmount,
+      category: insertCoupon.category,
+      isActive: insertCoupon.isActive || "true",
+      maxUses: insertCoupon.maxUses || null,
+      usedCount: "0",
+    }).returning();
+    console.log(`✓ Coupon created: ${coupon.code} (${coupon.category})`);
+    return coupon;
+  }
+
+  async getAllCoupons(): Promise<Coupon[]> {
+    return await db.select().from(coupons);
+  }
+
+  async incrementCouponUsage(couponId: string): Promise<void> {
+    const coupon = await db.select().from(coupons).where(eq(coupons.id, couponId)).limit(1);
+    if (coupon.length > 0) {
+      const newCount = (parseInt(coupon[0].usedCount) + 1).toString();
+      await db.update(coupons).set({ usedCount: newCount }).where(eq(coupons.id, couponId));
+    }
+  }
 }
 
 // Use PostgreSQL storage (persistent) instead of MemStorage

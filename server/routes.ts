@@ -703,6 +703,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Coupon validation endpoint
+  app.post("/api/validate-coupon", async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code) {
+        return res.status(400).json({ valid: false, message: "Coupon code required" });
+      }
+      
+      const coupon = await storage.getCouponByCode(code);
+      if (!coupon) {
+        return res.status(400).json({ valid: false, message: "Coupon not found" });
+      }
+      
+      if (coupon.isActive !== "true") {
+        return res.status(400).json({ valid: false, message: "Coupon is inactive" });
+      }
+      
+      if (coupon.maxUses && parseInt(coupon.usedCount) >= parseInt(coupon.maxUses)) {
+        return res.status(400).json({ valid: false, message: "Coupon usage limit reached" });
+      }
+      
+      res.json({ 
+        valid: true, 
+        discountAmount: parseFloat(coupon.discountAmount),
+        category: coupon.category,
+        message: `${coupon.category} discount applied!`
+      });
+    } catch (error: any) {
+      console.error("Coupon validation error:", error);
+      res.status(500).json({ valid: false, message: "Error validating coupon" });
+    }
+  });
+
+  // Admin: Create coupon
+  app.post("/api/admin/coupons", requireAdminAuth, async (req, res) => {
+    try {
+      const { code, discountAmount, category, maxUses } = req.body;
+      
+      const coupon = await storage.createCoupon({
+        code,
+        discountAmount,
+        category,
+        isActive: "true",
+        maxUses
+      });
+      
+      res.status(201).json({ message: "Coupon created", coupon });
+    } catch (error: any) {
+      console.error("Create coupon error:", error);
+      res.status(500).json({ message: "Error creating coupon", error: error.message });
+    }
+  });
+
+  // Admin: Get all coupons
+  app.get("/api/admin/coupons", requireAdminAuth, async (req, res) => {
+    try {
+      const coupons = await storage.getAllCoupons();
+      res.json(coupons);
+    } catch (error: any) {
+      console.error("Get coupons error:", error);
+      res.status(500).json({ message: "Error fetching coupons" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

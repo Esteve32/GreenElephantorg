@@ -75,6 +75,8 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
   const { toast } = useToast();
@@ -138,12 +140,38 @@ export default function CheckoutPage() {
   };
 
   const selectedPackage = isSatellitescan ? packages['satellitescan'] : packages[packageType];
+  const finalPrice = Math.max(0, selectedPackage.price - discountAmount);
 
   useEffect(() => {
     if (!selectedPackage) {
       setLocation(isSatellitescan ? '/satellitescan' : '/coaching');
     }
   }, [packageType, selectedPackage, setLocation, isSatellitescan]);
+
+  const validateCoupon = async () => {
+    if (!couponCode) {
+      toast({ title: "Enter a coupon code", variant: "destructive" });
+      return;
+    }
+    
+    try {
+      const response = await fetch("/api/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode })
+      });
+      const data = await response.json();
+      
+      if (data.valid) {
+        setDiscountAmount(data.discountAmount);
+        toast({ title: "Coupon Applied!", description: data.message });
+      } else {
+        toast({ title: "Invalid Coupon", description: data.message, variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "Could not validate coupon", variant: "destructive" });
+    }
+  };
 
   const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -214,7 +242,10 @@ export default function CheckoutPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <div className="text-4xl font-bold mb-1">€{selectedPackage.price}</div>
+                <div className="text-4xl font-bold mb-1">€{finalPrice.toFixed(2)}</div>
+                {discountAmount > 0 && (
+                  <div className="text-sm text-green-500">Discount: -€{discountAmount.toFixed(2)}</div>
+                )}
                 {selectedPackage.savings && (
                   <div className="text-sm text-needs">{selectedPackage.savings}</div>
                 )}
@@ -295,13 +326,38 @@ export default function CheckoutPage() {
                     />
                   </div>
 
+                  <div className="space-y-2">
+                    <label htmlFor="coupon" className="text-sm font-medium">
+                      Coupon Code (Optional)
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="coupon"
+                        type="text"
+                        placeholder="e.g., STUDENT50"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        className="backdrop-blur-sm bg-white/5"
+                        data-testid="input-coupon-code"
+                      />
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        onClick={validateCoupon}
+                        data-testid="button-apply-coupon"
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </div>
+
                   <Button 
                     type="submit" 
                     className="w-full bg-alignment text-white hover:opacity-90"
                     disabled={isCreatingIntent}
                     data-testid="button-continue-to-payment"
                   >
-                    {isCreatingIntent ? "Loading..." : "Continue to Payment"}
+                    {isCreatingIntent ? "Loading..." : `Continue to Payment - €${finalPrice.toFixed(2)}`}
                   </Button>
                 </form>
               ) : (
