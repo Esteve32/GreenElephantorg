@@ -11,7 +11,7 @@ export default function SatelliteScanPage() {
 
   // SEO Meta Tags
   useEffect(() => {
-    document.title = "Satellitescan Beta - €29.99 | Map Your Communication Patterns | GreenElephant";
+    document.title = "Satellite Scan Beta - €29.99 | Map Your Communication Patterns | GreenElephant";
     
     // Meta description
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -26,13 +26,13 @@ export default function SatelliteScanPage() {
 
     // Open Graph tags
     const ogTags = [
-      { property: 'og:title', content: 'Satellitescan Beta - Map Your Communication Patterns in 90 Minutes' },
+      { property: 'og:title', content: 'Satellite Scan Beta - Map Your Communication Patterns in 90 Minutes' },
       { property: 'og:description', content: 'AI-powered communication scan + manual dashboard creation by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders. Beta: €29.99 (Regular: €697).' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://greenelephant.org/satellitescan' },
       { property: 'og:image', content: 'https://greenelephant.org/satellitescan-og-image.png' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: 'Satellitescan Beta - €29.99 | Communication Mapping for Conscious Leaders' },
+      { name: 'twitter:title', content: 'Satellite Scan Beta - €29.99 | Communication Mapping for Conscious Leaders' },
       { name: 'twitter:description', content: '90-min AI scan + personalized dashboard by Estève. For product leaders, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals.' },
     ];
 
@@ -59,7 +59,7 @@ export default function SatelliteScanPage() {
   }, []);
 
   return (
-    <div className="min-h-screen" role="main" aria-label="Satellitescan landing page">
+    <div className="min-h-screen" role="main" aria-label="Satellite Scan landing page">
       {/* Hero Section */}
       <section className="relative py-32 px-4 overflow-hidden" aria-labelledby="hero-heading">
         <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--needs))]/5 via-[hsl(var(--ego))]/5 to-[hsl(var(--flow))]/5" aria-hidden="true"></div>
@@ -114,7 +114,7 @@ export default function SatelliteScanPage() {
           <div className="pt-12">
             <Button 
               size="lg" 
-              className="text-lg font-bold px-10 py-7"
+              className="text-lg font-bold px-10 py-7 bg-alignment text-white hover:opacity-90"
               onClick={() => {
                 const checkoutSection = document.getElementById('checkout');
                 checkoutSection?.scrollIntoView({ behavior: 'smooth' });
@@ -133,7 +133,7 @@ export default function SatelliteScanPage() {
       <section className="py-20 px-4 bg-muted/30" aria-labelledby="what-you-get-heading">
         <div className="max-w-5xl mx-auto">
           <h2 id="what-you-get-heading" className="text-3xl font-bold text-center mb-12" data-testid="heading-what-you-get">
-            What's Included in Your Satellitescan
+            What's Included in Your Satellite Scan
           </h2>
           
           <div className="grid md:grid-cols-2 gap-8">
@@ -256,7 +256,7 @@ export default function SatelliteScanPage() {
       <section className="py-20 px-4 bg-muted/30">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12" data-testid="heading-how-works">
-            How Satellitescan Works
+            How Satellite Scan Works
           </h2>
           
           <div className="space-y-8">
