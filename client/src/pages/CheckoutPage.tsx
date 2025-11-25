@@ -188,6 +188,26 @@ export default function CheckoutPage() {
     setIsCreatingIntent(true);
 
     try {
+      // If finalPrice is 0 (100% discount), skip Stripe and process free order
+      if (finalPrice === 0 && isSatellitescan && couponCode) {
+        const response = await apiRequest("POST", "/api/satellitescan/free-purchase", {
+          customerEmail,
+          customerName,
+          couponCode
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          toast({
+            title: "Success!",
+            description: "Your free Satellite Scan has been activated!",
+          });
+          // Redirect to success page
+          setLocation("/payment-success?free=true");
+          return;
+        }
+      }
+      
       const endpoint = isSatellitescan 
         ? "/api/satellitescan/create-payment-intent" 
         : "/api/create-payment-intent";

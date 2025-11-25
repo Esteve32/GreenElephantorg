@@ -528,6 +528,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Free purchase endpoint for 100% discount coupons
+  app.post("/api/satellitescan/free-purchase", async (req, res) => {
+    try {
+      const { customerEmail, customerName, couponCode } = req.body;
+
+      if (!customerEmail || !couponCode) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Email and coupon code are required" 
+        });
+      }
+
+      // Validate coupon and ensure it provides full discount
+      const coupon = await storage.getCouponByCode(couponCode);
+      if (!coupon) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid coupon code" 
+        });
+      }
+
+      // Check if coupon is active
+      if (coupon.isActive !== "true") {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Coupon is inactive" 
+        });
+      }
+
+      // Check if coupon has remaining uses
+      if (coupon.maxUses && parseInt(coupon.usedCount) >= parseInt(coupon.maxUses)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Coupon usage limit reached" 
+        });
+      }
+
+      // Check if coupon covers full price (€29.99)
+      const BETA_PRICE = 29.99;
+      if (parseFloat(coupon.discountAmount) < BETA_PRICE) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Coupon does not cover full purchase price" 
+        });
+      }
+
+      // Generate a free purchase ID
+      const freePurchaseId = `FREE-${crypto.randomUUID()}`;
+
+      // Create the purchase record
+      await storage.createSatellitescanPurchase({
+        customerEmail,
+        customerName: customerName || null,
+        amount: "0.00",
+        stripePaymentIntentId: freePurchaseId,
+        status: "succeeded",
+      });
+
+      // Increment coupon usage
+      await storage.incrementCouponUsage(coupon.id);
+
+      // Send confirmation email using existing notification system
+      try {
+        await sendSatellitescanPurchaseEmail({
+          customerEmail,
+          customerName: customerName || '',
+          amount: "0.00 (FREE - Coupon: " + couponCode + ")",
+          paymentIntentId: freePurchaseId,
+          purchaseId: freePurchaseId,
+        });
+        console.log('✅ Free purchase notification sent');
+      } catch (emailError) {
+        console.error('Email notification failed (non-blocking):', emailError);
+      }
+
+      console.log(`✅ Free Satellite Scan activated for ${customerEmail} using coupon ${couponCode}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Free Satellite Scan activated!",
+        purchaseId: freePurchaseId 
+      });
+    } catch (error: any) {
+      console.error("Free purchase error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error processing free purchase: " + error.message 
+      });
+    }
+  });
+
   // Extended webhook handler for satellitescan purchases
   app.post("/api/webhooks/stripe-satellitescan", async (req, res) => {
     if (!stripe) {
