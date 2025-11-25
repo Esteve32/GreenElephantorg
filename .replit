@@ -39,10 +39,6 @@ localPort = 40977
 externalPort = 8000
 
 [[ports]]
-localPort = 42245
-externalPort = 8081
-
-[[ports]]
 localPort = 42531
 externalPort = 4200
 
@@ -91,7 +87,7 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["javascript_stripe:1.0.0", "resend:1.0.0"]
+integrations = ["javascript_stripe:1.0.0", "resend:1.0.0", "google-sheet:1.0.0"]
 
 [userenv]
 
