@@ -11,7 +11,10 @@ export default function TermsOfServicePage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 font-archivo">
             Terms of Service
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
+            Clear agreements create conscious relationships. Here's what we promise to each other when working together.
+          </p>
+          <p className="text-sm text-muted-foreground">
             Last updated: November 21, 2025
           </p>
         </div>

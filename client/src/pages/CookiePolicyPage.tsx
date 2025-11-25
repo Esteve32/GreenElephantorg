@@ -11,7 +11,10 @@ export default function CookiePolicyPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 font-archivo">
             Cookie Policy
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
+            We keep things simple. Only the essential cookies needed to make your experience smooth—nothing more.
+          </p>
+          <p className="text-sm text-muted-foreground">
             Last updated: November 21, 2025
           </p>
         </div>
