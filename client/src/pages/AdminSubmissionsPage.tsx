@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -83,15 +84,35 @@ export default function AdminSubmissionsPage() {
   const { toast } = useToast();
 
   // Check authentication status on mount
-  const { data: authStatus } = useQuery<{ isAuthenticated: boolean }>({
+  const { data: authStatus, isLoading: authLoading } = useQuery<{ isAuthenticated: boolean }>({
     queryKey: ['/api/admin/check'],
   });
 
   useEffect(() => {
-    if (authStatus && !authStatus.isAuthenticated) {
+    // Only redirect if auth check is complete and user is not authenticated
+    if (!authLoading && authStatus && !authStatus.isAuthenticated) {
       setLocation("/admin/login");
     }
-  }, [authStatus, setLocation]);
+  }, [authLoading, authStatus, setLocation]);
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin">
+            <Sparkles className="h-8 w-8 mx-auto" />
+          </div>
+          <p className="text-muted-foreground">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated
+  if (!authStatus?.isAuthenticated) {
+    return null;
+  }
 
   const { data: waitlistData, isLoading: waitlistLoading } = useQuery<WaitlistEntry[]>({
     queryKey: ['/api/admin/waitlist'],
