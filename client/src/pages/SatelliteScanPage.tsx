@@ -421,7 +421,7 @@ export default function SatelliteScanPage() {
                     <strong className="text-foreground">AI handles:</strong> The 90-minute Typeform questionnaire uses AI to structure questions and collect data efficiently. This is the €30 component.
                   </p>
                   <p>
-                    <strong className="text-foreground">I (Estève) handle:</strong> Dashboard creation, pattern identification, prompt library curation, and video tutorials. This manual work is the €670 value—and why beta pricing is 96% off.
+                    <strong className="text-foreground">Our coaches handle:</strong> Dashboard creation, pattern identification, prompt library curation, and video tutorials. This manual work is the €670 value—and why beta pricing is 96% off.
                   </p>
                   <p className="text-sm italic">
                     We're testing whether conscious professionals value AI-assisted reflection paired with human expertise. Your participation shapes the future of this product. In line with our <a href="https://arbora.partners/nest" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ACX commitment</a>, human agency remains paramount—AI supports, never replaces, your self-reflection.
@@ -446,7 +446,7 @@ export default function SatelliteScanPage() {
                     <strong className="text-foreground">Why we collect it:</strong> To deliver your Typeform link, create your personalized dashboard, and send your results and video tutorials.
                   </p>
                   <p>
-                    <strong className="text-foreground">How it's protected:</strong> Your responses are collected via Typeform (GDPR-compliant, TLS 1.3 encrypted in transit). Stored securely with limited access. We never share it with third parties—only Estève reviews your responses to create your dashboard.
+                    <strong className="text-foreground">How it's protected:</strong> Your responses are collected via Typeform (GDPR-compliant, TLS 1.3 encrypted in transit). Stored securely with limited access. We never share it with third parties—only our coaches review your responses to create your dashboard.
                   </p>
                   <p>
                     <strong className="text-foreground">Your rights:</strong> You can request access to or deletion of your data anytime by emailing esteve@greenelephant.org.
@@ -510,7 +510,7 @@ export default function SatelliteScanPage() {
 
           <div className="pt-8 border-t">
             <p className="text-sm text-muted-foreground">
-              Questions? <Link href="/contact" className="text-primary hover:underline">Contact Estève directly</Link>
+              Questions? <Link href="/contact" className="text-primary hover:underline">Contact us directly</Link>
             </p>
           </div>
         </div>
