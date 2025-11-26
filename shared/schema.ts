@@ -55,6 +55,8 @@ export const contacts = pgTable("contacts", {
   consentedAt: timestamp("consented_at").defaultNow().notNull(),
   source: text("source").notNull(), // "waitlist", "newsletter", "recommendation", "quiz"
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  notionPageId: text("notion_page_id"), // Notion CRM sync tracking
+  notionSyncedAt: timestamp("notion_synced_at"), // Last sync timestamp
 });
 
 export const insertContactSchema = createInsertSchema(contacts).pick({
