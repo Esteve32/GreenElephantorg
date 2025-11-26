@@ -18,6 +18,14 @@ import { fromError } from "zod-validation-error";
 import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail } from "./email-notifications";
 import { getSheetData } from "./lib/googleSheets";
 import { generateDashboardUI } from "./lib/thesysApi";
+import { 
+  syncContactWithNotion, 
+  pushAllContactsToNotion, 
+  pullContactsFromNotion, 
+  fullSync as notionFullSync,
+  getNotionDatabaseSchema,
+  getUnsyncedContacts
+} from "./lib/notionSync";
 
 // Stripe integration from blueprint:javascript_stripe
 // Gracefully handle missing Stripe keys to allow app to start
@@ -232,8 +240,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if contact already exists
       let contact = await storage.getContactByEmail(email);
+      let isNewContact = false;
       if (!contact) {
         contact = await storage.createContact(contactValidation.data);
+        isNewContact = true;
+      }
+
+      // Sync new contact to Notion CRM (async, don't block response)
+      if (isNewContact && contact) {
+        syncContactWithNotion(contact.id).catch(err => 
+          console.log('Notion sync deferred:', err.message)
+        );
       }
 
       // Validate waitlist entry
@@ -314,8 +331,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if contact already exists
       let contact = await storage.getContactByEmail(email);
+      let isNewContact = false;
       if (!contact) {
         contact = await storage.createContact(contactValidation.data);
+        isNewContact = true;
+      }
+
+      // Sync new contact to Notion CRM (async, don't block response)
+      if (isNewContact && contact) {
+        syncContactWithNotion(contact.id).catch(err => 
+          console.log('Notion sync deferred:', err.message)
+        );
       }
 
       const subscription = await storage.createNewsletterSubscription({
@@ -353,10 +379,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         if (contactValidation.success) {
           let contact = await storage.getContactByEmail(email);
+          let isNewContact = false;
           if (!contact) {
             contact = await storage.createContact(contactValidation.data);
+            isNewContact = true;
           }
           contactId = contact.id;
+          
+          // Sync new contact to Notion CRM (async, don't block response)
+          if (isNewContact && contact) {
+            syncContactWithNotion(contact.id).catch(err => 
+              console.log('Notion sync deferred:', err.message)
+            );
+          }
         }
       }
 
@@ -892,6 +927,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Dashboard UI generation error:", error);
       res.status(500).json({ message: "Error generating dashboard UI", error: error.message });
+    }
+  });
+
+  // ==========================================
+  // Notion CRM Sync Routes (Admin)
+  // ==========================================
+
+  // Get Notion database schema (to verify connection)
+  app.get("/api/admin/notion/schema", requireAdminAuth, async (_req, res) => {
+    try {
+      const schema = await getNotionDatabaseSchema();
+      res.json({ 
+        message: "Notion connection verified",
+        databaseId: schema.id,
+        title: (schema as any).title?.[0]?.plain_text || 'Untitled',
+        properties: Object.keys((schema as any).properties || {})
+      });
+    } catch (error: any) {
+      console.error("Notion schema error:", error);
+      res.status(500).json({ 
+        message: "Failed to connect to Notion", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Get unsynced contacts count
+  app.get("/api/admin/notion/unsynced", requireAdminAuth, async (_req, res) => {
+    try {
+      const unsynced = await getUnsyncedContacts();
+      res.json({ 
+        count: unsynced.length,
+        contacts: unsynced.map(c => ({ id: c.id, email: c.email, name: c.name }))
+      });
+    } catch (error: any) {
+      console.error("Get unsynced error:", error);
+      res.status(500).json({ message: "Error fetching unsynced contacts" });
+    }
+  });
+
+  // Push all contacts to Notion
+  app.post("/api/admin/notion/push", requireAdminAuth, async (_req, res) => {
+    try {
+      console.log('Starting Notion push all...');
+      const result = await pushAllContactsToNotion();
+      res.json({ 
+        message: `Pushed ${result.pushed} contacts to Notion`,
+        ...result 
+      });
+    } catch (error: any) {
+      console.error("Notion push error:", error);
+      res.status(500).json({ message: "Error pushing to Notion", error: error.message });
+    }
+  });
+
+  // Pull updates from Notion
+  app.post("/api/admin/notion/pull", requireAdminAuth, async (_req, res) => {
+    try {
+      console.log('Starting Notion pull...');
+      const result = await pullContactsFromNotion();
+      res.json({ 
+        message: `Pulled updates: ${result.updated} updated, ${result.created} created`,
+        ...result 
+      });
+    } catch (error: any) {
+      console.error("Notion pull error:", error);
+      res.status(500).json({ message: "Error pulling from Notion", error: error.message });
+    }
+  });
+
+  // Full two-way sync
+  app.post("/api/admin/notion/sync", requireAdminAuth, async (_req, res) => {
+    try {
+      console.log('Starting full Notion sync...');
+      const result = await notionFullSync();
+      res.json({ 
+        message: `Sync complete: ${result.pushed} pushed, ${result.pulled} pulled`,
+        ...result 
+      });
+    } catch (error: any) {
+      console.error("Notion sync error:", error);
+      res.status(500).json({ message: "Error syncing with Notion", error: error.message });
     }
   });
 
