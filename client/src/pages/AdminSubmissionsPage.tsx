@@ -83,9 +83,11 @@ export default function AdminSubmissionsPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Check authentication status on mount
+  // Check authentication status on mount - don't cache this query
   const { data: authStatus, isLoading: authLoading } = useQuery<{ isAuthenticated: boolean }>({
     queryKey: ['/api/admin/check'],
+    staleTime: 0, // Always refetch to ensure fresh auth status
+    gcTime: 0, // Don't keep in cache
   });
 
   useEffect(() => {

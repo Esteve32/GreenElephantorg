@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
@@ -24,6 +24,9 @@ export default function AdminLoginPage() {
       const data = await response.json();
 
       if (response.ok) {
+        // Invalidate the cached auth check so it will refetch
+        await queryClient.invalidateQueries({ queryKey: ['/api/admin/check'] });
+        
         toast({
           title: "Login successful",
           description: "Redirecting to admin dashboard...",
