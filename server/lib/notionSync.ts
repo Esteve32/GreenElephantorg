@@ -62,7 +62,7 @@ export async function pushContactToNotion(contact: typeof contacts.$inferSelect)
   }
 }
 
-function buildNotionProperties(contact: typeof contacts.$inferSelect): any {
+function buildNotionProperties(contact: typeof contacts.$inferSelect, isNewPage: boolean = true): any {
   const properties: any = {};
   
   if (contact.name) {
@@ -78,20 +78,14 @@ function buildNotionProperties(contact: typeof contacts.$inferSelect): any {
   }
   
   if (contact.source) {
+    const sourceMap: Record<string, string> = {
+      'waitlist': 'Waitlist',
+      'newsletter': 'Newsletter', 
+      'recommendation': 'Recommendation',
+      'quiz': 'Quiz',
+    };
     properties['Source'] = {
-      select: { name: contact.source },
-    };
-  }
-  
-  if (contact.consentGiven) {
-    properties['Consent Given'] = {
-      checkbox: contact.consentGiven === 'true',
-    };
-  }
-  
-  if (contact.createdAt) {
-    properties['Created At'] = {
-      date: { start: contact.createdAt.toISOString().split('T')[0] },
+      select: { name: sourceMap[contact.source] || contact.source },
     };
   }
   
@@ -124,6 +118,9 @@ export async function pullContactsFromNotion(): Promise<{ updated: number; creat
           const nameArr = props.Name?.title;
           const name = nameArr && nameArr.length > 0 ? nameArr[0].text?.content : null;
           
+          const sourceSelect = props.Source?.select?.name;
+          const source = sourceSelect ? sourceSelect.toLowerCase() : 'newsletter';
+          
           const existingContact = await db.select().from(contacts).where(eq(contacts.email, email)).limit(1);
           
           if (existingContact.length > 0) {
@@ -141,6 +138,21 @@ export async function pullContactsFromNotion(): Promise<{ updated: number; creat
                 .where(eq(contacts.id, contact.id));
               result.updated++;
             }
+          } else {
+            const validSources = ['waitlist', 'newsletter', 'recommendation', 'quiz'];
+            const safeSource = validSources.includes(source) ? source : 'newsletter';
+            
+            await db.insert(contacts).values({
+              email,
+              name: name || null,
+              consentGiven: 'true',
+              consentText: 'Imported from Notion CRM',
+              source: safeSource as any,
+              notionPageId: notionPage.id,
+              notionSyncedAt: new Date(),
+            });
+            result.created++;
+            console.log(`Created new contact from Notion: ${email}`);
           }
         } catch (pageError: any) {
           result.errors.push(`Error processing Notion page: ${pageError.message}`);
