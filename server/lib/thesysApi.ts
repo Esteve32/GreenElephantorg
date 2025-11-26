@@ -27,7 +27,7 @@ Keep the design clean and professional with good spacing.`;
 
   try {
     const response = await thesysClient.chat.completions.create({
-      model: 'claude-sonnet-4',
+      model: 'c1/anthropic/claude-sonnet-4/v-20250930',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userMessage }
@@ -50,7 +50,7 @@ Generate clean, modern UI components that display communication lens data.`;
     : prompt;
 
   const stream = await thesysClient.chat.completions.create({
-    model: 'claude-sonnet-4',
+    model: 'c1/anthropic/claude-sonnet-4/v-20250930',
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userMessage }

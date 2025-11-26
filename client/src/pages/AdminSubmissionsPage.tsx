@@ -83,11 +83,11 @@ export default function AdminSubmissionsPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Check authentication status on mount - don't cache this query
+  // Check authentication status on mount - refetch on every mount
   const { data: authStatus, isLoading: authLoading } = useQuery<{ isAuthenticated: boolean }>({
     queryKey: ['/api/admin/check'],
     staleTime: 0,
-    gcTime: 0,
+    refetchOnMount: 'always',
   });
 
   // All hooks must be called before any conditional returns (React Rules of Hooks)
@@ -129,8 +129,8 @@ export default function AdminSubmissionsPage() {
   });
 
   useEffect(() => {
-    // Only redirect if auth check is complete and user is not authenticated
-    if (!authLoading && authStatus && !authStatus.isAuthenticated) {
+    // Only redirect if auth check is complete and user is explicitly not authenticated
+    if (!authLoading && authStatus !== undefined && authStatus.isAuthenticated === false) {
       setLocation("/admin/login");
     }
   }, [authLoading, authStatus, setLocation]);
@@ -184,7 +184,7 @@ export default function AdminSubmissionsPage() {
   };
 
   // Show loading state while checking authentication
-  if (authLoading) {
+  if (authLoading || authStatus === undefined) {
     return (
       <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -197,9 +197,15 @@ export default function AdminSubmissionsPage() {
     );
   }
 
-  // Don't render anything if not authenticated (redirect happens via useEffect)
+  // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">Redirecting to login...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

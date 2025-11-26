@@ -7,6 +7,9 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Trust proxy for secure cookies behind Replit's proxy
+app.set('trust proxy', 1);
+
 // Require SESSION_SECRET for security
 if (!process.env.SESSION_SECRET) {
   throw new Error('SESSION_SECRET environment variable is required for secure sessions');
