@@ -34,7 +34,7 @@ const faqData = [
   },
   {
     q: "What makes this different from regular communication coaching?",
-    a: "You get a personalized visual map of your communication patterns, specific micro-habits you can practice right away, and videos explaining everything. It's like having a communication mirror held up by an expert."
+    a: "You get a personalized visual map of your communication patterns, plus access to a growing prompt library that lets you mine your scan data again and again. Weekly and monthly new prompts help you extract fresh insights without retaking the assessment. It's like having a communication mirror that keeps revealing new things."
   },
   {
     q: "What happens after I pay?",
@@ -54,7 +54,7 @@ const faqData = [
   },
   {
     q: "Can the Satellite Scan replace AI communication training?",
-    a: "No—and that's the point. The Satellite Scan maps your current patterns. To transform them, you need micro-habits, practice, and feedback. Unlike generic AI chatbots, your personalized dashboard shows you exactly where communication breaks down *for you* and what specific changes work best."
+    a: "No—and that's the point. The Satellite Scan maps your current patterns. To transform them, you need practice and reflection. That's why you get ongoing access to a prompt library—weekly and monthly new prompts let you revisit your scan data from fresh angles. Unlike generic AI chatbots, your personalized dashboard keeps revealing new insights as you grow."
   },
   {
     q: "Is this about Non-Violent Communication (NVC)?",
@@ -62,7 +62,7 @@ const faqData = [
   },
   {
     q: "How does this help with AI communication safety and prompt engineering?",
-    a: "Strong human-to-human communication is the foundation for human-AI collaboration. If you can't clarify expectations, navigate disagreement, or give precise feedback with people, you can't do it with AI either. The micro-habits from your Satellite Scan directly improve how you prompt, brief, and iterate with AI tools."
+    a: "Strong human-to-human communication is the foundation for human-AI collaboration. If you can't clarify expectations, navigate disagreement, or give precise feedback with people, you can't do it with AI either. The prompt library from your Satellite Scan directly improves how you prompt, brief, and iterate—both with people and AI tools."
   },
   {
     q: "What's the connection to Personal Development?",
@@ -278,12 +278,12 @@ export default function SatelliteScanPage() {
             <Card className="p-8 space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-[hsl(var(--flow))]/10 flex items-center justify-center flex-shrink-0">
-                  <Target className="w-6 h-6 text-[hsl(var(--flow))]" />
+                  <Sparkles className="w-6 h-6 text-[hsl(var(--flow))]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Actionable Micro-Habits</h3>
+                  <h3 className="font-semibold text-lg mb-2">Growing Prompt Library</h3>
                   <p className="text-muted-foreground">
-                    3-5 specific communication micro-habits tailored to your profile. Small shifts that create lasting transformation in how you connect with others.
+                    Your scan data becomes a goldmine you can mine again and again. Receive weekly and monthly new prompts to extract fresh insights from the same scan—ongoing growth without retaking the assessment.
                   </p>
                 </div>
               </div>
@@ -384,12 +384,12 @@ export default function SatelliteScanPage() {
               {
                 step: "🎨",
                 title: "Estève Creates Your Dashboard",
-                description: "I personally review your answers, identify patterns, and build a custom visual dashboard with specific micro-habits. This takes 3-5 business days."
+                description: "I personally review your answers, identify patterns, and build a custom visual dashboard. This takes 3-5 business days."
               },
               {
-                step: "🏃",
-                title: "Watch Videos & Apply",
-                description: "You'll receive your dashboard with video tutorials explaining each insight. Start practicing your personalized micro-habits immediately."
+                step: "🔄",
+                title: "Access Your Prompt Library",
+                description: "Your dashboard comes with a growing prompt library. Use weekly and monthly new prompts to mine fresh insights from the same scan data—ongoing growth without retaking the assessment."
               }
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-6">
@@ -421,7 +421,7 @@ export default function SatelliteScanPage() {
                     <strong className="text-foreground">AI handles:</strong> The 90-minute Typeform questionnaire uses AI to structure questions and collect data efficiently. This is the €30 component.
                   </p>
                   <p>
-                    <strong className="text-foreground">I (Estève) handle:</strong> Dashboard creation, pattern identification, micro-habit recommendations, and video tutorials. This manual work is the €670 value—and why beta pricing is 96% off.
+                    <strong className="text-foreground">I (Estève) handle:</strong> Dashboard creation, pattern identification, prompt library curation, and video tutorials. This manual work is the €670 value—and why beta pricing is 96% off.
                   </p>
                   <p className="text-sm italic">
                     We're testing whether conscious professionals value AI-assisted reflection paired with human expertise. Your participation shapes the future of this product. In line with our <a href="https://arbora.partners/nest" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ACX commitment</a>, human agency remains paramount—AI supports, never replaces, your self-reflection.
@@ -558,20 +558,20 @@ function TestimonialCarousel() {
     {
       name: "Sarah M.",
       role: "Executive Assistant, Tech Company",
-      quote: "I used the micro-habits from my Satellite Scan to redesign our morning team rituals. Now everyone shows up more present. The dashboard was like finally understanding why certain conversations felt stuck.",
-      habit: "Morning Ritual Redesign"
+      quote: "The monthly prompts keep revealing new things about my communication patterns. I did the scan once, but every new prompt helps me see something I missed. It's like having a coach who keeps asking better questions.",
+      habit: "Ongoing Prompt Discovery"
     },
     {
       name: "James L.",
       role: "Operations Director, Startup",
-      quote: "The communication check-in ritual we implemented after seeing my dashboard changed everything. My team went from avoiding difficult conversations to naming them directly. That's worth way more than €29.99.",
-      habit: "Weekly Communication Check-ins"
+      quote: "I love that I can mine the same scan data with new prompts each week. Last month's prompt about conflict patterns helped me prepare for a tough board conversation. That's worth way more than €29.99.",
+      habit: "Weekly Prompt Practice"
     },
     {
       name: "Elena K.",
       role: "Coach & Facilitator",
-      quote: "I introduced the thumbs voting ritual for team decision-making. Instead of the loudest voice winning, now every perspective gets heard. My clients say it's the simplest thing that shifted everything.",
-      habit: "Thumbs Voting Decisions"
+      quote: "The growing prompt library is brilliant. I use different prompts with my clients to explore their scan results from new angles. One scan, endless insights. It's become central to my practice.",
+      habit: "Prompt Library for Clients"
     }
   ];
   
