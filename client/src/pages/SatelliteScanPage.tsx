@@ -14,7 +14,7 @@ const faqData = [
   },
   {
     q: "When will I get my dashboard?",
-    a: "Within 3-5 business days. Estève personally reads every single response and creates your custom dashboard by hand—it's not automated."
+    a: "Within 48-72 hours. Our coaches personally review every single response and create your custom dashboard by hand—it's not automated."
   },
   {
     q: "What if I don't complete the scan right away?",
@@ -38,11 +38,11 @@ const faqData = [
   },
   {
     q: "What happens after I pay?",
-    a: "You'll receive a confirmation email within seconds with: (1) your Typeform link to start the scan, (2) instructions for best results, (3) your customer support email. Complete the scan whenever you're ready—there's no time limit. After you submit, Estève personally reviews your answers and creates your custom dashboard within 3-5 business days."
+    a: "You'll be taken directly to the Typeform scan—it's click, buy, and fill. You also receive a confirmation email with resources: the Notion prompt library and YouTube video tutorials. Complete the scan in one sitting if possible (90 minutes). After you submit, our coaches personally review your answers and create your custom dashboard within 48-72 hours."
   },
   {
     q: "What about my privacy and data?",
-    a: "Your email and name help us send your Typeform link and deliver your dashboard. We never share your data. All communication is GDPR-compliant. Your survey responses are securely collected via Typeform and only reviewed by Estève for your dashboard creation. Read our full privacy policy for details."
+    a: "Your email and name help us send your resources and deliver your dashboard. We never share your data. All communication is GDPR-compliant. Your survey responses are securely collected via Typeform and only reviewed by our coaches for your dashboard creation. Read our full privacy policy for details."
   },
   {
     q: "What happens after the beta period?",
@@ -50,7 +50,7 @@ const faqData = [
   },
   {
     q: "How does AI fit into the Satellite Scan? Is this AI-driven?",
-    a: "AI structures the 90-minute questionnaire (the €30 component) to collect data efficiently. But AI doesn't analyze your responses. Estève personally reviews all 100+ answers and creates your dashboard (the €670 value). This isn't automating communication—it's augmenting it. You get the efficiency of AI questioning plus the human expertise of manual dashboard creation."
+    a: "AI structures the 90-minute questionnaire (the €30 component) to collect data efficiently. But AI doesn't analyze your responses. Our coaches personally review all 100+ answers and create your dashboard (the €670 value). This isn't automating communication—it's augmenting it. You get the efficiency of AI questioning plus the human expertise of manual dashboard creation."
   },
   {
     q: "Can the Satellite Scan replace AI communication training?",
@@ -99,24 +99,24 @@ export default function SatelliteScanPage() {
     // Meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals. Beta: €29.99 (Regular: €697).');
+      metaDescription.setAttribute('content', 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by our coaches. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals. Beta: €29.99 (Regular: €697).');
     } else {
       const meta = document.createElement('meta');
       meta.name = 'description';
-      meta.content = 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals. Beta: €29.99 (Regular: €697).';
+      meta.content = 'Map your communication patterns in 90 minutes. AI-powered Typeform scan + personalized dashboard by our coaches. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals. Beta: €29.99 (Regular: €697).';
       document.head.appendChild(meta);
     }
 
     // Open Graph tags
     const ogTags = [
       { property: 'og:title', content: 'Satellite Scan Beta - Map Your Communication Patterns in 90 Minutes' },
-      { property: 'og:description', content: 'AI-powered communication scan + manual dashboard creation by Estève. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders. Beta: €29.99 (Regular: €697).' },
+      { property: 'og:description', content: 'AI-powered communication scan + manual dashboard creation by our coaches. For product leaders, executives, ops experts, coaches, therapists, educators, TEAL founders. Beta: €29.99 (Regular: €697).' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://greenelephant.org/satellitescan' },
       { property: 'og:image', content: 'https://greenelephant.org/satellitescan-og-image.png' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: 'Satellite Scan Beta - €29.99 | Communication Mapping for Conscious Leaders' },
-      { name: 'twitter:description', content: '90-min AI scan + personalized dashboard by Estève. For product leaders, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals.' },
+      { name: 'twitter:description', content: '90-min AI scan + personalized dashboard by our coaches. For product leaders, ops experts, coaches, therapists, educators, TEAL founders, and conscious professionals.' },
     ];
 
     ogTags.forEach(tag => {
@@ -211,7 +211,7 @@ export default function SatelliteScanPage() {
               <div className="bg-[hsl(var(--needs))]/5 rounded-lg p-4 border border-[hsl(var(--needs))]/20 hover-elevate transition-all">
                 <p className="flex items-start gap-3">
                   <Brain className="w-5 h-5 text-[hsl(var(--needs))] flex-shrink-0 mt-0.5" />
-                  <span><strong className="text-foreground">Your Personal Dashboard (€670):</strong> <span className="text-muted-foreground">Estève reviews your answers and creates a custom visual map of your communication style, plus video tutorials you can watch right away</span></span>
+                  <span><strong className="text-foreground">Your Personal Dashboard (€670):</strong> <span className="text-muted-foreground">Our coaches review your answers and create a custom visual map of your communication style, delivered within 48-72 hours</span></span>
                 </p>
               </div>
             </div>
@@ -267,9 +267,9 @@ export default function SatelliteScanPage() {
                   <Brain className="w-6 h-6 text-[hsl(var(--needs))]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Personalized Dashboard by Estève</h3>
+                  <h3 className="font-semibold text-lg mb-2">Personalized Dashboard by Our Coaches</h3>
                   <p className="text-muted-foreground">
-                    I manually review your responses and create a custom visual dashboard highlighting your strengths, blind spots, and growth areas. Delivered within 3-5 business days.
+                    Our coaches manually review your responses and create a custom visual dashboard highlighting your strengths, blind spots, and growth areas. Delivered within 48-72 hours.
                   </p>
                 </div>
               </div>
@@ -372,24 +372,24 @@ export default function SatelliteScanPage() {
           <div className="space-y-8">
             {[
               {
-                step: "📧",
-                title: "Purchase & Receive Link",
-                description: "After payment, you'll get an email with the Typeform link and instructions. Set aside 60-90 minutes in a quiet space."
+                step: "1️⃣",
+                title: "Click & Buy",
+                description: "Complete your purchase in seconds with our secure checkout. You'll be redirected immediately to start your scan."
               },
               {
-                step: "🧠",
-                title: "Complete the Scan",
-                description: "Answer questions about real communication scenarios. The AI structures your responses across 8 lenses, but there's no automated analysis—this is data collection only."
+                step: "2️⃣",
+                title: "Fill the Scan (90 min)",
+                description: "Answer questions about real communication scenarios. The AI structures your responses across 8 lenses. Best done in one sitting for optimal reflection."
               },
               {
-                step: "🎨",
-                title: "Estève Creates Your Dashboard",
-                description: "I personally review your answers, identify patterns, and build a custom visual dashboard. This takes 3-5 business days."
+                step: "3️⃣",
+                title: "Dashboard Created (48-72 hrs)",
+                description: "Our coaches manually review your answers, identify patterns, and build your custom visual dashboard. You'll receive an email when it's ready."
               },
               {
-                step: "🔄",
-                title: "Access Your Prompt Library",
-                description: "Your dashboard comes with a growing prompt library. Use weekly and monthly new prompts to mine fresh insights from the same scan data—ongoing growth without retaking the assessment."
+                step: "4️⃣",
+                title: "Access Your Resources",
+                description: "Get immediate access to the Notion prompt library and YouTube video tutorials. Use them to deepen your insights while waiting for your dashboard."
               }
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-6">

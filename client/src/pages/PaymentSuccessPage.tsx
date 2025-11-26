@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Calendar, Mail } from "lucide-react";
+import { CheckCircle2, FileText, Mail } from "lucide-react";
 
 export default function PaymentSuccessPage() {
   const [, setLocation] = useLocation();
@@ -37,24 +37,24 @@ export default function PaymentSuccessPage() {
             </div>
             
             <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-alignment shrink-0 mt-0.5" />
+              <FileText className="h-5 w-5 text-alignment shrink-0 mt-0.5" />
               <div>
-                <div className="font-semibold mb-1">Schedule your Satellite Scan</div>
+                <div className="font-semibold mb-1">Start Your Satellite Scan Now</div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Book your discovery call with Estève now to begin your AI-powered assessment. Choose a time that works best for you.
+                  Click below to begin your 90-minute self-assessment. Take your time and answer honestly for the best results.
                 </p>
                 <Button
                   asChild
                   size="sm"
                   className="bg-alignment hover:bg-alignment/90 text-white"
-                  data-testid="button-book-session"
+                  data-testid="button-start-scan"
                 >
                   <a 
-                    href="https://calendly.com/greenelephant/satellite-scan-session" 
+                    href="https://greenelephantorg.typeform.com/individualscan" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
-                    Book Satellite Scan
+                    Start Satellite Scan
                   </a>
                 </Button>
               </div>
