@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Sparkles, Users, BookOpen, Heart, PhoneCall, Trophy, Microscope, Target, MessageSquare, GraduationCap, Building2, Compass } from "lucide-react";
+import { Menu, X, Sparkles, Users, BookOpen, Heart, PhoneCall, Trophy, Microscope, Target, Building2, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -92,12 +92,6 @@ export default function Header() {
   ];
 
   const resourcesItems = [
-    { 
-      href: "/periodic-table", 
-      label: "Periodic Table",
-      description: "129 micro-habits. 8 lenses. One map of connection",
-      icon: Microscope
-    },
     { 
       href: "/resources", 
       label: "Resources & Prompts",
