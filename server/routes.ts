@@ -24,7 +24,8 @@ import {
   pullContactsFromNotion, 
   fullSync as notionFullSync,
   getNotionDatabaseSchema,
-  getUnsyncedContacts
+  getUnsyncedContacts,
+  markContactAsCustomer
 } from "./lib/notionSync";
 
 // Stripe integration from blueprint:javascript_stripe
@@ -178,6 +179,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
             console.log('👉 Include Calendly link: https://calendly.com/greenelephant/satellite-scan-session');
           }
+
+          // Sync purchase to Notion CRM (async, don't block response)
+          markContactAsCustomer(customerEmail, {
+            productName: packageName,
+            amount: amount,
+            customerName: customerName || undefined
+          }).catch(err => console.log('Notion sync for purchase deferred:', err.message));
         } else {
           console.log('ℹ️ Duplicate webhook event received for payment:', paymentIntent.id);
         }
@@ -641,6 +649,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log(`✅ Free Satellite Scan activated for ${customerEmail} using coupon ${couponCode}`);
+
+      // Sync purchase to Notion CRM (async, don't block response)
+      markContactAsCustomer(customerEmail, {
+        productName: 'Satellite Scan (Free - ' + couponCode + ')',
+        amount: '0.00',
+        customerName: customerName || undefined
+      }).catch(err => console.log('Notion sync for free purchase deferred:', err.message));
       
       res.json({ 
         success: true, 
@@ -731,6 +746,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
               console.log('👉 Include Typeform link: https://greenelephantorg.typeform.com/individualscan');
             }
+
+            // Sync purchase to Notion CRM (async, don't block response)
+            markContactAsCustomer(customerEmail, {
+              productName: 'Satellite Scan',
+              amount: amount,
+              customerName: customerName || undefined
+            }).catch(err => console.log('Notion sync for satellitescan deferred:', err.message));
           } else {
             console.log('ℹ️ Duplicate webhook event received for satellitescan payment:', paymentIntent.id);
           }

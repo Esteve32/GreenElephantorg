@@ -37,6 +37,37 @@ export async function getNotionDatabaseSchema() {
   }
 }
 
+export async function findNotionContactByEmail(email: string): Promise<{ pageId: string; name?: string } | null> {
+  try {
+    const notion = await getNotionClient();
+    
+    const response = await notion.databases.query({
+      database_id: NOTION_DATABASE_ID,
+      filter: {
+        property: 'Email',
+        email: {
+          equals: email.toLowerCase(),
+        },
+      },
+      page_size: 1,
+    });
+    
+    if (response.results.length > 0) {
+      const page = response.results[0] as any;
+      const nameArr = page.properties?.Name?.title;
+      const name = nameArr && nameArr.length > 0 ? nameArr[0].text?.content : undefined;
+      
+      console.log(`Found existing Notion contact for ${email}: ${page.id}`);
+      return { pageId: page.id, name };
+    }
+    
+    return null;
+  } catch (error: any) {
+    console.error(`Error searching Notion for ${email}:`, error.message);
+    return null;
+  }
+}
+
 export async function pushContactToNotion(contact: typeof contacts.$inferSelect): Promise<string | null> {
   try {
     const notion = await getNotionClient();
@@ -240,4 +271,112 @@ export async function fullSync(): Promise<SyncResult> {
 
 export async function getUnsyncedContacts(): Promise<typeof contacts.$inferSelect[]> {
   return db.select().from(contacts).where(isNull(contacts.notionPageId));
+}
+
+export async function markContactAsCustomer(
+  email: string, 
+  purchaseDetails: { 
+    productName: string; 
+    amount: string; 
+    customerName?: string;
+  }
+): Promise<{ success: boolean; isNewContact: boolean; notionPageId?: string; linkedExisting?: boolean }> {
+  try {
+    const notion = await getNotionClient();
+    
+    let existingContact = await db.select().from(contacts).where(eq(contacts.email, email)).limit(1);
+    let isNewContact = false;
+    let linkedExisting = false;
+    let contact: typeof contacts.$inferSelect;
+    
+    if (existingContact.length === 0) {
+      const [newContact] = await db.insert(contacts).values({
+        email,
+        name: purchaseDetails.customerName || null,
+        consentGiven: 'true',
+        consentText: `Purchase consent for ${purchaseDetails.productName}`,
+        source: 'recommendation' as any,
+      }).returning();
+      contact = newContact;
+      isNewContact = true;
+      console.log(`Created new contact for customer: ${email}`);
+    } else {
+      contact = existingContact[0];
+      if (purchaseDetails.customerName && !contact.name) {
+        await db.update(contacts)
+          .set({ name: purchaseDetails.customerName })
+          .where(eq(contacts.id, contact.id));
+        contact.name = purchaseDetails.customerName;
+      }
+    }
+    
+    if (contact.notionPageId) {
+      console.log(`Contact ${email} already synced to Notion (page: ${contact.notionPageId})`);
+      
+      await db.update(contacts)
+        .set({ notionSyncedAt: new Date() })
+        .where(eq(contacts.id, contact.id));
+      
+      return { success: true, isNewContact, notionPageId: contact.notionPageId };
+    }
+    
+    const existingNotionContact = await findNotionContactByEmail(email);
+    
+    if (existingNotionContact) {
+      console.log(`Found existing Notion contact for ${email}, linking to local record`);
+      linkedExisting = true;
+      
+      if (existingNotionContact.name && !contact.name) {
+        await db.update(contacts)
+          .set({ 
+            name: existingNotionContact.name,
+            notionPageId: existingNotionContact.pageId,
+            notionSyncedAt: new Date() 
+          })
+          .where(eq(contacts.id, contact.id));
+      } else {
+        await db.update(contacts)
+          .set({ 
+            notionPageId: existingNotionContact.pageId,
+            notionSyncedAt: new Date() 
+          })
+          .where(eq(contacts.id, contact.id));
+      }
+      
+      console.log(`Linked existing Notion contact for: ${email}`);
+      return { success: true, isNewContact, notionPageId: existingNotionContact.pageId, linkedExisting };
+    }
+    
+    const properties: any = {
+      'Email': { email: email },
+      'Source': { select: { name: 'Purchase' } },
+    };
+    
+    if (contact.name) {
+      properties['Name'] = { title: [{ text: { content: contact.name } }] };
+    }
+    
+    const response = await notion.pages.create({
+      parent: { database_id: NOTION_DATABASE_ID },
+      properties,
+    });
+    
+    await db.update(contacts)
+      .set({ 
+        notionPageId: response.id,
+        notionSyncedAt: new Date() 
+      })
+      .where(eq(contacts.id, contact.id));
+    
+    console.log(`Created new Notion page for customer: ${email}`);
+    return { success: true, isNewContact, notionPageId: response.id };
+  } catch (error: any) {
+    console.error(`Failed to mark ${email} as customer in Notion:`, error.message);
+    return { success: false, isNewContact: false };
+  }
+}
+
+export async function findContactByEmail(email: string): Promise<typeof contacts.$inferSelect | null> {
+  const results = await db.select().from(contacts).where(eq(contacts.email, email)).limit(1);
+  return results.length > 0 ? results[0] : null;
 }

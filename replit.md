@@ -57,7 +57,15 @@ The platform includes automatic two-way synchronization between the database con
 - Email → Email
 - Source → Source (select: Waitlist, Newsletter, Recommendation, Quiz)
 
+**Purchase-to-CRM Tracking:**
+- When customers make purchases (free or paid), their contact is automatically created/updated in the database
+- The system searches Notion for existing contacts by email before creating new records
+- If the customer already exists in Notion CRM, their record is linked (not duplicated)
+- This ensures seamless tracking when leads from Notion later become customers
+
 **Technical notes:**
 - Uses Replit's Notion connector for OAuth authentication
 - Sync tracking via `notionPageId` and `notionSyncedAt` fields in contacts table
 - Pull preserves existing local data; only updates name and sync metadata
+- Purchase sync uses `findNotionContactByEmail()` to prevent duplicates
+- Source field for purchases is set to "Purchase" in Notion
