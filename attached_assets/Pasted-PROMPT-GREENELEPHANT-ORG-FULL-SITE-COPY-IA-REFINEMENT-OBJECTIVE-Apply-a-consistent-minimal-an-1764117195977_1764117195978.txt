@@ -1,0 +1,278 @@
+PROMPT: GREENELEPHANT.ORG – FULL SITE COPY & IA REFINEMENT
+
+OBJECTIVE
+Apply a consistent, minimal and high-impact copy refresh across the entire site of GreenElephant.org. Preserve existing design, structure and visual brand code. Priority: clarity, human-centric tone, AI-aware context, short sentences, clear headings. Update navigation architecture, all major pages (Home, Framework/Periodic Table, Lab & Resources, WHY/About, Services/Programs, Team/Contact, Legal). Provide copy-ready text and annotate tasks for implementation.
+
+GLOBAL GUIDELINES
+
+Keep typography, color palette, layout grid unchanged unless layout change is explicitly indicated here.
+
+Ensure one <h1> per page. Use <h2>/<h3> for subsections.
+
+Use short paragraphs (1–3 sentences) and sentence length preferably under ~20 words.
+
+Maintain brand tone: calm, human-focused, slightly poetic, no hype-overload.
+
+When referencing AI, use exactly two sentences: one acknowledging AI capability, next refocusing on human nuance.
+
+Use active verbs (“guide, design, notice, deepen”) especially in micro-habit / element contexts.
+
+Keep language inclusive (“leaders and teams”, “you and your team”, “individuals, teams, enterprises”).
+
+HEADER / NAVIGATION
+
+Top nav items (desktop left to right):
+
+Why It Matters – anchor to Home section Problem/Promise/Practice.
+
+Framework – link to Periodic Table page.
+
+Programs (dropdown) – Satellite Scan™, Micro-Habit Coaching™, Coaching Cell™, Bootcamps & Training, Webinars & Keynotes, Consulting.
+
+Lab & Resources – link to combined Lab + Resources page.
+
+About & Consulting – link to About/Values/Team + Consulting overview.
+
+On right side:
+
+Primary CTA button: Talk to a Facilitator
+
+Secondary CTA (outline style): Explore Your Path → anchors to “Find Your Path” on Home page.
+
+FOOTER
+
+Tagline:
+Transforming conflict into trust through conscious communication. Every conversation is an opportunity for deeper connection and understanding.
+
+Contact details, legal links as existing.
+
+Single line micro-footer:
+Made with love for transformation.
+
+Friendly intro line on legal pages:
+
+“Thank you for taking this moment to review our policy. We believe in transparency, kindness and mutual respect in data and dialogue.”
+
+HOME PAGE
+
+Hero Section
+
+H1: Design the human conversations AI can’t.
+
+H2: Conscious communication for leaders and teams in a machine-made world.
+
+Body paragraph:
+
+AI can automate words, not wisdom. It doesn’t sit in the tension of disagreement or rebuild trust after a hard meeting. That’s your work. We help you master it.
+
+Primary CTA: Find Your Path
+
+Find Your Path / Problem-Promise-Practice
+
+Eyebrow label: Find Your Path
+
+H2: From friction to flow.
+
+Supporting text: See the problem, trust the promise, practice the micro-habits.
+
+Step 1 – The Problem (title remains): Copy:
+
+Miscommunication quietly drains trust, time, and energy. Every unspoken concern or unclear message compounds into defensiveness, resentment, and disconnection. In many teams, a significant share of productivity is lost to communication breakdowns.
+
+Step 2 – The Promise: Copy:
+
+Conscious communication turns conflict into connection. You’ll navigate difficult conversations with clarity, set boundaries with compassion, and build relationships on genuine understanding. Peace isn’t the absence of conflict—it’s the presence of practiced wisdom.
+
+Step 3 – The Practice: Copy:
+
+Our Periodic Table of Conscious Communication gives you 129 practical elements, organized into 8 transformative lenses. Each element is a micro-habit you can apply immediately. Small shifts, repeated over time, create lasting transformation.
+
+8 Lenses Section
+
+H2: 8 Lenses of Conscious Communication
+
+Subtitle: Each lens reveals a different way we connect—or disconnect—with ourselves and others.
+
+Update descriptors:
+
+Needs → “Energy & Needs”
+
+Chaordic → “Order in Creative Chaos”
+
+Flow → “Sensing Flow”
+(Other lenses keep existing names/descriptors unless designated by team.)
+
+What You’ll Experience
+
+H2: What You’ll Experience
+
+Subtitle: Practical skills, measurable confidence, and braver human connection.
+
+Updated bullet list:
+
+Boost Emotional Intelligence
+
+Clarify Boundaries
+
+Solve Problems Collectively
+
+Turn conflict into deeper trust
+
+Prevent avoidable drama
+
+Create Healthy Habits
+
+Balance empathy with self-respect
+
+Identify Critical Needs
+
+Increase Self-Reliance
+
+Notice, name, and loosen ego
+
+Closing paragraph:
+
+Small shifts in conversation design create lasting transformation. These aren’t just skills—they’re behavioral micro-habits designed for durable change.
+
+Who We Serve (with gratitude)
+
+H2: Who We Serve (with gratitude)
+
+Subheading: We support the people who hold space for others.
+
+Personas:
+
+Executive Assistants: Bridge communication between leaders and teams with empathy, clarity, and healthy boundaries.
+
+TEAL Startup Founders: Build organizations where conscious communication is the operating system of collective intelligence.
+
+Design & Innovation Students: Learn communication frameworks that deepen collaboration and unlock creative potential.
+
+FRAMEWORK / PERIODIC TABLE PAGE
+
+Title: Periodic Table of Conscious Communication
+
+Subtitle: 129 micro-habits. 8 lenses. One map of human connection.
+
+Intro copy:
+
+The language of human-to-human communication has structure, pattern and geometry. Our Periodic Table gives you a clear map of how you connect—or disconnect—with yourself and others.
+
+For each lens section: Label: Lens Name (e.g., Influence)
+
+Short descriptor: e.g., What this lens reveals: how you exert influence with integrity.
+
+For each element card: Begin tooltip or hover copy with a verb: “Notice your posture when…”, “Pause before reacting…”, “Ask a clarifying question…”, “Reflect on your assumption…”.
+
+CTA at bottom: Start your journey → (links to “Find Your Path” section.)
+
+LAB & RESOURCES PAGE
+
+Title: Lab & Resource Library
+
+Intro line:
+
+This is where ideas meet practice. Explore research, toolkits and stories that deepen your capacity to communicate consciously.
+
+For each resource tile:
+
+Title (unchanged or refined)
+
+Subtitle: Read / Watch / Download: a brief guide to …
+
+CTA: Subscribe for updates (if applicable)
+
+Footer CTA: Have a resource suggestion? Contact us.
+
+ABOUT / WHY / VALUES PAGE
+
+Title: Why GreenElephant
+
+Subheading:
+
+Because communication is the last frontier AI cannot cross—and the first frontier humans must master.
+
+Values intro:
+
+These are not just words. They are decision-rules, behaviours and signals we live by when the pressure is on.
+
+Values list unchanged but layout/style emphasised.
+
+Ikigai section copy:
+
+Our purpose: to unleash growth in leaders and teams, to cultivate collective, embodied and emotional intelligence—and to channel those into a sustainable future.
+
+Passion / Profession / Mission / Vocation sections: refine similarly to be succinct, consistent tone.
+
+Bio section: link to Team page.
+
+PROGRAMS / SERVICES PAGE
+
+Title: Programs & Services
+
+Intro line:
+
+Whether you’re an individual, team or enterprise — pick the entry-point that matches your scale, speed and ambition.
+
+For each service offering, update headline + benefit line:
+
+Satellite Scan™: Light-touch assessment, insights you act on.
+
+Micro-Habit Coaching™: Tiny changes. Big shift. One-to-one or micro-group.
+
+Coaching Cell™: Small teams. Big trust. Live sessions for up to five members.
+
+Corporate Training & Certification Bootcamps: Equip your organisation with conscious communication as an operating system.
+
+Webinars & Keynotes: Fresh perspectives, live and interactive — for teams and audiences.
+
+Consulting (HR / People & Culture): Co-create your communication-centric strategy with our experts.
+
+Each service card: include “Who it’s for” line (e.g., “For teams ready to scale trust”, “For individuals wanting deeper micro-habits”).
+
+CTA at end: Book a discovery call →
+
+TEAM / CONTACT PAGE
+
+Title: Team & Contact
+
+Intro line:
+
+Meet the curious minds behind GreenElephant.
+
+For each team member: apply bio refinement: first sentence explains their “why”. Then their playful title.
+
+Example:
+Jonas is driven by helping teams find healing in words and nature. “The Therapist”: conflict-transformation expert, gardener and rap-poetry listener.
+
+Contact section:
+
+Ready to begin? Send us a message or book a discovery call — we’ll meet you where the conversation is starting.
+
+Ensure link/buttons for email, phone and booking.
+
+LEGAL / PRIVACY / TERMS PAGES
+
+At top of each page add:
+
+Thank you for taking this moment to review our policy. We believe in transparency, kindness and mutual respect in data and dialogue.
+
+Ensure headings are clear (Privacy Policy, Terms of Service, Cookie Policy).
+
+Keep the legal content intact; only modify intro line as above.
+
+CHANGELOG & IMPLEMENTATION NOTES
+
+Mark any changed headings, subtitles, bullet lists in the CMS or code as “copy-revision v2”.
+
+For each page list out old copy → new copy (document in spreadsheet or CMS change log).
+
+Ensure all mobile breakpoints look good with slightly shorter sentences and no overflow.
+
+Test anchor links (e.g., “Explore Your Path” to Home section) for smooth scroll.
+
+Confirm all CTAs have correct tracking tags (UTM) so you can measure click-throughs post-launch.
+
+Once copy is updated, run accessibility check: heading order, contrast ratio, alt-text for key visuals still match brand.
+
+Roll out in staging environment first; conduct a screen-share walkthrough with 3 users for clarity of message before publishing live.
