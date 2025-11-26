@@ -2,6 +2,8 @@ import { useState } from "react";
 import PeriodicElement from "@/components/PeriodicElement";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
+import { ArrowRight } from "lucide-react";
 import { LENS_ARRAY } from "@/constants/lenses";
 import { ALL_ELEMENTS } from "@/data/periodicElements";
 import type { LensType } from "@/constants/lenses";
@@ -22,7 +24,6 @@ export default function PeriodicTablePage() {
     ? ALL_ELEMENTS
     : ALL_ELEMENTS.filter(el => el.lens === selectedLens);
 
-  // Group elements by category
   const groupedElements = filteredElements.reduce((acc, element) => {
     const category = element.category || "Core Concepts";
     if (!acc[category]) {
@@ -51,15 +52,15 @@ export default function PeriodicTablePage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(51,153,204,0.05),transparent_50%)] -z-10" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-needs text-white">Interactive Framework</Badge>
+          <Badge className="mb-4 bg-needs text-white">The Framework</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Periodic Table of Conscious Communication
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            Transform your daily interactions into sacred practice—129 elements organized into 8 transformative lenses
+            129 micro-habits. 8 lenses. One map of human connection.
           </p>
           <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto mb-8">
-            Each element is a microhabit you can practice immediately. No theory. Just presence, awareness, and compassionate dialogue.
+            The language of human-to-human communication has structure, pattern and geometry. Our Periodic Table gives you a clear map of how you connect—or disconnect—with yourself and others.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -106,7 +107,7 @@ export default function PeriodicTablePage() {
         <div className="mt-16 backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12">
           <h3 className="text-3xl font-bold mb-6 text-center">How to Apply This Today</h3>
           <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
-            The Periodic Table isn't meant to be mastered overnight—it's designed for gradual integration into your life
+            The Periodic Table isn't meant to be mastered overnight—it's designed for gradual integration into your life.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -132,9 +133,12 @@ export default function PeriodicTablePage() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-white/10 text-center">
-            <p className="text-sm text-muted-foreground italic">
-              "I started with just the Empathic Listening element. Within two weeks, my team noticed a difference in how I hold space for conflict." — Marcus T., TEAL Founder
-            </p>
+            <Link href="/choose-your-path">
+              <Button className="bg-needs hover:bg-needs/90 text-white" data-testid="button-start-journey">
+                Start your journey
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

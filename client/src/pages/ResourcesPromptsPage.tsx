@@ -130,10 +130,10 @@ export default function ResourcesPromptsPage() {
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-alignment text-white">Practical Tools</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6" style={{ fontFamily: 'Archivo, sans-serif' }}>
-            Never Be Stuck in Difficult Conversations Again
+            Resources &amp; Prompts
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            Ready-to-use prompts that help you respond with clarity and compassion—even when emotions run high
+            Infographics, downloads, and conversation prompts—all structured by the 8 lenses of the Periodic Table.
           </p>
           <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
             Filter by your role, scenario, or communication lens to find the exact words that transform conflict into connection.

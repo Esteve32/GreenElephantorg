@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Heart, PhoneCall, Trophy, Microscope } from "lucide-react";
+import { Menu, X, Sparkles, Users, BookOpen, Heart, PhoneCall, Trophy, Microscope, Target, MessageSquare, GraduationCap, Building2, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -16,7 +16,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
 
-  const awakenItems = [
+  const whyItMattersItems = [
     { 
       href: "/what-is-conscious-communication", 
       label: "What is Conscious Communication?",
@@ -26,22 +26,28 @@ export default function Header() {
     { 
       href: "/signals", 
       label: "Signals You're Drifting",
-      description: "Recognize the patterns that fracture trust and connection",
-      icon: AlertCircle
+      description: "Recognize patterns that fracture trust and connection",
+      icon: Target
     },
     { 
-      href: "/periodic-table", 
-      label: "Science & Proof",
-      description: "Our Periodic Table framework backed by research",
-      icon: Microscope
+      href: "/stories", 
+      label: "Stories of Transformation",
+      description: "Real journeys from conflict to connection",
+      icon: Heart
     },
   ];
 
-  const practiceItems = [
+  const programsItems = [
     { 
       href: "/satellitescan", 
-      label: "Satellite Scan Beta",
-      description: "90-min AI scan + personalized dashboard (€29.99)",
+      label: "Satellite Scan",
+      description: "Light-touch assessment, insights you act on (€29.99)",
+      icon: Compass
+    },
+    { 
+      href: "/coaching", 
+      label: "Micro-Habit Coaching",
+      description: "Tiny changes. Big shift. One-to-one or micro-group",
       icon: Sparkles
     },
     { 
@@ -52,33 +58,27 @@ export default function Header() {
     },
     { 
       href: "/retreats", 
-      label: "Equinoxe Retreats",
-      description: "Sacred gatherings in Lapland and Provence",
+      label: "Retreats & Bootcamps",
+      description: "Immersive experiences in Lapland and Provence",
       icon: Heart
-    },
-    { 
-      href: "/coaching", 
-      label: "Coaching",
-      description: "1:1 and group guidance for sustainable change",
-      icon: Users
-    },
-  ];
-
-  const connectItems = [
-    { 
-      href: "/team", 
-      label: "Meet the Team",
-      description: "The coaches guiding your transformation",
-      icon: Users
     },
     { 
       href: "/consulting", 
       label: "Consulting",
-      description: "High-touch transformation for TEAL organizations",
-      icon: Sparkles
+      description: "Co-create your communication-centric strategy",
+      icon: Building2
     },
-    {
-      href: "/references",
+  ];
+
+  const aboutItems = [
+    { 
+      href: "/team", 
+      label: "Meet the Team",
+      description: "The curious minds guiding your transformation",
+      icon: Users
+    },
+    { 
+      href: "/references", 
       label: "Client References",
       description: "35+ organizations we've partnered with",
       icon: Heart
@@ -91,18 +91,12 @@ export default function Header() {
     },
   ];
 
-  const integrateItems = [
+  const resourcesItems = [
     { 
-      href: "/choose-your-path", 
-      label: "Choose Your Path",
-      description: "Take our diagnostic to find your ideal starting point",
-      icon: Sparkles
-    },
-    { 
-      href: "/stories", 
-      label: "Stories of Transformation",
-      description: "Real journeys from conflict to connection",
-      icon: Heart
+      href: "/periodic-table", 
+      label: "Periodic Table",
+      description: "129 micro-habits. 8 lenses. One map of connection",
+      icon: Microscope
     },
     { 
       href: "/resources", 
@@ -110,18 +104,20 @@ export default function Header() {
       description: "Tools and prompts structured by the 8 lenses",
       icon: BookOpen
     },
+    { 
+      href: "/choose-your-path", 
+      label: "Find Your Path",
+      description: "Take our diagnostic to find your ideal starting point",
+      icon: Compass
+    },
   ];
 
-  // Helper to check if menu section is active (supports nested routes, query params, hashes, trailing slashes)
-  const isMenuActive = (items: typeof awakenItems) => {
-    // Normalize current location (remove trailing slash, hash, query params for comparison)
+  const isMenuActive = (items: typeof whyItMattersItems) => {
     const normalizedLocation = location.split('?')[0].split('#')[0].replace(/\/$/, '');
     
     return items.some(item => {
       const normalizedHref = item.href.replace(/\/$/, '');
-      // Exact match
       if (normalizedLocation === normalizedHref) return true;
-      // Prefix match for nested routes (e.g., /coaching/bundle matches /coaching)
       if (normalizedLocation.startsWith(normalizedHref + '/')) return true;
       return false;
     });
@@ -140,14 +136,60 @@ export default function Header() {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
-                  className={`backdrop-blur-sm ${isMenuActive(awakenItems) ? 'bg-white/10' : ''}`}
-                  data-testid="nav-awaken"
+                  className={`backdrop-blur-sm ${isMenuActive(whyItMattersItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-why-it-matters"
                 >
                   Why It Matters
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4">
-                    {awakenItems.map((item) => (
+                    {whyItMattersItems.map((item) => (
+                      <li key={item.href}>
+                        <NavigationMenuLink asChild>
+                          <Link href={item.href}>
+                            <div
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate cursor-pointer"
+                              data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
+                                <item.icon className="h-4 w-4 text-white" />
+                                {item.label}
+                              </div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {item.description}
+                              </p>
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/periodic-table">
+                    <div
+                      className={`flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md backdrop-blur-sm cursor-pointer hover-elevate ${location === '/periodic-table' ? 'bg-white/10' : ''}`}
+                      data-testid="nav-framework"
+                    >
+                      Framework
+                    </div>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
+                  className={`backdrop-blur-sm ${isMenuActive(programsItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-programs"
+                >
+                  Programs
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4">
+                    {programsItems.map((item) => (
                       <li key={item.href}>
                         <NavigationMenuLink asChild>
                           <Link href={item.href}>
@@ -173,14 +215,14 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
-                  className={`backdrop-blur-sm ${isMenuActive(practiceItems) ? 'bg-white/10' : ''}`}
-                  data-testid="nav-practice"
+                  className={`backdrop-blur-sm ${isMenuActive(resourcesItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-resources"
                 >
-                  How We Guide You
+                  Resources
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4">
-                    {practiceItems.map((item) => (
+                    {resourcesItems.map((item) => (
                       <li key={item.href}>
                         <NavigationMenuLink asChild>
                           <Link href={item.href}>
@@ -206,47 +248,14 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
-                  className={`backdrop-blur-sm ${isMenuActive(connectItems) ? 'bg-white/10' : ''}`}
-                  data-testid="nav-connect"
+                  className={`backdrop-blur-sm ${isMenuActive(aboutItems) ? 'bg-white/10' : ''}`}
+                  data-testid="nav-about"
                 >
-                  Connect With Us
+                  About
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4">
-                    {connectItems.map((item) => (
-                      <li key={item.href}>
-                        <NavigationMenuLink asChild>
-                          <Link href={item.href}>
-                            <div
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover-elevate cursor-pointer"
-                              data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                            >
-                              <div className="flex items-center gap-2 text-sm font-medium leading-none mb-2">
-                                <item.icon className="h-4 w-4 text-white" />
-                                {item.label}
-                              </div>
-                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                {item.description}
-                              </p>
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger 
-                  className={`backdrop-blur-sm ${isMenuActive(integrateItems) ? 'bg-white/10' : ''}`}
-                  data-testid="nav-integrate"
-                >
-                  Start Your Ritual
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4">
-                    {integrateItems.map((item) => (
+                    {aboutItems.map((item) => (
                       <li key={item.href}>
                         <NavigationMenuLink asChild>
                           <Link href={item.href}>
@@ -273,24 +282,24 @@ export default function Header() {
           </NavigationMenu>
 
           <div className="hidden lg:flex items-center gap-3">
+            <Link href="/choose-your-path">
+              <Button 
+                variant="outline"
+                size="sm"
+                className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10"
+                data-testid="button-explore-your-path"
+              >
+                Explore Your Path
+              </Button>
+            </Link>
             <Link href="/contact">
               <Button 
-                variant="ghost" 
                 size="sm"
+                className="bg-needs hover:bg-needs/90 text-white gap-2"
                 data-testid="button-talk-to-facilitator"
-                className="gap-2"
               >
                 <PhoneCall className="h-4 w-4" />
                 Talk to a Facilitator
-              </Button>
-            </Link>
-            <Link href="/choose-your-path">
-              <Button 
-                size="sm"
-                className="bg-needs hover:bg-needs/90 text-white"
-                data-testid="button-find-your-path"
-              >
-                Find Your Path
               </Button>
             </Link>
           </div>
@@ -308,14 +317,14 @@ export default function Header() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden backdrop-blur-lg bg-card/95 border-t border-white/10">
+        <div className="lg:hidden backdrop-blur-lg bg-card/95 border-t border-white/10 max-h-[80vh] overflow-y-auto">
           <nav className="px-4 py-4 space-y-4">
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
                 Why It Matters
               </h3>
               <div className="space-y-1">
-                {awakenItems.map((item) => (
+                {whyItMattersItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
@@ -333,10 +342,29 @@ export default function Header() {
 
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
-                How We Guide You
+                Framework
               </h3>
               <div className="space-y-1">
-                {practiceItems.map((item) => (
+                <Link href="/periodic-table">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                    data-testid="link-mobile-periodic-table"
+                  >
+                    <Microscope className="h-4 w-4 text-white" />
+                    Periodic Table
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+                Programs
+              </h3>
+              <div className="space-y-1">
+                {programsItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
@@ -354,10 +382,10 @@ export default function Header() {
 
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
-                Connect With Us
+                Resources
               </h3>
               <div className="space-y-1">
-                {connectItems.map((item) => (
+                {resourcesItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
@@ -375,10 +403,10 @@ export default function Header() {
 
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
-                Start Your Ritual
+                About
               </h3>
               <div className="space-y-1">
-                {integrateItems.map((item) => (
+                {aboutItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
@@ -395,24 +423,24 @@ export default function Header() {
             </div>
 
             <div className="pt-4 border-t border-white/10 space-y-2">
-              <Link href="/contact">
+              <Link href="/choose-your-path">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-center gap-2"
+                  className="w-full justify-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                  data-testid="button-mobile-explore-your-path"
+                >
+                  Explore Your Path
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button 
+                  className="w-full bg-needs hover:bg-needs/90 text-white gap-2"
                   onClick={() => setMobileMenuOpen(false)}
                   data-testid="button-mobile-talk-to-facilitator"
                 >
                   <PhoneCall className="h-4 w-4" />
                   Talk to a Facilitator
-                </Button>
-              </Link>
-              <Link href="/choose-your-path">
-                <Button 
-                  className="w-full bg-needs hover:bg-needs/90 text-white"
-                  onClick={() => setMobileMenuOpen(false)}
-                  data-testid="button-mobile-find-your-path"
-                >
-                  Find Your Path
                 </Button>
               </Link>
             </div>

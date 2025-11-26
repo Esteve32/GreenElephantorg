@@ -20,7 +20,7 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-influence",
     hexColor: "#cc3333",
     icon: Target,
-    description: "Influence Strategies",
+    description: "How you exert influence with integrity",
     code: 1100
   },
   attitude: {
@@ -29,7 +29,7 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-attitude",
     hexColor: "#ff9933",
     icon: Lightbulb,
-    description: "Attitude to Change",
+    description: "Your stance toward change and growth",
     code: 2100
   },
   chaordic: {
@@ -38,7 +38,7 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-chaordic",
     hexColor: "#ffcc00",
     icon: Sparkles,
-    description: "Chaordic Balance",
+    description: "Order in creative chaos",
     code: 3100
   },
   flow: {
@@ -47,7 +47,7 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-flow",
     hexColor: "#cccc33",
     icon: Compass,
-    description: "Measuring Flow",
+    description: "Sensing flow in conversations",
     code: 4100
   },
   alignment: {
@@ -56,16 +56,16 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-alignment",
     hexColor: "#669966",
     icon: Shield,
-    description: "Alignment & Empathy",
+    description: "Building empathy and shared understanding",
     code: 5100
   },
   needs: {
     value: "needs",
-    name: "Needs",
+    name: "Energy & Needs",
     color: "bg-needs",
     hexColor: "#009999",
     icon: Heart,
-    description: "Chakra Needs",
+    description: "Honoring your energy and core needs",
     code: 6100
   },
   ego: {
@@ -74,7 +74,7 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-ego",
     hexColor: "#3399cc",
     icon: Brain,
-    description: "Ego Triggers",
+    description: "Recognizing and loosening ego patterns",
     code: 7100
   },
   dynamics: {
@@ -83,7 +83,7 @@ export const LENSES: Record<LensType, LensMetadata> = {
     color: "bg-dynamics",
     hexColor: "#666699",
     icon: Users,
-    description: "Relationship Dynamics",
+    description: "Understanding relationship dynamics",
     code: 8100
   }
 };

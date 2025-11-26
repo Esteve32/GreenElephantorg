@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Sparkles, AlertTriangle } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import heroImageUrl from "@assets/generated_images/Spiritual_hero_background_light_80674a87.png";
 
 export default function Hero() {
@@ -15,17 +15,19 @@ export default function Hero() {
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style={{ paddingTop: '88px', paddingBottom: '128px' }}>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-8">
           <Sparkles className="h-4 w-4 text-needs" />
-          <span className="text-sm text-muted-foreground">Conscious Communication for Transformation</span>
+          <span className="text-sm text-muted-foreground">Conscious Communication for Leaders and Teams</span>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text">
-          Design the Human Conversations<br />AI Cannot Automate
+          Design the human conversations<br />AI can't.
         </h1>
 
-        <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto leading-relaxed">Communication is not soft. It's the only interface AI cannot fully automate for you.</p>
+        <h2 className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto leading-relaxed">
+          Conscious communication for leaders and teams in a machine-made world.
+        </h2>
 
         <p className="text-lg text-muted-foreground/80 mb-12 max-w-2xl mx-auto">
-          AI makes us productive. But it can't teach us to handle differences in opinion, diversity of values, or how to have constructive, critical conversations. We specialize in the human-to-human relational interface—where real transformation happens.
+          AI can automate words, not wisdom. It doesn't sit in the tension of disagreement or rebuild trust after a hard meeting. That's your work. We help you master it.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -33,21 +35,20 @@ export default function Hero() {
             <Button 
               size="lg" 
               className="bg-needs hover:bg-needs/90 text-white min-w-[220px]"
-              data-testid="button-choose-your-path"
+              data-testid="button-find-your-path"
             >
               Find Your Path
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <Link href="/signals">
+          <Link href="/periodic-table">
             <Button 
               size="lg" 
               variant="outline"
-              className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10 text-destructive min-w-[220px]"
-              data-testid="button-recognize-signals"
+              className="backdrop-blur-sm bg-white/5 border-white/20 hover:bg-white/10 min-w-[220px]"
+              data-testid="button-explore-framework"
             >
-              <AlertTriangle className="mr-2 h-5 w-5" />
-              Recognize the Signals
+              Explore the Framework
             </Button>
           </Link>
         </div>

@@ -8,13 +8,19 @@ export default function Footer() {
     explore: [
       { label: "Periodic Table", href: "/periodic-table" },
       { label: "Satellite Scan", href: "/satellitescan" },
-      { label: "Interview Coaching", href: "/interview-coaching" },
       { label: "Coaching", href: "/coaching" },
+      { label: "Interview Coaching", href: "/interview-coaching" },
       { label: "Retreats", href: "/retreats" },
     ],
     learn: [
-      { label: "Resources", href: "/resources" },
+      { label: "Resources & Prompts", href: "/resources" },
+      { label: "Stories", href: "/stories" },
+      { label: "Find Your Path", href: "/choose-your-path" },
       { label: "Consulting", href: "/consulting" },
+    ],
+    connect: [
+      { label: "Team", href: "/team" },
+      { label: "References", href: "/references" },
       { label: "Contact", href: "/contact" },
     ],
     legal: [
@@ -27,14 +33,14 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-background/80 backdrop-blur-sm mt-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <img src={logoUrl} alt="GreenElephant" className="h-10 w-10" />
               <span className="text-xl font-bold">GreenElephant</span>
             </div>
             <p className="text-muted-foreground mb-6 max-w-md leading-relaxed">
-              Transforming conflicts into trust through conscious communication. 
+              Transforming conflict into trust through conscious communication. 
               Every conversation is an opportunity for deeper connection and understanding.
             </p>
             <div className="flex items-center gap-3">
@@ -64,7 +70,7 @@ export default function Footer() {
                 data-testid="button-email"
                 asChild
               >
-                <a href="mailto:anu@greenelephant.org">
+                <a href="mailto:esteve@greenelephant.org">
                   <Mail className="h-5 w-5" />
                 </a>
               </Button>
@@ -72,7 +78,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Explore</h3>
+            <h3 className="font-semibold mb-4">Programs</h3>
             <ul className="space-y-3">
               {footerLinks.explore.map((link) => (
                 <li key={link.href}>
@@ -87,9 +93,24 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Learn</h3>
+            <h3 className="font-semibold mb-4">Resources</h3>
             <ul className="space-y-3">
               {footerLinks.learn.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>
+                    <Button variant="ghost" className="h-auto p-0 text-muted-foreground hover:text-foreground hover:bg-transparent">
+                      {link.label}
+                    </Button>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">Connect</h3>
+            <ul className="space-y-3">
+              {footerLinks.connect.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
                     <Button variant="ghost" className="h-auto p-0 text-muted-foreground hover:text-foreground hover:bg-transparent">
@@ -118,7 +139,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2025 GreenElephant.org. Crafted with conscious intention.</p>
+          <p>© 2025 GreenElephant.org</p>
           <div className="flex items-center gap-2">
             <span>Made with</span>
             <Heart className="h-4 w-4 text-needs fill-needs" />

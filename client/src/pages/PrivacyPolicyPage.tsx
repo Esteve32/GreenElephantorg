@@ -11,11 +11,11 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 font-archivo">
             Privacy Policy
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
-            Your trust matters to us. We're committed to protecting your personal information with the same care we bring to every conversation.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4 italic">
+            Thank you for taking this moment to review our privacy practices. We believe in transparency, kindness and mutual respect—in data handling as in dialogue.
           </p>
           <p className="text-sm text-muted-foreground">
-            Last updated: November 21, 2025
+            Last updated: November 26, 2025
           </p>
         </div>
 

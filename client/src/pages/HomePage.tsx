@@ -9,13 +9,13 @@ const benefits = [
   { text: "Boost Emotional Intelligence", icon: Brain },
   { text: "Clarify Boundaries", icon: Shield },
   { text: "Solve Problems Collectively", icon: Users },
-  { text: "Turn Conflicts Into Trust", icon: HandHeart },
-  { text: "Prevent Unnecessary Drama", icon: ShieldCheck },
+  { text: "Turn conflict into deeper trust", icon: HandHeart },
+  { text: "Prevent avoidable drama", icon: ShieldCheck },
   { text: "Create Healthy Habits", icon: Repeat },
-  { text: "Balance Empathy With Self-Respect", icon: Scale },
+  { text: "Balance empathy with self-respect", icon: Scale },
   { text: "Identify Critical Needs", icon: Target },
   { text: "Increase Self-Reliance", icon: Anchor },
-  { text: "Detach From Ego", icon: Feather },
+  { text: "Notice, name, and loosen ego", icon: Feather },
 ];
 
 export default function HomePage() {
@@ -23,13 +23,14 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Hero />
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-b border-white/10">
+      <section id="find-your-path" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-b border-white/10">
         <div className="text-center mb-16">
+          <Badge className="mb-4 bg-needs text-white">Find Your Path</Badge>
           <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            From Pain to Peace: Your Path
+            From friction to flow.
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Understanding the problem, discovering the promise, and applying the practice
+            See the problem, trust the promise, practice the micro-habits.
           </p>
         </div>
 
@@ -43,10 +44,10 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Miscommunication costs you trust, time, and peace. Every misunderstanding compounds, creating cycles of defensiveness, resentment, and disconnection.
+                Miscommunication quietly drains trust, time, and energy. Every unspoken concern or unclear message compounds into defensiveness, resentment, and disconnection.
               </p>
               <p className="text-sm text-foreground font-medium">
-                The average workplace loses <span className="text-destructive">30% productivity</span> to communication breakdowns.
+                In many teams, a significant share of productivity is lost to communication breakdowns.
               </p>
             </CardContent>
           </Card>
@@ -60,10 +61,10 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Conscious communication transforms conflict into connection. You'll navigate difficult conversations with clarity, set boundaries with compassion, and build relationships on genuine understanding.
+                Conscious communication turns conflict into connection. You'll navigate difficult conversations with clarity, set boundaries with compassion, and build relationships on genuine understanding.
               </p>
               <p className="text-sm text-foreground font-medium">
-                Peace isn't the absence of conflict—it's the presence of wisdom.
+                Peace isn't the absence of conflict—it's the presence of practiced wisdom.
               </p>
             </CardContent>
           </Card>
@@ -77,10 +78,10 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Our Periodic Table framework gives you 129 practical elements organized into 8 transformative lenses. Each element is a microhabit you can apply immediately.
+                Our Periodic Table of Conscious Communication gives you 129 practical elements, organized into 8 transformative lenses. Each element is a micro-habit you can apply immediately.
               </p>
               <p className="text-sm text-foreground font-medium">
-                Small shifts, sustained over time, create lasting transformation.
+                Small shifts, repeated over time, create lasting transformation.
               </p>
             </CardContent>
           </Card>
@@ -94,7 +95,7 @@ export default function HomePage() {
             8 Lenses of Conscious Communication
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Each lens reveals a different dimension of how we connect—or disconnect—from ourselves and others
+            Each lens reveals a different way we connect—or disconnect—with ourselves and others.
           </p>
         </div>
 
@@ -131,7 +132,7 @@ export default function HomePage() {
               What You'll Experience
             </h3>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Practical skills, measurable confidence, and human connection—all from transforming how you communicate
+              Practical skills, measurable confidence, and braver human connection.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto">
               {benefits.map((benefit) => {
@@ -148,7 +149,7 @@ export default function HomePage() {
               })}
             </div>
             <p className="text-sm text-muted-foreground/80 mt-8 max-w-3xl mx-auto italic">
-              Small shifts in communication ergonomics create lasting transformation. These aren't just skills—they're behavioral micro-habits designed for durable change.
+              Small shifts in conversation design create lasting transformation. These aren't just skills—they're behavioral micro-habits designed for durable change.
             </p>
           </div>
         </div>
@@ -157,10 +158,10 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-white/10">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            Who We Serve with Gratitude
+            Who We Serve (with gratitude)
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We support transformational leaders who value authentic connection
+            We support the people who hold space for others.
           </p>
         </div>
 
@@ -171,7 +172,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                Master the art of bridging communication gaps between leaders and teams with empathy and clarity.
+                Bridge communication between leaders and teams with empathy, clarity, and healthy boundaries.
               </p>
             </CardContent>
           </Card>
@@ -182,7 +183,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                Build organizations where conscious communication is the foundation of collective intelligence.
+                Build organizations where conscious communication is the operating system of collective intelligence.
               </p>
             </CardContent>
           </Card>
@@ -193,7 +194,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                Learn communication frameworks that enhance collaboration and unlock creative potential.
+                Learn communication frameworks that deepen collaboration and unlock creative potential.
               </p>
             </CardContent>
           </Card>
