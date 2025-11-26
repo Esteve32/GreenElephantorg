@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Microscope, Heart, PhoneCall, Trophy } from "lucide-react";
+import { Menu, X, ChevronDown, AlertCircle, Sparkles, Users, BookOpen, Heart, PhoneCall, Trophy, Microscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -107,14 +107,8 @@ export default function Header() {
     { 
       href: "/resources", 
       label: "Resources & Prompts",
-      description: "Microhabits and tools structured by the 8 lenses",
+      description: "Tools and prompts structured by the 8 lenses",
       icon: BookOpen
-    },
-    { 
-      href: "/lab", 
-      label: "Collaborate",
-      description: "LinkedIn community and research partnerships",
-      icon: Microscope
     },
   ];
 

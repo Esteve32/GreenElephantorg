@@ -248,11 +248,11 @@ export default function RetreatsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Our microhabit framework is research-backed and proven. Small, consistent practices that rewire communication patterns.
+                Our framework is research-backed and proven. The Periodic Table maps 129 elements across 8 communication lenses.
               </p>
-              <Link href="/lab" data-testid="link-lab">
+              <Link href="/periodic-table" data-testid="link-periodic-table">
                 <Button variant="outline" className="w-full" data-testid="button-methodology">
-                  Explore the Science
+                  Explore the Framework
                 </Button>
               </Link>
             </CardContent>
@@ -262,16 +262,16 @@ export default function RetreatsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FlaskConical className="h-5 w-5" />
-                Open Data
+                Resources
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Access our research findings, case studies, and open-source frameworks. Subscribe for updates from our lab.
+                Access prompts, tools, and practical resources structured by the 8 communication lenses.
               </p>
-              <Link href="/lab" data-testid="link-lab-data">
-                <Button variant="outline" className="w-full" data-testid="button-open-data">
-                  Subscribe to Research
+              <Link href="/resources" data-testid="link-resources">
+                <Button variant="outline" className="w-full" data-testid="button-resources">
+                  Explore Resources
                 </Button>
               </Link>
             </CardContent>

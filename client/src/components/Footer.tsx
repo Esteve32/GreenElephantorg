@@ -13,7 +13,6 @@ export default function Footer() {
       { label: "Retreats", href: "/retreats" },
     ],
     learn: [
-      { label: "Lab", href: "/lab" },
       { label: "Resources", href: "/resources" },
       { label: "Consulting", href: "/consulting" },
       { label: "Contact", href: "/contact" },
