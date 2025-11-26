@@ -23,10 +23,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const SPREADSHEET_ID = "15nV63jCMFGsKWZGzKRPT9WEVkY5MI8oDNR74q7u--gs";
-const RANGE = "A1:Z100";
+const RANGE = "A:Z";
 
 interface AggregatedInsights {
   totalParticipants: number;
+  totalRawRows: number;
   educationBreakdown: Record<string, number>;
   genderBreakdown: Record<string, number>;
   nationalityBreakdown: Record<string, number>;
@@ -39,10 +40,15 @@ interface AggregatedInsights {
 }
 
 function parseData(rawData: string[][]): AggregatedInsights {
-  const dataRows = rawData.slice(3).filter(row => row[0] === "TRUE" && row[2] && row[3]);
+  const allDataRows = rawData.slice(3).filter(row => row && row.length > 0 && row[0]);
+  const dataRows = allDataRows.filter(row => {
+    const consent = (row[0] || "").toString().trim().toUpperCase();
+    return consent === "TRUE";
+  });
   
   const insights: AggregatedInsights = {
     totalParticipants: dataRows.length,
+    totalRawRows: rawData.length,
     educationBreakdown: {},
     genderBreakdown: {},
     nationalityBreakdown: {},
@@ -225,12 +231,35 @@ export default function DashboardPage() {
 
         {insights && (
           <>
+            <div className="mb-6 p-4 rounded-lg bg-white/5 border border-white/10 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-6">
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Raw rows in sheet:</span>
+                  <span className="ml-2 font-bold">{insights.totalRawRows}</span>
+                </div>
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Valid consented entries:</span>
+                  <span className="ml-2 font-bold text-needs">{insights.totalParticipants}</span>
+                </div>
+              </div>
+              <Button 
+                onClick={() => refetch()} 
+                variant="outline" 
+                size="sm"
+                className="bg-white/5"
+                data-testid="button-refresh-data"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Data
+              </Button>
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <Card className="backdrop-blur-sm bg-gradient-to-br from-needs/20 to-needs/5 border-needs/20">
                 <CardContent className="pt-6 text-center">
                   <Users className="h-8 w-8 mx-auto mb-2 text-needs" />
                   <div className="text-4xl font-bold text-needs">{insights.totalParticipants}</div>
-                  <p className="text-sm text-muted-foreground mt-1">Total Participants</p>
+                  <p className="text-sm text-muted-foreground mt-1">Consented Participants</p>
                 </CardContent>
               </Card>
 
