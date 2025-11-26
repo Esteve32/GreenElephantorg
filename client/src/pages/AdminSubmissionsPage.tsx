@@ -86,8 +86,46 @@ export default function AdminSubmissionsPage() {
   // Check authentication status on mount - don't cache this query
   const { data: authStatus, isLoading: authLoading } = useQuery<{ isAuthenticated: boolean }>({
     queryKey: ['/api/admin/check'],
-    staleTime: 0, // Always refetch to ensure fresh auth status
-    gcTime: 0, // Don't keep in cache
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  // All hooks must be called before any conditional returns (React Rules of Hooks)
+  const isAuthenticated = authStatus?.isAuthenticated === true;
+
+  const { data: waitlistData, isLoading: waitlistLoading } = useQuery<WaitlistEntry[]>({
+    queryKey: ['/api/admin/waitlist'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: newsletterData, isLoading: newsletterLoading } = useQuery<NewsletterSubscription[]>({
+    queryKey: ['/api/admin/newsletter'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: quizData, isLoading: quizLoading } = useQuery<SignalsQuizResult[]>({
+    queryKey: ['/api/admin/quiz'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: recommendationData, isLoading: recommendationLoading } = useQuery<RecommendationSubmission[]>({
+    queryKey: ['/api/admin/recommendations'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: contactsData, isLoading: contactsLoading } = useQuery<Contact[]>({
+    queryKey: ['/api/admin/contacts'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: satellitescanData, isLoading: satellitescanLoading } = useQuery<SatellitescanPurchase[]>({
+    queryKey: ['/api/admin/satellitescan'],
+    enabled: isAuthenticated,
+  });
+
+  const { data: couponsData, isLoading: couponsLoading, refetch: refetchCoupons } = useQuery<Coupon[]>({
+    queryKey: ['/api/admin/coupons'],
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {
@@ -96,60 +134,6 @@ export default function AdminSubmissionsPage() {
       setLocation("/admin/login");
     }
   }, [authLoading, authStatus, setLocation]);
-
-  // Show loading state while checking authentication
-  if (authLoading) {
-    return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin">
-            <Sparkles className="h-8 w-8 mx-auto" />
-          </div>
-          <p className="text-muted-foreground">Verifying authentication...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render anything if not authenticated
-  if (!authStatus?.isAuthenticated) {
-    return null;
-  }
-
-  const { data: waitlistData, isLoading: waitlistLoading } = useQuery<WaitlistEntry[]>({
-    queryKey: ['/api/admin/waitlist'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
-
-  const { data: newsletterData, isLoading: newsletterLoading } = useQuery<NewsletterSubscription[]>({
-    queryKey: ['/api/admin/newsletter'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
-
-  const { data: quizData, isLoading: quizLoading } = useQuery<SignalsQuizResult[]>({
-    queryKey: ['/api/admin/quiz'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
-
-  const { data: recommendationData, isLoading: recommendationLoading } = useQuery<RecommendationSubmission[]>({
-    queryKey: ['/api/admin/recommendations'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
-
-  const { data: contactsData, isLoading: contactsLoading } = useQuery<Contact[]>({
-    queryKey: ['/api/admin/contacts'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
-
-  const { data: satellitescanData, isLoading: satellitescanLoading } = useQuery<SatellitescanPurchase[]>({
-    queryKey: ['/api/admin/satellitescan'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
-
-  const { data: couponsData, isLoading: couponsLoading, refetch: refetchCoupons } = useQuery<Coupon[]>({
-    queryKey: ['/api/admin/coupons'],
-    enabled: authStatus?.isAuthenticated === true,
-  });
 
   const handleLogout = async () => {
     try {
@@ -198,6 +182,25 @@ export default function AdminSubmissionsPage() {
       toast({ title: "Error", description: "Could not create coupon", variant: "destructive" });
     }
   };
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin">
+            <Sparkles className="h-8 w-8 mx-auto" />
+          </div>
+          <p className="text-muted-foreground">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated (redirect happens via useEffect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-16">
