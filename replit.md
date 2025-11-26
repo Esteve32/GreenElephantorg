@@ -3,6 +3,32 @@
 ## Overview
 GreenElephant.org is a spiritual transformation platform centered on conscious communication, utilizing the "Periodic Table of Conscious Communication" framework. It targets Executive Assistants, TEAL startup founders, and Design & Innovation students through retreats, coaching, research, and educational resources. The platform promotes inclusive spiritual principles and features a unique "Head-Up Display" (HUD) design aesthetic with dark backgrounds and semi-transparent white overlays. The business vision is to foster authentic connection and meaningful relationships by transforming conflicts into trust and positioning communication as a critical human interface beyond AI automation.
 
+## Recent Changes (November 25, 2025)
+
+### Thesys.dev Dashboard Integration ✅
+- **New Dashboard Page**: Created `/dashboard` page with live communication lens visualization
+- **Google Sheets Integration**: Fetches real-time data from connected Google Sheets via `/api/dashboard/lens-data`
+- **AI-Powered Visualization**: Uses Thesys.dev API via OpenAI SDK for generating dashboard insights
+- **Backend API Routes**:
+  - `GET /api/dashboard/lens-data?spreadsheetId=...&range=...` - Fetches Google Sheets data
+  - `POST /api/dashboard/generate-ui` - Generates AI-powered UI visualization
+- **8 Lenses Display**: Visual progress bars for all 8 communication lenses (Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Wisdom)
+- **Secure Implementation**: API keys stay server-side, no credential exposure to frontend
+- **Files Created**: 
+  - `server/lib/thesysApi.ts` - Thesys API client using OpenAI SDK
+  - `client/src/pages/DashboardPage.tsx` - React dashboard with data fetching and mutation
+
+### FAQ Accordion with JSON-LD Schema ✅
+- **Shadcn Accordion**: SatelliteScanPage FAQ uses proper shadcn Accordion primitives
+- **FAQPage Schema**: JSON-LD structured data for SEO/GEO optimization
+- **Collapse/Expand**: Full accordion functionality with smooth animations
+
+### E2E Testing Verified ✅
+- **All Pages Tested**: Homepage, Dashboard, SatelliteScan, Legal pages, References, Coaching
+- **Mobile Responsive**: Verified at 375px viewport width
+- **Navigation**: All menu items and CTAs work correctly
+- **Accessibility**: Skip-to-main link present, heading hierarchy correct
+
 ## Recent Changes (November 21, 2025)
 
 ### Payment System & Email Notifications - PRODUCTION READY ✅
