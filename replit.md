@@ -35,3 +35,29 @@ A basic user model is prepared, but authentication is not yet implemented. The p
 - **LinkedIn**: Company page
 - **Resend**: Email notifications
 - **Thesys.dev API**: AI-powered communication lens visualization
+- **Notion CRM**: Two-way contact sync (database ID: 8818608d251c426c8538920ec88bbde3)
+
+## Notion CRM Integration
+
+### Two-Way Sync Feature
+The platform includes automatic two-way synchronization between the database contacts and the Notion CRM:
+
+**Auto-sync on contact creation:**
+- New contacts from waitlist, newsletter, or quiz forms are automatically pushed to Notion
+
+**Admin sync endpoints (require authentication):**
+- `GET /api/admin/notion/schema` - Verify Notion connection and view database properties
+- `GET /api/admin/notion/unsynced` - Get contacts not yet synced to Notion
+- `POST /api/admin/notion/push` - Push all contacts to Notion
+- `POST /api/admin/notion/pull` - Pull updates from Notion (creates new contacts if they don't exist locally)
+- `POST /api/admin/notion/sync` - Full two-way sync (pull first, then push)
+
+**Field mappings:**
+- Name → Name (title)
+- Email → Email
+- Source → Source (select: Waitlist, Newsletter, Recommendation, Quiz)
+
+**Technical notes:**
+- Uses Replit's Notion connector for OAuth authentication
+- Sync tracking via `notionPageId` and `notionSyncedAt` fields in contacts table
+- Pull preserves existing local data; only updates name and sync metadata
