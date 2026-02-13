@@ -1,10 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import jonasPhoto from "@assets/Jonas Pannetier Best Photo_1762898039160.jpeg";
-import estevePhoto from "@assets/Esteve purple blue gradient full_1764110536036.png";
-import anuPhoto from "@assets/Anu Timmerbacka Photo_1762897955119.jpeg";
+import { atmosphericPalette } from "@/constants/atmosphericGradient";
+import { fadeInUp, staggerContainer } from "@/lib/motion";
+import jonasPhoto from "@assets/Jonas purple upscaled with Jal-ai topaz._1764338940533.jpeg";
+import estevePhoto from "@assets/Esteve profile fal-ai-topaz upscaled_1764338940532.jpeg";
+import anuPhoto from "@assets/Anu upscaled with pruple fal-ai topaz_1764339012644.jpeg";
 
 const coaches = [
   {
@@ -75,47 +76,71 @@ const coaches = [
   }
 ];
 
+const heroGradient = `linear-gradient(180deg, 
+  #000000 0%, 
+  ${atmosphericPalette.space} 40%, 
+  ${atmosphericPalette.highAtmosphere} 100%
+)`;
+
+const coachesSectionGradient = `linear-gradient(180deg, 
+  ${atmosphericPalette.highAtmosphere} 0%, 
+  ${atmosphericPalette.upperAtmosphere} 50%, 
+  ${atmosphericPalette.midAtmosphere} 100%
+)`;
+
+const ctaSectionGradient = `linear-gradient(180deg, 
+  ${atmosphericPalette.midAtmosphere} 0%, 
+  ${atmosphericPalette.upperAtmosphere} 50%, 
+  ${atmosphericPalette.highAtmosphere} 100%
+)`;
+
 export default function TeamPage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 px-6">
+    <div className="min-h-screen">
+      <section 
+        className="relative py-20 px-6"
+        style={{ background: heroGradient }}
+      >
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Meet Your Guides</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
+              <Sparkles className="h-4 w-4 text-white" />
+              <span className="text-sm font-medium text-white">Meet Your Guides</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-['Archivo']">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-['Archivo'] text-white drop-shadow-lg">
               The Team Behind Your Transformation
             </h1>
             
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
               Three voices. One mission. Helping you turn every conversation into sacred practice through conscious communication.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Coaches Grid */}
-      <section className="py-16 px-6">
-        <div className="max-w-7xl mx-auto space-y-16">
-          {coaches.map((coach, index) => (
+      <section 
+        className="py-16 px-6"
+        style={{ background: coachesSectionGradient }}
+      >
+        <motion.div 
+          className="max-w-7xl mx-auto space-y-16"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {coaches.map((coach) => (
             <motion.div
               key={coach.name}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+              variants={fadeInUp}
             >
-              <Card className="backdrop-blur-sm bg-card/50 hover-elevate">
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden hover-elevate">
                 <div className="grid md:grid-cols-[220px,1fr] gap-6">
-                  {/* Photo Section */}
                   <div className="flex items-start justify-center p-6 md:p-8">
                     <div className="w-48 h-48 flex-shrink-0">
                       <img
@@ -127,53 +152,50 @@ export default function TeamPage() {
                     </div>
                   </div>
 
-                  {/* Content Section */}
                   <div className="p-6 md:pr-8 md:py-8 space-y-6">
                     <div>
-                      <h2 className="text-3xl font-bold mb-2 font-['Archivo']" data-testid={`text-coach-name-${coach.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <h2 className="text-3xl font-bold mb-2 font-['Archivo'] text-white drop-shadow-lg" data-testid={`text-coach-name-${coach.name.toLowerCase().replace(/\s+/g, '-')}`}>
                         {coach.name}
                       </h2>
-                      <p className="text-lg text-muted-foreground mb-1">{coach.title}</p>
-                      <p className="text-sm text-muted-foreground">{coach.location}</p>
+                      <p className="text-lg text-white/70 mb-1">{coach.title}</p>
+                      <p className="text-sm text-white/60">{coach.location}</p>
                     </div>
 
-                    <p className="text-base leading-relaxed">
+                    <p className="text-base leading-relaxed text-white/70">
                       {coach.bio}
                     </p>
 
-                    {/* Unique Superpower */}
-                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                    <div className="bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-lg p-4">
                       <div className="flex items-start gap-3">
                         <Sparkles className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <h3 className="text-sm font-semibold mb-1 text-primary">
                             Unique Superpower: {coach.superpower}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-white/70">
                             {coach.superpowerDescription}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* How to Talk Green */}
-                    <div className="bg-needs/5 border border-needs/20 rounded-lg p-4">
+                    <div className="bg-needs/20 backdrop-blur-sm border border-needs/30 rounded-lg p-4">
                       <h3 className="text-sm font-semibold mb-2 text-needs">
                         How to Talk "Green" to {coach.name.split(' ')[0]}
                       </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-sm text-white/70 leading-relaxed">
                         {coach.howToTalkGreen}
                       </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
+                        <h3 className="text-sm font-semibold mb-3 text-white/60 uppercase tracking-wide">
                           Specialties
                         </h3>
                         <ul className="space-y-2">
                           {coach.specialties.map((specialty) => (
-                            <li key={specialty} className="flex items-start gap-2 text-sm">
+                            <li key={specialty} className="flex items-start gap-2 text-sm text-white/70">
                               <span className="text-primary mt-1">•</span>
                               <span>{specialty}</span>
                             </li>
@@ -183,17 +205,17 @@ export default function TeamPage() {
 
                       <div className="space-y-4">
                         <div>
-                          <h3 className="text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
+                          <h3 className="text-sm font-semibold mb-2 text-white/60 uppercase tracking-wide">
                             Experience
                           </h3>
-                          <p className="text-sm">{coach.experience}</p>
+                          <p className="text-sm text-white/70">{coach.experience}</p>
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
+                          <h3 className="text-sm font-semibold mb-2 text-white/60 uppercase tracking-wide">
                             Languages
                           </h3>
-                          <p className="text-sm">
+                          <p className="text-sm text-white/70">
                             {Array.isArray(coach.languages) 
                               ? coach.languages.join(", ") 
                               : coach.languages}
@@ -202,11 +224,11 @@ export default function TeamPage() {
                       </div>
                     </div>
 
-                    <div className="border-t pt-6">
-                      <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
+                    <div className="border-t border-white/10 pt-6">
+                      <h3 className="text-sm font-semibold mb-3 text-white/60 uppercase tracking-wide">
                         Approach
                       </h3>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                      <p className="text-sm leading-relaxed text-white/70">
                         {coach.approach}
                       </p>
                     </div>
@@ -227,6 +249,7 @@ export default function TeamPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="border-white/20 text-white hover:bg-white/10"
                         asChild
                         data-testid={`button-email-${coach.name.toLowerCase().replace(/\s+/g, '-')}`}
                       >
@@ -238,26 +261,28 @@ export default function TeamPage() {
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6">
+      <section 
+        className="py-20 px-6"
+        style={{ background: ctaSectionGradient }}
+      >
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
             className="space-y-8"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-['Archivo']">
+            <h2 className="text-3xl md:text-4xl font-bold font-['Archivo'] text-white drop-shadow-lg">
               Ready to Begin Your Journey?
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">
               Whether you're seeking therapeutic support, organizational transformation, or executive presence—our team is here to guide you.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -266,7 +291,13 @@ export default function TeamPage() {
                   Talk to a Facilitator
                 </a>
               </Button>
-              <Button size="lg" variant="outline" asChild data-testid="button-explore-coaching">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/20 text-white hover:bg-white/10"
+                asChild 
+                data-testid="button-explore-coaching"
+              >
                 <a href="/coaching">
                   Explore Coaching
                 </a>

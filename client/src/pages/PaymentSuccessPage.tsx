@@ -1,25 +1,36 @@
-import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { useEffect, useMemo } from "react";
+import { useLocation, useSearch } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, FileText, Mail } from "lucide-react";
+import { CheckCircle2, FileText, Mail, Gift } from "lucide-react";
 
 export default function PaymentSuccessPage() {
   const [, setLocation] = useLocation();
+  const searchString = useSearch();
+  
+  const isFreeActivation = useMemo(() => {
+    const params = new URLSearchParams(searchString);
+    return params.get('free') === 'true';
+  }, [searchString]);
 
   useEffect(() => {
-    // Could track conversion here
-    console.log('Payment successful - conversion tracked');
-  }, []);
+    console.log('Payment successful - conversion tracked', { isFreeActivation });
+  }, [isFreeActivation]);
 
   return (
     <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4">
       <Card className="max-w-2xl w-full backdrop-blur-sm bg-card/95 text-center">
         <CardHeader>
           <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-alignment/20 flex items-center justify-center">
-            <CheckCircle2 className="h-8 w-8 text-alignment" />
+            {isFreeActivation ? (
+              <Gift className="h-8 w-8 text-alignment" />
+            ) : (
+              <CheckCircle2 className="h-8 w-8 text-alignment" />
+            )}
           </div>
-          <CardTitle className="text-3xl mb-2">Payment Successful!</CardTitle>
+          <CardTitle className="text-3xl mb-2">
+            {isFreeActivation ? "Scan Activated!" : "Payment Successful!"}
+          </CardTitle>
           <p className="text-muted-foreground">
             Welcome to your conscious communication transformation journey
           </p>
@@ -31,7 +42,10 @@ export default function PaymentSuccessPage() {
               <div>
                 <div className="font-semibold mb-1">Check your email</div>
                 <p className="text-sm text-muted-foreground">
-                  You'll receive a confirmation email with next steps and scheduling details within 5 minutes.
+                  {isFreeActivation 
+                    ? "A welcome email from GreenElephant.org is on its way with your scan link and resources. Check your spam folder if you don't see it within a few minutes."
+                    : "You'll receive a confirmation email with next steps and scheduling details within 5 minutes."
+                  }
                 </p>
               </div>
             </div>

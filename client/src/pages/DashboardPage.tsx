@@ -467,10 +467,10 @@ export default function DashboardPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
               className="bg-needs hover:bg-needs/90"
-              onClick={() => window.location.href = '/satellitescan'}
+              onClick={() => window.location.href = '/checkout?product=satellitescan'}
               data-testid="button-get-satellite-scan"
             >
-              Get Your Satellite Scan
+              Get Your Scan - €99.95
               <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
             <Button 

@@ -1,5 +1,25 @@
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { fadeInUp, fadeIn } from "@/lib/motion";
+import { atmosphericPalette, imageMaskStyles } from "@/constants/atmosphericGradient";
+import helsinkiUrl from "@assets/stock_images/helsinki_finland_aer_3c2036cc.jpg";
+
+const heroGradient = {
+  background: `linear-gradient(180deg, 
+    #000000 0%, 
+    ${atmosphericPalette.space} 30%, 
+    ${atmosphericPalette.highAtmosphere} 100%
+  )`
+};
+
+const clientSectionGradient = {
+  background: `linear-gradient(180deg, 
+    ${atmosphericPalette.highAtmosphere} 0%, 
+    ${atmosphericPalette.upperAtmosphere} 50%, 
+    ${atmosphericPalette.midAtmosphere} 100%
+  )`
+};
 
 const clientCategories = [
   {
@@ -73,68 +93,98 @@ const clientCategories = [
 
 export default function ReferencesPage() {
   return (
-    <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-needs text-white">Trusted By</Badge>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Selected Clients & References
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Organizations worldwide trust GreenElephant for conscious communication transformation
-          </p>
+    <div className="min-h-screen relative">
+      <section className="relative pt-24 pb-16" style={heroGradient}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+          >
+            <Badge className="mb-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white">Trusted By</Badge>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg" style={{ fontFamily: 'Archivo, sans-serif' }}>
+              Selected Clients & References
+            </h1>
+            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+              Organizations worldwide trust GreenElephant for conscious communication transformation
+            </p>
+          </motion.div>
         </div>
+      </section>
 
-        <div className="space-y-12">
-          {clientCategories.map((category) => (
-            <div key={category.title}>
-              <h2 className="text-2xl font-bold mb-6 text-center md:text-left">
-                {category.title}
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {category.clients.map((client) => (
-                  <a
-                    key={client.name}
-                    href={client.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group backdrop-blur-sm bg-card/50 border border-white/10 rounded-lg p-6 flex flex-col items-center justify-center gap-3 hover-elevate active-elevate-2 transition-all duration-200"
-                    data-testid={`link-client-${client.name.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <span className="text-center font-semibold text-sm md:text-base">
-                      {client.name}
-                    </span>
-                    <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                ))}
+      <section className="relative pb-16" style={clientSectionGradient}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="space-y-12"
+            initial="hidden"
+            animate="visible"
+            variants={fadeIn}
+          >
+            {clientCategories.map((category) => (
+              <div key={category.title}>
+                <h2 className="text-2xl font-bold mb-6 text-center md:text-left text-white">
+                  {category.title}
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {category.clients.map((client) => (
+                    <a
+                      key={client.name}
+                      href={client.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col items-center justify-center gap-3 hover-elevate active-elevate-2 transition-all duration-200"
+                      data-testid={`link-client-${client.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <span className="text-center font-semibold text-sm md:text-base text-white">
+                        {client.name}
+                      </span>
+                      <ExternalLink className="h-4 w-4 text-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </motion.div>
 
-        <div className="mt-16 backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12 text-center">
-          <h3 className="text-2xl font-bold mb-4">Transform Your Organization</h3>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Join these leading organizations in their conscious communication journey. From startups to Fortune 500 companies, we've helped teams worldwide transform conflict into trust.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="/consulting"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-needs text-white rounded-lg hover-elevate active-elevate-2 font-semibold"
-              data-testid="button-consulting-cta"
-            >
-              Explore Consulting
-            </a>
-            <a
-              href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 backdrop-blur-sm bg-card/50 border border-white/20 rounded-lg hover-elevate active-elevate-2 font-semibold"
-              data-testid="button-contact-cta"
-            >
-              Get in Touch
-            </a>
+          <div className="mt-16 backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12 text-center">
+            <h3 className="text-2xl font-bold mb-4 text-white">Transform Your Organization</h3>
+            <p className="text-white/70 mb-6 max-w-2xl mx-auto">
+              Join these leading organizations in their conscious communication journey. From startups to Fortune 500 companies, we've helped teams worldwide transform conflict into trust.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="/consulting"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-needs text-white rounded-lg hover-elevate active-elevate-2 font-semibold"
+                data-testid="button-consulting-cta"
+              >
+                Explore Consulting
+              </a>
+              <a
+                href="/contact"
+                className="inline-flex items-center gap-2 px-6 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-lg hover-elevate active-elevate-2 font-semibold text-white"
+                data-testid="button-contact-cta"
+              >
+                Get in Touch
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section className="relative h-64 overflow-hidden" aria-label="Helsinki cityscape">
+        <img 
+          src={helsinkiUrl}
+          alt="Aerial view of Helsinki, Finland"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={imageMaskStyles.topFade}
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" aria-hidden="true" />
+        <div className="absolute bottom-8 left-0 right-0 text-center">
+          <p className="text-white/80 text-sm">Kauniainen, Greater Helsinki</p>
+        </div>
+      </section>
     </div>
   );
 }

@@ -24,6 +24,19 @@ export const COACHING_PACKAGES = {
       "Support until objectives are reached"
     ]
   },
+  'interview-mastery': {
+    name: "Interview Mastery Bundle",
+    price: 845, // EUR
+    features: [
+      "Full Satellite Scan diagnostic (90 questions)",
+      "3 x 1-hour personalized coaching sessions",
+      "Interview-specific communication analysis",
+      "Mock interview with feedback",
+      "Post-interview debrief call"
+    ],
+    includesSatelliteScan: true,
+    calendlyLink: "https://calendly.com/greenelephant/3-session-interview-mastery"
+  },
   'team-workshop': {
     name: "Team Workshop",
     price: 1200, // EUR

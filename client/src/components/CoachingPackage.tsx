@@ -15,6 +15,8 @@ interface CoachingPackageProps {
   highlighted?: boolean;
   packageId: string;
   idealFor?: string;
+  buttonText?: string;
+  buttonLink?: string;
 }
 
 export default function CoachingPackage({
@@ -28,11 +30,17 @@ export default function CoachingPackage({
   highlighted = false,
   packageId,
   idealFor,
+  buttonText,
+  buttonLink,
 }: CoachingPackageProps) {
   const [, setLocation] = useLocation();
 
   const handleBooking = () => {
-    setLocation(`/checkout?package=${packageId}`);
+    if (buttonLink) {
+      setLocation(buttonLink);
+    } else {
+      setLocation(`/checkout?package=${packageId}`);
+    }
   };
 
   return (
@@ -82,7 +90,7 @@ export default function CoachingPackage({
           data-testid={`button-book-${type.toLowerCase()}`}
           onClick={handleBooking}
         >
-          Begin Transformation
+          {buttonText || "Begin Transformation"}
         </Button>
       </CardFooter>
     </Card>

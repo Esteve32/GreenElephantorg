@@ -47,6 +47,7 @@ export const attitudeElements: PeriodicElement[] = [
   { code: 2402, symbol: "AI", name: "Attitude I", lens: "attitude", category: "FEEL & INTEND", examplePrompt: "I'm curious about your perspective, even though it challenges mine. Help me understand what you're seeing." },
   { code: 2403, symbol: "AII", name: "Attitude II", lens: "attitude", category: "FEEL & INTEND", examplePrompt: "I genuinely want to learn from this. What wisdom are you offering that I might be missing?" },
   { code: 2404, symbol: "AIII", name: "Attitude III", lens: "attitude", category: "FEEL & INTEND", examplePrompt: "I'm approaching this with beginner's mind—ready to be surprised and transformed by what emerges." },
+  { code: 2405, symbol: "QW", name: "Quick Win Mindset", lens: "attitude", category: "FEEL & INTEND", examplePrompt: "What's one small shift I can make right now that would improve this conversation?" },
 ];
 
 // CHAORDIC LENS (🟡 YELLOW #ffcc00) - Code 3100
@@ -66,6 +67,12 @@ export const chaordicElements: PeriodicElement[] = [
   { code: 3113, symbol: "Hv", name: "Harvester", lens: "chaordic", category: "COLLECTIVELY INTELLIGENT ROLES", examplePrompt: "Let me harvest what I'm hearing: [key themes]. Did I capture the essence, or is something missing?" },
   { code: 3114, symbol: "Ht", name: "Host", lens: "chaordic", category: "COLLECTIVELY INTELLIGENT ROLES", examplePrompt: "As host, I'm here to hold space for all voices. What needs to be said that hasn't been spoken yet?" },
   { code: 3115, symbol: "Sw", name: "Steward", lens: "chaordic", category: "COLLECTIVELY INTELLIGENT ROLES", examplePrompt: "I'm stewarding our shared purpose here. If we drift, I'll gently guide us back to what matters most." },
+  { code: 3301, symbol: "PS", name: "Pause & Sense", lens: "chaordic", category: "DO & MOVE", examplePrompt: "[Before speaking, pause and notice: What am I feeling in my body? What does this conversation need?]" },
+  { code: 3302, symbol: "EC", name: "Eye Contact", lens: "chaordic", category: "DO & MOVE", examplePrompt: "[Make soft, steady eye contact to show you're fully present and listening.]" },
+  { code: 3303, symbol: "LF", name: "Lean Forward", lens: "chaordic", category: "DO & MOVE", examplePrompt: "[Lean in slightly with open posture to signal genuine interest and engagement.]" },
+  { code: 3304, symbol: "SL", name: "Slow Down", lens: "chaordic", category: "DO & MOVE", examplePrompt: "[Speak more slowly. Create pauses between sentences. Let your words land.]" },
+  { code: 3305, symbol: "3B", name: "Three Breaths", lens: "chaordic", category: "DO & MOVE", examplePrompt: "[Pause. Take three conscious breaths before responding to create space for a more thoughtful response.]" },
+  { code: 3306, symbol: "CIF", name: "Check-In First", lens: "chaordic", category: "DO & MOVE", examplePrompt: "Before we dive in, how are you arriving to this conversation? What do you need to be fully present?" },
 ];
 
 // FLOW LENS (🟢 GREEN #cccc33) - Code 4100
@@ -113,6 +120,8 @@ export const needsElements: PeriodicElement[] = [
   { code: 6104, symbol: "FC", name: "Functional Conflicts", lens: "needs", examplePrompt: "This conflict is pointing us to unmet needs. What need is alive for you that I haven't acknowledged yet?" },
   { code: 6105, symbol: "TL", name: "Types of Love", lens: "needs", examplePrompt: "What kind of support do you need right now—practical help, emotional connection, or playful presence?" },
   { code: 6106, symbol: "ST", name: "Stages of Team", lens: "needs", examplePrompt: "Our team is in [forming/storming/norming/performing]. What do we need to move through this stage together?" },
+  { code: 6107, symbol: "HL", name: "Humble Listening", lens: "needs", examplePrompt: "Let me make sure I understand: [reflect back what you heard]. Did I get that right?" },
+  { code: 6108, symbol: "NI", name: "Name the Intent", lens: "needs", examplePrompt: "My intention for this conversation is [specific goal]. Does that work for you?" },
   { code: 6201, symbol: "CR", name: "Conscious Request", lens: "needs", category: "SAY & WRITE", examplePrompt: "Here's my specific request: Would you be willing to [concrete action] by [time]? It would meet my need for [need]." },
   { code: 6401, symbol: "PS", name: "Psychological Safety", lens: "needs", category: "FEEL & INTEND", examplePrompt: "I want you to feel safe being vulnerable here. Nothing you share will be used against you—I'm committed to that." },
   { code: 6402, symbol: "St", name: "Storge", lens: "needs", category: "FEEL & INTEND", examplePrompt: "I care about you like family. Your wellbeing matters to me beyond this work we're doing together." },
@@ -147,6 +156,11 @@ export const egoElements: PeriodicElement[] = [
   { code: 7204, symbol: "Pj", name: "Projecting", lens: "ego", category: "SAY & WRITE", examplePrompt: "I realize I'm projecting my own [fear/assumption] onto you. Let me check: is this actually true for you?" },
   { code: 7205, symbol: "Ap", name: "Apologising", lens: "ego", category: "SAY & WRITE", examplePrompt: "I apologize for [specific behavior]. That didn't honor you, and I'll work to do better. What would help repair this?" },
   { code: 7206, symbol: "Sy", name: "Storytelling", lens: "ego", category: "SAY & WRITE", examplePrompt: "Let me share a story that illustrates this: [relevant narrative]. Does that resonate with your experience?" },
+  { code: 7207, symbol: "WH", name: "What I Heard", lens: "ego", category: "SAY & WRITE", examplePrompt: "What I'm hearing is [summary]. Is that what you meant?" },
+  { code: 7208, symbol: "TM", name: "That Matters", lens: "ego", category: "SAY & WRITE", examplePrompt: "That matters to me. Can you tell me more about [specific aspect]?" },
+  { code: 7209, symbol: "HM", name: "Help Me Understand", lens: "ego", category: "SAY & WRITE", examplePrompt: "Help me understand what you mean by [term/phrase]. I want to make sure we're on the same page." },
+  { code: 7210, symbol: "WN", name: "What I Need", lens: "ego", category: "SAY & WRITE", examplePrompt: "What I need right now is [specific request]. Would you be willing to help with that?" },
+  { code: 7211, symbol: "TY", name: "Thank You For", lens: "ego", category: "SAY & WRITE", examplePrompt: "Thank you for [specific thing]. That really helped me feel [positive emotion]." },
   { code: 7301, symbol: "BS", name: "Blue Silence", lens: "ego", category: "DO & MOVE", examplePrompt: "[Withdraw into reflective silence, perhaps looking away, to process internally before responding]" },
   { code: 7302, symbol: "BI", name: "Blue Intonation", lens: "ego", category: "DO & MOVE", examplePrompt: "[Speak in measured, analytical tone]: Let me think this through logically. First... second... third..." },
   { code: 7303, symbol: "BBL", name: "Blue Body-Language", lens: "ego", category: "DO & MOVE", examplePrompt: "[Cross arms thoughtfully, look upward]: I'm processing what you've said. Give me a moment to formulate my response." },
@@ -168,6 +182,9 @@ export const dynamicsElements: PeriodicElement[] = [
   { code: 8104, symbol: "RM", name: "Relationship Map", lens: "dynamics", examplePrompt: "Let's map out our relationship: What roles do we each play? What's working? What wants to evolve?" },
   { code: 8105, symbol: "RR", name: "Relationship Ritual", lens: "dynamics", examplePrompt: "What if we created a ritual for [check-ins/conflicts/celebrations]? What would help us stay connected through transitions?" },
   { code: 8201, symbol: "SN", name: "Saying No", lens: "dynamics", category: "SAY & WRITE", examplePrompt: "I need to say no to [request]. It's not aligned with my capacity right now, and I want to honor both of us by being honest." },
+  { code: 8301, symbol: "AK", name: "Assume Kindness", lens: "dynamics", category: "DO & MOVE", examplePrompt: "I'm choosing to assume positive intent. What were you hoping to achieve when you said that?" },
+  { code: 8302, symbol: "OT", name: "Own Your Part", lens: "dynamics", category: "DO & MOVE", examplePrompt: "I want to own my part in this. What I could have done differently is [specific action]." },
+  { code: 8303, symbol: "BK", name: "Be Kind First", lens: "dynamics", category: "DO & MOVE", examplePrompt: "Even though this is hard, I choose kindness. How can we move forward in a way that honors both of us?" },
   { code: 8401, symbol: "Fg", name: "Forgiveness", lens: "dynamics", category: "FEEL & INTEND", examplePrompt: "I'm choosing to release my resentment about [situation]. Not because you earned it, but because holding it hurts me more than you." },
 ];
 

@@ -61,15 +61,16 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`${lensColors[lens]} hover-elevate active-elevate-2 rounded-md p-3 text-white border border-white/20 transition-all duration-200 hover:scale-105 group bg-opacity-66`}
-        style={{ backgroundColor: `${lensMetadata.hexColor}aa` }}
+        className="hover-elevate active-elevate-2 rounded-sm transition-all duration-200 hover:scale-105 group w-full aspect-square"
+        style={{ backgroundColor: lensMetadata.hexColor }}
         data-testid={`element-${symbol.toLowerCase()}`}
       >
-        <div className="flex flex-col items-center gap-1">
-          <Icon className="h-6 w-6 mb-1 text-[hsl(var(--lens-icon))]" />
-          <div className="text-xs opacity-80">{number}</div>
-          <div className="text-2xl font-bold">{symbol}</div>
-          <div className="text-xs opacity-90 text-center line-clamp-1">{name}</div>
+        <div className="flex flex-col h-full p-2 text-white">
+          <div className="text-[10px] font-medium opacity-80 text-left leading-none">{number}</div>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-2xl md:text-3xl font-bold leading-none">{symbol}</div>
+          </div>
+          <div className="text-[9px] md:text-[10px] font-medium text-center leading-tight opacity-90 line-clamp-2">{name}</div>
         </div>
       </button>
 
@@ -87,7 +88,9 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
                 </div>
               </div>
               <div className={`${lensColors[lens]} rounded-lg p-4 border border-white/20 flex flex-col items-center gap-2`} style={{ backgroundColor: `${lensMetadata.hexColor}aa` }}>
-                <Icon className="h-8 w-8 text-[hsl(var(--lens-icon))]" />
+                <div className="h-8 w-8 flex items-center justify-center">
+                  <Icon className="h-6 w-6 text-[hsl(var(--lens-icon))]" />
+                </div>
                 <div className="text-3xl font-bold text-[hsl(var(--lens-icon))]">{symbol}</div>
               </div>
             </div>

@@ -2,6 +2,9 @@ import ResourceCard from "@/components/ResourceCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import montVentouxUrl from "@assets/generated_images/mont_ventoux_provence_lavender_landscape.png";
+import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
 
 //todo: remove mock functionality
 const resources = [
@@ -69,7 +72,7 @@ export default function ResourcesPage() {
     <div className="min-h-screen pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-chaordic text-white">Learning Resources</Badge>
+          <Badge className="mb-4 bg-chaordic text-black">Learning Resources</Badge>
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Resources Hub
           </h1>
@@ -155,6 +158,78 @@ export default function ResourcesPage() {
           </Card>
         </div>
       </div>
+      
+      {/* Mont Ventoux Landscape Footer */}
+      <section 
+        className="relative min-h-[70vh]"
+        aria-label="Mont Ventoux landscape"
+      >
+        {/* Base background gradient */}
+        <div 
+          className="absolute inset-0"
+          style={{ 
+            background: `linear-gradient(to bottom,
+              #000000 0%,
+              #050a14 15%,
+              #0a1424 30%,
+              #081020 50%,
+              #050a14 70%,
+              #020408 85%,
+              #000000 100%
+            )`
+          }}
+        />
+        
+        {/* Mont Ventoux image with gentle top gradient showing sky */}
+        <div 
+          className="absolute inset-0"
+          style={{ 
+            backgroundImage: `url(${montVentouxUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
+            backgroundRepeat: 'no-repeat',
+            maskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.6) 15%, rgba(0,0,0,0.85) 22%, black 30%, black 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.6) 15%, rgba(0,0,0,0.85) 22%, black 30%, black 100%)'
+          }}
+        />
+        
+        {/* Bottom gradient overlay to fade to black */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{ 
+            height: '25%',
+            background: `linear-gradient(to top,
+              #000000 0%,
+              rgba(0, 0, 0, 0.9) 30%,
+              rgba(0, 0, 0, 0.6) 60%,
+              rgba(0, 0, 0, 0.2) 85%,
+              transparent 100%
+            )`
+          }}
+        />
+        
+        <div className="absolute bottom-8 left-0 right-0 z-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
+            >
+              <p className="text-white/60 text-sm mb-4">Mont Ventoux, Provence</p>
+              <img 
+                src={logoUrl} 
+                alt="GreenElephant logo" 
+                className="w-16 h-16 mx-auto mb-4 opacity-90"
+              />
+              <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                GreenElephant.org
+              </h3>
+            </motion.div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

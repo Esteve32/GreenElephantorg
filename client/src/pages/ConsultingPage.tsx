@@ -1,8 +1,28 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, ArrowRight, TrendingDown, Sparkles, Users } from "lucide-react";
+import { Check, ArrowRight, TrendingDown, Sparkles, Users, Quote } from "lucide-react";
 import { motion } from "framer-motion";
+import { atmosphericPalette } from "@/constants/atmosphericGradient";
+import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
+import { Link } from "wouter";
+import luzernUrl from "@assets/stock_images/luzern_switzerland_l_1930ad9b.jpg";
+
+const heroGradient = {
+  background: `linear-gradient(180deg, 
+    #000000 0%, 
+    ${atmosphericPalette.space} 30%, 
+    ${atmosphericPalette.highAtmosphere} 100%
+  )`
+};
+
+const contentGradient = {
+  background: `linear-gradient(180deg, 
+    ${atmosphericPalette.highAtmosphere} 0%, 
+    ${atmosphericPalette.upperAtmosphere} 50%, 
+    ${atmosphericPalette.midAtmosphere} 100%
+  )`
+};
 
 export default function ConsultingPage() {
   const services = [
@@ -64,22 +84,28 @@ export default function ConsultingPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Badge className="mb-4 bg-needs text-white">Enterprise Consulting</Badge>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6" style={{ fontFamily: 'Archivo, sans-serif' }}>
-            Strategic Communication Consulting
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Transform your organization's communication culture with strategic, high-touch consulting for <a href="https://en.wikipedia.org/wiki/Teal_organisation" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">TEAL</a> leaders and innovation teams
-          </p>
-        </motion.div>
+    <div className="min-h-screen">
+      <section className="pt-24 pb-16" style={heroGradient}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+          >
+            <Badge className="mb-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white">Enterprise Consulting</Badge>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg" style={{ fontFamily: 'Archivo, sans-serif' }}>
+              Strategic Communication Consulting
+            </h1>
+            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+              Transform your organization's communication culture with strategic, high-touch consulting for <a href="https://en.wikipedia.org/wiki/Teal_organisation" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">TEAL</a> leaders and innovation teams
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section style={contentGradient} className="pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <motion.div 
           className="backdrop-blur-sm bg-gradient-to-br from-needs/20 to-alignment/20 border border-white/20 rounded-2xl p-8 md:p-12 mb-16"
@@ -221,10 +247,12 @@ export default function ConsultingPage() {
                         <Button 
                           className="bg-needs hover:bg-needs/90 w-full"
                           data-testid={`button-inquire-${index}`}
-                          onClick={() => console.log('Inquiring about:', service.title)}
+                          asChild
                         >
-                          Request Consultation
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <Link href="/connect#contact">
+                            Request Consultation
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
                         </Button>
                       </div>
                     </div>
@@ -311,9 +339,86 @@ export default function ConsultingPage() {
           </Card>
         </div>
 
+        <motion.div 
+          className="mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">What Leaders Are Saying</h2>
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">
+              Organizations that have transformed their communication culture
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div 
+              variants={fadeInUp}
+              className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6"
+              data-testid="testimonial-1"
+            >
+              <Quote className="h-8 w-8 text-needs/40 mb-4" />
+              <p className="text-white/80 mb-6 leading-relaxed">
+                "Within six months, our executive team went from constant misalignment to speaking the same language. The Periodic Table framework gave us a shared vocabulary that transformed how we navigate difficult conversations."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-needs/20 flex items-center justify-center">
+                  <span className="text-needs font-semibold">MK</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Maria Korhonen</p>
+                  <p className="text-sm text-white/60">CEO, Nordic HealthTech Scale-up</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              variants={fadeInUp}
+              className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6"
+              data-testid="testimonial-2"
+            >
+              <Quote className="h-8 w-8 text-needs/40 mb-4" />
+              <p className="text-white/80 mb-6 leading-relaxed">
+                "Our design sprint was a turning point. The team stopped avoiding conflict and started having the honest conversations we needed. Three months later, our product decisions are faster and everyone feels heard."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-needs/20 flex items-center justify-center">
+                  <span className="text-needs font-semibold">JV</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Jonas Virtanen</p>
+                  <p className="text-sm text-white/60">VP of Product, TEAL Organization</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              variants={fadeInUp}
+              className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6"
+              data-testid="testimonial-3"
+            >
+              <Quote className="h-8 w-8 text-needs/40 mb-4" />
+              <p className="text-white/80 mb-6 leading-relaxed">
+                "The ROI was undeniable. We reduced meeting time by 40% and resolved a two-year board conflict in three sessions. This isn't soft skills training—it's strategic infrastructure for conscious leadership."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-needs/20 flex items-center justify-center">
+                  <span className="text-needs font-semibold">AS</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Anneli Svensson</p>
+                  <p className="text-sm text-white/60">CFO, Impact Investment Firm</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
         <div className="backdrop-blur-sm bg-needs/10 border border-needs/20 rounded-2xl p-8 md:p-12 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Organization?</h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-white">Ready to Transform Your Organization?</h2>
+          <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
             Schedule a complimentary discovery call to explore how conscious communication can elevate your organizational culture.
           </p>
           <Button 
@@ -322,13 +427,56 @@ export default function ConsultingPage() {
             data-testid="button-schedule-call"
             asChild
           >
-            <a href="/contact">
+            <Link href="/connect#contact">
               Schedule Discovery Call
               <ArrowRight className="ml-2 h-5 w-5" />
-            </a>
+            </Link>
           </Button>
         </div>
-      </div>
+        </div>
+      </section>
+
+      <section 
+        className="relative min-h-[60vh] md:min-h-[70vh]"
+        aria-label="Luzern landscape"
+      >
+        <div 
+          className="absolute inset-0"
+          style={{ 
+            background: `linear-gradient(to top,
+              #87CEEB 0%,
+              #6BB3D9 8%,
+              #4A9CC7 16%,
+              #3585B5 24%,
+              #2070A3 32%,
+              #1A5A8A 40%,
+              #144570 50%,
+              #0E3055 60%,
+              #081C3A 72%,
+              #040E1F 85%,
+              #000000 100%
+            )`
+          }}
+        />
+        
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-[60%]"
+          style={{ 
+            backgroundImage: `url(${luzernUrl})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'bottom center',
+            backgroundRepeat: 'no-repeat',
+            maskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 90%)',
+            WebkitMaskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 90%)'
+          }}
+        />
+        
+        <div className="absolute bottom-8 left-0 right-0 z-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p className="text-white/80 text-sm">Luzern, Switzerland</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

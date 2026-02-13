@@ -1,6 +1,6 @@
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
@@ -8,12 +8,72 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ArrowLeft } from "lucide-react";
+import { CheckCircle2, ArrowLeft, CreditCard, User, AlertCircle, Loader2 } from "lucide-react";
 
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
 }
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+type CheckoutStep = 'details' | 'payment';
+
+interface ProgressIndicatorProps {
+  currentStep: CheckoutStep;
+}
+
+const ProgressIndicator = ({ currentStep }: ProgressIndicatorProps) => {
+  const steps = [
+    { id: 'details', label: 'Your Details', icon: User },
+    { id: 'payment', label: 'Payment', icon: CreditCard },
+  ];
+  
+  const currentIndex = steps.findIndex(s => s.id === currentStep);
+  
+  return (
+    <div className="flex items-center justify-center mb-8" data-testid="checkout-progress-indicator">
+      {steps.map((step, index) => {
+        const isCompleted = index < currentIndex;
+        const isCurrent = step.id === currentStep;
+        const Icon = step.icon;
+        
+        return (
+          <div key={step.id} className="flex items-center">
+            <div className="flex flex-col items-center">
+              <div 
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
+                  isCompleted 
+                    ? 'bg-alignment border-alignment text-white' 
+                    : isCurrent 
+                      ? 'border-alignment text-alignment bg-alignment/10' 
+                      : 'border-muted-foreground/30 text-muted-foreground/50'
+                }`}
+                data-testid={`step-${step.id}`}
+              >
+                {isCompleted ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <Icon className="w-5 h-5" />
+                )}
+              </div>
+              <span className={`text-xs mt-2 font-medium ${
+                isCurrent ? 'text-alignment' : isCompleted ? 'text-foreground' : 'text-muted-foreground/50'
+              }`}>
+                {step.label}
+              </span>
+            </div>
+            {index < steps.length - 1 && (
+              <div 
+                className={`w-12 sm:w-20 h-0.5 mx-2 transition-colors ${
+                  index < currentIndex ? 'bg-alignment' : 'bg-muted-foreground/20'
+                }`}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 interface CheckoutFormProps {
   packageInfo: {
@@ -44,6 +104,14 @@ const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/payment-success`,
+        payment_method_data: {
+          billing_details: {
+            address: {
+              country: 'FI', // Default to Finland for EU compliance
+              postal_code: '00100'
+            }
+          }
+        }
       },
     });
 
@@ -59,27 +127,48 @@ const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
+      <PaymentElement 
+        options={{
+          layout: 'tabs',
+          fields: {
+            billingDetails: {
+              address: {
+                country: 'never',
+                postalCode: 'never'
+              }
+            }
+          }
+        }}
+      />
       <Button 
         type="submit" 
         className="w-full bg-alignment text-white hover:opacity-90"
         disabled={!stripe || isProcessing}
         data-testid="button-complete-payment"
       >
-        {isProcessing ? "Processing..." : `Complete Payment - €${finalPrice.toFixed(2)}`}
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          `Complete Payment - €${finalPrice.toFixed(2)}`
+        )}
       </Button>
     </form>
   );
 };
 
 export default function CheckoutPage() {
+  const [currentStep, setCurrentStep] = useState<CheckoutStep>('details');
   const [clientSecret, setClientSecret] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   
@@ -87,7 +176,6 @@ export default function CheckoutPage() {
   const productType = urlParams.get('product');
   const packageType = urlParams.get('package') || '1on1-single';
   
-  // Detect if this is a Satellite Scan purchase
   const isSatellitescan = productType === 'satellitescan';
   
   const packages: Record<string, { name: string; price: number; features: string[]; savings?: string }> = {
@@ -121,21 +209,38 @@ export default function CheckoutPage() {
       savings: "€120/person for 10 participants",
       features: [
         "Half-day intensive for up to 10 people",
-        "Live framework mapping exercise",
-        "Team communication audit",
-        "Custom micro-habit playbook",
+        "Collectively intelligent micro-habits",
         "30-day follow-up session included"
       ]
     },
     'satellitescan': {
-      name: "Satellitescan Beta",
-      price: 29.99,
+      name: "Satellite Scan",
+      price: 99.95,
       features: [
         "90-minute AI-powered Typeform scan",
-        "Personalized dashboard by Estève (manual creation)",
-        "3-5 actionable micro-habits",
+        "Personalized dashboard (manual creation by human coach)",
+        "10+ prompts to reuse your scan data",
         "Video tutorials for each lens",
-        "Dashboard delivered in 3-5 business days"
+        "Dashboard delivered in 48-72 hours"
+      ]
+    },
+    'interview-mastery-bundle': {
+      name: "Interview Mastery Bundle",
+      price: 845,
+      savings: "Save €49.95 vs buying separately",
+      features: [
+        "Satellite Scan (€99.95 value included)",
+        "90-minute AI-powered behavioral assessment",
+        "Personalized communication dashboard",
+        "10+ prompts to mine your scan data",
+        "3 personalized interview coaching sessions",
+        "300 minutes total coaching (5 hours)",
+        "Verbal & nonverbal feedback analysis",
+        "Live interview roleplay practice",
+        "Linguistic & conscious communication insights",
+        "Video recordings & session transcripts",
+        "30-day email follow-up support",
+        "Self-paced learning resources access"
       ]
     }
   };
@@ -144,10 +249,38 @@ export default function CheckoutPage() {
   const finalPrice = Math.max(0, selectedPackage.price - discountAmount);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (!selectedPackage) {
-      setLocation(isSatellitescan ? '/satellitescan' : '/coaching');
+      setLocation(isSatellitescan ? '/scan' : '/coaching');
     }
   }, [packageType, selectedPackage, setLocation, isSatellitescan]);
+
+  const validateEmail = useCallback((email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("Email is required");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  }, []);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    setCustomerEmail(email);
+    if (email.length > 5) {
+      validateEmail(email);
+    } else {
+      setEmailError("");
+    }
+  };
 
   const validateCoupon = async () => {
     if (!couponCode) {
@@ -164,10 +297,8 @@ export default function CheckoutPage() {
       const data = await response.json();
       
       if (data.valid) {
-        // Parse as number to avoid string comparison issues
         const discount = parseFloat(data.discountAmount) || 0;
         setDiscountAmount(discount);
-        console.log('[Coupon] Applied discount:', discount, 'New final price:', Math.max(0, selectedPackage.price - discount));
         toast({ title: "Coupon Applied!", description: data.message });
       } else {
         toast({ title: "Invalid Coupon", description: data.message, variant: "destructive" });
@@ -177,43 +308,37 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
+  const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!customerEmail) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address",
-        variant: "destructive",
-      });
+    if (!validateEmail(customerEmail)) {
       return;
     }
 
+    await proceedToPayment();
+  };
+
+  const proceedToPayment = async () => {
     setIsCreatingIntent(true);
     
-    // Check if this is a free purchase (price is essentially zero)
     const isFreeCheckout = finalPrice < 0.01 && isSatellitescan && couponCode;
-    console.log('[Checkout] finalPrice:', finalPrice, 'isFreeCheckout:', isFreeCheckout);
 
     try {
-      // If finalPrice is 0 (100% discount), skip Stripe and process free order
       if (isFreeCheckout) {
-        console.log('[Checkout] Processing FREE purchase with coupon:', couponCode);
         const response = await apiRequest("POST", "/api/satellitescan/free-purchase", {
           customerEmail,
           customerName,
           couponCode
         });
         const data = await response.json();
-        console.log('[Checkout] Free purchase response:', data);
         
         if (data.success) {
+          setIsCreatingIntent(false);
           toast({
             title: "Success!",
             description: "Your free Satellite Scan has been activated!",
           });
-          // Redirect to success page
-          setLocation("/payment-success?free=true");
+          window.location.href = "/payment-success?free=true";
           return;
         } else {
           throw new Error(data.error || 'Free purchase failed');
@@ -231,7 +356,7 @@ export default function CheckoutPage() {
       const response = await apiRequest("POST", endpoint, payload);
       const data = await response.json();
       setClientSecret(data.clientSecret);
-      setShowPaymentForm(true);
+      setCurrentStep('payment');
     } catch (error) {
       console.error('Payment intent error:', error);
       toast({
@@ -255,20 +380,21 @@ export default function CheckoutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          onClick={() => setLocation(isSatellitescan ? '/satellitescan' : '/coaching')}
+          onClick={() => setLocation(isSatellitescan ? '/scan' : '/coaching')}
           className="mb-6"
-          data-testid="button-back-to-coaching"
+          data-testid="button-back-to-product"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {isSatellitescan ? 'Back to Satellitescan' : 'Back to Coaching'}
+          {isSatellitescan ? 'Back to Satellite Scan' : 'Back to Coaching'}
         </Button>
 
+        <ProgressIndicator currentStep={currentStep} />
+
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Package Summary */}
           <Card className="backdrop-blur-sm bg-card/95 h-fit sticky top-24">
             <CardHeader>
               <Badge className="w-fit mb-2 bg-alignment text-white">
-                {isSatellitescan ? 'Satellitescan Beta' : 'Conscious Communication Coaching'}
+                {isSatellitescan ? 'Satellite Scan' : 'Conscious Communication Coaching'}
               </Badge>
               <CardTitle className="text-2xl">{selectedPackage.name}</CardTitle>
             </CardHeader>
@@ -305,28 +431,25 @@ export default function CheckoutPage() {
                     This investment is <span className="text-alignment font-semibold">less than the price of one conflict</span> - 
                     but it gives you the tools to prevent countless more.
                   </p>
-                  <p className="text-foreground font-medium pt-2">
-                    Choose transformation over repetition.
-                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Customer Info & Payment Form */}
           <Card className="backdrop-blur-sm bg-card/95">
             <CardHeader>
-              <CardTitle>{showPaymentForm ? "Complete Your Payment" : "Your Information"}</CardTitle>
+              <CardTitle>
+                {currentStep === 'details' && "Your Information"}
+                {currentStep === 'payment' && "Complete Your Payment"}
+              </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {showPaymentForm 
-                  ? "Secure payment powered by Stripe. All transactions encrypted and PCI-DSS compliant."
-                  : "We collect your email to deliver your service and send receipts. Your data stays private (GDPR protected)."
-                }
+                {currentStep === 'details' && "We collect your email to deliver your service and send receipts. Your data stays private (GDPR protected)."}
+                {currentStep === 'payment' && "Secure payment powered by Stripe. All transactions encrypted and PCI-DSS compliant."}
               </p>
             </CardHeader>
             <CardContent>
-              {!showPaymentForm ? (
-                <form onSubmit={handleCustomerInfoSubmit} className="space-y-4">
+              {currentStep === 'details' && (
+                <form onSubmit={handleDetailsSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">
                       Email Address *
@@ -336,11 +459,17 @@ export default function CheckoutPage() {
                       type="email"
                       placeholder="your@email.com"
                       value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       required
-                      className="backdrop-blur-sm bg-white/5"
+                      className={`backdrop-blur-sm bg-white/5 ${emailError ? 'border-red-500' : ''}`}
                       data-testid="input-customer-email"
                     />
+                    {emailError && (
+                      <div className="flex items-center gap-1 text-red-500 text-xs">
+                        <AlertCircle className="w-3 h-3" />
+                        {emailError}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -386,24 +515,39 @@ export default function CheckoutPage() {
                   <Button 
                     type="submit" 
                     className="w-full bg-alignment text-white hover:opacity-90"
-                    disabled={isCreatingIntent}
+                    disabled={!!emailError || !customerEmail || isCreatingIntent}
                     data-testid="button-continue-to-payment"
                   >
-                    {isCreatingIntent ? "Loading..." : (finalPrice < 0.01 ? "Get Free Access" : `Continue to Payment - €${finalPrice.toFixed(2)}`)}
+                    {isCreatingIntent ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Preparing payment...
+                      </>
+                    ) : finalPrice < 0.01 ? (
+                      "Get Free Access"
+                    ) : (
+                      `Continue to Payment - €${finalPrice.toFixed(2)}`
+                    )}
                   </Button>
                 </form>
-              ) : (
-                clientSecret && (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm packageInfo={selectedPackage} finalPrice={finalPrice} />
-                  </Elements>
-                )
+              )}
+
+              {currentStep === 'payment' && clientSecret && (
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <CheckoutForm packageInfo={selectedPackage} finalPrice={finalPrice} />
+                </Elements>
+              )}
+
+              {currentStep === 'payment' && isCreatingIntent && (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Loader2 className="w-8 h-8 animate-spin text-alignment mb-4" />
+                  <p className="text-muted-foreground">Preparing secure payment...</p>
+                </div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* GDPR & Trust Signals */}
         <div className="mt-12 space-y-6">
           <Card className="bg-ego/5 border-ego/20 p-4">
             <p className="text-xs text-muted-foreground">

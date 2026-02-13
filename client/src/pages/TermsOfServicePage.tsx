@@ -15,7 +15,7 @@ export default function TermsOfServicePage() {
             Clear agreements create conscious relationships. Thank you for reviewing our terms—we believe in transparency, kindness and mutual respect.
           </p>
           <p className="text-sm text-muted-foreground">
-            Last updated: November 26, 2025
+            Last updated: January 30, 2026
           </p>
         </div>
 
@@ -30,8 +30,19 @@ export default function TermsOfServicePage() {
                 If you do not agree to these terms, please do not use our services.
               </p>
               <p>
-                GreenElephant.org is operated by Estève Pannetier (Finland) and Jonas Pannetier (France), offering coaching, 
-                retreats, and consulting services centered on conscious communication.
+                GreenElephant.org is operated by{" "}
+                <a href="https://www.linkedin.com/in/estève-pannetier-3a883217" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">
+                  Estève Pannetier
+                </a>{" "}
+                (Finland),{" "}
+                <a href="https://www.linkedin.com/in/jonas-pannetier-6a7728134" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">
+                  Jonas Pannetier
+                </a>{" "}
+                (France), and{" "}
+                <a href="https://www.linkedin.com/in/anutimmerbacka" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">
+                  Anu Timmerbacka
+                </a>{" "}
+                (Finland), offering coaching, retreats, and consulting services centered on conscious communication.
               </p>
             </CardContent>
           </Card>
@@ -197,8 +208,8 @@ export default function TermsOfServicePage() {
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
                 All content on GreenElephant.org, including the Periodic Table of Conscious Communication framework, 
-                course materials, prompts, infographics, and proprietary methodologies, are owned by Estève Pannetier 
-                and Jonas Pannetier.
+                course materials, prompts, infographics, and proprietary methodologies, are owned by Estève Pannetier, 
+                Jonas Pannetier, and Anu Timmerbacka.
               </p>
               <p className="mt-4">
                 <strong>Personal Use License:</strong> You may download and use our resources for personal, 

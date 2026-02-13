@@ -4,6 +4,7 @@ import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { startOnboardingScheduler } from "./onboarding-scheduler";
 
 const app = express();
 
@@ -39,12 +40,22 @@ declare module 'http' {
     rawBody: unknown
   }
 }
+
+// Dedicated raw body parser for Typeform webhook with higher limit
+// This must come BEFORE the global JSON parser to intercept large payloads
+app.use('/api/typeform-webhook', express.raw({ 
+  type: 'application/json', 
+  limit: '50mb' 
+}));
+
+// Global JSON parser for all other routes
 app.use(express.json({
+  limit: '10mb',
   verify: (req, _res, buf) => {
     req.rawBody = buf;
   }
 }));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -111,6 +122,10 @@ app.use((req, res, next) => {
     // Set up automatic daily reminder scheduler
     // Runs every 24 hours to check for overdue Satellitescan purchases
     setupDailyReminderScheduler();
+    
+    // Set up onboarding email scheduler
+    // Runs every 5 minutes to check for pending Fibonacci sequence emails
+    startOnboardingScheduler();
   });
 })();
 

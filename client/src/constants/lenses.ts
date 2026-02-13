@@ -1,4 +1,4 @@
-import { Brain, Users, Target, Lightbulb, Sparkles, Compass, Shield, Heart } from "lucide-react";
+import { Brain, Users, Target, Lightbulb, Sparkles, Compass, Shield, Heart, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type LensType = "ego" | "dynamics" | "influence" | "attitude" | "chaordic" | "flow" | "alignment" | "needs";

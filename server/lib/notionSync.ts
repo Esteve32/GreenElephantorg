@@ -5,6 +5,24 @@ import { eq, isNull, and, or } from 'drizzle-orm';
 
 const NOTION_DATABASE_ID = '8818608d251c426c8538920ec88bbde3';
 
+// Email normalization - ensures consistent matching
+function normalizeEmail(email: string): string {
+  return (email || '').trim().toLowerCase();
+}
+
+// Race condition prevention - ensures second sync for same email waits for first
+const emailLocks = new Map<string, Promise<string | null>>();
+
+// Source mapping from local to Notion select options
+const SOURCE_MAPPING: Record<string, string> = {
+  'waitlist': 'Waitlist',
+  'newsletter': 'Newsletter',
+  'recommendation': 'Recommendation',
+  'quiz': 'Quiz',
+  'purchase': 'Purchase',
+  'webinar': 'Webinar',
+};
+
 interface NotionContact {
   id: string;
   properties: {
@@ -37,30 +55,42 @@ export async function getNotionDatabaseSchema() {
   }
 }
 
-export async function findNotionContactByEmail(email: string): Promise<{ pageId: string; name?: string } | null> {
-  try {
-    const notion = await getNotionClient();
-    
-    const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
-      filter: {
-        property: 'Email',
-        email: {
-          equals: email.toLowerCase(),
-        },
+// IMPORTANT: Do NOT catch errors - let them propagate to trigger retries
+// This prevents creating duplicates when Notion API fails
+export async function findNotionContactByEmail(email: string): Promise<{ found: true; pageId: string; name?: string } | { found: false }> {
+  const notion = await getNotionClient();
+  const normalizedEmail = normalizeEmail(email);
+  
+  const response = await notion.databases.query({
+    database_id: NOTION_DATABASE_ID,
+    filter: {
+      property: 'Email',
+      email: {
+        equals: normalizedEmail,
       },
-      page_size: 1,
-    });
+    },
+    page_size: 1,
+  });
+  
+  if (response.results.length > 0) {
+    const page = response.results[0] as any;
+    const nameArr = page.properties?.Name?.title;
+    const name = nameArr && nameArr.length > 0 ? nameArr[0].text?.content : undefined;
     
-    if (response.results.length > 0) {
-      const page = response.results[0] as any;
-      const nameArr = page.properties?.Name?.title;
-      const name = nameArr && nameArr.length > 0 ? nameArr[0].text?.content : undefined;
-      
-      console.log(`Found existing Notion contact for ${email}: ${page.id}`);
-      return { pageId: page.id, name };
+    console.log(`Found existing Notion contact for ${email}: ${page.id}`);
+    return { found: true, pageId: page.id, name };
+  }
+  
+  return { found: false };
+}
+
+// Safe wrapper for backward compatibility in places that expect null
+export async function findNotionContactByEmailSafe(email: string): Promise<{ pageId: string; name?: string } | null> {
+  try {
+    const result = await findNotionContactByEmail(email);
+    if (result.found) {
+      return { pageId: result.pageId, name: result.name };
     }
-    
     return null;
   } catch (error: any) {
     console.error(`Error searching Notion for ${email}:`, error.message);
@@ -68,55 +98,142 @@ export async function findNotionContactByEmail(email: string): Promise<{ pageId:
   }
 }
 
-export async function pushContactToNotion(contact: typeof contacts.$inferSelect): Promise<string | null> {
-  try {
-    const notion = await getNotionClient();
-    
-    if (contact.notionPageId) {
-      await notion.pages.update({
-        page_id: contact.notionPageId,
-        properties: buildNotionProperties(contact),
-      });
-      console.log(`Updated Notion page for contact: ${contact.email}`);
-      return contact.notionPageId;
-    } else {
-      const response = await notion.pages.create({
-        parent: { database_id: NOTION_DATABASE_ID },
-        properties: buildNotionProperties(contact),
-      });
-      console.log(`Created Notion page for contact: ${contact.email}`);
-      return response.id;
-    }
-  } catch (error: any) {
-    console.error(`Failed to push contact ${contact.email} to Notion:`, error.message);
-    return null;
+// Internal upsert function - checks for existing contact and updates or creates
+async function pushContactToNotionInternal(contact: typeof contacts.$inferSelect): Promise<string | null> {
+  const notion = await getNotionClient();
+  const normalizedEmail = normalizeEmail(contact.email);
+  
+  // If we already have a Notion page ID, just update
+  if (contact.notionPageId) {
+    await notion.pages.update({
+      page_id: contact.notionPageId,
+      properties: buildNotionUpdateProperties(contact),
+    });
+    console.log(`Updated Notion page for contact: ${contact.email}`);
+    return contact.notionPageId;
+  }
+  
+  // Search for existing contact by email (UPSERT logic)
+  // IMPORTANT: Don't catch errors here - let them propagate to prevent duplicates
+  const existingResult = await findNotionContactByEmail(normalizedEmail);
+  
+  if (existingResult.found) {
+    // UPDATE existing page (don't include email - it's the immutable key)
+    await notion.pages.update({
+      page_id: existingResult.pageId,
+      properties: buildNotionUpdateProperties(contact),
+    });
+    console.log(`Upsert: Updated existing Notion page for ${contact.email}: ${existingResult.pageId}`);
+    return existingResult.pageId;
+  } else {
+    // CREATE new page (include email)
+    const response = await notion.pages.create({
+      parent: { database_id: NOTION_DATABASE_ID },
+      properties: buildNotionProperties(contact),
+    });
+    console.log(`Upsert: Created new Notion page for ${contact.email}: ${response.id}`);
+    return response.id;
   }
 }
 
-function buildNotionProperties(contact: typeof contacts.$inferSelect, isNewPage: boolean = true): any {
+// Public function with race condition lock
+export async function pushContactToNotion(contact: typeof contacts.$inferSelect): Promise<string | null> {
+  const normalizedEmail = normalizeEmail(contact.email);
+  
+  // Wait for any existing lock on this email
+  const existingLock = emailLocks.get(normalizedEmail);
+  if (existingLock) {
+    console.log(`Waiting for existing sync lock on ${contact.email}`);
+    await existingLock;
+  }
+  
+  // Create new lock for this sync
+  const syncPromise = pushContactToNotionInternal(contact);
+  emailLocks.set(normalizedEmail, syncPromise);
+  
+  try {
+    return await syncPromise;
+  } catch (error: any) {
+    console.error(`Failed to push contact ${contact.email} to Notion:`, error.message);
+    return null;
+  } finally {
+    emailLocks.delete(normalizedEmail);
+  }
+}
+
+// Build properties for CREATE (includes email)
+function buildNotionProperties(contact: typeof contacts.$inferSelect): any {
   const properties: any = {};
   
+  // Name is title field
   if (contact.name) {
     properties['Name'] = {
       title: [{ text: { content: contact.name } }],
     };
   }
   
+  // Email is only set on CREATE (immutable key)
   if (contact.email) {
     properties['Email'] = {
-      email: contact.email,
+      email: normalizeEmail(contact.email),
     };
   }
   
+  // Source mapping
   if (contact.source) {
-    const sourceMap: Record<string, string> = {
-      'waitlist': 'Waitlist',
-      'newsletter': 'Newsletter', 
-      'recommendation': 'Recommendation',
-      'quiz': 'Quiz',
-    };
     properties['Source'] = {
-      select: { name: sourceMap[contact.source] || contact.source },
+      select: { name: SOURCE_MAPPING[contact.source] || contact.source },
+    };
+  }
+  
+  // Channels Reached multi-select (🟢 Channels Reached)
+  if (contact.channelsReached && contact.channelsReached.length > 0) {
+    properties['🟢 Channels Reached'] = {
+      multi_select: contact.channelsReached.map(channel => ({ name: channel })),
+    };
+  }
+  
+  // Scan Submitted At date (maps to Notion field "label_🛰️ SatelliteScanDone_added_at")
+  if (contact.scanSubmittedAt) {
+    properties['label_🛰️ SatelliteScanDone_added_at'] = {
+      date: { start: contact.scanSubmittedAt.toISOString().split('T')[0] },
+    };
+  }
+  
+  return properties;
+}
+
+// Build properties for UPDATE (excludes email - it's the immutable key)
+function buildNotionUpdateProperties(contact: typeof contacts.$inferSelect): any {
+  const properties: any = {};
+  
+  // Name is title field
+  if (contact.name) {
+    properties['Name'] = {
+      title: [{ text: { content: contact.name } }],
+    };
+  }
+  
+  // Note: Email is NOT included in updates - it's the immutable lookup key
+  
+  // Source mapping - only update if set
+  if (contact.source) {
+    properties['Source'] = {
+      select: { name: SOURCE_MAPPING[contact.source] || contact.source },
+    };
+  }
+  
+  // Channels Reached multi-select (🟢 Channels Reached) - append, don't replace
+  if (contact.channelsReached && contact.channelsReached.length > 0) {
+    properties['🟢 Channels Reached'] = {
+      multi_select: contact.channelsReached.map(channel => ({ name: channel })),
+    };
+  }
+  
+  // Scan Submitted At date
+  if (contact.scanSubmittedAt) {
+    properties['label_🛰️ SatelliteScanDone_added_at'] = {
+      date: { start: contact.scanSubmittedAt.toISOString().split('T')[0] },
     };
   }
   
@@ -322,7 +439,7 @@ export async function markContactAsCustomer(
     
     const existingNotionContact = await findNotionContactByEmail(email);
     
-    if (existingNotionContact) {
+    if (existingNotionContact.found) {
       console.log(`Found existing Notion contact for ${email}, linking to local record`);
       linkedExisting = true;
       
@@ -379,4 +496,87 @@ export async function markContactAsCustomer(
 export async function findContactByEmail(email: string): Promise<typeof contacts.$inferSelect | null> {
   const results = await db.select().from(contacts).where(eq(contacts.email, email)).limit(1);
   return results.length > 0 ? results[0] : null;
+}
+
+// Sync newsletter campaign status to Notion CRM
+// Updates "Satellite Scan Reachout Campaign Comments" column with sent/opened status
+export async function syncNewsletterToNotion(campaignId: string, contactId?: string): Promise<{ synced: number; errors: string[] }> {
+  const result = { synced: 0, errors: [] as string[] };
+  
+  try {
+    const notion = await getNotionClient();
+    
+    // Import storage dynamically to avoid circular dependency
+    const { storage } = await import('../storage');
+    const campaign = await storage.getNewsletterCampaignById(campaignId);
+    if (!campaign) {
+      result.errors.push("Campaign not found");
+      return result;
+    }
+    
+    // Get recipients to sync
+    let recipients;
+    if (contactId) {
+      // Sync single recipient
+      const recipient = await storage.getNewsletterRecipientByTracking(campaignId, contactId);
+      recipients = recipient ? [recipient] : [];
+    } else {
+      // Sync all unsent recipients for this campaign
+      const allRecipients = await storage.getNewsletterRecipientsByCampaign(campaignId);
+      recipients = allRecipients.filter(r => r.status === "sent" && r.notionSynced === "false");
+    }
+    
+    for (const recipient of recipients) {
+      try {
+        // Find contact's Notion page
+        const contact = await findContactByEmail(recipient.email);
+        let notionPageId = contact?.notionPageId;
+        
+        if (!notionPageId) {
+          // Try to find in Notion by email
+          const notionContact = await findNotionContactByEmail(recipient.email);
+          if (!notionContact.found) {
+            result.errors.push(`No Notion page for ${recipient.email}`);
+            continue;
+          }
+          notionPageId = notionContact.pageId;
+        }
+        
+        if (!notionPageId) continue;
+        
+        // Build the comment for "Satellite Scan Reachout Campaign Comments"
+        const sentDate = recipient.sentAt ? new Date(recipient.sentAt).toLocaleDateString() : "Unknown";
+        const openedInfo = recipient.openedAt 
+          ? ` | Opened: ${new Date(recipient.openedAt).toLocaleDateString()} (${recipient.openCount}x)` 
+          : " | Not opened";
+        const comment = `${campaign.name} sent ${sentDate}${openedInfo}`;
+        
+        // Update Notion page
+        await notion.pages.update({
+          page_id: notionPageId,
+          properties: {
+            'Satellite Scan Reachout Campaign Comments': {
+              rich_text: [{ text: { content: comment } }],
+            },
+          },
+        });
+        
+        // Mark as synced
+        await storage.updateNewsletterRecipient(recipient.id, {
+          notionSynced: "true"
+        });
+        
+        result.synced++;
+        console.log(`✓ Synced newsletter status for ${recipient.email} to Notion`);
+      } catch (recipientError: any) {
+        result.errors.push(`${recipient.email}: ${recipientError.message}`);
+      }
+    }
+    
+    return result;
+  } catch (error: any) {
+    console.error("Newsletter Notion sync error:", error.message);
+    result.errors.push(error.message);
+    return result;
+  }
 }
