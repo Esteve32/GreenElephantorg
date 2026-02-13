@@ -8,10 +8,13 @@ const BRANCH = 'main';
 
 const EXCLUDED_DIRS = [
   '.git', 'node_modules', '.cache', '.config', '.local', '.upm',
-  'attached_assets', '.replit', 'replit.nix', '.breakpoints'
+  '.breakpoints',
+  'attached_assets'
 ];
 
-const EXCLUDED_FILES = ['package-lock.json'];
+const EXCLUDED_FILES = ['.replit', 'replit.nix'];
+
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB GitHub API limit per blob
 
 function shouldInclude(filePath: string): boolean {
   const parts = filePath.split('/');
@@ -35,7 +38,17 @@ function getFiles(dir: string, base: string = ''): string[] {
         result.push(...getFiles(path.join(dir, entry.name), rel));
       }
     } else if (entry.isFile() && shouldInclude(rel)) {
-      result.push(rel);
+      const fullPath = path.join(dir, entry.name);
+      try {
+        const stat = fs.statSync(fullPath);
+        if (stat.size <= MAX_FILE_SIZE_BYTES) {
+          result.push(rel);
+        } else {
+          console.log(`  Skipping ${rel} (${(stat.size / 1024 / 1024).toFixed(1)}MB exceeds limit)`);
+        }
+      } catch {
+        result.push(rel);
+      }
     }
   }
   return result;

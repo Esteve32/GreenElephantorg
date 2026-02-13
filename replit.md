@@ -7,6 +7,8 @@ GreenElephant.org is a spiritual transformation platform centered on conscious c
 Preferred communication style: Simple, everyday language.
 When user points to elements in the preview, always apply changes to the file that renders that route.
 **Email Updates**: Send a friendly update email to esteve@greenelephant.org and anu@greenelephant.org after each website publish summarizing changes, new features, and next steps for inbound marketing.
+**GitHub Sync**: After every website publish, push the full codebase to GitHub repo `Esteve32/GreenElephantorg` (main branch) using the `pushToGitHub()` function in `server/github-push.ts`. This applies to all Replit projects -- always ensure a corresponding GitHub repo exists and is synced after publish.
+**GitHub Orchestration**: GreenElephantOS repo (`Esteve32/GreenElephantOS`) contains Google Apps Scripts, contracts, and docs. GreenElephantorg repo is the website backup. See `docs/ORCHESTRATION_PLAN.md` in GreenElephantOS for the full architecture.
 
 ## System Architecture
 
