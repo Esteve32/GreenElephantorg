@@ -19,11 +19,13 @@ Create a GitHub Action that runs daily to check SSL certificate expiration and a
 **Setup:**
 
 1. Create `.github/workflows/ssl-check.yml` in your repository
-2. Add the monitoring workflow (see example below)
+2. Add the monitoring workflow (simplified example below - see actual implementation in this repo)
 3. Configure GitHub repository secrets for notifications
 4. Enable GitHub Issues for alerts
 
-**Example Workflow:**
+**Simplified Example Workflow:**
+
+> **Note:** This is a simplified example for illustration. The actual implementation in this repository (`.github/workflows/ssl-certificate-check.yml`) includes more sophisticated features like automatic issue management, better error handling, and detailed summaries.
 
 ```yaml
 name: SSL Certificate Check

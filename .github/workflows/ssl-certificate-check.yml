@@ -214,7 +214,7 @@ jobs:
               const newIssue = await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: mainStatus === 'expired' ? '🔥 URGENT: SSL Certificate EXPIRED' : '⚠️ SSL Certificate Expiring Soon',
+                title: mainStatus === 'expired' ? '🔥 URGENT: SSL Certificate EXPIRED - greenelephant.org' : '⚠️ SSL Certificate Expiring Soon - greenelephant.org',
                 body: bodyText,
                 labels: ['ssl-certificate', 'infrastructure', mainStatus === 'expired' ? 'urgent' : 'warning']
               });
@@ -238,11 +238,13 @@ jobs:
             if (issues.data.length > 0) {
               const issue = issues.data[0];
               
+              const mainDays = '${{ steps.check-main.outputs.days }}';
+              
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: `✅ **SSL certificates are now valid!**\n\nAll domains verified on ${new Date().toISOString()}:\n- ✅ greenelephant.org (${context.payload.steps?.['check-main']?.outputs?.days || 'N/A'} days remaining)\n- ✅ www.greenelephant.org\n- ✅ interviews.greenelephant.org\n\nClosing this issue automatically.`
+                body: `✅ **SSL certificates are now valid!**\n\nAll domains verified on ${new Date().toISOString()}:\n- ✅ greenelephant.org (${mainDays || 'N/A'} days remaining)\n- ✅ www.greenelephant.org\n- ✅ interviews.greenelephant.org\n\nClosing this issue automatically.`
               });
               
               await github.rest.issues.update({

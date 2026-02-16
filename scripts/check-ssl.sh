@@ -24,7 +24,7 @@ for DOMAIN in "${DOMAINS[@]}"; do
   echo -e "${BLUE}Checking: ${DOMAIN}${NC}"
   
   # Get certificate info
-  CERT_INFO=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -dates -subject -issuer 2>/dev/null)
+  CERT_INFO=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -dates -issuer 2>/dev/null)
   
   if [ $? -ne 0 ]; then
     echo -e "${RED}  ❌ Failed to retrieve certificate${NC}"
@@ -57,7 +57,7 @@ for DOMAIN in "${DOMAINS[@]}"; do
   
   # Status check
   if [ $DAYS_UNTIL_EXPIRY -lt 0 ]; then
-    echo -e "  ${RED}❌ EXPIRED! (${DAYS_UNTIL_EXPIRY} days ago)${NC}"
+    echo -e "  ${RED}❌ EXPIRED! (${DAYS_UNTIL_EXPIRY#-} days ago)${NC}"
     echo -e "  ${YELLOW}→ Action required: Follow SSL_QUICK_FIX.md${NC}"
     ALL_VALID=false
   elif [ $DAYS_UNTIL_EXPIRY -lt 14 ]; then
