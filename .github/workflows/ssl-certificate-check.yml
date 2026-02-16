@@ -1,0 +1,305 @@
+name: SSL Certificate Monitoring
+
+on:
+  schedule:
+    # Run daily at 9:00 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-ssl-certificates:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check greenelephant.org SSL certificate
+        id: check-main
+        run: |
+          DOMAIN="greenelephant.org"
+          DAYS_THRESHOLD=14
+          
+          echo "Checking SSL certificate for $DOMAIN..."
+          
+          # Get certificate expiration date
+          EXPIRY_DATE=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          
+          if [ -z "$EXPIRY_DATE" ]; then
+            echo "error=true" >> $GITHUB_OUTPUT
+            echo "::error::Failed to retrieve certificate for $DOMAIN"
+            exit 1
+          fi
+          
+          # Convert to seconds since epoch
+          EXPIRY_EPOCH=$(date -d "$EXPIRY_DATE" +%s)
+          NOW_EPOCH=$(date +%s)
+          
+          # Calculate days until expiration
+          DAYS_UNTIL_EXPIRY=$(( ($EXPIRY_EPOCH - $NOW_EPOCH) / 86400 ))
+          
+          echo "Certificate expires on: $EXPIRY_DATE"
+          echo "Days until expiration: $DAYS_UNTIL_EXPIRY"
+          echo "days=$DAYS_UNTIL_EXPIRY" >> $GITHUB_OUTPUT
+          echo "expiry_date=$EXPIRY_DATE" >> $GITHUB_OUTPUT
+          
+          # Check if certificate is expired or expiring soon
+          if [ $DAYS_UNTIL_EXPIRY -lt 0 ]; then
+            echo "status=expired" >> $GITHUB_OUTPUT
+            echo "::error::SSL certificate for $DOMAIN has EXPIRED $DAYS_UNTIL_EXPIRY days ago!"
+            exit 1
+          elif [ $DAYS_UNTIL_EXPIRY -lt $DAYS_THRESHOLD ]; then
+            echo "status=expiring" >> $GITHUB_OUTPUT
+            echo "::warning::SSL certificate for $DOMAIN expires in $DAYS_UNTIL_EXPIRY days!"
+            exit 1
+          else
+            echo "status=valid" >> $GITHUB_OUTPUT
+            echo "::notice::SSL certificate for $DOMAIN is valid for $DAYS_UNTIL_EXPIRY more days"
+          fi
+
+      - name: Check www.greenelephant.org SSL certificate
+        id: check-www
+        continue-on-error: true
+        run: |
+          DOMAIN="www.greenelephant.org"
+          DAYS_THRESHOLD=14
+          
+          echo "Checking SSL certificate for $DOMAIN..."
+          
+          EXPIRY_DATE=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          
+          if [ -z "$EXPIRY_DATE" ]; then
+            echo "error=true" >> $GITHUB_OUTPUT
+            echo "::warning::Failed to retrieve certificate for $DOMAIN"
+            exit 0
+          fi
+          
+          EXPIRY_EPOCH=$(date -d "$EXPIRY_DATE" +%s)
+          NOW_EPOCH=$(date +%s)
+          DAYS_UNTIL_EXPIRY=$(( ($EXPIRY_EPOCH - $NOW_EPOCH) / 86400 ))
+          
+          echo "Certificate expires on: $EXPIRY_DATE"
+          echo "Days until expiration: $DAYS_UNTIL_EXPIRY"
+          echo "days=$DAYS_UNTIL_EXPIRY" >> $GITHUB_OUTPUT
+          echo "expiry_date=$EXPIRY_DATE" >> $GITHUB_OUTPUT
+          
+          if [ $DAYS_UNTIL_EXPIRY -lt 0 ]; then
+            echo "status=expired" >> $GITHUB_OUTPUT
+            echo "::warning::www subdomain certificate has EXPIRED"
+          elif [ $DAYS_UNTIL_EXPIRY -lt $DAYS_THRESHOLD ]; then
+            echo "status=expiring" >> $GITHUB_OUTPUT
+            echo "::warning::www subdomain certificate expires in $DAYS_UNTIL_EXPIRY days!"
+          else
+            echo "status=valid" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check interviews.greenelephant.org SSL certificate
+        id: check-interviews
+        continue-on-error: true
+        run: |
+          DOMAIN="interviews.greenelephant.org"
+          DAYS_THRESHOLD=14
+          
+          echo "Checking SSL certificate for $DOMAIN..."
+          
+          EXPIRY_DATE=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          
+          if [ -z "$EXPIRY_DATE" ]; then
+            echo "error=true" >> $GITHUB_OUTPUT
+            echo "::warning::Failed to retrieve certificate for $DOMAIN"
+            exit 0
+          fi
+          
+          EXPIRY_EPOCH=$(date -d "$EXPIRY_DATE" +%s)
+          NOW_EPOCH=$(date +%s)
+          DAYS_UNTIL_EXPIRY=$(( ($EXPIRY_EPOCH - $NOW_EPOCH) / 86400 ))
+          
+          echo "Certificate expires on: $EXPIRY_DATE"
+          echo "Days until expiration: $DAYS_UNTIL_EXPIRY"
+          echo "days=$DAYS_UNTIL_EXPIRY" >> $GITHUB_OUTPUT
+          echo "expiry_date=$EXPIRY_DATE" >> $GITHUB_OUTPUT
+          
+          if [ $DAYS_UNTIL_EXPIRY -lt 0 ]; then
+            echo "status=expired" >> $GITHUB_OUTPUT
+            echo "::warning::interviews subdomain certificate has EXPIRED"
+          elif [ $DAYS_UNTIL_EXPIRY -lt $DAYS_THRESHOLD ]; then
+            echo "status=expiring" >> $GITHUB_OUTPUT
+            echo "::warning::interviews subdomain certificate expires in $DAYS_UNTIL_EXPIRY days!"
+          else
+            echo "status=valid" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or Update Issue on Certificate Problem
+        if: failure() || steps.check-main.outputs.status != 'valid'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const mainStatus = '${{ steps.check-main.outputs.status }}';
+            const mainDays = '${{ steps.check-main.outputs.days }}';
+            const mainExpiry = '${{ steps.check-main.outputs.expiry_date }}';
+            const wwwStatus = '${{ steps.check-www.outputs.status }}';
+            const wwwDays = '${{ steps.check-www.outputs.days }}';
+            const interviewsStatus = '${{ steps.check-interviews.outputs.status }}';
+            const interviewsDays = '${{ steps.check-interviews.outputs.days }}';
+            
+            let bodyText = `## 🔒 SSL Certificate Alert\n\n`;
+            
+            if (mainStatus === 'expired') {
+              bodyText += `### ❌ URGENT: Main Certificate EXPIRED\n\n`;
+              bodyText += `**Domain:** greenelephant.org\n`;
+              bodyText += `**Status:** EXPIRED ${Math.abs(mainDays)} days ago\n`;
+              bodyText += `**Expired on:** ${mainExpiry}\n\n`;
+              bodyText += `**Users cannot access the website!** This needs immediate attention.\n\n`;
+            } else if (mainStatus === 'expiring') {
+              bodyText += `### ⚠️ Main Certificate Expiring Soon\n\n`;
+              bodyText += `**Domain:** greenelephant.org\n`;
+              bodyText += `**Status:** Expires in ${mainDays} days\n`;
+              bodyText += `**Expires on:** ${mainExpiry}\n\n`;
+            }
+            
+            if (wwwStatus === 'expired' || wwwStatus === 'expiring') {
+              bodyText += `### www Subdomain: ${wwwStatus === 'expired' ? 'EXPIRED' : 'Expiring in ' + wwwDays + ' days'}\n`;
+            }
+            
+            if (interviewsStatus === 'expired' || interviewsStatus === 'expiring') {
+              bodyText += `### interviews Subdomain: ${interviewsStatus === 'expired' ? 'EXPIRED' : 'Expiring in ' + interviewsDays + ' days'}\n`;
+            }
+            
+            bodyText += `\n---\n\n`;
+            bodyText += `## 🚀 Action Required\n\n`;
+            bodyText += `**Quick Fix (15 minutes):**\n`;
+            bodyText += `1. Follow the steps in [\`SSL_QUICK_FIX.md\`](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/SSL_QUICK_FIX.md)\n\n`;
+            bodyText += `**Detailed Troubleshooting:**\n`;
+            bodyText += `2. See [\`SSL_CERTIFICATE_RENEWAL_GUIDE.md\`](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/SSL_CERTIFICATE_RENEWAL_GUIDE.md)\n\n`;
+            bodyText += `**Quick Links:**\n`;
+            bodyText += `- [Replit Deployments](https://replit.com) (re-link domain to renew certificate)\n`;
+            bodyText += `- [Namecheap DNS](https://namecheap.com) (verify DNS records)\n`;
+            bodyText += `- [SSL Checker](https://www.sslshopper.com/ssl-checker.html?hostname=greenelephant.org)\n`;
+            bodyText += `- [DNS Propagation Check](https://dnschecker.org)\n\n`;
+            bodyText += `---\n\n`;
+            bodyText += `**Workflow Run:** [View logs](${context.payload.repository.html_url}/actions/runs/${context.runId})\n`;
+            bodyText += `**Detected:** ${new Date().toISOString()}\n`;
+            
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ssl-certificate'
+            });
+            
+            if (issues.data.length > 0) {
+              // Update existing issue
+              const issue = issues.data[0];
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: bodyText
+              });
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `🔔 Certificate check failed again on ${new Date().toISOString()}\n\nSee updated issue description for current status.`
+              });
+              
+              core.notice(`Updated existing issue #${issue.number}`);
+            } else {
+              // Create new issue
+              const newIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: mainStatus === 'expired' ? '🔥 URGENT: SSL Certificate EXPIRED' : '⚠️ SSL Certificate Expiring Soon',
+                body: bodyText,
+                labels: ['ssl-certificate', 'infrastructure', mainStatus === 'expired' ? 'urgent' : 'warning']
+              });
+              
+              core.notice(`Created new issue #${newIssue.data.number}`);
+            }
+
+      - name: Close Issue if All Certificates Valid
+        if: success() && steps.check-main.outputs.status == 'valid'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Check if there's an open SSL certificate issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ssl-certificate'
+            });
+            
+            if (issues.data.length > 0) {
+              const issue = issues.data[0];
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ **SSL certificates are now valid!**\n\nAll domains verified on ${new Date().toISOString()}:\n- ✅ greenelephant.org (${context.payload.steps?.['check-main']?.outputs?.days || 'N/A'} days remaining)\n- ✅ www.greenelephant.org\n- ✅ interviews.greenelephant.org\n\nClosing this issue automatically.`
+              });
+              
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed'
+              });
+              
+              core.notice(`Closed issue #${issue.number} - certificates are valid`);
+            }
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### SSL Certificate Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Domain | Status | Days Remaining |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|----------------|" >> $GITHUB_STEP_SUMMARY
+          
+          MAIN_STATUS="${{ steps.check-main.outputs.status }}"
+          MAIN_DAYS="${{ steps.check-main.outputs.days }}"
+          WWW_STATUS="${{ steps.check-www.outputs.status }}"
+          WWW_DAYS="${{ steps.check-www.outputs.days }}"
+          INT_STATUS="${{ steps.check-interviews.outputs.status }}"
+          INT_DAYS="${{ steps.check-interviews.outputs.days }}"
+          
+          # Main domain
+          if [ "$MAIN_STATUS" = "expired" ]; then
+            echo "| greenelephant.org | ❌ EXPIRED | ${MAIN_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$MAIN_STATUS" = "expiring" ]; then
+            echo "| greenelephant.org | ⚠️ Expiring | ${MAIN_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| greenelephant.org | ✅ Valid | ${MAIN_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # WWW subdomain
+          if [ "$WWW_STATUS" = "expired" ]; then
+            echo "| www.greenelephant.org | ❌ EXPIRED | ${WWW_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$WWW_STATUS" = "expiring" ]; then
+            echo "| www.greenelephant.org | ⚠️ Expiring | ${WWW_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$WWW_STATUS" = "valid" ]; then
+            echo "| www.greenelephant.org | ✅ Valid | ${WWW_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| www.greenelephant.org | ⚠️ Error | - |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Interviews subdomain
+          if [ "$INT_STATUS" = "expired" ]; then
+            echo "| interviews.greenelephant.org | ❌ EXPIRED | ${INT_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$INT_STATUS" = "expiring" ]; then
+            echo "| interviews.greenelephant.org | ⚠️ Expiring | ${INT_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$INT_STATUS" = "valid" ]; then
+            echo "| interviews.greenelephant.org | ✅ Valid | ${INT_DAYS} |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| interviews.greenelephant.org | ⚠️ Error | - |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Last checked:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
