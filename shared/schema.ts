@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -73,7 +73,7 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
   name: z.string().min(2).optional(),
   consentGiven: z.string(),
   consentText: z.string(),
-  source: z.enum(["waitlist", "newsletter", "recommendation", "quiz", "webinar"]),
+  source: z.enum(["waitlist", "newsletter", "recommendation", "quiz", "webinar", "scan_interest", "flow_check"]),
   channelsReached: z.array(z.string()).optional(),
 });
 
@@ -552,3 +552,39 @@ export const insertWebinarSettingsSchema = createInsertSchema(webinarSettings).o
 
 export type InsertWebinarSettings = z.infer<typeof insertWebinarSettingsSchema>;
 export type WebinarSettings = typeof webinarSettings.$inferSelect;
+
+export const flowCheckResults = pgTable("flow_check_results", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contactId: varchar("contact_id"),
+  situation: text("situation").notNull(),
+  customSituation: text("custom_situation"),
+  role: text("role").notNull(),
+  motivation: integer("motivation").notNull(),
+  challenge: integer("challenge").notNull(),
+  competence: integer("competence").notNull(),
+  zone: text("zone").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertFlowCheckResultSchema = createInsertSchema(flowCheckResults).pick({
+  contactId: true,
+  situation: true,
+  customSituation: true,
+  role: true,
+  motivation: true,
+  challenge: true,
+  competence: true,
+  zone: true,
+}).extend({
+  contactId: z.string().nullish(),
+  situation: z.string().min(1),
+  customSituation: z.string().nullish(),
+  role: z.string().min(1),
+  motivation: z.coerce.number().min(0).max(10),
+  challenge: z.coerce.number().min(0).max(10),
+  competence: z.coerce.number().min(0).max(10),
+  zone: z.enum(["flow", "challenge", "comfort", "danger"]),
+});
+
+export type InsertFlowCheckResult = z.infer<typeof insertFlowCheckResultSchema>;
+export type FlowCheckResult = typeof flowCheckResults.$inferSelect;

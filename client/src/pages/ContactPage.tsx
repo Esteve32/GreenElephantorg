@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Mail, MessageCircle } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -104,6 +105,16 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16" style={gradientStyle}>
+      <SEO
+        title="Contact Us | GreenElephant"
+        description="Get in touch with GreenElephant for coaching, retreats, or consulting inquiries. Every message receives a personal response within 24 hours. Book a call or send us a message."
+        canonicalPath="/contact"
+        keywords="contact GreenElephant, book coaching session, communication coaching inquiry, schedule consultation"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Contact", url: "/contact" }
+        ]}
+      />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="text-center mb-16"

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Quote, ArrowRight, Sparkles } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 const stories = [
   {
@@ -42,6 +43,16 @@ const stories = [
 export default function StoriesPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Client Stories & Success | GreenElephant"
+        description="Read real transformation stories from executives, founders, designers, and partners who transformed their communication patterns through conscious communication coaching and retreats."
+        canonicalPath="/stories"
+        keywords="communication coaching success stories, client testimonials, conscious communication transformation, coaching results, retreat outcomes"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Stories", url: "/stories" }
+        ]}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-flow text-white">

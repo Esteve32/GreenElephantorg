@@ -78,6 +78,28 @@ export function SEO({
       canonical.setAttribute('href', fullUrl);
     }
 
+    // Organisation schema — injected on every page for AI agent discoverability
+    if (!document.getElementById('org-structured-data')) {
+      const orgScript = document.createElement('script');
+      orgScript.setAttribute('type', 'application/ld+json');
+      orgScript.setAttribute('id', 'org-structured-data');
+      orgScript.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "GreenElephant",
+        "alternateName": "GreenElephant.org",
+        "url": "https://greenelephant.org",
+        "logo": "https://greenelephant.org/ge-logo-512.png",
+        "description": "Conscious communication platform. Tools, coaching, and retreats built around the Periodic Table of Conscious Communication.",
+        "email": "esteve@greenelephant.org",
+        "areaServed": "Worldwide",
+        "knowsAbout": ["Conscious Communication", "Executive Coaching", "Flow Theory", "Micro-habits", "Behavioural Change"],
+        "sameAs": ["https://www.linkedin.com/company/greenelephant-org"],
+        "founder": { "@type": "Person", "name": "Esteve Camprubí", "email": "esteve@greenelephant.org" }
+      });
+      document.head.appendChild(orgScript);
+    }
+
     if (structuredData) {
       let script = document.getElementById('page-structured-data');
       if (!script) {
@@ -146,16 +168,51 @@ export function SEO({
   return null;
 }
 
+// Organisation schema — injected on every page that uses SEO for agent discoverability
+export const ORGANIZATION_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "GreenElephant",
+  "alternateName": "GreenElephant.org",
+  "url": "https://greenelephant.org",
+  "logo": "https://greenelephant.org/ge-logo-512.png",
+  "description": "Conscious communication platform. Tools, coaching, and retreats built around the Periodic Table of Conscious Communication — 146 micro-habits across 8 behavioural lenses.",
+  "email": "esteve@greenelephant.org",
+  "areaServed": "Worldwide",
+  "foundingDate": "2022",
+  "knowsAbout": [
+    "Conscious Communication",
+    "Executive Coaching",
+    "Communication Diagnostics",
+    "Flow Theory",
+    "Micro-habits",
+    "TEAL Organisations",
+    "Behavioural Change",
+    "Leadership Presence"
+  ],
+  "sameAs": [
+    "https://www.linkedin.com/company/greenelephant-org"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Esteve Camprubí",
+    "jobTitle": "Founder & Lead Communication Coach",
+    "email": "esteve@greenelephant.org"
+  }
+};
+
 export const PRODUCT_STRUCTURED_DATA = {
   satelliteScan: {
     "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "Satellite Scan - Communication Diagnostic",
-    "description": "AI-powered communication behavior analysis mapping your patterns across 8 lenses. Discover your communication strengths and growth opportunities.",
-    "brand": {
-      "@type": "Brand",
-      "name": "GreenElephant"
-    },
+    "@type": ["Product", "Service"],
+    "name": "Satellite Scan — Communication Diagnostic",
+    "description": "AI-powered communication assessment mapping your patterns across 8 lenses (Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics). 129 questions. Delivered as a visual dashboard. Used as the baseline for all coaching.",
+    "url": "https://greenelephant.org/scan",
+    "serviceType": "Communication Assessment",
+    "audience": { "@type": "Audience", "audienceType": "Executive Assistants, Founders, Team Leaders, Virtual Assistants" },
+    "areaServed": "Worldwide",
+    "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+    "brand": { "@type": "Brand", "name": "GreenElephant" },
     "offers": {
       "@type": "Offer",
       "price": "99.95",
@@ -165,13 +222,12 @@ export const PRODUCT_STRUCTURED_DATA = {
   },
   interviewMastery: {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": ["Product", "Service"],
     "name": "Interview Mastery Bundle",
-    "description": "3-session coaching program combining Satellite Scan diagnostics with personalized interview coaching for career advancement.",
-    "brand": {
-      "@type": "Brand",
-      "name": "GreenElephant"
-    },
+    "description": "3-session coaching program combining Satellite Scan diagnostics with personalised interview coaching for career advancement.",
+    "serviceType": "Career Coaching",
+    "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+    "brand": { "@type": "Brand", "name": "GreenElephant" },
     "offers": {
       "@type": "Offer",
       "price": "845",
@@ -181,13 +237,12 @@ export const PRODUCT_STRUCTURED_DATA = {
   },
   singleSession: {
     "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "1:1 Single Session",
-    "description": "One-on-one coaching session for targeted communication breakthroughs.",
-    "brand": {
-      "@type": "Brand",
-      "name": "GreenElephant"
-    },
+    "@type": ["Product", "Service"],
+    "name": "1:1 Single Coaching Session",
+    "description": "One 120-minute coaching session for targeted communication breakthroughs. Uses Satellite Scan results to identify triggers, blind spots, and strengths.",
+    "serviceType": "Executive Communication Coaching",
+    "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+    "brand": { "@type": "Brand", "name": "GreenElephant" },
     "offers": {
       "@type": "Offer",
       "price": "295",
@@ -197,13 +252,15 @@ export const PRODUCT_STRUCTURED_DATA = {
   },
   coachingJourney: {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": ["Product", "Service"],
     "name": "Coaching Journey",
-    "description": "Comprehensive multi-session coaching program for deep transformation in communication patterns and leadership presence.",
-    "brand": {
-      "@type": "Brand",
-      "name": "GreenElephant"
-    },
+    "description": "Comprehensive multi-session coaching program for deep transformation in communication patterns and leadership presence. Includes Satellite Scan baseline, biweekly 120-minute sessions, and unlimited check-in support.",
+    "url": "https://greenelephant.org/coaching",
+    "serviceType": "Executive Communication Coaching",
+    "audience": { "@type": "Audience", "audienceType": "Leaders, Executives, Founders seeking deep behavioural change" },
+    "areaServed": "Worldwide",
+    "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+    "brand": { "@type": "Brand", "name": "GreenElephant" },
     "offers": {
       "@type": "Offer",
       "price": "2980",
@@ -213,16 +270,32 @@ export const PRODUCT_STRUCTURED_DATA = {
   },
   teamWorkshop: {
     "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "Team Workshop",
-    "description": "Interactive team workshop to improve workplace communication culture and reduce conflict.",
-    "brand": {
-      "@type": "Brand",
-      "name": "GreenElephant"
-    },
+    "@type": ["Product", "Service"],
+    "name": "Team Communication Workshop",
+    "description": "Interactive team workshop to improve workplace communication culture and reduce conflict. Uses the Periodic Table of Conscious Communication framework.",
+    "serviceType": "Team Workshop",
+    "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+    "brand": { "@type": "Brand", "name": "GreenElephant" },
     "offers": {
       "@type": "Offer",
       "price": "1200",
+      "priceCurrency": "EUR",
+      "availability": "https://schema.org/InStock"
+    }
+  },
+  flowCheck: {
+    "@context": "https://schema.org",
+    "@type": ["SoftwareApplication", "Service"],
+    "name": "Check-my-FLOW — Free Flow Assessment",
+    "description": "Free 5-minute assessment based on Csikszentmihalyi's 1988 flow model. Measures perceived Motivation, Challenge, and Competence in a communication situation. Maps you to Flow, Challenge/Stress, Comfort, or Danger/Apathy zones.",
+    "url": "https://greenelephant.org/flow-check",
+    "applicationCategory": "Assessment Tool",
+    "serviceType": "Communication Assessment",
+    "audience": { "@type": "Audience", "audienceType": "Anyone navigating a challenging communication context" },
+    "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
       "priceCurrency": "EUR",
       "availability": "https://schema.org/InStock"
     }

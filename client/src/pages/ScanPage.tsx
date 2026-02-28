@@ -10,8 +10,12 @@ import { LENSES, type LensType } from "@/constants/lenses";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { Link, useLocation } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2, Sparkles, Brain, Timer, Users, Gift, AlertTriangle, Target, Zap, ArrowDown, HelpCircle, Smartphone, BarChart3, MessageSquare, Bot, Video, FileText, Play, Download, Table } from "lucide-react";
-import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
+import { ArrowRight, CheckCircle2, Sparkles, Brain, Timer, Users, Gift, AlertTriangle, Target, Zap, ArrowDown, HelpCircle, Smartphone, BarChart3, MessageSquare, Bot, Video, FileText, Play, Download, Table, Star, Shield, Award, Quote, ChevronLeft, ChevronRight, BookOpen, Mail, Lock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+const logoUrl = "/ge-logo-512.png";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
 import archipelagoUrl from "@assets/finnish_archipelago_landscape_aerial_view_1764797904449.png";
 import { SEO, PRODUCT_STRUCTURED_DATA } from "@/components/SEO";
@@ -884,6 +888,233 @@ function WhatIsItSection() {
   );
 }
 
+const SCAN_TESTIMONIALS = [
+  {
+    quote: "Managing calendars for three executives means navigating conflicting priorities daily. The Satellite Scan helped me see my communication patterns and now I handle those tough 'no' conversations with confidence.",
+    name: "Sophie M.",
+    role: "Executive Assistant to C-Suite",
+    country: "Germany",
+    lens: "alignment" as LensType,
+  },
+  {
+    quote: "I always thought I was just 'bad at confrontation.' The Scan showed me I actually have strong Alignment skills — I just needed the language to own them. My annual review went completely differently this year.",
+    name: "Katariina L.",
+    role: "Executive Assistant, Tech Company",
+    country: "Finland",
+    lens: "influence" as LensType,
+  },
+  {
+    quote: "Working remotely for three clients across time zones, I was drowning in miscommunication. The 8 lenses gave me a framework to name what was going wrong — and fix it without burning bridges.",
+    name: "Priya S.",
+    role: "Virtual Assistant",
+    country: "India",
+    lens: "dynamics" as LensType,
+  },
+  {
+    quote: "We've been transitioning to a self-managing structure for two years. The framework finally gave our team a common language for the difficult conversations that transformation requires.",
+    name: "Elena R.",
+    role: "People Lead, TEAL Organization",
+    country: "Netherlands",
+    lens: "needs" as LensType,
+  },
+  {
+    quote: "I recommended the Scan to my whole team. It's not a test — it's a mirror. And sometimes you need a good mirror before you can see your superpowers clearly.",
+    name: "Mikko H.",
+    role: "Operations Manager",
+    country: "Finland",
+    lens: "ego" as LensType,
+  },
+];
+
+const TRUST_SIGNALS = [
+  { icon: BookOpen, label: "27 years of practice" },
+  { icon: Award, label: "Based on peer-reviewed research" },
+  { icon: Shield, label: "GDPR compliant" },
+];
+
+function SocialProofSection() {
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startAutoPlay = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % SCAN_TESTIMONIALS.length);
+    }, 6000);
+  };
+
+  useEffect(() => {
+    startAutoPlay();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, []);
+
+  const goTo = (index: number) => {
+    setCurrent(index);
+    startAutoPlay();
+  };
+
+  const prev = () => goTo((current - 1 + SCAN_TESTIMONIALS.length) % SCAN_TESTIMONIALS.length);
+  const next = () => goTo((current + 1) % SCAN_TESTIMONIALS.length);
+
+  const testimonial = SCAN_TESTIMONIALS[current];
+  const lens = LENSES[testimonial.lens];
+
+  return (
+    <section
+      className="relative py-24 md:py-32"
+      data-testid="section-social-proof"
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <Badge className="mb-6 bg-needs/20 text-needs border-needs/30">
+            <Users className="w-3 h-3 mr-1" />
+            Trusted by Professionals
+          </Badge>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white" data-testid="text-social-proof-title">
+            What Professionals Are Saying
+          </h2>
+          <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            Professionals across industries trust the Satellite Scan to transform their communication.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
+        >
+          <Card className="bg-white/5 border-white/10 text-center">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center gap-1 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
+                ))}
+              </div>
+              <p className="text-3xl font-bold text-white mb-1" data-testid="text-nps-score">9.2/10</p>
+              <p className="text-sm text-white/60">Average satisfaction score</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 border-white/10 text-center">
+            <CardContent className="p-8">
+              <p className="text-3xl font-bold text-white mb-1" data-testid="text-client-count">200+</p>
+              <p className="text-sm text-white/60">Professionals scanned</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 border-white/10 text-center">
+            <CardContent className="p-8">
+              <p className="text-3xl font-bold text-white mb-1" data-testid="text-elements-count">129</p>
+              <p className="text-sm text-white/60">Communication elements mapped</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-16"
+          data-testid="scan-testimonial-carousel"
+        >
+          <div className="flex items-center gap-4">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="text-white/60 flex-shrink-0"
+              onClick={prev}
+              data-testid="button-scan-testimonial-prev"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+
+            <div className="flex-1 min-h-[180px] flex items-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.35 }}
+                  className="w-full"
+                >
+                  <Card className="bg-white/5 border-white/10">
+                    <CardContent className="p-8">
+                      <div
+                        className="w-3 h-3 rounded-full mb-4"
+                        style={{ backgroundColor: lens.hexColor }}
+                      />
+                      <blockquote className="text-lg md:text-xl text-white/90 leading-relaxed italic mb-6" data-testid={`text-scan-testimonial-${current}`}>
+                        "{testimonial.quote}"
+                      </blockquote>
+                      <div className="border-t border-white/10 pt-4">
+                        <p className="font-semibold text-white">{testimonial.name}</p>
+                        <p className="text-white/50 text-sm">{testimonial.role}, {testimonial.country}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <Button
+              size="icon"
+              variant="ghost"
+              className="text-white/60 flex-shrink-0"
+              onClick={next}
+              data-testid="button-scan-testimonial-next"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 mt-6">
+            {SCAN_TESTIMONIALS.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goTo(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                  index === current ? "bg-white" : "bg-white/30"
+                }`}
+                data-testid={`button-scan-testimonial-dot-${index}`}
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex flex-wrap items-center justify-center gap-8"
+        >
+          {TRUST_SIGNALS.map((signal) => {
+            const SignalIcon = signal.icon;
+            return (
+              <div key={signal.label} className="flex items-center gap-3" data-testid={`trust-signal-${signal.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div className="w-10 h-10 rounded-md bg-white/5 border border-white/10 flex items-center justify-center">
+                  <SignalIcon className="w-5 h-5 text-needs" />
+                </div>
+                <span className="text-sm text-white/70 font-medium">{signal.label}</span>
+              </div>
+            );
+          })}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function LensesSection() {
   const [openLens, setOpenLens] = useState<LensType | null>(null);
   const [viewMode, setViewMode] = useState<"circular" | "stacked">("circular");
@@ -1359,6 +1590,212 @@ function HowItWorksSection() {
   );
 }
 
+function LeadMagnetSection() {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !consent) {
+      toast({
+        title: "Please fill in all required fields",
+        description: "Email and consent are required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await apiRequest("POST", "/api/scan-interest", {
+        email,
+        name: name || undefined,
+        consentText: "I agree to receive communication insights and occasional updates from GreenElephant. I can unsubscribe at any time.",
+      });
+      setIsSubmitted(true);
+      toast({
+        title: "Check your inbox!",
+        description: "We've sent you communication insights and a link to the Flow Check.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Something went wrong",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <section
+      className="relative py-24 md:py-32"
+      data-testid="section-lead-magnet"
+    >
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-10"
+        >
+          <Badge className="mb-6 bg-flow/20 text-flow border-flow/30">
+            <Zap className="w-3 h-3 mr-1" />
+            Free Assessment
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white" data-testid="text-lead-magnet-title">
+            Check Your Communication Flow — Free
+          </h2>
+          <p className="text-lg text-white/70 max-w-xl mx-auto">
+            Measure your motivation, perceived challenge, and perceived competence in a specific communication situation. Discover which zone you're in — Flow, Challenge, Comfort, or Danger — based on Csikszentmihalyi's flow model.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+            <CardContent className="p-6 md:p-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                {[
+                  { title: "Pick Your Situation", desc: "Choose a communication context that matters to you" },
+                  { title: "Rate 3 Dimensions", desc: "Motivation, perceived challenge, and perceived competence" },
+                  { title: "Get Your Zone", desc: "See where you land on the Flow model with personalized insights" },
+                ].map((step, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-flow/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-flow text-xs font-bold">{i + 1}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{step.title}</p>
+                      <p className="text-xs text-white/60">{step.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
+                <Link href="/flow-check">
+                  <Button className="bg-flow text-white" data-testid="button-take-flow-check">
+                    <Zap className="mr-2 h-4 w-4" />
+                    Take the Free Flow Check
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <p className="text-sm text-white/50">
+                  Takes about 2 minutes. No email required.
+                </p>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-white/10">
+                {isSubmitted ? (
+                  <div className="text-center py-4" data-testid="text-lead-magnet-success">
+                    <div className="w-12 h-12 rounded-full bg-needs/20 flex items-center justify-center mx-auto mb-3">
+                      <CheckCircle2 className="w-6 h-6 text-needs" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-1">Check Your Inbox</h3>
+                    <p className="text-sm text-white/70">
+                      We've sent you communication insights and a direct link to the Flow Check.
+                    </p>
+                  </div>
+                ) : showEmailForm ? (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <p className="text-sm text-white/60 text-center mb-2">
+                      Get communication insights and updates delivered to your inbox.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Input
+                        type="text"
+                        placeholder="Your name (optional)"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+                        data-testid="input-lead-name"
+                      />
+                      <Input
+                        type="email"
+                        placeholder="Your email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+                        data-testid="input-lead-email"
+                      />
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="lead-consent"
+                        checked={consent}
+                        onCheckedChange={(checked) => setConsent(checked === true)}
+                        className="mt-1 border-white/30 data-[state=checked]:bg-needs data-[state=checked]:border-needs"
+                        data-testid="checkbox-lead-consent"
+                      />
+                      <label htmlFor="lead-consent" className="text-xs text-white/60 leading-relaxed cursor-pointer">
+                        I agree to receive communication insights and occasional updates from GreenElephant. I can unsubscribe at any time. See our{" "}
+                        <Link href="/privacy" className="text-needs underline">Privacy Policy</Link>.
+                      </label>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting || !consent || !email}
+                        className="bg-needs text-white w-full sm:w-auto"
+                        data-testid="button-get-updates"
+                      >
+                        {isSubmitting ? (
+                          "Sending..."
+                        ) : (
+                          <>
+                            <Mail className="mr-2 h-4 w-4" />
+                            Get Updates
+                          </>
+                        )}
+                      </Button>
+                      <span className="flex items-center gap-1 text-xs text-white/40">
+                        <Lock className="w-3 h-3" />
+                        GDPR compliant. No spam.
+                      </span>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm text-white/50">
+                      Prefer to get updates by email?{" "}
+                      <button
+                        onClick={() => setShowEmailForm(true)}
+                        className="text-needs underline cursor-pointer bg-transparent border-none"
+                        data-testid="button-show-email-form"
+                      >
+                        Sign up for communication insights
+                      </button>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 export default function ScanPage() {
   const [location] = useLocation();
   
@@ -1441,8 +1878,10 @@ export default function ScanPage() {
           <BenefitsSection />
           <SignalsSection />
           <WhatIsItSection />
+          <SocialProofSection />
           <LensesSection />
           <FAQSection />
+          <LeadMagnetSection />
           <HowItWorksSection />
         </div>
       </div>

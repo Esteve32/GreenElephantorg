@@ -15,10 +15,11 @@ import {
   insertContactMessageSchema,
   insertSatellitescanPurchaseSchema,
   insertPromptSchema,
+  insertFlowCheckResultSchema,
   type InsertOnboardingEmailTemplate
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
-import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail, sendWebinarWaitlistConfirmation, sendTypeformScanCompletionEmail, sendVerificationEmail } from "./email-notifications";
+import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail, sendWebinarWaitlistConfirmation, sendTypeformScanCompletionEmail, sendVerificationEmail, sendNewsletterConfirmationEmail, sendScanInterestConfirmationEmail, sendScanInterestAdminNotification, sendWaitlistConfirmationEmail, sendContactFormEmails, sendQuizResultsEmail, sendFlowCheckResultEmail, sendFlowCheckAdminNotification } from "./email-notifications";
 import { getSheetData } from "./lib/googleSheets";
 import { generateDashboardUI } from "./lib/thesysApi";
 import { 
@@ -597,6 +598,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const entry = await storage.createWaitlistEntry(entryValidation.data);
 
+      sendWaitlistConfirmationEmail({
+        email,
+        name: name || null,
+        retreatType: retreatType || '',
+        motivation: motivation || '',
+      }).catch(err => console.log('Waitlist confirmation email failed:', err.message));
+
       res.status(201).json({
         message: "You're on the list! We'll reach out when spots open up.",
         entry: { id: entry.id }
@@ -628,6 +636,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const contactMessage = await storage.createContactMessage(validation.data);
+
+      sendContactFormEmails({
+        name,
+        email,
+        message,
+        intent: intent || 'general',
+      }).catch(err => console.log('Contact form email failed:', err.message));
 
       res.status(201).json({
         message: "We're grateful for your message. We'll respond with care and attention within 24 hours.",
@@ -679,6 +694,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         contactId: contact.id
       });
 
+      if (contactValidation.data.consentGiven === 'true') {
+        sendNewsletterConfirmationEmail({
+          email,
+          name: name || null,
+        }).catch(err => console.log('Newsletter confirmation email failed:', err.message));
+      }
+
       res.status(201).json({
         message: "Welcome to the community!",
         subscription: { id: subscription.id }
@@ -688,6 +710,316 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         message: "We encountered an issue. Please try again."
       });
+    }
+  });
+
+  app.post("/api/scan-interest", async (req, res) => {
+    try {
+      const { email, name, consentText } = req.body;
+
+      const contactValidation = insertContactSchema.safeParse({
+        email,
+        name,
+        consentGiven: "true",
+        consentText,
+        source: "scan_interest"
+      });
+
+      if (!contactValidation.success) {
+        const validationError = fromError(contactValidation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      let contact = await storage.getContactByEmail(email);
+      let isNewContact = false;
+      if (!contact) {
+        contact = await storage.createContact(contactValidation.data);
+        isNewContact = true;
+      }
+
+      await storage.addChannelToContact(email, 'Scan Interest');
+
+      syncContactWithNotion(contact.id).catch(err => 
+        console.log('Notion sync deferred:', err.message)
+      );
+
+      const subscription = await storage.createNewsletterSubscription({
+        contactId: contact.id
+      });
+
+      if (contactValidation.data.consentGiven === 'true') {
+        sendScanInterestConfirmationEmail({
+          email,
+          name: name || null,
+        }).catch(err => console.log('Scan interest confirmation email failed:', err.message));
+      }
+
+      sendScanInterestAdminNotification({
+        email,
+        name: name || null,
+      }).catch(err => console.log('Scan interest admin notification failed:', err.message));
+
+      res.status(201).json({
+        message: "Check your inbox for your free prompts!",
+        subscription: { id: subscription.id }
+      });
+    } catch (error: any) {
+      console.error("Scan interest subscription error:", error);
+      res.status(500).json({
+        message: "We encountered an issue. Please try again."
+      });
+    }
+  });
+
+  // Check-my-FLOW assessment endpoint
+  app.post("/api/flow-check", async (req, res) => {
+    try {
+      const { email, name, consentText, situation, customSituation, role, motivation, challenge, competence } = req.body;
+
+      const m = Math.min(10, Math.max(0, Math.round(Number(motivation))));
+      const ch = Math.min(10, Math.max(0, Math.round(Number(challenge))));
+      const co = Math.min(10, Math.max(0, Math.round(Number(competence))));
+
+      if (isNaN(m) || isNaN(ch) || isNaN(co)) {
+        return res.status(400).json({ message: "motivation, challenge, and competence must be numbers between 0-10" });
+      }
+
+      // Motivation shifts perceived challenge (matching the frontend formula)
+      const effCh = Math.min(10, Math.max(0, ch + (m - 5) * 0.8));
+      let zone: "flow" | "challenge" | "comfort" | "danger";
+      if (effCh >= 5 && co >= 5) {
+        zone = "flow";
+      } else if (effCh >= 5 && co < 5) {
+        zone = "challenge";
+      } else if (effCh < 5 && co >= 5) {
+        zone = "comfort";
+      } else {
+        zone = "danger";
+      }
+
+      const displaySituation = situation === 'other' && customSituation ? customSituation : situation;
+
+      const resultValidation = insertFlowCheckResultSchema.safeParse({
+        situation: displaySituation,
+        customSituation: customSituation || null,
+        role,
+        motivation: m,
+        challenge: ch,
+        competence: co,
+        zone,
+        contactId: null,
+      });
+
+      if (!resultValidation.success) {
+        const validationError = fromError(resultValidation.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      const result = await storage.createFlowCheckResult(resultValidation.data);
+
+      if (email && consentText) {
+        const contactValidation = insertContactSchema.safeParse({
+          email,
+          name,
+          consentGiven: "true",
+          consentText,
+          source: "flow_check"
+        });
+
+        if (contactValidation.success) {
+          let contact = await storage.getContactByEmail(email);
+          if (!contact) {
+            contact = await storage.createContact(contactValidation.data);
+          }
+
+          await storage.addChannelToContact(email, 'Flow Check');
+
+          syncContactWithNotion(contact.id).catch(err =>
+            console.log('Notion sync deferred:', err.message)
+          );
+
+          sendFlowCheckResultEmail({
+            email,
+            name: name || null,
+            zone,
+            situation: displaySituation,
+            role,
+            motivation: m,
+            challenge: ch,
+            competence: co,
+          }).catch(err => console.log('Flow check result email failed:', err.message));
+
+          sendFlowCheckAdminNotification({
+            email,
+            name: name || null,
+            zone,
+            situation: displaySituation,
+            role,
+            motivation: m,
+            challenge: ch,
+            competence: co,
+          }).catch(err => console.log('Flow check admin notification failed:', err.message));
+        }
+      }
+
+      const zoneLabels: Record<string, string> = {
+        flow: "Flow Zone",
+        challenge: "Challenge / Stress Zone",
+        comfort: "Comfort Zone",
+        danger: "Danger / Apathy Zone"
+      };
+
+      res.status(201).json({
+        zone,
+        zoneLabel: zoneLabels[zone],
+        motivation: m,
+        challenge: ch,
+        competence: co,
+        situation: displaySituation,
+        role,
+        resultId: result.id,
+      });
+    } catch (error: any) {
+      console.error("Flow check submission error:", error);
+      res.status(500).json({
+        message: "We encountered an issue processing your flow check. Please try again."
+      });
+    }
+  });
+
+  // ── AGENT-READABLE MACHINE API ──────────────────────────────────────────────
+  // Structured JSON endpoints for AI agents, LLMs, and automated systems.
+  // These are public, cacheable, and intentionally flat/parseable.
+
+  app.get("/api/services", (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.json({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "GreenElephant Services",
+      "description": "Conscious communication coaching, assessments, and retreats by GreenElephant.",
+      "url": "https://greenelephant.org",
+      "itemListElement": [
+        {
+          "@type": "Service",
+          "position": 1,
+          "name": "Satellite Scan — Communication Diagnostic",
+          "description": "AI-powered assessment mapping your communication patterns across 8 lenses (Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics). 129 questions. Delivered as a visual dashboard. Used as the baseline for all coaching.",
+          "url": "https://greenelephant.org/scan",
+          "serviceType": "Communication Assessment",
+          "audience": "Executive Assistants, Founders, Team Leaders, Virtual Assistants",
+          "offers": { "@type": "Offer", "price": "99.95", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+          "format": "Online self-assessment + PDF report",
+          "duration": "Approximately 45 minutes"
+        },
+        {
+          "@type": "Service",
+          "position": 2,
+          "name": "Check-my-FLOW — Free Flow Assessment",
+          "description": "Free 5-minute assessment based on Csikszentmihalyi's 1988 flow model. Measures perceived Motivation, Challenge, and Competence in a specific communication situation. Maps you to one of 4 zones: Flow, Challenge/Stress, Comfort, or Danger/Apathy.",
+          "url": "https://greenelephant.org/flow-check",
+          "serviceType": "Communication Assessment",
+          "audience": "Anyone navigating a challenging communication context",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+          "format": "Online multi-step form with instant results",
+          "duration": "Approximately 5 minutes"
+        },
+        {
+          "@type": "Service",
+          "position": 3,
+          "name": "Coaching Journey",
+          "description": "Comprehensive communication coaching program. Includes Satellite Scan as baseline, biweekly 120-minute sessions, unlimited check-in calls, and ongoing messaging support. Continues until your personalised SMART communication goal is reached.",
+          "url": "https://greenelephant.org/coaching",
+          "serviceType": "Executive Communication Coaching",
+          "audience": "Leaders, Executives, Founders seeking deep behavioural change",
+          "offers": { "@type": "Offer", "price": "2980", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+          "format": "Video call sessions (remote)",
+          "duration": "Approximately 6 months"
+        },
+        {
+          "@type": "Service",
+          "position": 4,
+          "name": "Single Coaching Session",
+          "description": "One-off 120-minute deep-dive into your communication patterns. Uses Satellite Scan results to identify triggers, blind spots, and strengths. Co-creates micro-habits for your specific context.",
+          "url": "https://greenelephant.org/coaching",
+          "serviceType": "Executive Communication Coaching",
+          "audience": "Individuals wanting targeted support for a specific communication challenge",
+          "offers": { "@type": "Offer", "price": "295", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+          "format": "Video call (remote)",
+          "duration": "120 minutes"
+        },
+        {
+          "@type": "Service",
+          "position": 5,
+          "name": "Team Communication Workshop",
+          "description": "Interactive half-day or full-day workshop using the Periodic Table of Conscious Communication. Builds shared language, reduces conflict, and installs communication micro-habits across a team.",
+          "url": "https://greenelephant.org/coaching",
+          "serviceType": "Team Workshop",
+          "audience": "Teams of 6–30, HR managers, People & Culture leaders",
+          "offers": { "@type": "Offer", "price": "1200", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+          "format": "In-person or virtual",
+          "duration": "Half-day or full-day"
+        },
+        {
+          "@type": "Service",
+          "position": 6,
+          "name": "Conscious Communication Retreat — Finland",
+          "description": "Multi-day immersive retreat in the Finnish archipelago combining conscious communication practice with nature, movement, and stillness. Limited cohorts. Apply to join the waitlist.",
+          "url": "https://greenelephant.org/retreats",
+          "serviceType": "Immersive Retreat",
+          "audience": "Leaders, coaches, and professionals seeking deep reflection and renewal",
+          "offers": { "@type": "Offer", "price": "2800", "priceCurrency": "EUR", "availability": "https://schema.org/LimitedAvailability" },
+          "format": "In-person, Finland",
+          "duration": "4–5 days"
+        }
+      ]
+    });
+  });
+
+  app.get("/api/coaches", (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.json({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "GreenElephant Coaches",
+      "itemListElement": [
+        {
+          "@type": "Person",
+          "position": 1,
+          "name": "Esteve Camprubí",
+          "jobTitle": "Founder & Lead Communication Coach",
+          "description": "Communication strategist and coach. Creator of the Periodic Table of Conscious Communication and the Satellite Scan diagnostic. Works with Executive Assistants, TEAL founders, and innovation leaders across Europe.",
+          "url": "https://greenelephant.org/team",
+          "email": "esteve@greenelephant.org",
+          "knowsAbout": ["Conscious Communication", "Executive Coaching", "Behavioural Change", "TEAL Organisations", "Flow Theory", "Micro-habits"],
+          "worksFor": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+          "availableLanguage": ["English", "Spanish", "Catalan", "French"]
+        },
+        {
+          "@type": "Person",
+          "position": 2,
+          "name": "Anu Moisio",
+          "jobTitle": "Retreat Host & Movement Coach",
+          "description": "Yoga teacher and movement specialist. Co-hosts the GreenElephant retreats in Finland. Integrates somatic practice and conscious presence into communication coaching.",
+          "url": "https://greenelephant.org/team",
+          "knowsAbout": ["Yoga", "Somatic Practice", "Retreat Facilitation", "Conscious Movement", "Mindfulness"],
+          "worksFor": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
+          "availableLanguage": ["English", "Finnish"]
+        }
+      ]
+    });
+  });
+
+  // ── ADMIN ENDPOINTS ──────────────────────────────────────────────────────────
+
+  // Admin: get all flow check results
+  app.get("/api/admin/flow-checks", requireAdminAuth, async (req, res) => {
+    try {
+      const results = await storage.getAllFlowCheckResults();
+      res.json(results);
+    } catch (error: any) {
+      console.error("Error fetching flow check results:", error);
+      res.status(500).json({ message: "Failed to load flow check results" });
     }
   });
 
@@ -808,6 +1140,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await storage.createSignalsQuizResult(quizValidation.data);
       const averageScore = await storage.getQuizAverageScore();
+
+      if (email && (consentText || contactId)) {
+        sendQuizResultsEmail({
+          email,
+          name: name || null,
+          score: parseInt(result.score),
+          averageScore,
+        }).catch(err => console.log('Quiz results email failed:', err.message));
+      }
 
       res.status(201).json({
         message: "Quiz complete!",

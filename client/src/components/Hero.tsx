@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowRight, Sparkles } from "lucide-react";
-import heroImageUrl from "@assets/generated_images/Spiritual_hero_background_light_80674a87.png";
+const heroImageUrl = "/spiritual-hero.png";
 
 export default function Hero() {
   return (

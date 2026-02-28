@@ -527,7 +527,7 @@ function ProductLadderSection() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-center text-sm text-muted-foreground mt-8"
         >
-          Not sure where to start? <Link href="/quiz" className="text-needs hover:underline">Take our free 2-minute quiz</Link> to find your path.
+          Not sure where to start? <Link href="/signals" className="text-needs hover:underline">Take our free 2-minute quiz</Link> to find your path.
         </motion.p>
       </div>
     </section>
@@ -1113,7 +1113,7 @@ function JourneySection() {
                   Interview Coaching
                 </Button>
               </Link>
-              <Link href="/team">
+              <Link href="/connect">
                 <Button variant="outline" className="border-white/20" data-testid="link-team">
                   Meet the Team
                 </Button>
@@ -1382,6 +1382,28 @@ export default function HomePage() {
         description="Satellite Scan communication assessment for Executive Assistants, CEOs, and leaders. Data-driven diagnostic mapping your patterns across 8 lenses. Executive coaching and team workshops for conscious communication."
         keywords="executive assistant communication training, CEO communication coaching, executive coaching assessment, leadership communication, communication diagnostic, team alignment, EA professional development, managing up skills"
         canonicalPath="/"
+        faqItems={[
+          {
+            question: "What is GreenElephant?",
+            answer: "GreenElephant is a communication coaching practice founded on 27 years of research into conscious communication. We help professionals—especially Executive Assistants, CEOs, and leaders—understand and transform their communication patterns using our proprietary 8-lens framework and AI-powered Satellite Scan diagnostic."
+          },
+          {
+            question: "Who is GreenElephant for?",
+            answer: "GreenElephant serves professionals who want to communicate more consciously and effectively. Our primary audiences include Executive Assistants navigating complex stakeholder dynamics, CEOs and executives seeking leadership communication clarity, and teams looking to build collaborative communication culture. Anyone interested in personal growth through conscious communication can benefit."
+          },
+          {
+            question: "How do I get started with GreenElephant?",
+            answer: "The easiest way to start is with our free 2-minute Communication Pattern Quick Check, which identifies your drift signals across 6 lenses. For a deeper picture, the Satellite Scan (€99.95) maps your communication patterns across all 8 lenses with 129 questions and delivers a personalized AI-powered dashboard within 48-72 hours."
+          },
+          {
+            question: "What is the Satellite Scan?",
+            answer: "The Satellite Scan is our flagship diagnostic tool—a 129-question self-reflection assessment that maps your communication patterns across 8 lenses: Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, and Dynamics. You receive a personalized dashboard with insights and AI-powered prompts for ongoing development. It costs €99.95."
+          },
+          {
+            question: "What are the 8 lenses of conscious communication?",
+            answer: "The 8 lenses are Influence (how you persuade and lead), Attitude (your approach to change and learning), Chaordic (structure vs. freedom in conversation), Flow (challenge-skill balance), Alignment (empathy and trust), Needs (understanding what drives you), Ego (triggers and self-awareness), and Dynamics (relationships and boundaries). Together they form a complete map of communication behavior."
+          }
+        ]}
       />
       <ScrollProgressLine />
       <HeroSection />

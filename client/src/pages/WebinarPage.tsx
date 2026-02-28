@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { LENSES, type LensType } from "@/constants/lenses";
 import { Link } from "wouter";
-import { ArrowRight, ArrowDown, Clock, Users, MessageSquare, Shield, Target, Sparkles, Brain, Zap, CheckCircle2, Bot, Gift, Timer, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowDown, Clock, Users, MessageSquare, Shield, Target, Sparkles, Brain, Zap, CheckCircle2, Bot, Gift, Timer, ChevronDown, ChevronLeft, ChevronRight, Calendar, Play, ExternalLink } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
 
@@ -124,6 +124,87 @@ const SCAN_JOURNEY_STEPS = [
     icon: Sparkles,
   },
 ];
+
+interface PastWebinarSession {
+  title: string;
+  date: string;
+  summary: string;
+  recordingUrl?: string;
+  lens?: LensType;
+}
+
+const PAST_WEBINAR_SESSIONS: PastWebinarSession[] = [
+  {
+    title: "Communication Clarity for EA's & VA's",
+    date: "2026-02-28",
+    summary: "Explored how Executive and Virtual Assistants can identify their communication superpowers using the 8 Lenses framework. Featured live demonstrations of the Satellite Scan dashboard.",
+    lens: "alignment",
+  },
+];
+
+function formatMonthYear(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function formatSessionDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function buildEventStructuredData(config: WebinarConfig): object {
+  const deadline = new Date(config.countdownDeadline);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": config.sessionTitle,
+    "description": `A free ${config.sessionDuration} live session. ${config.sessionSubtitle}`,
+    "startDate": deadline.toISOString(),
+    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+      "@type": "VirtualLocation",
+      "url": "https://greenelephant.org/webinar"
+    },
+    "organizer": {
+      "@type": "Organization",
+      "name": "GreenElephant",
+      "url": "https://greenelephant.org"
+    },
+    "performer": {
+      "@type": "Person",
+      "name": config.hostNames
+    },
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR",
+      "availability": "https://schema.org/InStock",
+      "url": "https://greenelephant.org/webinar"
+    },
+    "image": "https://greenelephant.org/og-image.png"
+  };
+}
+
+function buildVideoStructuredData(sessions: PastWebinarSession[]): object[] {
+  return sessions
+    .filter(s => s.recordingUrl)
+    .map(s => ({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": s.title,
+      "description": s.summary,
+      "uploadDate": s.date,
+      "contentUrl": s.recordingUrl,
+      "thumbnailUrl": "https://greenelephant.org/og-image.png",
+      "publisher": {
+        "@type": "Organization",
+        "name": "GreenElephant",
+        "url": "https://greenelephant.org"
+      }
+    }));
+}
 
 function ToggleDetail({ children, label }: { children: React.ReactNode; label?: string }) {
   const [open, setOpen] = useState(false);
@@ -319,26 +400,69 @@ export default function WebinarPage() {
   const deadline = new Date(config.countdownDeadline);
   const { expired } = useCountdown(deadline);
 
+  const nextSessionMonth = formatMonthYear(config.countdownDeadline);
+  const seoTitle = expired
+    ? `Free Communication Webinar for EAs & Leaders | GreenElephant`
+    : `Free Communication Webinar for EAs & Leaders | ${nextSessionMonth} | GreenElephant`;
+
+  const eventSchema = !expired ? buildEventStructuredData(config) : undefined;
+  const videoSchemas = buildVideoStructuredData(PAST_WEBINAR_SESSIONS);
+
+  const combinedStructuredData = eventSchema
+    ? videoSchemas.length > 0
+      ? [eventSchema, ...videoSchemas]
+      : eventSchema
+    : videoSchemas.length > 0
+      ? videoSchemas.length === 1 ? videoSchemas[0] : videoSchemas
+      : undefined;
+
   return (
     <div className="min-h-screen bg-black">
       <SEO
-        title={`${config.sessionTitle} | GreenElephant`}
-        description={`A free ${config.sessionDuration} live session for Executive and Virtual Assistants. Learn to see, name and grow your communication superpowers with the Satellite Scan framework.`}
+        title={seoTitle}
+        description={`A free ${config.sessionDuration} live session for Executive and Virtual Assistants. Learn to see, name and grow your communication superpowers with the Satellite Scan framework. ${!expired ? `Next session: ${nextSessionMonth}.` : 'Monthly recurring sessions.'}`}
         canonicalPath="/webinar"
+        keywords="free communication webinar, executive assistant training, virtual assistant communication, conscious communication, leadership webinar, EA communication skills"
+        structuredData={combinedStructuredData}
+        faqItems={[
+          {
+            question: "What is the GreenElephant webinar about?",
+            answer: "Our free monthly webinar introduces the 8 lenses of conscious communication and the Satellite Scan framework. You'll learn to identify your communication superpowers and blind spots, with practical tools you can apply immediately in your work as an Executive or Virtual Assistant."
+          },
+          {
+            question: "Who is the webinar for?",
+            answer: "The webinar is designed for Executive Assistants, Virtual Assistants, Office Managers, and admin professionals who want to strengthen their communication skills. Leaders and anyone interested in conscious communication are also welcome."
+          },
+          {
+            question: "How long is the webinar and is it free?",
+            answer: `The webinar is a free ${config.sessionDuration} live session. There's no cost and no obligation. Early registrants may receive a bonus: ${config.bonusDescription}.`
+          },
+          {
+            question: "Will there be a recording available?",
+            answer: "Past webinar recordings are made available on our webinar page after the live session. If you can't attend live, register anyway and we'll send you the recording link."
+          },
+          {
+            question: "What happens after the webinar?",
+            answer: "After the webinar, you can take the free 2-minute Communication Pattern Quick Check or invest in the full Satellite Scan (€99.95) for a comprehensive 8-lens communication profile. Coaching options are also available for those who want deeper transformation."
+          }
+        ]}
       />
 
-      <HeroSection config={config} />
+      <HeroSection config={config} expired={expired} deadline={deadline} />
       <ChallengesSection />
       <TestimonialsSection />
       <FrameworkSection />
       <ScanJourneySection />
       <AITeaserSection />
       <SpecialOfferSection config={config} expired={expired} deadline={deadline} />
+      <PastSessionsSection />
     </div>
   );
 }
 
-function HeroSection({ config }: { config: WebinarConfig }) {
+function HeroSection({ config, expired, deadline }: { config: WebinarConfig; expired: boolean; deadline: Date }) {
+  const nextSessionDate = deadline.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
   return (
     <section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -382,10 +506,21 @@ function HeroSection({ config }: { config: WebinarConfig }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Badge className="mb-8 bg-white/10 border-white/20 text-white backdrop-blur-sm text-base px-4 py-1.5" data-testid="badge-webinar-free">
-            <Gift className="w-4 h-4 mr-2" />
-            Free Live Session
-          </Badge>
+          <div className="flex items-center justify-center gap-3 flex-wrap mb-8">
+            <Badge className="bg-white/10 border-white/20 text-white backdrop-blur-sm text-base px-4 py-1.5" data-testid="badge-webinar-free">
+              <Gift className="w-4 h-4 mr-2" />
+              Free Live Session
+            </Badge>
+            {!expired && (
+              <Badge className="bg-needs/20 border-needs/30 text-white backdrop-blur-sm text-base px-4 py-1.5" data-testid="badge-webinar-next-session">
+                <Calendar className="w-4 h-4 mr-2" />
+                Next: {nextSessionDate}
+              </Badge>
+            )}
+            <Badge className="bg-white/5 border-white/15 text-white/70 backdrop-blur-sm text-sm px-3 py-1" data-testid="badge-webinar-recurring">
+              Monthly Sessions
+            </Badge>
+          </div>
 
           <h1
             className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-white drop-shadow-lg"
@@ -849,6 +984,112 @@ function SpecialOfferSection({ config, expired, deadline }: { config: WebinarCon
             For personal development and coaching only. Not for hiring, selection, or performance evaluation.
           </p>
         </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function PastSessionsSection() {
+  if (PAST_WEBINAR_SESSIONS.length === 0) return null;
+
+  return (
+    <section
+      className="py-24"
+      style={{
+        background: `linear-gradient(180deg, #000000 0%, ${atmosphericPalette.space} 50%, #000000 100%)`,
+      }}
+      data-testid="section-webinar-past-sessions"
+    >
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <Badge className="mb-6 bg-white/5 border-white/15 text-white/70">
+            <Clock className="w-3 h-3 mr-1" />
+            Archive
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Past Sessions
+          </h2>
+          <p className="text-lg text-white/50 max-w-2xl mx-auto">
+            Missed a session? Catch up on previous webinars and explore recordings when available.
+          </p>
+        </motion.div>
+
+        <div className="space-y-4">
+          {PAST_WEBINAR_SESSIONS.map((session, index) => {
+            const lens = session.lens ? LENSES[session.lens] : null;
+            return (
+              <motion.div
+                key={`${session.date}-${index}`}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+              >
+                <Card className="bg-white/5 border-white/10" data-testid={`card-past-session-${index}`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
+                        style={{
+                          backgroundColor: lens ? `${lens.hexColor}20` : 'rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        {session.recordingUrl ? (
+                          <Play className="w-5 h-5" style={{ color: lens?.hexColor || 'white' }} />
+                        ) : (
+                          <Calendar className="w-5 h-5" style={{ color: lens?.hexColor || 'white' }} />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 flex-wrap mb-1">
+                          <h3 className="text-lg font-semibold text-white" data-testid={`text-past-session-title-${index}`}>
+                            {session.title}
+                          </h3>
+                          {lens && (
+                            <Badge
+                              className="text-xs"
+                              style={{
+                                backgroundColor: `${lens.hexColor}20`,
+                                borderColor: `${lens.hexColor}40`,
+                                color: lens.hexColor,
+                              }}
+                            >
+                              {lens.name}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-white/40 mb-2" data-testid={`text-past-session-date-${index}`}>
+                          {formatSessionDate(session.date)}
+                        </p>
+                        <p className="text-white/60 leading-relaxed text-sm" data-testid={`text-past-session-summary-${index}`}>
+                          {session.summary}
+                        </p>
+                        {session.recordingUrl && (
+                          <a
+                            href={session.recordingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 mt-3 text-sm text-needs hover:text-needs/80 transition-colors"
+                            data-testid={`link-past-session-recording-${index}`}
+                          >
+                            <Play className="w-4 h-4" />
+                            Watch Recording
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

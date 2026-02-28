@@ -1,10 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Cookie } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 export default function CookiePolicyPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Cookie Policy | GreenElephant"
+        description="GreenElephant's cookie policy. Learn which cookies we use and how to manage your preferences. Only essential cookies by default."
+        canonicalPath="/cookies"
+        keywords="cookie policy, cookies, GreenElephant cookies, cookie management"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Cookie Policy", url: "/cookies" }
+        ]}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-needs text-white">Legal</Badge>

@@ -1,10 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scale } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Terms of Service | GreenElephant"
+        description="GreenElephant's terms of service covering coaching, retreats, and consulting agreements. Clear terms for conscious relationships."
+        canonicalPath="/terms"
+        keywords="terms of service, GreenElephant terms, coaching terms, retreat terms"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Terms of Service", url: "/terms" }
+        ]}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-needs text-white">Legal</Badge>

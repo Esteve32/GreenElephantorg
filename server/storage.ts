@@ -37,6 +37,8 @@ import {
   type InsertNewsletterRecipient,
   type WebinarSettings,
   type InsertWebinarSettings,
+  type FlowCheckResult,
+  type InsertFlowCheckResult,
   users,
   recommendationSubmissions,
   contacts,
@@ -56,7 +58,8 @@ import {
   batchEmailRecipients,
   newsletterCampaigns,
   newsletterRecipients,
-  webinarSettings
+  webinarSettings,
+  flowCheckResults
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -185,6 +188,10 @@ export interface IStorage {
   // Webinar settings
   getWebinarSettings(): Promise<WebinarSettings | undefined>;
   upsertWebinarSettings(settings: InsertWebinarSettings): Promise<WebinarSettings>;
+
+  // Flow check results
+  createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult>;
+  getAllFlowCheckResults(): Promise<FlowCheckResult[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -197,6 +204,7 @@ export class MemStorage implements IStorage {
   private purchases: Map<string, Purchase>;
   private contactMessages: Map<string, ContactMessage>;
   private satellitescanPurchases: Map<string, SatellitescanPurchase>;
+  private flowCheckResultsMap: Map<string, FlowCheckResult>;
 
   constructor() {
     this.users = new Map();
@@ -208,6 +216,7 @@ export class MemStorage implements IStorage {
     this.purchases = new Map();
     this.contactMessages = new Map();
     this.satellitescanPurchases = new Map();
+    this.flowCheckResultsMap = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -591,6 +600,28 @@ export class MemStorage implements IStorage {
   }
   async upsertWebinarSettings(settings: InsertWebinarSettings): Promise<WebinarSettings> {
     throw new Error("Not implemented in MemStorage");
+  }
+
+  async createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult> {
+    const id = randomUUID();
+    const record: FlowCheckResult = {
+      id,
+      contactId: result.contactId ?? null,
+      situation: result.situation,
+      customSituation: result.customSituation ?? null,
+      role: result.role,
+      motivation: result.motivation,
+      challenge: result.challenge,
+      competence: result.competence,
+      zone: result.zone,
+      createdAt: new Date(),
+    };
+    this.flowCheckResultsMap.set(id, record);
+    return record;
+  }
+
+  async getAllFlowCheckResults(): Promise<FlowCheckResult[]> {
+    return Array.from(this.flowCheckResultsMap.values());
   }
 }
 
@@ -1254,6 +1285,26 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return result;
     }
+  }
+
+  async createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult> {
+    const [record] = await db.insert(flowCheckResults)
+      .values({
+        contactId: result.contactId ?? null,
+        situation: result.situation,
+        customSituation: result.customSituation ?? null,
+        role: result.role,
+        motivation: result.motivation,
+        challenge: result.challenge,
+        competence: result.competence,
+        zone: result.zone,
+      })
+      .returning();
+    return record;
+  }
+
+  async getAllFlowCheckResults(): Promise<FlowCheckResult[]> {
+    return await db.select().from(flowCheckResults).orderBy(flowCheckResults.createdAt);
   }
 }
 

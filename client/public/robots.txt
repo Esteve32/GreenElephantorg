@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /admin
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /api/
+
+Sitemap: https://greenelephant.org/sitemap.xml

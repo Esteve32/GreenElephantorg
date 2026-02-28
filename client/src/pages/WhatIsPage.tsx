@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowRight, Heart, Brain, Users, Sparkles, Eye, MessageCircle } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 export default function WhatIsPage() {
   const principles = [
@@ -48,6 +49,16 @@ export default function WhatIsPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="What is Conscious Communication? | GreenElephant"
+        description="Learn how conscious communication transforms everyday conversations into moments of genuine connection. Explore the principles of presence, needs awareness, curiosity, and authentic connection."
+        canonicalPath="/what-is-conscious-communication"
+        keywords="what is conscious communication, conscious communication definition, NVC, nonviolent communication, presence, empathy, authentic connection"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "What is Conscious Communication?", url: "/what-is-conscious-communication" }
+        ]}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-needs text-white">Understanding the Foundation</Badge>

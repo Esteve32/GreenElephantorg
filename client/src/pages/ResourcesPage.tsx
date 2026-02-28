@@ -3,8 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { BookOpen, ExternalLink } from "lucide-react";
 import montVentouxUrl from "@assets/generated_images/mont_ventoux_provence_lavender_landscape.png";
-import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
+const logoUrl = "/ge-logo-512.png";
 
 //todo: remove mock functionality
 const resources = [
@@ -156,6 +157,44 @@ export default function ResourcesPage() {
               </Button>
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Coaches-only NotebookLM */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="border border-white/10 rounded-xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 bg-white/[0.03]">
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-white/70" />
+            </div>
+            <Badge variant="outline" className="border-white/20 text-white/60 text-xs">Coaches only</Badge>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white/80 text-sm font-medium mb-0.5">
+              GreenElephant's NotebookLM — our living knowledge base
+            </p>
+            <p className="text-white/50 text-xs">
+              For coaches and facilitators. Ask questions, explore the framework, dig into the research.{" "}
+              <a
+                href="/connect"
+                className="text-white/60 hover:text-white/80 underline underline-offset-2 transition-colors"
+                data-testid="link-become-coach"
+              >
+                Want to become a GreenElephant coach?
+              </a>
+            </p>
+          </div>
+          <a
+            href="https://notebooklm.google.com/notebook/2a5f99e7-31a1-455e-b832-f706c7e29a86"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="link-notebooklm-coaches"
+          >
+            <Button variant="outline" size="sm" className="shrink-0 border-white/20 text-white/70 hover:text-white hover:border-white/40 gap-1.5">
+              Open NotebookLM
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Button>
+          </a>
         </div>
       </div>
       

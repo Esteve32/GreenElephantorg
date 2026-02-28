@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
 import CoachingPackage from "@/components/CoachingPackage";
@@ -7,6 +8,41 @@ import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import zurichUrl from "@assets/stock_images/zurich_switzerland_l_1db6a83f.jpg";
 import { SEO, PRODUCT_STRUCTURED_DATA } from "@/components/SEO";
+
+const COACHING_FAQ_ITEMS = [
+  {
+    question: "What happens in a coaching session?",
+    answer: "Each session is a 120-minute deep-dive into your communication patterns. We use your Satellite Scan results to identify specific triggers, blind spots, and strengths. Together, we co-create micro-habits tailored to your daily context—whether that's managing up, navigating conflict, or building executive presence."
+  },
+  {
+    question: "How much does coaching cost?",
+    answer: "Single sessions start at €295 for a 120-minute deep-dive. The Coaching Journey (our most popular option) is €2,980 for approximately 6 months of biweekly sessions, unlimited check-in calls, and ongoing messaging support. Team workshops are priced on request depending on duration and group size."
+  },
+  {
+    question: "What's the difference between coaching and therapy?",
+    answer: "Coaching focuses on developing conscious communication skills and building new patterns for professional and personal growth. It is not a substitute for mental health treatment. If you're experiencing severe anxiety, depression, trauma, or crisis, we recommend working with a licensed therapist first. Coaching can complement ongoing therapy."
+  },
+  {
+    question: "Do I need to take the Satellite Scan before coaching?",
+    answer: "The Coaching Journey includes a Satellite Scan as the first step—it gives us a data-driven baseline of your communication patterns across 8 lenses. For single sessions, it's recommended but not required. The Scan helps us focus coaching time on what matters most for you."
+  },
+  {
+    question: "How long does it take to see results?",
+    answer: "Most clients notice shifts within the first 2-3 weeks of practicing micro-habits. Significant behavioral change typically takes 3-6 months of consistent practice. The Coaching Journey continues until your personalized SMART goal is reached—not for a fixed duration."
+  },
+  {
+    question: "What if I'm not sure coaching is right for me?",
+    answer: "Start with the Satellite Scan (€99.95) to get a clear picture of your communication patterns. You can also take our free 2-minute Communication Pattern Quick Check to identify your drift signals. Both will help you decide if deeper coaching work would benefit you."
+  },
+  {
+    question: "Is coaching available remotely?",
+    answer: "Yes, all coaching sessions are conducted via video call. This allows us to work with clients across time zones. Session recordings and transcripts are provided so you can revisit key insights."
+  },
+  {
+    question: "Who is coaching for?",
+    answer: "Our coaching is designed for professionals who want to transform how they communicate—Executive Assistants navigating power dynamics, CEOs building team alignment, founders creating collaborative culture, and anyone seeking more conscious, effective communication in their work and relationships."
+  }
+];
 
 const packages = [
   {
@@ -103,6 +139,10 @@ const testimonials = [
 ];
 
 export default function CoachingPage() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   return (
     <div className="min-h-screen">
       <SEO 
@@ -111,6 +151,7 @@ export default function CoachingPage() {
         keywords="CEO executive coaching, executive assistant coaching, leadership coaching, executive presence communication, team alignment coaching, communication habit coaching, conflict resolution for leaders"
         canonicalPath="/coaching"
         structuredData={PRODUCT_STRUCTURED_DATA.coachingJourney}
+        faqItems={COACHING_FAQ_ITEMS}
       />
       <section 
         className="relative pt-24 pb-16"

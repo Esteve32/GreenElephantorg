@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,12 @@ import {
   Calendar,
   FileText
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { SiLinkedin, SiOpenai } from "react-icons/si";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
@@ -30,14 +37,14 @@ import earthImageUrl from "@assets/generated_images/earth_from_space_without_aur
 import provenceImageUrl from "@assets/generated_images/mont_ventoux_provence_lavender_landscape.png";
 import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1764343412596.png";
 import circularCalendarUrl from "@assets/Celestial_calendar🔥2022_extrenal_no_planets_with_legend_no_ik_1764793584893.png";
-import periodicTableImageUrl from "@assets/The-Periodic-Table-of-Conscious-Communication@2x_1762813238966.png";
-import influenceStrategiesPdfUrl from "@assets/1101 Influence Communication Strategies_1762813220069.pdf";
-import greenBlueRedPdfUrl from "@assets/1103 GreenBlueRed™_1762813220070.pdf";
-import microHabitPdfUrl from "@assets/2103 Micro-Habit_1762813220070.pdf";
-import chaordicRolesPdfUrl from "@assets/3111 Chaordic Roles (5 promises for each level of collective intelligence)_1762813220070.pdf";
-import nvcGreenBlueRedPdfUrl from "@assets/6104 NonViolentCommunication + 1103 GreenBlueRed_1762813220070.pdf";
-import fiveStagesTeamPdfUrl from "@assets/6106  with the 5 Stages of Team_1762813220070.pdf";
-import blueInfographicImageUrl from "@assets/InfographicSummary_BlueBeingUnderstood_slides _vers3.293_1762813339581.jpeg";
+import periodicTableImageUrl from "@assets/The-Periodic-Table-of-Conscious-Communication@2x_1764712887674.png";
+const influenceStrategiesPdfUrl = "";
+const greenBlueRedPdfUrl = "";
+const microHabitPdfUrl = "";
+const chaordicRolesPdfUrl = "";
+const nvcGreenBlueRedPdfUrl = "";
+const fiveStagesTeamPdfUrl = "";
+const blueInfographicImageUrl = "";
 import flowMeasuringInfographicUrl from "@assets/4101_Measuring_Flow_1764793076760.png";
 import consciousFeedbackInfographicUrl from "@assets/4102_Conscious_Feedback_1764793116577.png";
 import relationshipMapInfographicUrl from "@assets/8104_Relationship_Map_How_to_Cultivate_Relations_1764793161248.png";
@@ -1520,25 +1527,30 @@ function PromptCard({ prompt, onVote }: { prompt: LensPrompt; onVote: (id: strin
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         <p className="text-sm text-white/70">{prompt.description}</p>
-        
-        <div>
-          <p className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">What you'll learn:</p>
-          <ul className="text-sm text-white/60 space-y-1">
-            {prompt.whatItDoes.map((item, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <CheckCircle2 className="w-3 h-3 mt-1 text-needs shrink-0" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        
-        <p className="text-xs text-white/50">
-          <strong>Perfect for:</strong> {prompt.perfectFor}
-        </p>
-        
+
+        <Accordion type="single" collapsible>
+          <AccordionItem value="details" className="border-white/10">
+            <AccordionTrigger className="text-xs font-semibold text-white/50 uppercase tracking-wide hover:no-underline py-2 hover:text-white/70 transition-colors">
+              What you'll learn
+            </AccordionTrigger>
+            <AccordionContent>
+              <ul className="text-sm text-white/60 space-y-1 mb-3">
+                {prompt.whatItDoes.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3 h-3 mt-1 text-needs shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-white/50">
+                <strong>Perfect for:</strong> {prompt.perfectFor}
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
         <div className="flex items-center justify-between pt-2 border-t border-white/10">
           <Button
             size="sm"
@@ -1724,6 +1736,17 @@ export default function ResourcesPromptsPage() {
 
   return (
     <div className="min-h-screen bg-black">
+      <SEO
+        title="Communication Resources & AI Prompts | GreenElephant"
+        description="Access free AI-powered communication prompts, infographics, videos, and downloadable resources structured by the 8 lenses of conscious communication. Explore tools for self-awareness, leadership, and team dynamics."
+        canonicalPath="/resources/prompts"
+        keywords="communication prompts, AI coaching prompts, conscious communication resources, communication infographics, leadership prompts, team communication tools"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Resources", url: "/resources" },
+          { name: "Prompts & Resources", url: "/resources/prompts" }
+        ]}
+      />
       <ScrollProgressLine />
       <section 
         className="relative min-h-[90vh] overflow-hidden"
@@ -1943,7 +1966,7 @@ export default function ResourcesPromptsPage() {
                 <div className="grid md:grid-cols-3 gap-4 mb-6">
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10" data-testid="card-step-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-7 h-7 rounded-full bg-influence/20 text-influence flex items-center justify-center font-bold text-sm">1</div>
+                      <div className="w-7 h-7 rounded-full bg-needs/20 text-needs flex items-center justify-center font-bold text-sm">1</div>
                       <p className="font-medium text-white" data-testid="text-step-title-1">Copy a Prompt</p>
                     </div>
                     <p className="text-sm text-white/50" data-testid="text-step-desc-1">Pick any card below and click "Copy"</p>
@@ -1959,7 +1982,7 @@ export default function ResourcesPromptsPage() {
                   
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10" data-testid="card-step-3">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-7 h-7 rounded-full bg-flow/20 text-flow flex items-center justify-center font-bold text-sm">3</div>
+                      <div className="w-7 h-7 rounded-full bg-needs/20 text-needs flex items-center justify-center font-bold text-sm">3</div>
                       <p className="font-medium text-white" data-testid="text-step-title-3">Add Your Data</p>
                     </div>
                     <p className="text-sm text-white/50" data-testid="text-step-desc-3">Paste your scan data and send</p>
@@ -1993,62 +2016,67 @@ export default function ResourcesPromptsPage() {
                 </div>
               </div>
               
-              <Card className="backdrop-blur-sm bg-gradient-to-r from-needs/10 to-flow/10 border-needs/30 mb-8">
-                <CardHeader>
-                  <CardTitle className="text-lg text-white flex items-center gap-2">
-                    <Play className="w-5 h-5 text-flow" />
-                    Try It Out — Sample Scan Data
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-white/70">
-                    New to two-step prompts? Practice with this sample Satellite Scan data from Estève before using your own.
-                  </p>
-                  
-                  <div className="bg-black/30 rounded-xl p-5 border border-white/10">
-                    <div className="flex flex-col md:flex-row items-start gap-4">
-                      <div className="w-20 h-20 shrink-0 rounded-lg bg-gradient-to-br from-needs/30 to-flow/30 border border-needs/40 flex items-center justify-center">
-                        <div className="text-center">
-                          <FileText className="w-6 h-6 text-needs mx-auto mb-1" />
-                          <span className="text-[10px] text-white/60 font-medium">SAMPLE</span>
+              <Card className="backdrop-blur-sm bg-white/5 border-white/10 mb-8">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="sample-data" className="border-none">
+                    <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-white/5 rounded-t-lg transition-colors [&[data-state=open]]:rounded-b-none">
+                      <div className="flex items-center gap-2">
+                        <Play className="w-5 h-5 text-flow shrink-0" />
+                        <span className="text-lg font-semibold text-white">Try It Out — Sample Scan Data</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="px-6 pb-6 space-y-4">
+                        <p className="text-sm text-white/70">
+                          New to two-step prompts? Practice with this sample Satellite Scan data from Estève before using your own.
+                        </p>
+
+                        <div className="bg-black/30 rounded-xl p-5 border border-white/10">
+                          <div className="flex flex-col md:flex-row items-start gap-4">
+                            <div className="w-20 h-20 shrink-0 rounded-lg bg-gradient-to-br from-needs/30 to-flow/30 border border-needs/40 flex items-center justify-center">
+                              <div className="text-center">
+                                <FileText className="w-6 h-6 text-needs mx-auto mb-1" />
+                                <span className="text-[10px] text-white/60 font-medium">SAMPLE</span>
+                              </div>
+                            </div>
+
+                            <div className="flex-1 space-y-3">
+                              <div>
+                                <h4 className="font-semibold text-white text-sm mb-1">Estève's Satellite Scan Results</h4>
+                                <p className="text-xs text-white/50">Complete coaching data across all 8 lenses with situation analysis</p>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2">
+                                {["influence", "attitude", "chaordic", "flow", "alignment", "needs", "ego", "dynamics"].slice(0, 4).map((lens) => (
+                                  <Badge
+                                    key={lens}
+                                    variant="outline"
+                                    className="text-[10px] px-2 py-0.5 border-white/20 text-white/60"
+                                  >
+                                    {lens.charAt(0).toUpperCase() + lens.slice(1)}
+                                  </Badge>
+                                ))}
+                                <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-white/20 text-white/60">
+                                  +4 more
+                                </Badge>
+                              </div>
+
+                              <Button
+                                size="sm"
+                                className="bg-needs hover:bg-needs/90 text-white"
+                                onClick={handleCopySampleData}
+                                data-testid="copy-sample-data"
+                              >
+                                {copiedSample ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
+                                {copiedSample ? "Copied to Clipboard!" : "Copy Sample Data"}
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex-1 space-y-3">
-                        <div>
-                          <h4 className="font-semibold text-white text-sm mb-1">Estève's Satellite Scan Results</h4>
-                          <p className="text-xs text-white/50">Complete coaching data across all 8 lenses with situation analysis</p>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-2">
-                          {["influence", "attitude", "chaordic", "flow", "alignment", "needs", "ego", "dynamics"].slice(0, 4).map((lens) => (
-                            <Badge 
-                              key={lens}
-                              variant="outline" 
-                              className="text-[10px] px-2 py-0.5 border-white/20 text-white/60"
-                            >
-                              {lens.charAt(0).toUpperCase() + lens.slice(1)}
-                            </Badge>
-                          ))}
-                          <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-white/20 text-white/60">
-                            +4 more
-                          </Badge>
-                        </div>
-                        
-                        <Button
-                          size="sm"
-                          className="bg-needs hover:bg-needs/90 text-white"
-                          onClick={handleCopySampleData}
-                          data-testid="copy-sample-data"
-                        >
-                          {copiedSample ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
-                          {copiedSample ? "Copied to Clipboard!" : "Copy Sample Data"}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                </CardContent>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </Card>
               
               {!promptsLoading && isUsingFallback && (

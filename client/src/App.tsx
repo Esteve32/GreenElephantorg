@@ -46,6 +46,8 @@ import ForCEOsPage from "@/pages/ForCEOsPage";
 import ForVirtualAssistantsPage from "@/pages/ForVirtualAssistantsPage";
 import ExecutiveCoachingAssessmentPage from "@/pages/ExecutiveCoachingAssessmentPage";
 import WebinarPage from "@/pages/WebinarPage";
+import FlowCheckPage from "@/pages/FlowCheckPage";
+import DecodePage from "@/pages/DecodePage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -102,6 +104,8 @@ function Router() {
         <Route path="/for-virtual-assistants" component={ForVirtualAssistantsPage} />
         <Route path="/executive-coaching-assessment" component={ExecutiveCoachingAssessmentPage} />
         <Route path="/webinar" component={WebinarPage} />
+        <Route path="/flow-check" component={FlowCheckPage} />
+        <Route path="/decode" component={DecodePage} />
         <Route component={NotFound} />
       </Switch>
       </main>

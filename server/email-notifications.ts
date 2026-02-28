@@ -751,3 +751,703 @@ export async function sendOnboardingEmail(data: OnboardingEmailData): Promise<bo
     return false;
   }
 }
+
+function brandedEmailWrapper(title: string, subtitle: string, bodyHtml: string, footerText: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+  <style>
+    :root { color-scheme: dark; }
+    body, html { margin: 0; padding: 0; background-color: #0a0a0a; }
+  </style>
+</head>
+<body bgcolor="#0a0a0a" style="margin: 0; padding: 0; background-color: #0a0a0a;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a0a0a" style="background-color: #0a0a0a; width: 100%;">
+    <tr>
+      <td align="center" style="padding: 24px 12px; background-color: #0a0a0a;" bgcolor="#0a0a0a">
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%; background-color: #0a0a0a; border-radius: 12px; overflow: hidden; font-family: 'Lato', Arial, sans-serif;">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a0a0a 0%, #0f1f2e 50%, #0a0a0a 100%); padding: 40px 30px; text-align: center; border-bottom: 1px solid #1a1a1a;">
+              <img src="https://greenelephant.org/ge-logo-512.png" alt="GreenElephant" width="48" height="48" style="margin-bottom: 16px; border-radius: 8px; display: block; margin-left: auto; margin-right: auto;" />
+              <h1 style="font-family: 'Poppins', Arial, sans-serif; color: #ffffff; margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.5px;">${title}</h1>
+              ${subtitle ? `<p style="color: #009999; margin-top: 8px; margin-bottom: 0; font-size: 15px; font-weight: 500;">${subtitle}</p>` : ''}
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 28px; background-color: #0a0a0a;">
+              ${bodyHtml}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 20px 28px; border-top: 1px solid #1a1a1a; text-align: center; background-color: #0a0a0a;">
+              <p style="color: #555555; font-size: 11px; margin: 0; line-height: 1.6;">
+                ${footerText}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function tealButton(text: string, href: string): string {
+  return `<a href="${href}" style="display: inline-block; background-color: #009999; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px; letter-spacing: 0.3px;">${text}</a>`;
+}
+
+function darkCard(content: string, borderColor?: string): string {
+  const border = borderColor ? `border-left: 3px solid ${borderColor};` : '';
+  return `<div style="background-color: #111111; padding: 22px; border-radius: 8px; margin: 20px 0; ${border}">${content}</div>`;
+}
+
+interface NewsletterConfirmationData {
+  email: string;
+  name: string | null;
+}
+
+export async function sendNewsletterConfirmationEmail(data: NewsletterConfirmationData) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const body = `
+      <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
+        Hi ${data.name || 'there'},
+      </p>
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        Thank you for subscribing to the GreenElephant newsletter. You'll receive insights on conscious communication, updates on upcoming retreats and Play Labs sessions, and practical tools for transforming how you connect with others.
+      </p>
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #009999; font-size: 16px; font-weight: 600;">What You'll Receive</h3>
+        <ul style="line-height: 2; margin-bottom: 0; color: #cccccc; padding-left: 18px;">
+          <li>Research-backed communication insights</li>
+          <li>Early access to retreats and events</li>
+          <li>New prompts and resources from our library</li>
+          <li>Updates on the Periodic Table of Conscious Communication</li>
+        </ul>
+      `, '#009999')}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">Explore While You're Here</h3>
+        <ul style="line-height: 2; padding-left: 18px;">
+          <li><a href="https://greenelephant.org/periodic-table" style="color: #009999; text-decoration: none;">The Periodic Table of Conscious Communication</a></li>
+          <li><a href="https://greenelephant.org/resources" style="color: #009999; text-decoration: none;">Communication Prompts & Resources</a></li>
+          <li><a href="https://greenelephant.org/scan" style="color: #009999; text-decoration: none;">Satellite Scan - Map Your Patterns</a></li>
+        </ul>
+      `)}
+      <p style="color: #cccccc; line-height: 1.7;">
+        Looking forward to sharing this journey with you,<br>
+        <strong style="color: #e0e0e0;">Esteve from GreenElephant</strong>
+      </p>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: "Welcome to the GreenElephant Newsletter",
+      html: brandedEmailWrapper(
+        'Welcome to the Community',
+        'Conscious Communication Insights',
+        body,
+        'You\'re receiving this because you subscribed to the GreenElephant newsletter at greenelephant.org.<br/>To unsubscribe, simply reply to this email with "unsubscribe".'
+      ),
+    });
+
+    console.log(`✅ Newsletter confirmation email sent to: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send newsletter confirmation email to ${data.email}:`, error);
+    return false;
+  }
+}
+
+interface ScanInterestConfirmationData {
+  email: string;
+  name: string | null;
+}
+
+export async function sendScanInterestConfirmationEmail(data: ScanInterestConfirmationData) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const body = `
+      <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
+        Hi ${data.name || 'there'},
+      </p>
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        Thank you for your interest in the Satellite Scan. Here's a free tool to start exploring your communication patterns right away.
+      </p>
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #009999; font-size: 16px; font-weight: 600;">Check Your Communication Flow &mdash; Free</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
+          The Flow Check measures your motivation, perceived challenge, and perceived competence in a specific communication situation. Based on Csikszentmihalyi's flow model, it maps you into one of 4 zones: Flow, Challenge, Comfort, or Danger.
+        </p>
+        <p style="color: #999999; font-size: 14px; line-height: 1.6;">
+          It takes about 2 minutes and gives you a personalized interpretation of your results with actionable insights.
+        </p>
+        <div style="text-align: center; margin-top: 16px;">
+          ${tealButton('Take the Free Flow Check', 'https://greenelephant.org/flow-check')}
+        </div>
+      `, '#009999')}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">Go Deeper with the Full Satellite Scan</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
+          The Flow Check measures 1 of 8 lenses. The full Satellite Scan maps your patterns across all 8 communication lenses with 129 questions, delivering a personalized dashboard and access to our complete prompt library.
+        </p>
+        <div style="text-align: center; margin-top: 16px;">
+          ${tealButton('Get Your Full Scan &mdash; &euro;99.95', 'https://greenelephant.org/checkout?product=satellitescan')}
+        </div>
+      `)}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">Or Try the Free Signals Quiz</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
+          Get a quick snapshot of your communication style in just 6 questions with our free Signals Quiz.
+        </p>
+        <div style="text-align: center; margin-top: 16px;">
+          <a href="https://greenelephant.org/signals" style="display: inline-block; color: #009999; padding: 12px 24px; text-decoration: none; border: 1px solid #009999; border-radius: 6px; font-weight: 600; font-size: 14px;">Take the Free Quiz</a>
+        </div>
+      `)}
+      <p style="color: #cccccc; line-height: 1.7;">
+        Looking forward to supporting your communication journey,<br>
+        <strong style="color: #e0e0e0;">Esteve from GreenElephant</strong>
+      </p>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: "Check Your Communication Flow - Free Assessment from GreenElephant",
+      html: brandedEmailWrapper(
+        'Your Communication Flow Check',
+        'Discover Which Zone You\'re In',
+        body,
+        'You\'re receiving this because you signed up for communication insights at greenelephant.org.<br/>To unsubscribe, simply reply to this email with "unsubscribe".'
+      ),
+    });
+
+    console.log(`✅ Scan interest confirmation email sent to: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send scan interest confirmation email to ${data.email}:`, error);
+    return false;
+  }
+}
+
+export async function sendScanInterestAdminNotification(data: { email: string; name: string | null }) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    const adminEmail = 'esteve@greenelephant.org';
+
+    await client.emails.send({
+      from: fromEmail,
+      to: adminEmail,
+      subject: `New Scan Interest Lead: ${data.email}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">New Scan Interest Lead</h2>
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Contact Details</h3>
+            <p><strong>Name:</strong> ${data.name || 'Not provided'}</p>
+            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Source:</strong> Scan page lead magnet (Flow Check + updates)</p>
+            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+          </div>
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1e40af;">Next Steps</h3>
+            <ul style="line-height: 1.8;">
+              <li>Contact has been synced to Notion CRM with "Scan Interest" channel</li>
+              <li>They received a link to the free Flow Check and communication insights</li>
+              <li>Consider a personal follow-up in 3-5 days if no purchase</li>
+            </ul>
+          </div>
+          <p style="color: #6b7280; font-size: 14px;">This notification was automatically sent from GreenElephant.org Scan page.</p>
+        </div>
+      `,
+    });
+
+    console.log(`✅ Scan interest admin notification sent for: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send scan interest admin notification:`, error);
+    return false;
+  }
+}
+
+interface WaitlistConfirmationData {
+  email: string;
+  name: string | null;
+  retreatType: string;
+  motivation: string;
+}
+
+export async function sendWaitlistConfirmationEmail(data: WaitlistConfirmationData) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const adminEmail = 'esteve@greenelephant.org';
+    const retreatName = data.retreatType === 'provence' ? 'Equinoxe Provence' : data.retreatType === 'lapland' ? 'Equinoxe Lapland' : data.retreatType || 'Equinoxe Retreat';
+
+    await client.emails.send({
+      from: fromEmail,
+      to: adminEmail,
+      subject: `Retreat Waitlist: New Signup - ${retreatName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">New Retreat Waitlist Signup</h2>
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Contact Details</h3>
+            <p><strong>Name:</strong> ${data.name || 'Not provided'}</p>
+            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Retreat:</strong> ${retreatName}</p>
+          </div>
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Motivation</h3>
+            <p style="color: #374151; line-height: 1.6;">${data.motivation}</p>
+          </div>
+          <p style="color: #6b7280; font-size: 14px;">This notification was automatically sent from GreenElephant.org Retreats page.</p>
+        </div>
+      `,
+    });
+
+    const customerBody = `
+      <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
+        Hi ${data.name || 'there'},
+      </p>
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        Thank you for your interest in the ${retreatName} retreat. We've received your application and you're now on the waitlist.
+      </p>
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #009999; font-size: 16px; font-weight: 600;">What Happens Next</h3>
+        <ul style="line-height: 2; margin-bottom: 0; color: #cccccc; padding-left: 18px;">
+          <li>We review every application personally</li>
+          <li>When spots open up, we'll contact you directly</li>
+          <li>You'll receive details about dates, location, and what to expect</li>
+        </ul>
+      `, '#009999')}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">Explore While You Wait</h3>
+        <ul style="line-height: 2; padding-left: 18px;">
+          <li><a href="https://greenelephant.org/periodic-table" style="color: #009999; text-decoration: none;">The Periodic Table of Conscious Communication</a></li>
+          <li><a href="https://greenelephant.org/resources" style="color: #009999; text-decoration: none;">Communication Prompts & Resources</a></li>
+          <li><a href="https://greenelephant.org/scan" style="color: #009999; text-decoration: none;">Try the Satellite Scan</a></li>
+        </ul>
+      `)}
+      <p style="color: #cccccc; line-height: 1.7;">
+        We're excited about your interest in conscious communication,<br>
+        <strong style="color: #e0e0e0;">Esteve from GreenElephant</strong>
+      </p>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: `You're on the ${retreatName} Waitlist`,
+      html: brandedEmailWrapper(
+        "You're on the Waitlist",
+        retreatName,
+        customerBody,
+        'You\'re receiving this because you joined the retreat waitlist at GreenElephant.org.<br/>To unsubscribe, simply reply to this email with "unsubscribe".'
+      ),
+    });
+
+    console.log(`✅ Waitlist confirmation emails sent for: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send waitlist confirmation email to ${data.email}:`, error);
+    return false;
+  }
+}
+
+interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+  intent: string;
+}
+
+export async function sendContactFormEmails(data: ContactFormData) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const adminEmail = 'esteve@greenelephant.org';
+    const intentLabels: Record<string, string> = {
+      coaching: 'EA Coaching',
+      interview: 'Interview Coaching',
+      consulting: 'Consulting',
+      general: 'General Inquiry',
+    };
+    const intentLabel = intentLabels[data.intent] || data.intent || 'General Inquiry';
+
+    await client.emails.send({
+      from: fromEmail,
+      to: adminEmail,
+      subject: `New Contact Form: ${intentLabel} - ${data.name}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">New Contact Form Submission</h2>
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Contact Details</h3>
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Intent:</strong> ${intentLabel}</p>
+          </div>
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Message</h3>
+            <p style="color: #374151; line-height: 1.6; white-space: pre-wrap;">${data.message}</p>
+          </div>
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1e40af;">Action Required</h3>
+            <p style="margin-bottom: 0; color: #1e3a8a;">Reply to <a href="mailto:${data.email}">${data.email}</a> within 24 hours.</p>
+          </div>
+          <p style="color: #6b7280; font-size: 14px;">This notification was automatically sent from GreenElephant.org Contact page.</p>
+        </div>
+      `,
+    });
+
+    const customerBody = `
+      <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
+        Hi ${data.name},
+      </p>
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        Thank you for reaching out. We've received your message and will respond personally within 24 hours.
+      </p>
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #888888; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Your Message</h3>
+        <p style="color: #999999; line-height: 1.7; white-space: pre-wrap; font-style: italic; margin-bottom: 0;">${data.message}</p>
+      `)}
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        In the meantime, feel free to explore:
+      </p>
+      <ul style="line-height: 2; padding-left: 18px;">
+        <li><a href="https://greenelephant.org/periodic-table" style="color: #009999; text-decoration: none;">The Periodic Table of Conscious Communication</a></li>
+        <li><a href="https://greenelephant.org/resources" style="color: #009999; text-decoration: none;">Communication Prompts & Resources</a></li>
+      </ul>
+      <p style="color: #cccccc; line-height: 1.7;">
+        With care,<br>
+        <strong style="color: #e0e0e0;">The GreenElephant Team</strong>
+      </p>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: "We received your message - GreenElephant",
+      html: brandedEmailWrapper(
+        'Message Received',
+        '',
+        customerBody,
+        'You\'re receiving this one-time confirmation because you submitted a contact form at GreenElephant.org.<br/>No marketing emails will be sent. If you have questions, reply to this email.'
+      ),
+    });
+
+    console.log(`✅ Contact form emails sent for: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send contact form emails to ${data.email}:`, error);
+    return false;
+  }
+}
+
+interface QuizResultsData {
+  email: string;
+  name: string | null;
+  score: number;
+  averageScore: number;
+}
+
+export async function sendQuizResultsEmail(data: QuizResultsData) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const scoreLevel = data.score >= 80 ? 'High' : data.score >= 50 ? 'Moderate' : 'Developing';
+    const scoreColor = data.score >= 80 ? '#00cc99' : data.score >= 50 ? '#e6a817' : '#e05555';
+    const scoreBorderColor = data.score >= 80 ? '#009999' : data.score >= 50 ? '#b8860b' : '#cc3333';
+    const scoreMessage = data.score >= 80 
+      ? "You show strong conscious communication patterns. Your awareness of how you communicate is a significant asset."
+      : data.score >= 50 
+        ? "You have a solid foundation in conscious communication with room to grow. Targeted practice can help you strengthen specific areas."
+        : "You're at the beginning of your conscious communication journey. The good news? Awareness is the first step, and you've already taken it.";
+
+    const body = `
+      <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
+        Hi ${data.name || 'there'},
+      </p>
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        Thank you for completing the Signals Quiz. Here are your results:
+      </p>
+      
+      <div style="background-color: #111111; padding: 30px; border-radius: 8px; margin: 24px 0; text-align: center; border: 1px solid #1a1a1a;">
+        <p style="margin: 0 0 8px 0; color: #888888; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Your Score</p>
+        <p style="margin: 0; font-size: 56px; font-weight: 700; color: ${scoreColor}; font-family: 'Poppins', Arial, sans-serif;">${data.score}%</p>
+        <p style="margin: 8px 0 0 0; color: ${scoreColor}; font-weight: 600; font-size: 16px;">${scoreLevel} Awareness</p>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #1a1a1a;">
+          <p style="margin: 0; color: #666666; font-size: 13px;">Community average: ${data.averageScore}%</p>
+        </div>
+      </div>
+      
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">What This Means</h3>
+        <p style="color: #cccccc; line-height: 1.7; margin-bottom: 0;">${scoreMessage}</p>
+      `, scoreBorderColor)}
+      
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #009999; font-size: 16px; font-weight: 600;">Go Deeper with the Satellite Scan</h3>
+        <p style="color: #cccccc; line-height: 1.7;">
+          The Signals Quiz gives you a snapshot. The <strong style="color: #e0e0e0;">Satellite Scan</strong> gives you the full picture — a 90-minute deep dive mapping your communication patterns across all 8 lenses, with a personalized dashboard created by our coaches.
+        </p>
+        <div style="text-align: center; margin-top: 18px;">
+          ${tealButton('Explore the Satellite Scan', 'https://greenelephant.org/scan')}
+        </div>
+      `, '#009999')}
+      
+      <p style="color: #cccccc; line-height: 1.7;">
+        Questions about your results? Just reply to this email.<br>
+        <strong style="color: #e0e0e0;">Esteve from GreenElephant</strong>
+      </p>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: `Your Signals Quiz Results: ${scoreLevel} Awareness - GreenElephant`,
+      html: brandedEmailWrapper(
+        'Your Signals Quiz Results',
+        'Communication Awareness Assessment',
+        body,
+        'You\'re receiving this because you completed the Signals Quiz and opted to receive your results at GreenElephant.org.<br/>To unsubscribe, simply reply to this email with "unsubscribe".'
+      ),
+    });
+
+    console.log(`✅ Quiz results email sent to: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send quiz results email to ${data.email}:`, error);
+    return false;
+  }
+}
+
+interface FlowCheckResultEmailData {
+  email: string;
+  name: string | null;
+  zone: string;
+  situation: string;
+  role: string;
+  motivation: number;
+  challenge: number;
+  competence: number;
+}
+
+function flowAOrAn(word: string): string {
+  return /^[aeiou]/i.test(word.trim()) ? 'an' : 'a';
+}
+
+function flowPersonalisedInterpretation(zone: string, situation: string, role: string, motivation: number, challenge: number, competence: number): string {
+  switch (zone) {
+    case 'flow':
+      return `As ${flowAOrAn(role)} ${role} in &ldquo;${situation}&rdquo;, you perceive both high challenge (${challenge}/10) and high competence (${competence}/10), with strong motivation (${motivation}/10). This is the optimal state&mdash;you&rsquo;re stretched just enough to stay engaged without feeling overwhelmed. Your skills match the demands of this situation, creating deep involvement and satisfaction.`;
+    case 'challenge':
+      return `As ${flowAOrAn(role)} ${role} in &ldquo;${situation}&rdquo;, you perceive high challenge (${challenge}/10) but lower competence (${competence}/10). With motivation at ${motivation}/10, this creates a stress pattern. The situation demands more than you currently feel equipped to handle. This isn&rsquo;t about actual ability&mdash;it&rsquo;s about perception. Targeted support can shift this rapidly.`;
+    case 'comfort':
+      return `As ${flowAOrAn(role)} ${role} in &ldquo;${situation}&rdquo;, you perceive low challenge (${challenge}/10) but high competence (${competence}/10). With motivation at ${motivation}/10, you&rsquo;re in your comfort zone. While this feels safe, sustained comfort leads to stagnation. Your skills exceed the demands&mdash;which means you have capacity for growth.`;
+    case 'danger':
+      return `As ${flowAOrAn(role)} ${role} in &ldquo;${situation}&rdquo;, you perceive both low challenge (${challenge}/10) and low competence (${competence}/10), with motivation at ${motivation}/10. This is the danger zone&mdash;neither the situation nor your skills feel adequate. This creates apathy and disengagement, which compounds over time. Urgent attention is needed.`;
+    default:
+      return '';
+  }
+}
+
+const FLOW_ZONE_CONFIG: Record<string, { label: string; color: string; description: string; advice: string; recommendations: string[] }> = {
+  flow: {
+    label: 'Flow Zone',
+    color: '#009999',
+    description: 'Your perceived challenge and competence are well-balanced, and your motivation is strong. This is the optimal state for growth and engagement.',
+    advice: 'Keep nurturing this balance. The Satellite Scan can reveal which of the other 7 communication lenses are also in flow &mdash; and which might need attention.',
+    recommendations: [
+      'Protect this state&mdash;notice what conditions create it so you can replicate them',
+      'Share your approach with others to help them find their flow',
+      'Consider increasing complexity gradually to keep growing',
+    ],
+  },
+  challenge: {
+    label: 'Challenge / Stress Zone',
+    color: '#e67e22',
+    description: 'You perceive high challenge but feel your competence isn&rsquo;t matching up. This can lead to stress, anxiety, or feeling overwhelmed.',
+    advice: 'The key is to boost your perceived competence &mdash; through feedback, structure, or skill-building. The full Satellite Scan maps exactly where to focus.',
+    recommendations: [
+      'Seek green feedback&mdash;ask trusted colleagues what you&rsquo;re doing well',
+      'Break the challenge into smaller, manageable sub-tasks',
+      'Request mentoring or pair up with someone experienced in this area',
+      'Bring more structure: clear agendas, time limits, written preparation',
+    ],
+  },
+  comfort: {
+    label: 'Comfort Zone',
+    color: '#3b82f6',
+    description: 'You feel capable but the challenge is low. This can feel safe but may lead to boredom or disengagement over time.',
+    advice: 'Consider raising the challenge level &mdash; take on a new communication role, or explore a different lens. The Satellite Scan shows you how.',
+    recommendations: [
+      'Volunteer for a stretch role&mdash;host a session, mentor someone, take notes for the group',
+      'Set a personal challenge within the situation (e.g., ask a provocative question)',
+      'Explore adjacent skills that would raise the challenge level',
+      'Consider if this comfort is masking avoidance of harder conversations',
+    ],
+  },
+  danger: {
+    label: 'Danger / Apathy Zone',
+    color: '#ef4444',
+    description: 'Both perceived challenge and competence are low, often combined with low motivation. This zone signals disengagement or burnout risk.',
+    advice: 'Start small: find one micro-win to rebuild momentum. The Satellite Scan can identify which lenses hold the most potential for re-engagement.',
+    recommendations: [
+      'Reconnect with your purpose&mdash;why does this situation matter to you?',
+      'Seek immediate feedback and support from a trusted peer or coach',
+      'Consider whether this role or context truly aligns with your strengths',
+      'Start small: identify one micro-skill you can practice today',
+    ],
+  },
+};
+
+export async function sendFlowCheckResultEmail(data: FlowCheckResultEmailData) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    const zone = FLOW_ZONE_CONFIG[data.zone] || FLOW_ZONE_CONFIG.comfort;
+
+    const body = `
+      <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
+        Hi ${data.name || 'there'},
+      </p>
+      <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
+        Here are your Check-my-FLOW results. You assessed your communication flow in the context of <strong style="color: #e0e0e0;">${data.situation}</strong> as ${flowAOrAn(data.role)} <strong style="color: #e0e0e0;">${data.role}</strong>.
+      </p>
+      ${darkCard(`
+        <div style="text-align: center; margin-bottom: 16px;">
+          <span style="display: inline-block; background-color: ${zone.color}22; border: 1px solid ${zone.color}; color: ${zone.color}; padding: 8px 20px; border-radius: 20px; font-family: 'Poppins', Arial, sans-serif; font-weight: 600; font-size: 18px; letter-spacing: 0.5px;">${zone.label}</span>
+        </div>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6; text-align: center;">${zone.description}</p>
+      `, zone.color)}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">Your Personalised Interpretation</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.7;">${flowPersonalisedInterpretation(data.zone, data.situation, data.role, data.motivation, data.challenge, data.competence)}</p>
+      `)}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #009999; font-size: 16px; font-weight: 600;">Your Scores</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="color: #999; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">Perceived Motivation</td>
+            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">${data.motivation}/10</td>
+          </tr>
+          <tr>
+            <td style="color: #999; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">Perceived Challenge</td>
+            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">${data.challenge}/10</td>
+          </tr>
+          <tr>
+            <td style="color: #999; padding: 8px 0;">Perceived Competence</td>
+            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0;">${data.competence}/10</td>
+          </tr>
+        </table>
+      `)}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">What To Do Next</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">${zone.advice}</p>
+        <ul style="margin: 0; padding-left: 20px; color: #cccccc; font-size: 13px; line-height: 1.8;">
+          ${zone.recommendations.map(r => `<li style="margin-bottom: 4px;">${r}</li>`).join('')}
+        </ul>
+      `)}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">You Measured 1 of 8 Lenses</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
+          Flow is one of the 8 lenses in the Periodic Table of Conscious Communication. The full Satellite Scan maps all 8 lenses with 129 questions, giving you a complete communication dashboard.
+        </p>
+        <div style="text-align: center; margin-top: 16px;">
+          ${tealButton('Get Your Full Satellite Scan &mdash; &euro;99.95', 'https://greenelephant.org/checkout?product=satellitescan')}
+        </div>
+      `)}
+      ${darkCard(`
+        <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #e0e0e0; font-size: 16px; font-weight: 600;">Learn More About Flow</h3>
+        <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
+          Watch this short video to understand how to measure and hack communication flow in your work and team:
+        </p>
+        <div style="text-align: center; margin-top: 12px;">
+          <a href="https://youtu.be/EZBP2FByWBg" style="color: #009999; font-size: 14px; text-decoration: none; font-weight: 600;">Watch: Measuring Flow (YouTube)</a>
+        </div>
+      `)}
+      <p style="color: #cccccc; line-height: 1.7;">
+        Looking forward to supporting your communication journey,<br>
+        <strong style="color: #e0e0e0;">Esteve from GreenElephant</strong>
+      </p>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: `Your Flow Check Result: ${zone.label} - GreenElephant`,
+      html: brandedEmailWrapper(
+        'Your Check-my-FLOW Results',
+        'Communication Flow Assessment',
+        body,
+        'You\'re receiving this because you completed the Check-my-FLOW assessment and opted to receive your results at greenelephant.org.<br/>To unsubscribe, simply reply to this email with "unsubscribe".'
+      ),
+    });
+
+    console.log(`✅ Flow check result email sent to: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send flow check result email to ${data.email}:`, error);
+    return false;
+  }
+}
+
+export async function sendFlowCheckAdminNotification(data: { email: string; name: string | null; zone: string; situation: string; role: string; motivation: number; challenge: number; competence: number }) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    const adminEmail = 'esteve@greenelephant.org';
+    const zone = FLOW_ZONE_CONFIG[data.zone] || FLOW_ZONE_CONFIG.comfort;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: adminEmail,
+      subject: `New Flow Check: ${zone.label} - ${data.email}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">New Flow Check Submission</h2>
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Contact Details</h3>
+            <p><strong>Name:</strong> ${data.name || 'Not provided'}</p>
+            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+          </div>
+          <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #166534;">Flow Check Results</h3>
+            <p><strong>Zone:</strong> <span style="color: ${zone.color}; font-weight: bold;">${zone.label}</span></p>
+            <p><strong>Situation:</strong> ${data.situation}</p>
+            <p><strong>Role:</strong> ${data.role}</p>
+            <p><strong>Motivation:</strong> ${data.motivation}/10</p>
+            <p><strong>Challenge:</strong> ${data.challenge}/10</p>
+            <p><strong>Competence:</strong> ${data.competence}/10</p>
+          </div>
+          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1e40af;">Next Steps</h3>
+            <ul style="line-height: 1.8;">
+              <li>Contact synced to Notion CRM with "Flow Check" channel</li>
+              <li>They received branded result email with Satellite Scan CTA</li>
+              <li>Consider personal follow-up if in Danger or Challenge zone</li>
+            </ul>
+          </div>
+          <p style="color: #6b7280; font-size: 14px;">Automatically sent from GreenElephant.org Flow Check.</p>
+        </div>
+      `,
+    });
+
+    console.log(`✅ Flow check admin notification sent for: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send flow check admin notification for ${data.email}:`, error);
+    return false;
+  }
+}

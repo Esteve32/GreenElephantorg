@@ -5,8 +5,24 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertTriangle, ArrowRight, CheckCircle2, XCircle, Brain, Heart, Users, Target, TrendingDown, Zap } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2, XCircle, Brain, Heart, Users, Target, TrendingDown, Zap, Scan, BarChart3, Sparkles } from "lucide-react";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
+
+const QUIZ_FAQ_ITEMS = [
+  {
+    question: "How accurate is the Communication Pattern Quick Check?",
+    answer: "The Quick Check is a directional indicator based on 6 key communication lenses. It reveals broad patterns and drift signals, but it's not a full diagnostic. For a comprehensive analysis of all 8 lenses across 129 questions, the Satellite Scan provides a much deeper and more nuanced picture of your communication behavior."
+  },
+  {
+    question: "Is my quiz data private?",
+    answer: "Yes. Your quiz responses are processed locally in your browser and are not stored on our servers unless you explicitly choose to share them. We follow GDPR guidelines and never share personal data with third parties. Your privacy is fully respected."
+  },
+  {
+    question: "What do my quiz results mean?",
+    answer: "Green (conscious) patterns indicate areas where you communicate with awareness and intention. Red (drift) signals show areas where unconscious habits may be creating friction in your relationships and work. The more drift signals you have, the more you'd benefit from exploring the full Satellite Scan to map all your patterns in detail."
+  }
+];
 
 interface SignalCheck {
   id: string;
@@ -124,6 +140,17 @@ export default function SignalsQuizPage() {
   if (showResults) {
     return (
       <div className="min-h-screen pt-24 pb-16">
+        <SEO
+          title="Communication Pattern Quick Check | Free Assessment | GreenElephant"
+          description="Take this free 2-minute communication pattern assessment to identify conscious patterns and drift signals across 6 key lenses. Discover where you thrive and where unconscious habits may be holding you back."
+          canonicalPath="/signals"
+          keywords="communication assessment, communication quiz, conscious communication test, communication patterns, drift signals, free assessment"
+          breadcrumbs={[
+            { name: "Home", url: "/" },
+            { name: "Communication Quick Check", url: "/signals" }
+          ]}
+          faqItems={QUIZ_FAQ_ITEMS}
+        />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-needs text-white">Your Results</Badge>
@@ -283,23 +310,96 @@ export default function SignalsQuizPage() {
             </CardContent>
           </Card>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Card className="backdrop-blur-sm bg-card/50 border border-primary/20 mb-8">
+            <CardContent className="pt-6">
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Scan className="h-6 w-6 text-primary" />
+                  <h3 className="text-xl font-bold">See the Full Picture</h3>
+                </div>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Your quick check revealed <strong className="text-destructive">{redCount} drift pattern{redCount !== 1 ? 's' : ''}</strong>. The full Satellite Scan maps all 8 lenses across 129 questions with a personalized AI-powered dashboard.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <BarChart3 className="h-4 w-4" />
+                    <span>This Quick Check</span>
+                  </div>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                      6 binary questions
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                      Covers 6 of 146 elements
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground flex-shrink-0" />
+                      General pattern overview
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                    <Sparkles className="h-4 w-4" />
+                    <span>Full Satellite Scan</span>
+                  </div>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      129 calibrated questions across all 8 lenses
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      Personalized AI-powered dashboard
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      Actionable coaching prompts for each lens
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      27 years of research-backed methodology
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/checkout?product=satellitescan">
+                  <Button
+                    size="lg"
+                    data-testid="button-get-full-scan"
+                  >
+                    Get Your Full Satellite Scan — €99.95
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/choose-your-path">
+                  <Button
+                    variant="outline"
+                    data-testid="button-choose-path"
+                  >
+                    Explore Coaching & Retreats
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-center">
             <Button
               onClick={handleReset}
-              variant="outline"
+              variant="ghost"
               data-testid="button-retake-assessment"
             >
               Retake Assessment
             </Button>
-            <Link href="/choose-your-path">
-              <Button
-                className="bg-needs hover:bg-needs/90"
-                data-testid="button-choose-path"
-              >
-                Explore Coaching & Retreats
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
@@ -308,6 +408,17 @@ export default function SignalsQuizPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Communication Pattern Quick Check | Free Assessment | GreenElephant"
+        description="Take this free 2-minute communication pattern assessment to identify conscious patterns and drift signals across 6 key lenses. Discover where you thrive and where unconscious habits may be holding you back."
+        canonicalPath="/signals"
+        keywords="communication assessment, communication quiz, conscious communication test, communication patterns, drift signals, free assessment"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Communication Quick Check", url: "/signals" }
+        ]}
+        faqItems={QUIZ_FAQ_ITEMS}
+      />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-destructive text-white">Early Warning System</Badge>

@@ -1,10 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Privacy Policy | GreenElephant"
+        description="GreenElephant's privacy policy. Learn how we collect, use, and protect your personal data in compliance with GDPR. Your privacy is our priority."
+        canonicalPath="/privacy"
+        keywords="privacy policy, GDPR, data protection, GreenElephant privacy"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Privacy Policy", url: "/privacy" }
+        ]}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-needs text-white">Legal</Badge>

@@ -3,6 +3,7 @@ import { Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { SEO } from "@/components/SEO";
 import jonasPhoto from "@assets/Jonas purple upscaled with Jal-ai topaz._1764338940533.jpeg";
 import estevePhoto from "@assets/Esteve profile fal-ai-topaz upscaled_1764338940532.jpeg";
 import anuPhoto from "@assets/Anu upscaled with pruple fal-ai topaz_1764339012644.jpeg";
@@ -97,6 +98,16 @@ const ctaSectionGradient = `linear-gradient(180deg,
 export default function TeamPage() {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Our Team | GreenElephant"
+        description="Meet the GreenElephant team: Anu Timmerbacka (EA Coach), Jonas Pannetier (Clinical Psychologist), and Estève Pannetier (Coach & UX Ethnographer). Three voices, one mission — conscious communication."
+        canonicalPath="/team"
+        keywords="GreenElephant team, communication coaches, Anu Timmerbacka, Jonas Pannetier, Estève Pannetier, executive assistant coach, clinical psychologist"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Team", url: "/team" }
+        ]}
+      />
       <section 
         className="relative py-20 px-6"
         style={{ background: heroGradient }}
@@ -142,12 +153,17 @@ export default function TeamPage() {
               <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden hover-elevate">
                 <div className="grid md:grid-cols-[220px,1fr] gap-6">
                   <div className="flex items-start justify-center p-6 md:p-8">
-                    <div className="w-48 h-48 flex-shrink-0">
+                    <div className="w-48 h-48 flex-shrink-0 relative rounded-lg overflow-hidden ring-1 ring-[#009999]/30">
                       <img
                         src={coach.photo}
                         alt={coach.name}
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover"
+                        style={{ filter: "brightness(0.88) contrast(1.08) saturate(0.85)" }}
                         data-testid={`img-coach-${coach.name.toLowerCase().replace(/\s+/g, '-')}`}
+                      />
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{ background: "linear-gradient(135deg, rgba(0,153,153,0.08) 0%, transparent 60%)" }}
                       />
                     </div>
                   </div>

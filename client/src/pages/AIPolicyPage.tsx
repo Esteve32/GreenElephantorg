@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot, ExternalLink, Shield, Scale, Users, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeInUp, fadeIn } from "@/lib/motion";
+import { SEO } from "@/components/SEO";
 import earthWithAuroraUrl from "@assets/upscaled Jal-ai earth from space with northern lights_1764356069634.jpeg";
 
 const invertedEarthToSpaceGradient = {
@@ -17,6 +18,16 @@ const invertedEarthToSpaceGradient = {
 export default function AIPolicyPage() {
   return (
     <div className="min-h-screen relative">
+      <SEO
+        title="AI Ethics & Transparency Policy | GreenElephant"
+        description="GreenElephant's AI ethics and transparency policy. Learn how we use AI to augment human connection while maintaining data privacy, consent, and ethical standards."
+        canonicalPath="/ai-policy"
+        keywords="AI policy, AI ethics, AI transparency, responsible AI, GreenElephant AI policy"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "AI Policy", url: "/ai-policy" }
+        ]}
+      />
       <section 
         className="relative min-h-[50vh] flex items-center justify-center overflow-hidden"
         style={{

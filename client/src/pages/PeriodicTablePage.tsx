@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import PeriodicElement from "@/components/PeriodicElement";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, Network, X, ZoomIn, ZoomOut, RefreshCw } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { LENS_ARRAY } from "@/constants/lenses";
 import { ALL_ELEMENTS } from "@/data/periodicElements";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
@@ -12,6 +13,30 @@ import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import type { LensType } from "@/constants/lenses";
 import montVentouxUrl from "@assets/generated_images/mont_ventoux_provence_lavender_landscape.png";
 import periodicTableImageUrl from "@assets/The-Periodic-Table-of-Conscious-Communication@2x_1764712887674.png";
+import semanticConnectionsUrl from "@assets/🔥2022_full_transparent_BG_with_interconnexion_linesFull_Resea_1772234144810.png";
+
+const PERIODIC_TABLE_FAQ_ITEMS = [
+  {
+    question: "What is the Periodic Table of Conscious Communication?",
+    answer: "The Periodic Table of Conscious Communication is a framework of 146 micro-habits organized across 8 lenses. Inspired by chemistry's periodic table, it maps the building blocks of human communication—from how you express needs and set boundaries to how you influence, lead, and build trust. Each element includes a practical prompt you can use in real conversations."
+  },
+  {
+    question: "How do the 8 lenses work?",
+    answer: "Each lens represents a different dimension of communication: Influence (how you persuade), Attitude (your openness to change), Chaordic (structure vs. freedom), Flow (engagement and motivation), Alignment (empathy and trust), Needs (what drives you), Ego (self-awareness and triggers), and Dynamics (relationship patterns). Together, they provide a complete map of how you connect—or disconnect—with others."
+  },
+  {
+    question: "Is the Periodic Table based on research?",
+    answer: "Yes. The framework draws on 27 years of coaching practice and integrates concepts from established fields including Nonviolent Communication (Marshall Rosenberg), Flow theory (Mihaly Csikszentmihalyi), Transactional Analysis, systems thinking, and neuroscience of communication. Each element has been refined through real-world coaching application."
+  },
+  {
+    question: "How do I use the Periodic Table in my daily life?",
+    answer: "Start with one lens that resonates with your current challenges. Pick a single element and practice it for one week—notice what shifts in your conversations. The table is designed for gradual integration, not overnight mastery. Many people begin with the Needs or Alignment lens for foundational shifts."
+  },
+  {
+    question: "What's the difference between the Periodic Table and the Satellite Scan?",
+    answer: "The Periodic Table is the framework—it shows all 146 communication elements across 8 lenses. The Satellite Scan is the diagnostic tool—a 129-question assessment that maps YOUR specific patterns against this framework and generates a personalized dashboard. Think of the table as the map and the Scan as your GPS location on that map."
+  }
+];
 
 const lensFilters = [
   { value: "all", label: "All Lenses", color: "bg-primary" },
@@ -32,8 +57,184 @@ const periodicTableBackgroundStyle = {
   )`
 };
 
+function SemanticConnectionsViewer({ onClose }: { onClose: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+
+  const clampScale = (s: number) => Math.min(Math.max(s, 0.5), 5);
+
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.12 : 0.12;
+    setScale(prev => clampScale(prev + delta));
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    isDragging.current = true;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      isDragging.current = true;
+      lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - lastPos.current.x;
+    const dy = e.touches[0].clientY - lastPos.current.y;
+    lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+  }, []);
+
+  const reset = useCallback(() => {
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
+  }, []);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, [handleWheel]);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] bg-black/95 flex flex-col"
+      data-testid="modal-semantic-connections"
+    >
+      <div className="flex items-start justify-between px-4 py-3 border-b border-white/10 shrink-0">
+        <div className="max-w-xl">
+          <h2 className="text-white font-bold text-lg leading-tight">Semantic Connections</h2>
+          <p className="text-white/50 text-sm mt-0.5">
+            Each coloured line shows a research-backed relationship between elements across lenses.
+            These connections were mapped during the initial framework build from 27 years of coaching
+            practice, NVC, flow theory, Transactional Analysis and systems thinking.
+            Scroll to zoom · Drag to pan.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 ml-4 shrink-0">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setScale(prev => clampScale(prev + 0.3))}
+            className="text-white/60 hover:text-white"
+            data-testid="button-zoom-in"
+            aria-label="Zoom in"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setScale(prev => clampScale(prev - 0.3))}
+            className="text-white/60 hover:text-white"
+            data-testid="button-zoom-out"
+            aria-label="Zoom out"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={reset}
+            className="text-white/60 hover:text-white"
+            data-testid="button-zoom-reset"
+            aria-label="Reset view"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onClose}
+            className="text-white/60 hover:text-white"
+            data-testid="button-close-semantic-modal"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div
+        ref={containerRef}
+        className="flex-1 overflow-hidden relative"
+        style={{ cursor: isDragging.current ? "grabbing" : "grab" }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleMouseUp}
+        data-testid="canvas-semantic-connections"
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={semanticConnectionsUrl}
+            alt="Periodic Table of Conscious Communication — semantic connections between elements across all 8 lenses"
+            draggable={false}
+            style={{
+              transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+              transformOrigin: "center center",
+              transition: isDragging.current ? "none" : "transform 0.05s ease-out",
+              maxWidth: "none",
+              width: "90vw",
+              userSelect: "none",
+              pointerEvents: "none",
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="px-4 py-2 border-t border-white/10 shrink-0 flex items-center justify-between">
+        <span className="text-white/30 text-xs">Zoom: {Math.round(scale * 100)}%</span>
+        <span className="text-white/30 text-xs hidden sm:block">
+          Press Esc to close
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function PeriodicTablePage() {
   const [selectedLens, setSelectedLens] = useState<string>("all");
+  const [showSemanticViewer, setShowSemanticViewer] = useState(false);
 
   const filteredElements = selectedLens === "all"
     ? ALL_ELEMENTS
@@ -62,7 +263,23 @@ export default function PeriodicTablePage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 relative">
+      <SEO
+        title="Periodic Table of Conscious Communication | 146 Elements | GreenElephant"
+        description="Explore the Periodic Table of Conscious Communication — 146 micro-habits across 8 lenses mapping the full spectrum of human connection. A research-backed framework for transforming how you communicate."
+        canonicalPath="/periodic-table"
+        keywords="periodic table of communication, conscious communication framework, 146 elements, 8 lenses, communication micro-habits, NVC, nonviolent communication"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Periodic Table", url: "/periodic-table" }
+        ]}
+        faqItems={PERIODIC_TABLE_FAQ_ITEMS}
+      />
       <div className="absolute inset-0 -z-10" style={periodicTableBackgroundStyle} />
+
+      {showSemanticViewer && (
+        <SemanticConnectionsViewer onClose={() => setShowSemanticViewer(false)} />
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <motion.div 
           className="text-center mb-12"
@@ -85,7 +302,7 @@ export default function PeriodicTablePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
-            className="mb-10"
+            className="mb-6"
           >
             <img 
               src={periodicTableImageUrl} 
@@ -93,6 +310,28 @@ export default function PeriodicTablePage() {
               className="w-full h-auto"
               data-testid="img-periodic-table-full"
             />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mb-10"
+          >
+            <button
+              onClick={() => setShowSemanticViewer(true)}
+              className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-lg border border-white/15 bg-white/5 backdrop-blur-sm text-white/70 hover:text-white hover:border-white/30 hover:bg-white/10 transition-all duration-200 text-sm"
+              data-testid="button-view-semantic-connections"
+            >
+              <Network className="w-4 h-4 text-needs group-hover:text-needs" />
+              <span>View research connections between elements</span>
+              <span className="text-white/35 text-xs border border-white/15 rounded px-1.5 py-0.5 ml-1">
+                Interactive
+              </span>
+            </button>
+            <p className="text-white/35 text-xs mt-2">
+              Each coloured line is a semantic link drawn from 27 years of research across NVC, flow theory, TA and systems thinking.
+            </p>
           </motion.div>
 
           <motion.div 
@@ -210,13 +449,11 @@ export default function PeriodicTablePage() {
         </motion.div>
       </div>
 
-      {/* Mont Ventoux Footer - Full width image with seamless gradients */}
       <section 
         className="relative mt-16"
         aria-label="Provence landscape"
         data-testid="section-mont-ventoux-footer"
       >
-        {/* Top gradient - blends from dark content section */}
         <div 
           className="absolute top-0 left-0 right-0 h-40 z-10 pointer-events-none"
           style={{ 
@@ -232,7 +469,6 @@ export default function PeriodicTablePage() {
           aria-hidden="true"
         />
         
-        {/* Full-width Mont Ventoux image */}
         <div className="w-full">
           <img 
             src={montVentouxUrl} 
@@ -241,7 +477,6 @@ export default function PeriodicTablePage() {
           />
         </div>
         
-        {/* Bottom gradient - fades to dark */}
         <div 
           className="absolute bottom-0 left-0 right-0 h-32 z-10 pointer-events-none"
           style={{ 
@@ -257,7 +492,6 @@ export default function PeriodicTablePage() {
           aria-hidden="true"
         />
         
-        {/* Location label */}
         <div className="absolute bottom-6 left-0 right-0 z-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p className="text-white/80 text-sm">Mont Ventoux, Provence</p>

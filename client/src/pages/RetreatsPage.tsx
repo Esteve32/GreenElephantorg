@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Calendar, Users, Video, FlaskConical, BookText } from "lucide-react";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 import { motion } from "framer-motion";
 import { fadeInUp, fadeIn, staggerContainer, slideInLeft } from "@/lib/motion";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
-import laplandImageUrl from "@assets/generated_images/Tonttumäki_Finland_northern_lights_retreat_a23361d7.png";
-import provenceImageUrl from "@assets/generated_images/Aix-en-Provence_France_lavender_retreat_85bbb302.png";
-import microhabitImageUrl from "@assets/2103 Micro-Habit_1762730943460.png";
+const laplandImageUrl = "/retreat-finland.jpg";
+const provenceImageUrl = "/retreat-provence.png";
+const microhabitImageUrl = "/retreat-provence.png";
 
 const retreats = [
   {
@@ -48,6 +49,16 @@ const heroGradient = `linear-gradient(180deg,
 export default function RetreatsPage() {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Equinoxe Communication Retreats | Finland & Provence | GreenElephant"
+        description="Transform how you see conflict in 5-day immersive retreats in Levi, Finland or Provence, France. Practice microhabits, build trust, and return home with a personalized playbook. Limited to 12-14 participants."
+        canonicalPath="/retreats"
+        keywords="communication retreat, equinoxe retreat, Finland retreat, Provence retreat, conflict resolution retreat, conscious communication immersive, microhabit retreat"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Retreats", url: "/retreats" }
+        ]}
+      />
       <section 
         className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-16"
         style={{ background: heroGradient }}
@@ -309,7 +320,7 @@ export default function RetreatsPage() {
                   <p className="text-sm text-white/70">
                     Meet Anu and Jonas, your guides through this transformative journey. Each brings unique expertise in conscious communication.
                   </p>
-                  <Link href="/team" data-testid="link-team">
+                  <Link href="/connect" data-testid="link-team">
                     <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10" data-testid="button-agent-bios">
                       Meet the Team
                     </Button>

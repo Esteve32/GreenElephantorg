@@ -282,7 +282,7 @@ export default function ForCEOsPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mt-12"
+            className="text-center mt-12 flex flex-col items-center gap-4"
           >
             <Link href="/scan">
               <Button size="lg" className="bg-influence text-white" data-testid="button-ceo-final-cta">
@@ -290,6 +290,20 @@ export default function ForCEOsPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+              <Link href="/signals">
+                <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-ceo-quiz">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Free 2-Min Quick Check
+                </Button>
+              </Link>
+              <Link href="/webinar">
+                <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-ceo-webinar">
+                  <Zap className="mr-2 h-4 w-4" />
+                  Join Free Monthly Webinar
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>

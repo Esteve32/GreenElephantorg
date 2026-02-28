@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Linkedin, Mail, Sparkles, Calendar, MessageCircle, Users, Heart, PhoneCall, ArrowDown } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -281,6 +282,16 @@ export default function ConnectPage() {
 
   return (
     <div className="min-h-screen" data-testid="page-connect">
+      <SEO
+        title="Contact & Connect | GreenElephant"
+        description="Connect with the GreenElephant team for coaching, consulting, or collaboration. Meet our coaches, explore client references, and send us a message. We respond within 24 hours with genuine human presence."
+        canonicalPath="/connect"
+        keywords="contact GreenElephant, communication coaching contact, consulting inquiry, connect with coaches, client references"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Connect", url: "/connect" }
+        ]}
+      />
       {/* Hero Section - matching ScanPage */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden" data-testid="section-hero">
         <motion.div 

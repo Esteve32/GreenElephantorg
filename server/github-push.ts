@@ -1,3 +1,7 @@
+// GitHub push utility for syncing Replit codebase to GitHub
+// Pushes all source code, configs, and dependencies to Esteve32/GreenElephantorg
+// Note: attached_assets/ (408MB+) excluded from API push due to size limits.
+// Binary assets are managed by Replit and referenced via @assets imports at build time.
 import { getUncachableGitHubClient } from './github-client.ts';
 import * as fs from 'fs';
 import * as path from 'path';

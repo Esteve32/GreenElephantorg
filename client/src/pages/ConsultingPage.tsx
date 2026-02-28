@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 import luzernUrl from "@assets/stock_images/luzern_switzerland_l_1930ad9b.jpg";
 
 const heroGradient = {
@@ -85,6 +86,16 @@ export default function ConsultingPage() {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Communication Consulting for Organizations | GreenElephant"
+        description="Strategic communication consulting for TEAL organizations, CEOs, and innovation teams. Executive leadership intensives, organizational transformation, and design sprints. Investment from €12,000."
+        canonicalPath="/consulting"
+        keywords="communication consulting, TEAL organization consulting, executive coaching, organizational transformation, innovation team workshops, leadership communication"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Consulting", url: "/consulting" }
+        ]}
+      />
       <section className="pt-24 pb-16" style={heroGradient}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 

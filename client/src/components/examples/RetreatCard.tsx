@@ -1,5 +1,5 @@
 import RetreatCard from '../RetreatCard'
-import retreatImageUrl from "@assets/generated_images/Retreat_venue_meditation_space_c8b2bd31.png";
+const retreatImageUrl = "/retreat-venue.png";
 
 export default function RetreatCardExample() {
   return (

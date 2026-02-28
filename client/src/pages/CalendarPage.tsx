@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Users, Video, Sparkles, ArrowRight, CheckCircle } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -140,6 +141,16 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Events & Calendar | GreenElephant"
+        description="Explore the GreenElephant online coaching calendar with monthly and seasonal themed webinars following the 8 lenses of conscious communication. Join live practice sessions and community events."
+        canonicalPath="/calendar"
+        keywords="communication webinars, online coaching calendar, seasonal practice, 8 lenses calendar, communication events, live practice sessions"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Calendar", url: "/calendar" }
+        ]}
+      />
       <section className="relative pt-24 pb-16" style={heroGradient}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 

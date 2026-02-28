@@ -10,7 +10,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1762732324529.png";
+const logoUrl = "/ge-logo-512.png";
 
 function handleAnchorClick(e: React.MouseEvent, href: string) {
   const hashIndex = href.indexOf('#');
@@ -330,6 +330,16 @@ export default function Header() {
                 Find Your Path
               </Button>
             </Link>
+            <Link href="/flow-check">
+              <Button
+                variant="outline"
+                size="sm"
+                className="backdrop-blur-sm bg-flow/10 border-flow/40 text-flow hover:bg-flow/20"
+                data-testid="button-flow-check-nav"
+              >
+                Flow Check — Free
+              </Button>
+            </Link>
             <Link href="/scan">
               <Button 
                 size="sm"
@@ -437,6 +447,16 @@ export default function Header() {
             </div>
 
             <div className="pt-4 border-t border-white/10 space-y-2">
+              <Link href="/flow-check">
+                <Button
+                  variant="outline"
+                  className="w-full justify-center bg-flow/10 border-flow/40 text-flow"
+                  onClick={() => setMobileMenuOpen(false)}
+                  data-testid="button-mobile-flow-check"
+                >
+                  Flow Check — Free · 2 min
+                </Button>
+              </Link>
               <Link href="/programs#your-path">
                 <Button 
                   variant="outline" 

@@ -115,10 +115,10 @@ export default function ChooseYourPathPage() {
         title="Choose Your Path | Communication Assessment by Role | GreenElephant"
         description="Find the right communication assessment for your role. Tailored Satellite Scan insights for CEOs, Executive Assistants, and Virtual Assistants. €99.95 to map your patterns across 8 lenses."
         keywords="communication assessment, executive coaching, EA training, virtual assistant development, leadership communication, professional development"
-        canonicalPath="/your-path"
+        canonicalPath="/choose-your-path"
         breadcrumbs={[
           { name: "Home", url: "/" },
-          { name: "Choose Your Path", url: "/your-path" }
+          { name: "Choose Your Path", url: "/choose-your-path" }
         ]}
       />
       
