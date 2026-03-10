@@ -332,11 +332,11 @@ function SpeechStats({ speech }: { speech: Speech }) {
                 data-testid={`stat-bar-${b}`}
               />
             </div>
-            <span className="text-white/40 text-xs w-8 text-right" data-testid={`stat-pct-${b}`}>{stats[b]}%</span>
+            <span className="text-white/65 text-xs w-8 text-right" data-testid={`stat-pct-${b}`}>{stats[b]}%</span>
           </div>
         ))}
       </div>
-      <p className="text-white/30 text-xs mt-3 italic">Word-count weighted across annotated segments</p>
+      <p className="text-white/60 text-xs mt-3 italic">Word-count weighted across annotated segments</p>
     </div>
   );
 }
@@ -352,13 +352,13 @@ function BehaviorLegend() {
             <div key={b}>
               <p className="font-semibold text-sm mb-0.5" style={{ color: c.color }}>{c.label}</p>
               <p className="text-white/55 text-xs leading-relaxed">{c.description}</p>
-              {c.example && <p className="text-white/30 text-xs mt-1 italic">{c.example}</p>}
+              {c.example && <p className="text-white/60 text-xs mt-1 italic">{c.example}</p>}
             </div>
           );
         })}
       </div>
       <div className="mt-4 pt-4 border-t border-white/10">
-        <p className="text-white/35 text-xs leading-relaxed">
+        <p className="text-white/60 text-xs leading-relaxed">
           GreenBlueRed is a <span className="text-white/60">behavioural</span> model — it maps what you <em>say</em> and <em>do</em>, not who you <em>are</em>. The same person can move between all three.
         </p>
       </div>
@@ -386,7 +386,7 @@ function ComparisonBar() {
           {(["green", "blue", "red"] as const).map(b => (
             <div key={b} className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: BEHAVIOR_CONFIG[b].color }} />
-              <span className="text-white/30 text-xs">{BEHAVIOR_CONFIG[b].shortLabel}</span>
+              <span className="text-white/60 text-xs">{BEHAVIOR_CONFIG[b].shortLabel}</span>
             </div>
           ))}
         </div>
@@ -500,8 +500,8 @@ export default function DecodePage() {
                     {activeSpeech.title}
                   </p>
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-white/5 border border-white/10">
-                    <Info className="w-4 h-4 text-white/35 shrink-0 mt-0.5" />
-                    <p className="text-white/45 text-sm leading-relaxed" data-testid="text-speech-context">
+                    <Info className="w-4 h-4 text-white/60 shrink-0 mt-0.5" />
+                    <p className="text-white/65 text-sm leading-relaxed" data-testid="text-speech-context">
                       {activeSpeech.context}
                     </p>
                   </div>
@@ -513,7 +513,7 @@ export default function DecodePage() {
                 >
                   <div className="flex items-center gap-2 mb-6 pb-4 border-b border-white/10">
                     <BookOpen className="w-4 h-4 text-white/40" />
-                    <span className="text-white/40 text-sm">Hover any coloured passage for the analysis</span>
+                    <span className="text-white/65 text-sm">Hover any coloured passage for the analysis</span>
                   </div>
                   <div className="text-white/80 leading-[1.95] text-[1.05rem] space-y-5" data-testid="speech-text">
                     {activeSpeech.paragraphs.map((para, pIdx) => (

@@ -972,7 +972,7 @@ function SpecialOfferSection({ config, expired, deadline }: { config: WebinarCon
 
               {!expired && (
                 <ToggleDetail label="offer-fine-print">
-                  <p className="text-white/40 text-sm">
+                  <p className="text-white/65 text-sm">
                     Same Scan, same price — the bonus coaching session is our gift to webinar participants.
                   </p>
                 </ToggleDetail>
@@ -980,7 +980,7 @@ function SpecialOfferSection({ config, expired, deadline }: { config: WebinarCon
             </CardContent>
           </Card>
 
-          <p className="text-white/40 text-xs">
+          <p className="text-white/65 text-xs">
             For personal development and coaching only. Not for hiring, selection, or performance evaluation.
           </p>
         </motion.div>
@@ -1063,7 +1063,7 @@ function PastSessionsSection() {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-white/40 mb-2" data-testid={`text-past-session-date-${index}`}>
+                        <p className="text-sm text-white/65 mb-2" data-testid={`text-past-session-date-${index}`}>
                           {formatSessionDate(session.date)}
                         </p>
                         <p className="text-white/60 leading-relaxed text-sm" data-testid={`text-past-session-summary-${index}`}>

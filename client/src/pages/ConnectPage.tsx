@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Linkedin, Mail, Sparkles, Calendar, MessageCircle, Users, Heart, PhoneCall, ArrowDown } from "lucide-react";
+import { ExternalLink, Linkedin, Mail, Sparkles, Calendar, MessageCircle, Users, Heart, PhoneCall, ArrowDown, Quote } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -19,6 +19,63 @@ import jonasPhoto from "@assets/Jonas purple upscaled with Jal-ai topaz._1764338
 import estevePhoto from "@assets/Esteve profile fal-ai-topaz upscaled_1764338940532.jpeg";
 import anuPhoto from "@assets/Anu upscaled with pruple fal-ai topaz_1764339012644.jpeg";
 import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1764350733090.png";
+
+const testimonials = [
+  {
+    quote: "Managing calendars for three executives means navigating conflicting priorities daily. The Satellite Scan helped me see my communication patterns and now I handle those tough 'no' conversations with confidence.",
+    name: "Sophie M.",
+    role: "Executive Assistant to C-Suite",
+    country: "Germany",
+  },
+  {
+    quote: "I always thought I was just 'bad at confrontation.' The Scan showed me I actually have strong Alignment skills — I just needed the language to own them. My annual review went completely differently this year.",
+    name: "Katariina L.",
+    role: "Executive Assistant, Tech Company",
+    country: "Finland",
+  },
+  {
+    quote: "Working remotely for three clients across time zones, I was drowning in miscommunication. The 8 lenses gave me a framework to name what was going wrong — and fix it without burning bridges.",
+    name: "Priya S.",
+    role: "Virtual Assistant",
+    country: "India",
+  },
+  {
+    quote: "We've been transitioning to a self-managing structure for two years. The framework finally gave our team a common language for the difficult conversations that transformation requires.",
+    name: "Elena R.",
+    role: "People Lead, TEAL Organization",
+    country: "Netherlands",
+  },
+  {
+    quote: "I recommended the Scan to my whole team. It's not a test — it's a mirror. And sometimes you need a good mirror before you can see your superpowers clearly.",
+    name: "Mikko H.",
+    role: "Operations Manager",
+    country: "Finland",
+  },
+  {
+    quote: "Before Equinoxe, I'd tense up whenever my CEO was frustrated. I'd either shut down or become defensive. The microhabit framework taught me to pause, acknowledge my needs, and respond from clarity instead of fear. Our relationship has completely transformed.",
+    name: "Sarah K.",
+    role: "Executive Assistant, Tech Startup",
+    country: "",
+  },
+  {
+    quote: "I thought I was building a TEAL company, but I was still micromanaging every decision. The Provence retreat helped me see how my communication patterns were blocking self-organization. Now I ask questions instead of giving answers.",
+    name: "Marcus T.",
+    role: "TEAL Organization Founder",
+    country: "",
+  },
+  {
+    quote: "I used to agree with everyone to keep the peace, then resent them later. The Lapland retreat taught me that honoring my truth is an act of love, not selfishness. My design critiques are now honest AND compassionate.",
+    name: "Elisa R.",
+    role: "Design Innovation Student",
+    country: "",
+  },
+  {
+    quote: "We'd built a successful consulting firm but our marriage was fracturing. Every disagreement became a power struggle. Equinoxe showed us how to hold conflict as sacred — a chance to deepen understanding, not win arguments.",
+    name: "David & Ana L.",
+    role: "Partners in Business & Life",
+    country: "",
+  },
+];
 
 const clientCategories = [
   {
@@ -462,7 +519,7 @@ export default function ConnectPage() {
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-1">{coach.name}</h3>
                     <p className="text-white/60">{coach.title}</p>
-                    <p className="text-white/40 text-sm mt-1">{coach.location}</p>
+                    <p className="text-white/65 text-sm mt-1">{coach.location}</p>
                   </div>
                   
                   <p className="text-white/80 leading-relaxed">{coach.bio}</p>
@@ -545,6 +602,51 @@ export default function ConnectPage() {
                 </div>
               ))}
             </motion.div>
+          </div>
+        </section>
+
+        {/* Testimonials Carousel */}
+        <section className="relative py-16 overflow-hidden" data-testid="section-testimonials-carousel">
+          <style>{`
+            @keyframes ge-marquee {
+              from { transform: translateX(0); }
+              to   { transform: translateX(-50%); }
+            }
+            .ge-marquee-track {
+              display: flex;
+              width: max-content;
+              animation: ge-marquee 80s linear infinite;
+            }
+            .ge-marquee-track:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+          <div className="text-center mb-10 px-4">
+            <p className="text-xs uppercase tracking-widest text-white/65 mb-2">What Practitioners Say</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
+              Voices from Coaching, Retreats &amp; the Satellite Scan
+            </h2>
+          </div>
+          <div className="overflow-hidden">
+            <div className="ge-marquee-track">
+              {[...testimonials, ...testimonials].map((t, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 w-80 mx-4 backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6"
+                >
+                  <Quote className="w-5 h-5 text-teal-400/50 mb-3" />
+                  <p className="text-white/80 text-sm leading-relaxed mb-5">
+                    "{t.quote}"
+                  </p>
+                  <div>
+                    <p className="text-white font-semibold text-sm">{t.name}</p>
+                    <p className="text-white/50 text-xs mt-0.5">
+                      {t.role}{t.country ? ` · ${t.country}` : ""}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

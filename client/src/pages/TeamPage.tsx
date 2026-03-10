@@ -128,7 +128,7 @@ export default function TeamPage() {
             </h1>
             
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Three voices. One mission. Helping you turn every conversation into sacred practice through conscious communication.
+              Three voices. One mission. Helping you turn every conversation into intentional practice through conscious communication.
             </p>
           </motion.div>
         </div>
@@ -151,9 +151,9 @@ export default function TeamPage() {
               variants={fadeInUp}
             >
               <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden hover-elevate">
-                <div className="grid md:grid-cols-[220px,1fr] gap-6">
-                  <div className="flex items-start justify-center p-6 md:p-8">
-                    <div className="w-48 h-48 flex-shrink-0 relative rounded-lg overflow-hidden ring-1 ring-[#009999]/30">
+                <div className="grid md:grid-cols-[180px,1fr] gap-6">
+                  <div className="flex items-start justify-center p-6 md:p-6">
+                    <div className="w-36 h-36 flex-shrink-0 relative rounded-lg overflow-hidden ring-1 ring-[#009999]/30">
                       <img
                         src={coach.photo}
                         alt={coach.name}

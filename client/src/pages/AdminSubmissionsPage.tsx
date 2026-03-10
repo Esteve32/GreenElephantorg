@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2, HelpCircle, Info, ShoppingCart, Trash2, ToggleLeft, Download, Send, Clock, Edit2, Save, X, Eye, RefreshCw, Database, Radio, Loader2 } from "lucide-react";
+import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2, HelpCircle, Info, ShoppingCart, Trash2, ToggleLeft, Download, Send, Clock, Edit2, Save, X, Eye, RefreshCw, Database, Radio, Loader2, BarChart3, Settings } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
@@ -1023,7 +1023,7 @@ export default function AdminSubmissionsPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <div className="flex items-center justify-between max-w-3xl mx-auto mb-6">
             <div className="flex-1" />
             <Badge className="bg-needs text-white">Admin Dashboard</Badge>
@@ -1039,12 +1039,32 @@ export default function AdminSubmissionsPage() {
               </Button>
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 font-archivo">
-            Form Submissions
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 font-archivo">
+            Admin Hub
           </h1>
           <p className="text-muted-foreground">
-            All form submissions are stored in your PostgreSQL database
+            GreenElephant backend — data, content, and email controls
           </p>
+        </div>
+
+        {/* Admin tools quick-access */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+          {[
+            { label: "Email Control Room", icon: Mail, href: "/admin/email-control-room", color: "text-needs border-needs/30 bg-needs/5" },
+            { label: "Webinar Sessions", icon: Radio, href: "/admin/webinar-sessions", color: "text-ego border-ego/30 bg-ego/5" },
+            { label: "Calendar Events", icon: Calendar, href: "/admin/calendar-events", color: "text-alignment border-alignment/30 bg-alignment/5" },
+            { label: "Scan Results", icon: BarChart3, href: "/admin/scan-results", color: "text-attitude border-attitude/30 bg-attitude/5" },
+          ].map(tool => (
+            <button
+              key={tool.href}
+              onClick={() => setLocation(tool.href)}
+              className={`flex flex-col items-center gap-2 rounded-lg border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
+              data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              <tool.icon className="h-5 w-5" />
+              <span className="text-xs font-medium leading-tight">{tool.label}</span>
+            </button>
+          ))}
         </div>
 
         <Tabs defaultValue="prompts" className="space-y-8">

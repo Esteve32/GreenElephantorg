@@ -52,9 +52,21 @@ export default function InterviewCoachingPage() {
       <SEO 
         title="Interview Mastery Bundle | Data-Driven Interview Coaching"
         description="Ace your next interview with personalized coaching combining Satellite Scan diagnostics and expert guidance. For professionals 40+ seeking to communicate confidence in high-stakes career conversations."
-        keywords="interview coaching, career coaching, communication skills, executive interview preparation, job interview confidence, communication patterns"
+        keywords="career change interview coaching, career pivot communication, career transition preparation, interview coaching, career coaching, communication skills, executive interview preparation, job interview confidence, communication patterns, self-awareness for interviews, emotional intelligence in interviews, career reinvention"
         canonicalPath="/interview-coaching"
         structuredData={PRODUCT_STRUCTURED_DATA.interviewMastery}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Programs", url: "/programs" },
+          { name: "Interview Coaching", url: "/interview-coaching" }
+        ]}
+        faqItems={[
+          { question: "What is the Interview Mastery Bundle?", answer: "The Interview Mastery Bundle is a 3-session coaching programme combining the Satellite Scan communication diagnostic with expert interview coaching. It is designed for professionals preparing for high-stakes career conversations, job interviews, or career transitions." },
+          { question: "Who is interview coaching for?", answer: "The programme is designed for professionals — particularly those 40+ navigating career changes, career pivots, or executive-level interviews — who want to communicate with clarity, confidence, and self-awareness in high-pressure situations." },
+          { question: "How does the Satellite Scan help with interview preparation?", answer: "The Satellite Scan maps your communication patterns across 8 behavioural lenses. This diagnostic baseline reveals your natural strengths (e.g., Influence, Alignment) and blind spots under pressure, allowing coaching to be precisely targeted to the interview contexts you find most challenging." },
+          { question: "What does a coaching session look like?", answer: "Sessions are 90–120 minutes via video call. Session 1 reviews your Satellite Scan results and identifies your interview communication profile. Sessions 2 and 3 use live practice with structured feedback, reframing techniques, and personalised language coaching." },
+          { question: "How long does the Interview Mastery Bundle take?", answer: "The full bundle is typically completed over 3–4 weeks, with sessions spaced 1–2 weeks apart. Scheduling is flexible and adapts to your interview timeline." }
+        ]}
       />
       {/* Hero Section */}
       <section 

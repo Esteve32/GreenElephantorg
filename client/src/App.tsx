@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,49 +6,68 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FooterImage from "@/components/FooterImage";
 import { useHashScroll } from "@/hooks/useHashScroll";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { initGA } from "@/lib/analytics";
+import NotFound from "@/pages/not-found";
 
-const pagesWithCustomFooter = ['/resources', '/prompts'];
+const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table'];
 
 function shouldHideGlobalFooter(location: string): boolean {
   return pagesWithCustomFooter.some(path => 
     location === path || location.startsWith(path + '#') || location.startsWith(path + '?')
   );
 }
-import HomePage from "@/pages/HomePage";
-import WhatIsPage from "@/pages/WhatIsPage";
-import SignalsQuizPage from "@/pages/SignalsQuizPage";
-import ChooseYourPathPage from "@/pages/ChooseYourPathPage";
-import PeriodicTablePage from "@/pages/PeriodicTablePage";
-import RetreatsPage from "@/pages/RetreatsPage";
-import CoachingPage from "@/pages/CoachingPage";
-import ConsultingPage from "@/pages/ConsultingPage";
-import ResourcesPromptsPage from "@/pages/ResourcesPromptsPage";
-import StoriesPage from "@/pages/StoriesPage";
-import ConnectPage from "@/pages/ConnectPage";
-import CalendarPage from "@/pages/CalendarPage";
-import CheckoutPage from "@/pages/CheckoutPage";
-import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
-import InterviewCoachingPage from "@/pages/InterviewCoachingPage";
-import ScanPage from "@/pages/ScanPage";
-import ProgramsPage from "@/pages/ProgramsPage";
-import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
-import TermsOfServicePage from "@/pages/TermsOfServicePage";
-import CookiePolicyPage from "@/pages/CookiePolicyPage";
-import AIPolicyPage from "@/pages/AIPolicyPage";
-import AdminLoginPage from "@/pages/AdminLoginPage";
-import AdminSubmissionsPage from "@/pages/AdminSubmissionsPage";
-import DashboardPage from "@/pages/DashboardPage";
-import ForExecutiveAssistantsPage from "@/pages/ForExecutiveAssistantsPage";
-import ForCEOsPage from "@/pages/ForCEOsPage";
-import ForVirtualAssistantsPage from "@/pages/ForVirtualAssistantsPage";
-import ExecutiveCoachingAssessmentPage from "@/pages/ExecutiveCoachingAssessmentPage";
-import WebinarPage from "@/pages/WebinarPage";
-import FlowCheckPage from "@/pages/FlowCheckPage";
-import DecodePage from "@/pages/DecodePage";
-import NotFound from "@/pages/not-found";
+
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const SignalsQuizPage = lazy(() => import("@/pages/SignalsQuizPage"));
+const ChooseYourPathPage = lazy(() => import("@/pages/ChooseYourPathPage"));
+const PeriodicTablePage = lazy(() => import("@/pages/PeriodicTablePage"));
+const RetreatsPage = lazy(() => import("@/pages/RetreatsPage"));
+const CoachingPage = lazy(() => import("@/pages/CoachingPage"));
+const ResourcesPromptsPage = lazy(() => import("@/pages/ResourcesPromptsPage"));
+const ConnectPage = lazy(() => import("@/pages/ConnectPage"));
+const CalendarPage = lazy(() => import("@/pages/CalendarPage"));
+const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
+const PaymentSuccessPage = lazy(() => import("@/pages/PaymentSuccessPage"));
+const InterviewCoachingPage = lazy(() => import("@/pages/InterviewCoachingPage"));
+const ScanPage = lazy(() => import("@/pages/ScanPage"));
+const ProgramsPage = lazy(() => import("@/pages/ProgramsPage"));
+const PrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage"));
+const TermsOfServicePage = lazy(() => import("@/pages/TermsOfServicePage"));
+const CookiePolicyPage = lazy(() => import("@/pages/CookiePolicyPage"));
+const AIPolicyPage = lazy(() => import("@/pages/AIPolicyPage"));
+const AdminLoginPage = lazy(() => import("@/pages/AdminLoginPage"));
+const AdminSubmissionsPage = lazy(() => import("@/pages/AdminSubmissionsPage"));
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const ForExecutiveAssistantsPage = lazy(() => import("@/pages/ForExecutiveAssistantsPage"));
+const ForCEOsPage = lazy(() => import("@/pages/ForCEOsPage"));
+const ForVirtualAssistantsPage = lazy(() => import("@/pages/ForVirtualAssistantsPage"));
+const ExecutiveCoachingAssessmentPage = lazy(() => import("@/pages/ExecutiveCoachingAssessmentPage"));
+const WebinarPage = lazy(() => import("@/pages/WebinarPage"));
+const WebinarsPage = lazy(() => import("@/pages/WebinarsPage"));
+const FlowCheckPage = lazy(() => import("@/pages/FlowCheckPage"));
+const DecodePage = lazy(() => import("@/pages/DecodePage"));
+const ScanResultsDashboard = lazy(() => import("@/pages/ScanResultsDashboard"));
+const EmailControlRoom = lazy(() => import("@/pages/admin/EmailControlRoom"));
+const WebinarSessionsAdmin = lazy(() => import("@/pages/admin/WebinarSessionsAdmin"));
+const CalendarEventsAdmin = lazy(() => import("@/pages/admin/CalendarEventsAdmin"));
+
+function ScrollToTop() {
+  const [location] = useLocation();
+  const prevPath = useRef<string>("");
+
+  useEffect(() => {
+    const path = location.split("?")[0].split("#")[0];
+    if (path !== prevPath.current) {
+      prevPath.current = path;
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [location]);
+
+  return null;
+}
 
 function Router() {
   const [location] = useLocation();
@@ -59,6 +78,7 @@ function Router() {
 
   return (
     <>
+      <ScrollToTop />
       <a 
         href="#main" 
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
@@ -68,20 +88,21 @@ function Router() {
       </a>
       <Header />
       <main id="main" tabIndex={-1} className="pt-[72px]">
+      <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/scan" component={ScanPage} />
         <Route path="/programs" component={ProgramsPage} />
-        <Route path="/what-is-conscious-communication" component={WhatIsPage} />
-        <Route path="/signals" component={SignalsQuizPage} />
-        <Route path="/choose-your-path" component={ChooseYourPathPage} />
+        <Route path="/what-is-conscious-communication">{() => <Redirect to="/scan" />}</Route>
+        <Route path="/signals">{() => <Redirect to="/scan" />}</Route>
+        <Route path="/choose-your-path">{() => <Redirect to="/scan" />}</Route>
         <Route path="/periodic-table" component={PeriodicTablePage} />
         <Route path="/retreats" component={RetreatsPage} />
         <Route path="/coaching" component={CoachingPage} />
-        <Route path="/consulting" component={ConsultingPage} />
+        <Route path="/consulting">{() => <Redirect to="/programs" />}</Route>
         <Route path="/resources" component={ResourcesPromptsPage} />
         <Route path="/prompts" component={ResourcesPromptsPage} />
-        <Route path="/stories" component={StoriesPage} />
+        <Route path="/stories">{() => <Redirect to="/connect" />}</Route>
         <Route path="/connect" component={ConnectPage} />
         <Route path="/team">{() => <Redirect to="/connect" />}</Route>
         <Route path="/references">{() => <Redirect to="/connect" />}</Route>
@@ -104,11 +125,19 @@ function Router() {
         <Route path="/for-virtual-assistants" component={ForVirtualAssistantsPage} />
         <Route path="/executive-coaching-assessment" component={ExecutiveCoachingAssessmentPage} />
         <Route path="/webinar" component={WebinarPage} />
+        <Route path="/webinars" component={WebinarsPage} />
         <Route path="/flow-check" component={FlowCheckPage} />
         <Route path="/decode" component={DecodePage} />
+        <Route path="/decoding">{() => <Redirect to="/decode" />}</Route>
+        <Route path="/admin/scan-results" component={ScanResultsDashboard} />
+        <Route path="/admin/email-control-room" component={EmailControlRoom} />
+        <Route path="/admin/webinar-sessions" component={WebinarSessionsAdmin} />
+        <Route path="/admin/calendar-events" component={CalendarEventsAdmin} />
         <Route component={NotFound} />
       </Switch>
+      </Suspense>
       </main>
+      {!hideGlobalFooter && <FooterImage />}
       {!hideGlobalFooter && <Footer />}
     </>
   );

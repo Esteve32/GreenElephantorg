@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Video, Copy, Check } from "lucide-react";
+import { ExternalLink, Video, Copy, Check, Share2 } from "lucide-react";
 import { getLensMetadata, type LensType } from "@/constants/lenses";
 import { useToast } from "@/hooks/use-toast";
+import { getGBRColor, GBR_COLOR_HEX, GBR_COLOR_LABELS } from "@/constants/gbrTaxonomy";
 
 interface PeriodicElementProps {
   symbol: string;
@@ -41,9 +42,12 @@ const lensLabels = {
 export default function PeriodicElement({ symbol, name, number, lens, description, examplePrompt, learningUrl }: PeriodicElementProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const { toast } = useToast();
   const lensMetadata = getLensMetadata(lens);
   const Icon = lensMetadata.icon;
+
+  const gbrColor = getGBRColor(number);
 
   const handleCopyPrompt = () => {
     if (examplePrompt) {
@@ -51,10 +55,21 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
       setCopied(true);
       toast({
         title: "Copied to clipboard",
-        description: "Example prompt copied successfully",
+        description: "Prompt copied — paste it into ChatGPT or Claude",
       });
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleShareElement = () => {
+    const url = `https://greenelephant.org/periodic-table?element=${symbol}`;
+    navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    toast({
+      title: "Link copied — share this element",
+      description: url,
+    });
+    setTimeout(() => setLinkCopied(false), 2000);
   };
 
   return (
@@ -78,16 +93,25 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
         <DialogContent className="backdrop-blur-xl bg-card/95 border-white/20 max-w-2xl" aria-describedby="element-description">
           <DialogHeader>
             <div className="flex items-start justify-between gap-4">
-              <div>
+              <div className="flex-1 min-w-0">
                 <DialogTitle className="text-3xl font-bold mb-2">{name}</DialogTitle>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <Badge className={`${lensColors[lens]} text-white border-white/20`}>
                     {lensLabels[lens]}
                   </Badge>
                   <span className="text-sm text-muted-foreground">Element #{number}</span>
+                  {gbrColor && (
+                    <div className="flex items-center gap-1.5" data-testid={`badge-gbr-${symbol.toLowerCase()}`}>
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: GBR_COLOR_HEX[gbrColor] }}
+                      />
+                      <span className="text-xs text-muted-foreground">{GBR_COLOR_LABELS[gbrColor]}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className={`${lensColors[lens]} rounded-lg p-4 border border-white/20 flex flex-col items-center gap-2`} style={{ backgroundColor: `${lensMetadata.hexColor}aa` }}>
+              <div className={`${lensColors[lens]} rounded-lg p-4 border border-white/20 flex flex-col items-center gap-2 flex-shrink-0`} style={{ backgroundColor: `${lensMetadata.hexColor}aa` }}>
                 <div className="h-8 w-8 flex items-center justify-center">
                   <Icon className="h-6 w-6 text-[hsl(var(--lens-icon))]" />
                 </div>
@@ -99,21 +123,23 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
           <div className="space-y-6 mt-6" id="element-description">
             {description && (
               <div>
-                <h3 className="font-semibold mb-2">About this element</h3>
-                <p className="text-muted-foreground leading-relaxed">{description}</p>
+                <h3 className="font-semibold mb-2 text-sm uppercase tracking-wide text-muted-foreground">Official Definition</h3>
+                <p className="text-foreground leading-relaxed">{description}</p>
               </div>
             )}
 
             {examplePrompt && (
               <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <span className="text-sm uppercase tracking-wide text-muted-foreground">Example Prompt</span>
-                  </h3>
+                <div className="mb-3">
+                  <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-1">Reflect or Prompt</h3>
+                  <p className="text-xs text-muted-foreground">Use this quietly for self-reflection, or paste it into ChatGPT / Claude for a guided response.</p>
+                </div>
+                <p className="text-foreground leading-relaxed italic mb-4">&ldquo;{examplePrompt}&rdquo;</p>
+                <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-8 gap-2"
+                    className="gap-2"
                     onClick={handleCopyPrompt}
                     data-testid="button-copy-prompt"
                   >
@@ -125,12 +151,30 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
                     ) : (
                       <>
                         <Copy className="h-4 w-4" />
-                        <span className="text-xs">Copy</span>
+                        <span className="text-xs">Copy for AI</span>
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="gap-2"
+                    onClick={handleShareElement}
+                    data-testid="button-share-element"
+                  >
+                    {linkCopied ? (
+                      <>
+                        <Check className="h-4 w-4 text-needs" />
+                        <span className="text-xs">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="h-4 w-4" />
+                        <span className="text-xs">Share element</span>
                       </>
                     )}
                   </Button>
                 </div>
-                <p className="text-foreground leading-relaxed italic">&ldquo;{examplePrompt}&rdquo;</p>
               </div>
             )}
 

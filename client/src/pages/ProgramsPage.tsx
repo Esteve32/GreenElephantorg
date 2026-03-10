@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
+import archipelagoUrl from "@assets/finnish_archipelago_landscape_aerial_view_1764797904449.png";
+import Footer from "@/components/Footer";
 import { ArrowRight, Sparkles, Trophy, Compass, CheckCircle2, Calendar, Users, Target, Brain, Heart, MessageSquare, Zap } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
@@ -468,17 +470,69 @@ export default function ProgramsPage() {
   }, [location]);
 
   return (
+    <>
     <div className="min-h-screen" data-testid="page-programs">
       <SEO 
         title="Coaching Programs for EAs, CEOs & Leaders | GreenElephant"
         description="Executive communication programs for Executive Assistants, CEOs, and leaders. EA coaching, interview preparation, and leadership development. Find your path to communication mastery."
-        keywords="executive assistant coaching program, CEO leadership program, EA training, interview coaching, executive presence training, leadership communication development"
+        keywords="personal development coaching, career change coaching, career transition program, emotional intelligence training, self-awareness coaching, executive assistant coaching program, CEO leadership program, EA training, interview coaching, executive presence training, leadership communication development, future-proof career skills"
         canonicalPath="/programs"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Programs", url: "/programs" }
+        ]}
+        faqItems={[
+          { question: "What coaching programs does GreenElephant offer?", answer: "GreenElephant offers EA Communication Coaching (tailored for Executive Assistants), the Interview Mastery Bundle (3-session career interview preparation), single 1:1 coaching sessions (€295, 120 minutes), the full Coaching Journey (6 months, €2,980), and team workshops from €1,200." },
+          { question: "How do I know which program is right for me?", answer: "The Satellite Scan assessment (€99.95) is the baseline for all coaching — it maps your communication patterns across 8 lenses and is used to personalise every session. If you are preparing for an interview or career change, the Interview Mastery Bundle is a focused 3-session path. For deep transformation, the Coaching Journey provides 6 months of biweekly sessions." },
+          { question: "What is included in the EA Coaching Programme?", answer: "The Executive Assistant coaching programme combines the Satellite Scan diagnostic with personalised coaching sessions focused on managing up, stakeholder communication, executive presence, and navigating complex workplace dynamics. It is designed specifically for the unique communication challenges EA roles present." },
+          { question: "Are coaching sessions online or in person?", answer: "All coaching sessions are conducted online via video call, allowing GreenElephant to work with clients across Europe and globally. Retreats are in-person events held in Finland and Provence." },
+          { question: "What languages are coaching sessions available in?", answer: "Estève Pannetier coaches in English, Spanish, Catalan, and French. Anu Moisio hosts retreats in English and Finnish." }
+        ]}
       />
       <HeroSection />
       <EACoachingSection />
       <InterviewCoachingSection />
       <YourPathSection />
     </div>
+
+    <div className="relative w-full bg-[#0a0a0a]">
+      <div
+        className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
+        style={{
+          height: '160px',
+          background: `linear-gradient(to bottom,
+            #0a0a0a                  0%,
+            rgba(10,10,10,0.88)     22%,
+            rgba(10,10,10,0.60)     46%,
+            rgba(10,10,10,0.24)     72%,
+            transparent            100%
+          )`,
+        }}
+      />
+      <img
+        src={archipelagoUrl}
+        alt="Finnish Archipelago"
+        className="w-full h-auto block"
+      />
+      <div
+        className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
+        style={{
+          height: '160px',
+          background: `linear-gradient(to top,
+            #000000                  0%,
+            rgba(0,0,0,0.88)        22%,
+            rgba(0,0,0,0.60)        46%,
+            rgba(0,0,0,0.24)        72%,
+            transparent            100%
+          )`,
+        }}
+      />
+      <div className="absolute bottom-4 left-0 right-0 z-20 text-center">
+        <p className="text-white/65 text-xs tracking-wide">Finnish Archipelago</p>
+      </div>
+    </div>
+
+    <Footer />
+    </>
   );
 }

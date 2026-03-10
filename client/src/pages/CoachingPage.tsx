@@ -148,10 +148,14 @@ export default function CoachingPage() {
       <SEO 
         title="Executive Coaching & Leadership Communication | 1:1 & Team Sessions"
         description="Executive coaching for CEOs, Executive Assistants, and leaders. From €295 single sessions to 6-month Coaching Journeys. Build executive presence, team alignment, and conscious communication habits."
-        keywords="CEO executive coaching, executive assistant coaching, leadership coaching, executive presence communication, team alignment coaching, communication habit coaching, conflict resolution for leaders"
+        keywords="emotional intelligence coaching, self-awareness coaching, personal development coach, career change coaching, career transition support, CEO executive coaching, executive assistant coaching, leadership coaching, executive presence communication, team alignment coaching, communication habit coaching, conflict resolution for leaders, EQ coach, future-proof career"
         canonicalPath="/coaching"
         structuredData={PRODUCT_STRUCTURED_DATA.coachingJourney}
         faqItems={COACHING_FAQ_ITEMS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Coaching", url: "/coaching" }
+        ]}
       />
       <section 
         className="relative pt-24 pb-16"

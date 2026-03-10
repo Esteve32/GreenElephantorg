@@ -2,7 +2,6 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Mail, Linkedin, Youtube, Heart } from "lucide-react";
 import { motion } from "framer-motion";
-import { atmosphericPalette } from "@/constants/atmosphericGradient";
 
 function handleAnchorClick(e: React.MouseEvent, href: string) {
   const hashIndex = href.indexOf('#');
@@ -55,18 +54,9 @@ export default function Footer() {
   };
 
   return (
-    <footer 
-      className="relative"
-      style={{
-        background: `linear-gradient(180deg, 
-          ${atmosphericPalette.abyss} 0%, 
-          ${atmosphericPalette.space} 60%, 
-          ${atmosphericPalette.highAtmosphere} 100%
-        )`
-      }}
-      data-testid="footer"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="bg-black" data-testid="footer">
+      {/* Footer content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Top Section - Centered branding */}
         <motion.div 
           className="flex flex-col items-center text-center mb-16"
@@ -130,7 +120,7 @@ export default function Footer() {
                 {footerLinks.scan.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} onClick={(e) => handleAnchorClick(e, link.href)}>
-                      <span className="text-white/60 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                      <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
                         {link.label}
                       </span>
                     </Link>
@@ -145,7 +135,7 @@ export default function Footer() {
                 {footerLinks.resources.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} onClick={(e) => handleAnchorClick(e, link.href)}>
-                      <span className="text-white/60 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                      <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
                         {link.label}
                       </span>
                     </Link>
@@ -160,7 +150,7 @@ export default function Footer() {
                 {footerLinks.programs.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} onClick={(e) => handleAnchorClick(e, link.href)}>
-                      <span className="text-white/60 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                      <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
                         {link.label}
                       </span>
                     </Link>
@@ -175,7 +165,7 @@ export default function Footer() {
                 {footerLinks.connect.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} onClick={(e) => handleAnchorClick(e, link.href)}>
-                      <span className="text-white/60 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                      <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
                         {link.label}
                       </span>
                     </Link>
@@ -190,7 +180,7 @@ export default function Footer() {
                 {footerLinks.legal.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href}>
-                      <span className="text-white/60 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                      <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
                         {link.label}
                       </span>
                     </Link>
@@ -202,12 +192,12 @@ export default function Footer() {
           
           {/* Bottom tagline */}
           <div className="mt-12 pt-6 border-t border-white/5 flex flex-col items-center gap-3">
-            <div className="flex items-center gap-2 text-white/50 text-sm">
+            <div className="flex items-center gap-2 text-white/65 text-sm">
               <span>Made with</span>
               <Heart className="h-4 w-4 text-needs fill-needs" />
               <span>for transformation</span>
             </div>
-            <p className="text-white/40 text-sm">
+            <p className="text-white/65 text-sm">
               2025 GreenElephant.org
             </p>
           </div>

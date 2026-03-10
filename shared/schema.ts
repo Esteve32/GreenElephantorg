@@ -230,6 +230,7 @@ export const satellitescanPurchases = pgTable("satellitescan_purchases", {
   typeformCompletedAt: timestamp("typeform_completed_at"), // When the Typeform scan was actually completed
   dashboardSent: text("dashboard_sent").default("false").notNull(), // Track if dashboard sent
   remindersCount: text("reminders_count").default("0").notNull(), // Track how many reminders sent
+  role: text("role"), // Self-reported professional role from Typeform
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -239,12 +240,14 @@ export const insertSatellitescanPurchaseSchema = createInsertSchema(satellitesca
   amount: true,
   stripePaymentIntentId: true,
   status: true,
+  role: true,
 }).extend({
   customerEmail: z.string().email("Please enter a valid email address"),
   customerName: z.string().optional(),
   amount: z.string(),
   stripePaymentIntentId: z.string(),
   status: z.enum(["succeeded", "pending", "failed"]),
+  role: z.string().optional(),
 });
 
 export type InsertSatellitescanPurchase = z.infer<typeof insertSatellitescanPurchaseSchema>;
@@ -552,6 +555,44 @@ export const insertWebinarSettingsSchema = createInsertSchema(webinarSettings).o
 
 export type InsertWebinarSettings = z.infer<typeof insertWebinarSettingsSchema>;
 export type WebinarSettings = typeof webinarSettings.$inferSelect;
+
+export const webinarSessions = pgTable("webinar_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  lens: text("lens").notNull(),
+  topic: text("topic").notNull(),
+  description: text("description").notNull(),
+  date: text("date").notNull(),
+  time: text("time").notNull(),
+  spotsLeft: integer("spots_left").notNull().default(12),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWebinarSessionSchema = createInsertSchema(webinarSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertWebinarSession = z.infer<typeof insertWebinarSessionSchema>;
+export type WebinarSession = typeof webinarSessions.$inferSelect;
+
+export const calendarEvents = pgTable("calendar_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  month: text("month").notNull(),
+  lens: text("lens").notNull(),
+  color: text("color").notNull(),
+  description: text("description").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCalendarEventSchema = createInsertSchema(calendarEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
+export type CalendarEvent = typeof calendarEvents.$inferSelect;
 
 export const flowCheckResults = pgTable("flow_check_results", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

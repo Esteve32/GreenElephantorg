@@ -103,8 +103,8 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     interpretation: (situation, role, motivation, challenge, competence) =>
       `As ${aOrAn(role)} ${role} in "${situation}", you perceive both high challenge (${challenge}/10) and high competence (${competence}/10), with strong motivation (${motivation}/10). This is the optimal state—you're stretched just enough to stay engaged without feeling overwhelmed. Your skills match the demands of this situation, creating deep involvement and satisfaction.`,
     recommendations: [
-      "Protect this state—notice what conditions create it so you can replicate them",
-      "Share your approach with others to help them find their flow",
+      "Protect this state — notice what conditions create it so you can replicate them",
+      "Talk to a colleague about what is working — it can help them find their rhythm too",
       "Consider increasing complexity gradually to keep growing",
     ],
   },
@@ -116,12 +116,12 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     bgClass: "bg-attitude/10",
     description: "High perceived challenge with lower perceived competence. You may feel anxious or stressed.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive high challenge (${challenge}/10) but lower competence (${competence}/10). With motivation at ${motivation}/10, this creates a stress pattern. The situation demands more than you currently feel equipped to handle. This isn't about actual ability—it's about perception. Targeted support can shift this rapidly.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you perceive high challenge (${challenge}/10) but lower competence (${competence}/10). With motivation at ${motivation}/10, this creates a stress pattern. The situation demands more than you currently feel equipped to handle. This isn't about actual ability — it's about perception. Targeted support can shift this rapidly.`,
     recommendations: [
-      "Seek green feedback—ask trusted colleagues what you're doing well",
+      "Ask trusted colleagues to share what they notice you doing well",
       "Break the challenge into smaller, manageable sub-tasks",
       "Request mentoring or pair up with someone experienced in this area",
-      "Bring more structure: clear agendas, time limits, written preparation",
+      "Bring more structure to the situation — a clear agenda, a time limit, written preparation",
     ],
   },
   comfort: {
@@ -132,12 +132,12 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     bgClass: "bg-primary/10",
     description: "Low perceived challenge with high perceived competence. You feel safe but may be coasting.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive low challenge (${challenge}/10) but high competence (${competence}/10). With motivation at ${motivation}/10, you're in your comfort zone. While this feels safe, sustained comfort leads to stagnation. Your skills exceed the demands—which means you have capacity for growth.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you perceive low challenge (${challenge}/10) but high competence (${competence}/10). With motivation at ${motivation}/10, you're in your comfort zone. While this feels safe, sustained comfort leads to stagnation. Your skills exceed the demands — which means you have capacity for growth.`,
     recommendations: [
-      "Volunteer for a stretch role—host a session, mentor someone, take notes for the group",
+      "Volunteer for a stretch role — host a session, mentor someone, take notes for the group",
       "Set a personal challenge within the situation (e.g., ask a provocative question)",
       "Explore adjacent skills that would raise the challenge level",
-      "Consider if this comfort is masking avoidance of harder conversations",
+      "Reflect on whether staying comfortable is holding you back from a more meaningful challenge",
     ],
   },
   danger: {
@@ -148,12 +148,12 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     bgClass: "bg-destructive/10",
     description: "Low perceived challenge and low perceived competence. Disengagement risk is high.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive both low challenge (${challenge}/10) and low competence (${competence}/10), with motivation at ${motivation}/10. This is the danger zone—neither the situation nor your skills feel adequate. This creates apathy and disengagement, which compounds over time. Urgent attention is needed.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you perceive both low challenge (${challenge}/10) and low competence (${competence}/10), with motivation at ${motivation}/10. This is the danger zone — neither the situation nor your skills feel adequate. This creates apathy and disengagement, which compounds over time. Urgent attention is needed.`,
     recommendations: [
-      "Reconnect with your purpose—why does this situation matter to you?",
-      "Seek immediate feedback and support from a trusted peer or coach",
-      "Consider whether this role or context truly aligns with your strengths",
-      "Start small: identify one micro-skill you can practice today",
+      "Reconnect with your purpose — why does this situation matter to you?",
+      "Ask for honest perspective from a trusted peer or coach",
+      "Ask yourself honestly whether this situation is the right fit for your energy right now",
+      "Start small — identify one specific communication habit to practise today",
     ],
   },
 };
@@ -580,7 +580,7 @@ export default function FlowCheckPage() {
                   const shifted = Math.abs(effCh - challenge) >= 0.5;
                   const dir = motivation < 5 ? "reduced" : motivation > 5 ? "amplified" : null;
                   return (
-                    <div className="mt-3 text-[11px] text-white/45 text-center leading-snug space-y-0.5">
+                    <div className="mt-3 text-[11px] text-white/65 text-center leading-snug space-y-0.5">
                       {shifted && dir ? (
                         <>
                           <div>
@@ -775,7 +775,7 @@ export default function FlowCheckPage() {
         title="Check Your Communication Flow | Free Assessment | GreenElephant"
         description="Measure your communication flow state using Csikszentmihalyi's model. Discover if you're in the Flow, Challenge, Comfort, or Danger zone in your key communication situations."
         canonicalPath="/flow-check"
-        keywords="flow state assessment, communication flow, Csikszentmihalyi, flow zone, motivation challenge competence, free communication test"
+        keywords="flow state assessment, self-awareness tool, free emotional intelligence test, personal development check, communication self-reflection, Csikszentmihalyi flow model, flow zone, motivation challenge competence, free communication assessment, free EQ check, conscious communication test"
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Flow Check", url: "/flow-check" },

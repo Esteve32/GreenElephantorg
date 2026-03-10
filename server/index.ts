@@ -5,6 +5,7 @@ import { pool } from "./db";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { startOnboardingScheduler } from "./onboarding-scheduler";
+import { startDailyPulseScheduler } from "./daily-pulse";
 
 const app = express();
 
@@ -126,6 +127,9 @@ app.use((req, res, next) => {
     // Set up onboarding email scheduler
     // Runs every 5 minutes to check for pending Fibonacci sequence emails
     startOnboardingScheduler();
+
+    // Set up daily pulse digest scheduler (runs at 8:00 AM UTC daily)
+    startDailyPulseScheduler();
   });
 })();
 

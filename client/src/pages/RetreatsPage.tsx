@@ -58,6 +58,13 @@ export default function RetreatsPage() {
           { name: "Home", url: "/" },
           { name: "Retreats", url: "/retreats" }
         ]}
+        faqItems={[
+          { question: "Where are the GreenElephant retreats held?", answer: "GreenElephant Equinoxe retreats are held in two locations: Levi, Finnish Lapland in winter/spring, and Provence, France in summer/autumn. Both locations are chosen for their natural setting, stillness, and distance from daily pressures — essential conditions for deep communication work." },
+          { question: "How many people attend a retreat?", answer: "Retreats are limited to 12–14 participants to ensure deep personal attention and genuine group cohesion. This intimate scale allows for meaningful practice, honest conversation, and lasting connections." },
+          { question: "What happens during a GreenElephant retreat?", answer: "Each 5-day Equinoxe retreat combines conscious communication sessions using the Periodic Table framework, micro-habit practice, conflict transformation exercises, nature immersion, movement, and personal reflection time. Participants leave with a personalised communication playbook." },
+          { question: "Do I need to have done the Satellite Scan before attending a retreat?", answer: "The Satellite Scan is strongly recommended before attending — it gives you a personal diagnostic baseline that deepens your experience and allows facilitators to tailor sessions to your communication profile." },
+          { question: "What is the price of a retreat?", answer: "Retreats start from €2,800 per participant. This includes accommodation, all meals, facilitation, and materials. Travel to the retreat location is not included. Early-bird and group pricing may be available — contact esteve@greenelephant.org for details." }
+        ]}
       />
       <section 
         className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-16"

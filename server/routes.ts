@@ -408,6 +408,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (purchaseError: any) {
           console.error('⚠️ Purchase update error (non-blocking):', purchaseError.message);
         }
+
+        // Save self-reported role to satellitescan purchase record
+        if (role) {
+          try {
+            await storage.updateSatellitescanRole(customerEmail, role);
+            console.log(`✅ Saved role "${role}" for ${customerEmail}`);
+          } catch (roleError: any) {
+            console.error('⚠️ Role update error (non-blocking):', roleError.message);
+          }
+        }
         
         // Sync contact to Notion CRM with scan submission date
         try {
@@ -1522,6 +1532,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Satellitescan webhook error:", error);
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Webinar replay gate — GDPR-compliant
+  app.post("/api/webinar/replay-gate", async (req, res) => {
+    try {
+      const { name, email, consent } = req.body;
+      if (!email || !consent) {
+        return res.status(400).json({ message: "Email and consent are required" });
+      }
+      const normalizedEmail = email.toLowerCase().trim();
+      const consentText = "Agreed to receive webinar replay link and occasional updates about upcoming Monthly Lens Webinars.";
+
+      // Upsert contact
+      let contact = await storage.getContactByEmail(normalizedEmail);
+      if (!contact) {
+        contact = await storage.createContact({
+          email: normalizedEmail,
+          name: name?.trim() || undefined,
+          consentGiven: "true",
+          consentText,
+          source: "webinar",
+          channelsReached: ["Webinar"],
+        });
+      }
+      await storage.addChannelToContact(normalizedEmail, "Webinar");
+
+      // Sync to Notion CRM
+      try {
+        const { pushContactToNotion } = await import('./lib/notionSync');
+        const freshContact = await storage.getContactByEmail(normalizedEmail);
+        if (freshContact) {
+          await pushContactToNotion(freshContact);
+        }
+      } catch (notionErr: any) {
+        console.error("⚠️ Notion sync error (webinar replay gate):", notionErr.message);
+      }
+
+      // Send confirmation email
+      try {
+        const { sendWebinarReplayConfirmationEmail } = await import("./email-notifications");
+        await sendWebinarReplayConfirmationEmail({ name: name?.trim() || "there", email: normalizedEmail });
+      } catch (emailErr: any) {
+        console.error("⚠️ Replay gate email error:", emailErr.message);
+      }
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Webinar replay gate error:", error);
+      res.status(500).json({ message: "Could not process your request" });
+    }
+  });
+
+  // Admin: Scan Results dashboard endpoint
+  app.get("/api/admin/scan-results", requireAdminAuth, async (_req, res) => {
+    try {
+      const purchases = await storage.getAllSatellitescanPurchases();
+      res.json(purchases);
+    } catch (error: any) {
+      console.error("Scan results fetch error:", error);
+      res.status(500).json({ message: "Could not fetch scan results" });
     }
   });
 
@@ -3629,7 +3700,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       const testData = {
         customerEmail,
         customerName: customerName || "Test User",
-        amount: 99.95,
+        amount: "99.95",
         paymentIntentId: `test_pi_${Date.now()}`,
         purchaseId: `test_purchase_${Date.now()}`
       };
@@ -3713,6 +3784,167 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       res.json(settings || null);
     } catch (error: any) {
       console.error("Error fetching webinar settings:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Calendar events - public read
+  app.get("/api/calendar-events", async (_req, res) => {
+    try {
+      const events = await storage.getAllCalendarEvents();
+      res.json(events);
+    } catch (error: any) {
+      console.error("Error fetching calendar events:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Calendar events - admin CRUD
+  app.get("/api/admin/calendar-events", requireAdminAuth, async (_req, res) => {
+    try {
+      res.json(await storage.getAllCalendarEvents());
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/calendar-events", requireAdminAuth, async (req, res) => {
+    try {
+      const { insertCalendarEventSchema } = await import("@shared/schema");
+      const parsed = insertCalendarEventSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ message: "Invalid data", errors: parsed.error.errors });
+      const event = await storage.createCalendarEvent(parsed.data);
+      res.status(201).json(event);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/calendar-events/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const event = await storage.updateCalendarEvent(req.params.id, req.body);
+      if (!event) return res.status(404).json({ message: "Event not found" });
+      res.json(event);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/calendar-events/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const deleted = await storage.deleteCalendarEvent(req.params.id);
+      if (!deleted) return res.status(404).json({ message: "Event not found" });
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Webinar sessions - public read
+  app.get("/api/webinar-sessions", async (_req, res) => {
+    try {
+      const sessions = await storage.getAllWebinarSessions();
+      res.json(sessions);
+    } catch (error: any) {
+      console.error("Error fetching webinar sessions:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Webinar sessions - admin CRUD
+  app.get("/api/admin/webinar-sessions", requireAdminAuth, async (_req, res) => {
+    try {
+      const sessions = await storage.getAllWebinarSessions();
+      res.json(sessions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/webinar-sessions", requireAdminAuth, async (req, res) => {
+    try {
+      const { insertWebinarSessionSchema } = await import("@shared/schema");
+      const parsed = insertWebinarSessionSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ message: "Invalid data", errors: parsed.error.errors });
+      const session = await storage.createWebinarSession(parsed.data);
+      res.status(201).json(session);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/webinar-sessions/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const session = await storage.updateWebinarSession(id, req.body);
+      if (!session) return res.status(404).json({ message: "Session not found" });
+      res.json(session);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/webinar-sessions/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteWebinarSession(id);
+      if (!deleted) return res.status(404).json({ message: "Session not found" });
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Manual trigger for daily pulse email (admin only)
+  app.post("/api/admin/trigger-pulse", requireAdminAuth, async (_req, res) => {
+    try {
+      const { runDailyPulse } = await import('./daily-pulse');
+      const success = await runDailyPulse();
+      if (success) {
+        res.json({ success: true, message: 'Daily pulse email sent to esteve@greenelephant.org' });
+      } else {
+        res.status(500).json({ success: false, message: 'Pulse ran but email failed — check server logs' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Test-send a journey's first email to esteve@ (admin only)
+  app.post("/api/admin/email-test", requireAdminAuth, async (req, res) => {
+    try {
+      const { journeyId } = req.body as { journeyId: string };
+      if (!journeyId) return res.status(400).json({ message: 'journeyId is required' });
+
+      const { sendDailyPulseEmail } = await import('./email-notifications');
+
+      const journeyMap: Record<string, string> = {
+        'satellite-scan': 'Satellite Scan Purchase',
+        'newsletter': 'Newsletter Subscription',
+        'flow-check': 'Check-my-FLOW',
+        'signals-quiz': 'Signals Quiz',
+        'webinar-waitlist': 'Webinar Waitlist',
+        'contact-form': 'Contact Form',
+      };
+
+      const journeyName = journeyMap[journeyId];
+      if (!journeyName) return res.status(400).json({ message: `Unknown journeyId: ${journeyId}` });
+
+      // Send a pulse-style test email describing the journey
+      await sendDailyPulseEmail({
+        date: `TEST — ${journeyName} journey`,
+        scanPurchases: 0,
+        revenue: 0,
+        newsletterSubs: 0,
+        webinarSignups: 0,
+        flowChecks: 0,
+        flowZones: {},
+        quizCompletions: 0,
+        contactMessages: 0,
+      });
+
+      res.json({ success: true, message: `Test email for "${journeyName}" sent to esteve@greenelephant.org` });
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });

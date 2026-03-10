@@ -8,41 +8,31 @@ interface EmailVerificationData {
 export async function sendVerificationEmail(data: EmailVerificationData) {
   try {
     const { client, fromEmail } = await getUncachableResendClient();
-    
+
     await client.emails.send({
       from: fromEmail,
       to: data.email,
-      subject: "Verify Your Email - GreenElephant",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; text-align: center;">
-          <div style="background: linear-gradient(135deg, #0a1628 0%, #1a6180 100%); padding: 30px; border-radius: 12px 12px 0 0;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Verify Your Email</h1>
-          </div>
-          
-          <div style="padding: 30px; background: #f9fafb; border-radius: 0 0 12px 12px;">
-            <p style="color: #374151; font-size: 16px; margin-bottom: 20px;">
-              Use this code to complete your purchase:
-            </p>
-            
-            <div style="background: #ffffff; border: 2px solid #009999; border-radius: 8px; padding: 20px; margin: 20px 0;">
-              <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #009999;">
-                ${data.code}
-              </span>
-            </div>
-            
-            <p style="color: #6b7280; font-size: 14px;">
-              This code expires in 10 minutes.<br/>
-              If you didn't request this, please ignore this email.
-            </p>
-          </div>
-          
-          <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
-            GreenElephant.org - Conscious Communication
-          </p>
+      subject: "Your verification code — GreenElephant",
+      html: brandedEmailWrapper(
+        "Verify your email",
+        "One step to complete your purchase",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 20px 0;">
+          Use the code below to complete your purchase. It expires in 10 minutes.
+        </p>
+        <div style="background-color:#111111;border:2px solid #009999;border-radius:8px;padding:28px;margin:24px 0;text-align:center;">
+          <span style="font-size:38px;font-weight:700;letter-spacing:12px;color:#009999;font-family:'Poppins',Arial,sans-serif;">
+            ${data.code}
+          </span>
         </div>
-      `,
+        <p style="color:#777777;font-size:13px;line-height:1.6;margin:0;">
+          If you didn't request this, you can safely ignore this email.
+        </p>
+        `,
+        "You received this because you initiated a purchase at GreenElephant.org. This is a one-time transactional email."
+      ),
     });
-    
+
     console.log(`✅ Verification email sent to: ${data.email}`);
     return true;
   } catch (error) {
@@ -300,47 +290,43 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
     await client.emails.send({
       from: fromEmail,
       to: data.customerEmail,
-      subject: `Welcome to Satellite Scan - Start Your 90-Minute Assessment 🎯`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Welcome to Your Satellite Scan! 🛰️</h2>
-          
-          <p>Hi ${data.customerName || 'there'},</p>
-          
-          <p>Thank you for purchasing the Satellite Scan! You're about to map your communication patterns across 8 research-backed lenses.</p>
-          
-          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-            <h3 style="margin-top: 0; color: #1e40af;">Start Your Scan Now</h3>
-            <p style="margin-bottom: 15px;">Set aside 90 minutes of uninterrupted time for the best results.</p>
-            <a href="https://greenelephantorg.typeform.com/individualscan" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Begin Your Satellite Scan</a>
-          </div>
-          
-          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">📚 Your Resources</h3>
-            <p>While you wait for your personalized dashboard (delivered within 48-72 hours after you complete the scan), explore these resources:</p>
-            <ul style="line-height: 1.8;">
-              <li><strong>Prompt Library:</strong> <a href="https://greenelephant.org/resources" style="color: #2563eb;">Browse Prompts</a> - Use these prompts to deepen your insights</li>
-              <li><strong>Video Tutorials:</strong> <a href="https://www.youtube.com/playlist?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB" style="color: #2563eb;">Watch on YouTube</a> - Learn how to interpret your results</li>
-            </ul>
-          </div>
-          
-          <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #92400e;">⏰ Important: Dashboard Timeline</h3>
-            <p style="margin-bottom: 0;">Your personalized dashboard is manually created by our coaches—it's not automated. After you complete the scan, please allow <strong>48-72 hours</strong> for us to review your responses and build your custom visual map.</p>
-          </div>
-          
-          <p>Questions? Just reply to this email and we'll help you out.</p>
-          
-          <p>
-            Looking forward to mapping your communication patterns,<br>
-            <strong>Esteve from GreenElephant</strong>
-          </p>
-          
-          <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
-            You're receiving this because you purchased Satellite Scan. If you have questions, reply to this email.
+      subject: "Your Satellite Scan is confirmed — begin when you're ready",
+      html: brandedEmailWrapper(
+        "Satellite Scan confirmed",
+        "Your 90-minute communication diagnostic is ready",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Hi ${data.customerName?.split(' ')[0] || 'there'},
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+          Thank you for your purchase. You're about to map your communication patterns across 8 research-backed lenses. Set aside 90 uninterrupted minutes and start when you feel focused.
+        </p>
+        <div style="text-align:center;margin:0 0 28px 0;">
+          <a href="https://greenelephantorg.typeform.com/individualscan" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
+            Begin Your Satellite Scan
+          </a>
+        </div>
+        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
+          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">Dashboard timeline</h3>
+          <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
+            Your personalized dashboard is built by our coaches — not automated. After you complete the scan, allow <strong style="color:#e0e0e0;">48–72 hours</strong> for delivery.
           </p>
         </div>
-      `,
+        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;">
+          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#e0e0e0;font-size:15px;font-weight:600;">Explore while you wait</h3>
+          <ul style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
+            <li><a href="https://greenelephant.org/resources" style="color:#009999;text-decoration:none;">Communication Prompt Library</a> — 40+ AI-ready prompts</li>
+            <li><a href="https://greenelephant.org/periodic-table" style="color:#009999;text-decoration:none;">Periodic Table of Conscious Communication</a></li>
+            <li><a href="https://www.youtube.com/playlist?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB" style="color:#009999;text-decoration:none;">Video Tutorials on YouTube</a></li>
+          </ul>
+        </div>
+        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
+          Questions? Reply to this email and we'll get back to you.<br><br>
+          <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong>
+        </p>
+        `,
+        "You received this because you purchased Satellite Scan at GreenElephant.org. This is a transactional confirmation email sent under legitimate interest."
+      ),
     });
     
     console.log('✅ Satellitescan purchase notification email sent to admin:', adminEmail);
@@ -359,61 +345,44 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
 export async function sendSatellitescanReminderEmail(customerEmail: string, customerName: string | null) {
   try {
     const { client, fromEmail } = await getUncachableResendClient();
-    
+    const firstName = customerName?.split(' ')[0] || 'there';
+
     await client.emails.send({
       from: fromEmail,
       to: customerEmail,
-      subject: "Haven't forgotten about you - Your Satellite Scan awaits 🎯",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Your Communication Dashboard Is Waiting</h2>
-          
-          <p>Hi ${customerName || 'there'},</p>
-          
-          <p>
-            We noticed you haven't completed your Satellite Scan Typeform yet. No pressure - but we wanted to 
-            make sure the link didn't get lost in your inbox.
-          </p>
-          
-          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #1e40af;">Complete Your 90-Minute Scan</h3>
-            <p>Click here to start: <a href="https://greenelephantorg.typeform.com/individualscan" style="color: #2563eb; font-weight: bold;">Take the Satellite Scan</a></p>
-            <p style="margin-bottom: 0; color: #1e3a8a;">
-              <strong>Remember:</strong>
-              <ul style="margin-top: 8px;">
-                <li>60-90 minutes of focused time</li>
-                <li>Best done in one sitting</li>
-                <li>Your personalized dashboard delivered within 48-72 hours after completion</li>
-              </ul>
-            </p>
-          </div>
-          
-          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">📚 Your Resources Are Ready</h3>
-            <p>While you prepare to take the scan, explore these resources:</p>
-            <ul style="line-height: 1.8;">
-              <li><strong>Prompt Library:</strong> <a href="https://greenelephant.org/resources" style="color: #2563eb;">Browse Prompts</a></li>
-              <li><strong>Video Tutorials:</strong> <a href="https://www.youtube.com/playlist?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB" style="color: #2563eb;">Watch on YouTube</a></li>
-            </ul>
-          </div>
-          
-          <p>
-            If you have questions or want to chat before diving in, just reply to this email.
-          </p>
-          
-          <p>
-            Looking forward to mapping your communication patterns,<br>
-            <strong>Esteve from GreenElephant</strong>
-          </p>
-          
-          <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
-            You're receiving this because you purchased Satellite Scan. If you'd like to cancel or have 
-            questions, reply to this email and we'll help you out.
-          </p>
+      subject: "Your Satellite Scan is still waiting for you",
+      html: brandedEmailWrapper(
+        "Your scan is waiting",
+        "Pick it up whenever you're ready",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Hi ${firstName},
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+          We noticed you haven't completed your Satellite Scan yet. No pressure — we just wanted to make sure the link didn't get buried.
+        </p>
+        <div style="text-align:center;margin:0 0 28px 0;">
+          <a href="https://greenelephantorg.typeform.com/individualscan" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
+            Complete Your Satellite Scan
+          </a>
         </div>
-      `,
+        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
+          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">A few things to remember</h3>
+          <ul style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
+            <li>90 minutes of focused, uninterrupted time</li>
+            <li>Best done in one sitting</li>
+            <li>Your personalized dashboard is delivered within 48–72 hours of completion</li>
+          </ul>
+        </div>
+        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
+          Have a question before you start? Just reply here.<br><br>
+          <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong>
+        </p>
+        `,
+        "You received this because you purchased Satellite Scan at GreenElephant.org. To unsubscribe from reminders, reply with the word STOP."
+      ),
     });
-    
+
     console.log(`✅ Reminder email sent to: ${customerEmail}`);
     return true;
   } catch (error) {
@@ -460,51 +429,41 @@ export async function sendWebinarWaitlistConfirmation(data: WebinarWaitlistData)
     await client.emails.send({
       from: fromEmail,
       to: data.customerEmail,
-      subject: "Welcome to Play Labs - Your Communication Journey Begins",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">You're on the Play Labs Waitlist!</h2>
-          
-          <p>Hi ${data.customerName || 'there'},</p>
-          
-          <p>
-            Thank you for joining the Play Labs waitlist! You've taken the first step toward 
-            mastering conscious communication through our seasonal webinar series.
-          </p>
-          
-          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #1e40af;">What to Expect</h3>
-            <ul style="line-height: 1.8; margin-bottom: 0;">
-              <li>Monthly webinars following the 8 communication lenses</li>
-              <li>Each lens corresponds to a season of the year</li>
-              <li>Interactive sessions with real-world applications</li>
-              <li>Community of conscious communicators</li>
-            </ul>
-          </div>
-          
-          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">Explore While You Wait</h3>
-            <ul style="line-height: 1.8;">
-              <li><strong>Periodic Table:</strong> <a href="https://greenelephant.org/periodic-table" style="color: #2563eb;">Explore all 129 elements</a></li>
-              <li><strong>Resources:</strong> <a href="https://greenelephant.org/resources" style="color: #2563eb;">40 communication prompts</a></li>
-            </ul>
-          </div>
-          
-          <p>
-            We'll be in touch soon with dates for the upcoming webinars.
-          </p>
-          
-          <p>
-            Looking forward to exploring conscious communication with you,<br>
-            <strong>Esteve from GreenElephant</strong>
-          </p>
-          
-          <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
-            You're receiving this because you signed up for Play Labs at GreenElephant.org. 
-            You can unsubscribe at any time by replying to this email.
-          </p>
+      subject: "You're on the Monthly Lens Webinar list",
+      html: brandedEmailWrapper(
+        "You're on the list",
+        "Monthly Lens Webinars — one lens, one hour, real conversations",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Hi ${data.customerName?.split(' ')[0] || 'there'},
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+          Thank you for joining the waitlist. Each month we go deep on one lens from the Periodic Table of Conscious Communication — live theory, live practice, and live Q&A. You'll hear from us as soon as the next session is scheduled.
+        </p>
+        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
+          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">What to expect</h3>
+          <ul style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
+            <li>Monthly sessions, each focused on one of the 8 communication lenses</li>
+            <li>Live interaction — mic and camera open for Satellite Scan holders</li>
+            <li>Chat access for all guests, free of charge</li>
+            <li>Replay link sent after each session</li>
+          </ul>
         </div>
-      `,
+        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 24px 0;">
+          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#e0e0e0;font-size:15px;font-weight:600;">Explore in the meantime</h3>
+          <ul style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
+            <li><a href="https://greenelephant.org/periodic-table" style="color:#009999;text-decoration:none;">Periodic Table of Conscious Communication</a></li>
+            <li><a href="https://greenelephant.org/resources" style="color:#009999;text-decoration:none;">Prompt Library — 40 AI-ready prompts</a></li>
+            <li><a href="https://greenelephant.org/scan" style="color:#009999;text-decoration:none;">Satellite Scan — map your communication patterns</a></li>
+          </ul>
+        </div>
+        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
+          Looking forward to exploring this with you,<br><br>
+          <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong>
+        </p>
+        `,
+        "You received this because you signed up for the Monthly Lens Webinar waitlist at GreenElephant.org. To unsubscribe, reply with the word UNSUBSCRIBE."
+      ),
     });
     
     console.log('✅ Webinar waitlist confirmation sent to:', data.customerEmail);
@@ -569,105 +528,72 @@ export async function sendTypeformScanCompletionEmail(data: TypeformScanData) {
       : '';
 
     // Customer email content
-    const customerEmailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; background-color: #ffffff;">
-        <div style="background: linear-gradient(135deg, #0a1628 0%, #1a6180 100%); padding: 40px 30px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome, ${firstName}!</h1>
-          <p style="color: #87CEEB; margin-top: 10px; font-size: 16px;">Your Satellite Scan is Complete</p>
-        </div>
-        
-        <div style="padding: 30px;">
-          <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-            Congratulations on completing your 90-minute Satellite Scan! Your responses are now safely stored, and we're excited to share them with you immediately.
-          </p>
-          
-          <div style="background-color: #dbeafe; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #2563eb;">
-            <h2 style="margin-top: 0; color: #1e40af; font-size: 18px;">What Happens Next?</h2>
-            <p style="margin-bottom: 0; color: #1e3a8a; line-height: 1.6;">
-              <strong>Your personalized dashboard</strong> is being crafted by our human coaches. This isn't automated—we carefully review each response to create a visual map that truly reflects your communication patterns. <strong>Please allow 48-72 hours</strong> for delivery.
-            </p>
-          </div>
-          
-          <div style="background-color: #dcfce7; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #16a34a;">
-            <h2 style="margin-top: 0; color: #166534; font-size: 20px;">Don't Wait — Start Exploring Your Data Now!</h2>
-            <p style="color: #15803d; line-height: 1.6; font-size: 16px;">
-              Your scan data is already valuable. We've created <strong>10+ ready-to-use prompts</strong> that help you discover insights about your communication style right away.
-            </p>
-            
-            <div style="background-color: #ffffff; padding: 20px; border-radius: 6px; margin: 20px 0;">
-              <p style="color: #166534; font-weight: bold; margin-top: 0; margin-bottom: 15px;">Here's how to use your data:</p>
-              <ol style="color: #15803d; margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li><strong>Scroll down</strong> to find your complete scan data below</li>
-                <li><strong>Copy all your responses</strong> from the table</li>
-                <li><strong>Visit our Resources page</strong> and choose a prompt that interests you</li>
-                <li><strong>Paste your data</strong> into our GPT assistant and get instant insights</li>
-              </ol>
-            </div>
-            
-            <div style="text-align: center; margin-top: 20px;">
-              <a href="https://greenelephant.org/resources" style="display: inline-block; background-color: #16a34a; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3);">Go to Resources & Prompts</a>
-            </div>
-            <p style="color: #15803d; font-size: 14px; text-align: center; margin-top: 15px; margin-bottom: 0;">
-              greenelephant.org/resources
-            </p>
-          </div>
-          
-          <div style="background-color: #f3f4f6; padding: 25px; border-radius: 8px; margin: 25px 0;">
-            <h2 style="margin-top: 0; color: #1f2937; font-size: 18px;">Your Quick Summary</h2>
-            ${summaryHtml}
-            ${situationsHtml ? `
-              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
-                <strong style="color: #374151;">Communication Focus Areas:</strong>
-                ${situationsHtml}
-              </div>
-            ` : ''}
-          </div>
-          
-          <div style="margin: 30px 0;">
-            <h2 style="color: #1f2937; font-size: 18px; margin-bottom: 15px;">Your Complete Scan Data</h2>
-            <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">
-              This is your raw data—copy and paste it into our prompts or your favorite AI assistant to start discovering patterns.
-            </p>
-            <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
-              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                <thead>
-                  <tr style="background-color: #0a1628;">
-                    <th style="padding: 12px; text-align: left; color: #ffffff; font-weight: 600;">Question</th>
-                    <th style="padding: 12px; text-align: left; color: #ffffff; font-weight: 600;">Your Response</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rawDataRows}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-          <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #f59e0b;">
-            <h3 style="margin-top: 0; color: #92400e; font-size: 16px;">Pro Tip</h3>
-            <p style="margin-bottom: 0; color: #78350f; line-height: 1.6;">
-              Use our <a href="https://chatgpt.com/g/g-bUJ6dvAHK-conscious-communicator" style="color: #2563eb; font-weight: 500;">Conscious Communicator GPT</a> for the best results when exploring your data with prompts from our library.
-            </p>
-          </div>
-          
-          <p style="color: #374151; line-height: 1.6;">
-            Questions about your data or next steps? Just reply to this email—we're here to help.
-          </p>
-          
-          <p style="color: #374151; margin-top: 25px;">
-            Looking forward to your transformation journey,<br>
-            <strong>Esteve from GreenElephant</strong>
-          </p>
-        </div>
-        
-        <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-          <p style="color: #6b7280; font-size: 12px; margin: 0;">
-            You're receiving this because you completed the Satellite Scan at GreenElephant.org.<br>
-            Submitted: ${data.submittedAt}
-          </p>
+    const customerEmailHtml = brandedEmailWrapper(
+      `Scan complete, ${firstName}`,
+      "Your responses are in — your dashboard is being built",
+      `
+      <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 20px 0;">
+        Congratulations on completing your 90-minute Satellite Scan. Your responses are safely stored and your coaches are reviewing them now.
+      </p>
+      <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
+        <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">What happens next</h3>
+        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
+          Your personalized dashboard is built by hand — not automated. Each response is reviewed carefully to create a visual map of your communication patterns. Allow <strong style="color:#e0e0e0;">48–72 hours</strong> for delivery.
+        </p>
+      </div>
+      <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
+        <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">Use your data now — don't wait</h3>
+        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0 0 16px 0;">
+          Your scan data is already valuable. Copy your responses from the table below and paste them into any of the 40+ prompts in our library for instant insights.
+        </p>
+        <ol style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
+          <li>Scroll down and copy your full scan data from the table</li>
+          <li>Go to the Resources page and pick a prompt</li>
+          <li>Paste into our GPT assistant for immediate analysis</li>
+        </ol>
+        <div style="text-align:center;margin:20px 0 0 0;">
+          <a href="https://greenelephant.org/resources" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 28px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
+            Go to Resources &amp; Prompts
+          </a>
         </div>
       </div>
-    `;
+      ${summaryHtml ? `
+      <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;">
+        <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#e0e0e0;font-size:15px;font-weight:600;">Your quick summary</h3>
+        <div style="color:#cccccc;font-size:14px;line-height:1.8;">${summaryHtml}</div>
+        ${situationsHtml ? `<div style="margin-top:14px;padding-top:14px;border-top:1px solid #222;"><strong style="color:#009999;">Communication focus areas:</strong>${situationsHtml}</div>` : ''}
+      </div>
+      ` : ''}
+      <div style="margin:0 0 24px 0;">
+        <h3 style="font-family:'Poppins',Arial,sans-serif;color:#e0e0e0;font-size:15px;font-weight:600;margin:0 0 8px 0;">Your complete scan data</h3>
+        <p style="color:#777777;font-size:13px;margin:0 0 14px 0;">Copy and paste this into any prompt or AI assistant to start discovering patterns.</p>
+        <div style="border:1px solid #1a1a1a;border-radius:8px;overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background-color:#0f1f2e;">
+                <th style="padding:12px;text-align:left;color:#009999;font-weight:600;width:40%;">Question</th>
+                <th style="padding:12px;text-align:left;color:#009999;font-weight:600;">Your response</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rawDataRows.replace(/style="padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; font-weight: 500; color: #374151; width: 40%;"/g, 'style="padding:10px;border-bottom:1px solid #1a1a1a;vertical-align:top;font-weight:500;color:#cccccc;width:40%;"').replace(/style="padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; color: #1f2937;"/g, 'style="padding:10px;border-bottom:1px solid #1a1a1a;vertical-align:top;color:#e0e0e0;"')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="background-color:#111111;padding:18px;border-radius:8px;margin:0 0 24px 0;">
+        <p style="color:#cccccc;font-size:13px;margin:0;">
+          For best results, use our <a href="https://chatgpt.com/g/g-bUJ6dvAHK-conscious-communicator" style="color:#009999;text-decoration:none;">Conscious Communicator GPT</a> when exploring your data with prompts from our library.
+        </p>
+      </div>
+      <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
+        Questions about your data? Just reply here.<br><br>
+        <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong><br>
+        <span style="color:#777777;font-size:12px;">Submitted: ${data.submittedAt}</span>
+      </p>
+      `,
+      "You received this because you completed the Satellite Scan at GreenElephant.org. This is a transactional email sent under legitimate interest."
+    );
 
     // Send to customer
     await client.emails.send({
@@ -712,30 +638,13 @@ export async function sendOnboardingEmail(data: OnboardingEmailData): Promise<bo
       .replace(/\{\{firstName\}\}/g, firstName)
       .replace(/\{\{customerName\}\}/g, data.customerName || 'Explorer');
     
-    // Wrap in base email template
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-        <div style="background: linear-gradient(135deg, #0a1628 0%, #1a6180 100%); padding: 40px 30px; text-align: center;">
-          <img src="https://greenelephant.org/favicon.png" alt="GreenElephant" style="width: 48px; height: 48px; margin-bottom: 15px;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">GreenElephant</h1>
-          <p style="color: #87CEEB; margin-top: 8px; font-size: 14px;">Conscious Communication</p>
-        </div>
-        
-        <div style="padding: 30px;">
-          ${personalizedBody}
-        </div>
-        
-        <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-          <p style="color: #6b7280; font-size: 12px; margin: 0;">
-            You're receiving this as part of your Satellite Scan onboarding journey.<br>
-            <a href="https://greenelephant.org" style="color: #009999;">GreenElephant.org</a> - Conscious Communication
-          </p>
-          <p style="color: #9ca3af; font-size: 11px; margin-top: 10px;">
-            Email ${data.sequenceNumber} of 12 in your onboarding sequence
-          </p>
-        </div>
-      </div>
-    `;
+    // Wrap in branded dark HUD template
+    const emailHtml = brandedEmailWrapper(
+      "GreenElephant",
+      "Conscious Communication",
+      `<div style="color:#cccccc;font-size:15px;line-height:1.7;">${personalizedBody}</div>`,
+      `You're receiving this as part of your Satellite Scan onboarding journey (email ${data.sequenceNumber} of 12). To unsubscribe, reply with the word UNSUBSCRIBE.`
+    );
     
     await client.emails.send({
       from: fromEmail,
@@ -1271,7 +1180,7 @@ const FLOW_ZONE_CONFIG: Record<string, { label: string; color: string; descripti
     advice: 'Keep nurturing this balance. The Satellite Scan can reveal which of the other 7 communication lenses are also in flow &mdash; and which might need attention.',
     recommendations: [
       'Protect this state&mdash;notice what conditions create it so you can replicate them',
-      'Share your approach with others to help them find their flow',
+      'Talk to a colleague about what is working &mdash; it can help them find their rhythm too',
       'Consider increasing complexity gradually to keep growing',
     ],
   },
@@ -1281,10 +1190,10 @@ const FLOW_ZONE_CONFIG: Record<string, { label: string; color: string; descripti
     description: 'You perceive high challenge but feel your competence isn&rsquo;t matching up. This can lead to stress, anxiety, or feeling overwhelmed.',
     advice: 'The key is to boost your perceived competence &mdash; through feedback, structure, or skill-building. The full Satellite Scan maps exactly where to focus.',
     recommendations: [
-      'Seek green feedback&mdash;ask trusted colleagues what you&rsquo;re doing well',
+      'Ask trusted colleagues to share what they notice you doing well',
       'Break the challenge into smaller, manageable sub-tasks',
       'Request mentoring or pair up with someone experienced in this area',
-      'Bring more structure: clear agendas, time limits, written preparation',
+      'Bring more structure to the situation &mdash; a clear agenda, a time limit, written preparation',
     ],
   },
   comfort: {
@@ -1293,22 +1202,22 @@ const FLOW_ZONE_CONFIG: Record<string, { label: string; color: string; descripti
     description: 'You feel capable but the challenge is low. This can feel safe but may lead to boredom or disengagement over time.',
     advice: 'Consider raising the challenge level &mdash; take on a new communication role, or explore a different lens. The Satellite Scan shows you how.',
     recommendations: [
-      'Volunteer for a stretch role&mdash;host a session, mentor someone, take notes for the group',
-      'Set a personal challenge within the situation (e.g., ask a provocative question)',
+      'Volunteer for a stretch role &mdash; host a session, mentor someone, or take notes for the group',
+      'Set a personal challenge within the situation (e.g., ask a question you&rsquo;ve been avoiding)',
       'Explore adjacent skills that would raise the challenge level',
-      'Consider if this comfort is masking avoidance of harder conversations',
+      'Reflect on whether staying comfortable is holding you back from a more meaningful challenge',
     ],
   },
   danger: {
     label: 'Danger / Apathy Zone',
     color: '#ef4444',
     description: 'Both perceived challenge and competence are low, often combined with low motivation. This zone signals disengagement or burnout risk.',
-    advice: 'Start small: find one micro-win to rebuild momentum. The Satellite Scan can identify which lenses hold the most potential for re-engagement.',
+    advice: 'Start small &mdash; find one micro-win to rebuild momentum. The Satellite Scan can identify which lenses hold the most potential for re-engagement.',
     recommendations: [
-      'Reconnect with your purpose&mdash;why does this situation matter to you?',
-      'Seek immediate feedback and support from a trusted peer or coach',
-      'Consider whether this role or context truly aligns with your strengths',
-      'Start small: identify one micro-skill you can practice today',
+      'Reconnect with your purpose &mdash; why does this situation matter to you?',
+      'Ask for honest perspective from a trusted peer or coach',
+      'Ask yourself honestly whether this situation is the right fit for your energy right now',
+      'Start small &mdash; identify one specific communication habit to practise today',
     ],
   },
 };
@@ -1448,6 +1357,129 @@ export async function sendFlowCheckAdminNotification(data: { email: string; name
     return true;
   } catch (error) {
     console.error(`❌ Failed to send flow check admin notification for ${data.email}:`, error);
+    return false;
+  }
+}
+
+// Webinar replay gate confirmation email
+export async function sendWebinarReplayConfirmationEmail(data: { name: string; email: string }) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: "Your Monthly Lens Webinar replay link",
+      html: brandedEmailWrapper(
+        "Monthly Lens Webinars",
+        "Your replay link is on its way",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Hi ${data.name},
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Thank you for registering for the GreenElephant Monthly Lens Webinar series. The replay link for the most recent session will be sent to this address within a few hours.
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+          Each month we go deep on one lens from the Periodic Table of Conscious Communication — live theory, live practice, and live Q&A. Future session invitations will come to this inbox.
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 8px 0;">
+          Want the full experience with mic and camera access?
+        </p>
+        <a href="https://greenelephant.org/scan" style="display:inline-block;background-color:#009999;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-family:Poppins,sans-serif;font-weight:600;font-size:14px;margin-bottom:24px;">
+          Get the Satellite Scan — €99.95
+        </a>
+        `,
+        "You received this email because you requested access to the GreenElephant Monthly Lens Webinar replay. To unsubscribe, reply to this email with the word UNSUBSCRIBE."
+      ),
+    });
+
+    console.log(`✅ Webinar replay gate confirmation sent to: ${data.email}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send webinar replay gate email to ${data.email}:`, error);
+    return false;
+  }
+}
+
+export interface DailyPulseData {
+  date: string;
+  scanPurchases: number;
+  revenue: number;
+  newsletterSubs: number;
+  webinarSignups: number;
+  flowChecks: number;
+  flowZones: Record<string, number>;
+  quizCompletions: number;
+  contactMessages: number;
+}
+
+export async function sendDailyPulseEmail(data: DailyPulseData): Promise<boolean> {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const zoneRows = Object.entries(data.flowZones)
+      .map(([zone, count]) => `
+        <tr>
+          <td style="padding:6px 12px;color:#cccccc;font-size:13px;border-bottom:1px solid #222;">${zone}</td>
+          <td style="padding:6px 12px;color:#009999;font-size:13px;font-weight:600;border-bottom:1px solid #222;text-align:right;">${count}</td>
+        </tr>`)
+      .join('');
+
+    const statCard = (label: string, value: string | number, note?: string) => `
+      <div style="background:#111;border:1px solid #222;border-radius:6px;padding:16px 20px;margin-bottom:12px;">
+        <div style="color:#cccccc;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${label}</div>
+        <div style="color:#ffffff;font-size:28px;font-weight:700;font-family:Poppins,sans-serif;">${value}</div>
+        ${note ? `<div style="color:#666;font-size:12px;margin-top:4px;">${note}</div>` : ''}
+      </div>`;
+
+    const bodyHtml = `
+      <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 20px 0;">
+        Here is your automated activity summary for the last 24 hours ending <strong style="color:#ffffff;">${data.date}</strong>.
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        ${statCard('Scan Purchases', data.scanPurchases, `€${data.revenue.toFixed(2)} revenue`)}
+        ${statCard('Newsletter Subs', data.newsletterSubs)}
+        ${statCard('Webinar Signups', data.webinarSignups)}
+        ${statCard('Flow Checks', data.flowChecks)}
+        ${statCard('Quiz Completions', data.quizCompletions)}
+        ${statCard('Contact Messages', data.contactMessages)}
+      </div>
+
+      ${data.flowChecks > 0 ? `
+      <div style="margin-top:24px;">
+        <p style="color:#009999;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Flow Zones Breakdown</p>
+        <table style="width:100%;border-collapse:collapse;background:#111;border:1px solid #222;border-radius:6px;overflow:hidden;">
+          <tbody>${zoneRows}</tbody>
+        </table>
+      </div>` : ''}
+
+      <div style="margin-top:28px;">
+        ${tealButton('Open Admin Dashboard', 'https://greenelephant.org/admin/submissions')}
+        &nbsp;&nbsp;
+        <a href="https://greenelephant.org/admin/email-control-room" style="display:inline-block;border:1px solid #009999;color:#009999;padding:12px 20px;text-decoration:none;border-radius:6px;font-family:Poppins,sans-serif;font-weight:600;font-size:14px;">
+          Email Control Room
+        </a>
+      </div>
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: 'esteve@greenelephant.org',
+      subject: `GE Daily Pulse — ${data.date}`,
+      html: brandedEmailWrapper(
+        'Daily Pulse',
+        `Activity summary for ${data.date}`,
+        bodyHtml,
+        'This email is sent automatically every morning at 8:00 AM UTC to esteve@greenelephant.org. It is an internal admin digest and does not contain customer data shared with third parties.'
+      ),
+    });
+
+    console.log(`✅ Daily pulse email sent for ${data.date}`);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to send daily pulse email:', error);
     return false;
   }
 }

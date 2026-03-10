@@ -8,27 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, Users, Video, Sparkles, ArrowRight, CheckCircle } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import type { CalendarEvent } from "@shared/schema";
 import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { LENSES } from "@/constants/lenses";
 import celestialCalendarUrl from "@assets/Celestial_calendar🔥2022_extrenal_no_planets_with_legend_no_ik_1764793584893.png";
 
-const lensCalendar = [
-  { month: "January", lens: "Influence", color: "influence", description: "Begin the year by examining how you take up space in conversations and balance power dynamics." },
-  { month: "February", lens: "Dynamics", color: "dynamics", description: "Explore the dance of leading and following, and how to shift fluidly between roles." },
-  { month: "March", lens: "Ego", color: "ego", description: "March towards self-awareness by understanding your ego's role in communication patterns." },
-  { month: "April", lens: "Needs", color: "needs", description: "Spring into deeper connection by identifying and expressing universal human needs." },
-  { month: "May", lens: "Needs", color: "needs", description: "Continue the journey of needs literacy and compassionate self-expression." },
-  { month: "June", lens: "Alignment", color: "alignment", description: "Summer solstice brings focus on creating shared understanding and mutual agreements." },
-  { month: "July", lens: "Alignment", color: "alignment", description: "Deepen practices for confirming expectations and closing communication loops." },
-  { month: "August", lens: "Flow", color: "flow", description: "Explore the psychology of optimal engagement and balanced challenge." },
-  { month: "September", lens: "Chaordic", color: "chaordic", description: "Autumn equinox embraces the dance between structure and emergence." },
-  { month: "October", lens: "Chaordic", color: "chaordic", description: "Navigate complexity with grace, finding order in apparent chaos." },
-  { month: "November", lens: "Attitude", color: "attitude", description: "Cultivate stance and presence as the year winds down." },
-  { month: "December", lens: "Influence", color: "influence", description: "Winter reflection on how you've grown in taking conscious space." },
-];
 
 const heroGradient = {
   background: `linear-gradient(180deg, 
@@ -64,6 +51,10 @@ export default function CalendarPage() {
   const [gdprConsent, setGdprConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
+
+  const { data: lensCalendar = [], isLoading: calendarLoading } = useQuery<CalendarEvent[]>({
+    queryKey: ["/api/calendar-events"],
+  });
 
   const mutation = useMutation({
     mutationFn: async (data: { name: string; email: string; consentText: string; preferredLens?: string }) => {
@@ -226,6 +217,9 @@ export default function CalendarPage() {
             </motion.div>
           </div>
 
+          {calendarLoading ? (
+            <div className="text-center py-8 text-white/65">Loading calendar…</div>
+          ) : null}
           <motion.div 
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
             initial="hidden"

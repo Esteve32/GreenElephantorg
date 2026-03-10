@@ -11,8 +11,9 @@ import { ALL_ELEMENTS } from "@/data/periodicElements";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import type { LensType } from "@/constants/lenses";
-import montVentouxUrl from "@assets/generated_images/mont_ventoux_provence_lavender_landscape.png";
 import periodicTableImageUrl from "@assets/The-Periodic-Table-of-Conscious-Communication@2x_1764712887674.png";
+import archipelagoUrl from "@assets/finnish_archipelago_landscape_aerial_view_1764797904449.png";
+import Footer from "@/components/Footer";
 import semanticConnectionsUrl from "@assets/🔥2022_full_transparent_BG_with_interconnexion_linesFull_Resea_1772234144810.png";
 
 const PERIODIC_TABLE_FAQ_ITEMS = [
@@ -223,8 +224,8 @@ function SemanticConnectionsViewer({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="px-4 py-2 border-t border-white/10 shrink-0 flex items-center justify-between">
-        <span className="text-white/30 text-xs">Zoom: {Math.round(scale * 100)}%</span>
-        <span className="text-white/30 text-xs hidden sm:block">
+        <span className="text-white/60 text-xs">Zoom: {Math.round(scale * 100)}%</span>
+        <span className="text-white/60 text-xs hidden sm:block">
           Press Esc to close
         </span>
       </div>
@@ -262,12 +263,13 @@ export default function PeriodicTablePage() {
   const sortedCategories = categoryOrder.filter(cat => groupedElements[cat]);
 
   return (
+    <>
     <div className="min-h-screen pt-24 pb-16 relative">
       <SEO
         title="Periodic Table of Conscious Communication | 146 Elements | GreenElephant"
         description="Explore the Periodic Table of Conscious Communication — 146 micro-habits across 8 lenses mapping the full spectrum of human connection. A research-backed framework for transforming how you communicate."
         canonicalPath="/periodic-table"
-        keywords="periodic table of communication, conscious communication framework, 146 elements, 8 lenses, communication micro-habits, NVC, nonviolent communication"
+        keywords="periodic table of communication, conscious communication framework, emotional intelligence framework, personal development tools, self-awareness micro-habits, 146 communication elements, 8 lenses, communication micro-habits, NVC, nonviolent communication, behavioural change tools, communication self-improvement"
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Periodic Table", url: "/periodic-table" }
@@ -275,11 +277,9 @@ export default function PeriodicTablePage() {
         faqItems={PERIODIC_TABLE_FAQ_ITEMS}
       />
       <div className="absolute inset-0 -z-10" style={periodicTableBackgroundStyle} />
-
       {showSemanticViewer && (
         <SemanticConnectionsViewer onClose={() => setShowSemanticViewer(false)} />
       )}
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <motion.div 
           className="text-center mb-12"
@@ -291,9 +291,7 @@ export default function PeriodicTablePage() {
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
             Periodic Table of Conscious Communication
           </h1>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto mb-4">
-            146 micro-habits. 8 lenses. One map of human connection.
-          </p>
+          <p className="text-xl text-white/70 max-w-3xl mx-auto mb-4">146 elements. 8 lenses. One map of human connection.</p>
           <p className="text-lg text-white/70 max-w-2xl mx-auto mb-8">
             The language of human-to-human communication has structure, pattern and geometry. Our Periodic Table gives you a clear map of how you connect—or disconnect—with yourself and others.
           </p>
@@ -329,7 +327,7 @@ export default function PeriodicTablePage() {
                 Interactive
               </span>
             </button>
-            <p className="text-white/35 text-xs mt-2">
+            <p className="text-white/65 text-xs mt-2">
               Each coloured line is a semantic link drawn from 27 years of research across NVC, flow theory, TA and systems thinking.
             </p>
           </motion.div>
@@ -448,56 +446,46 @@ export default function PeriodicTablePage() {
           </div>
         </motion.div>
       </div>
-
-      <section 
-        className="relative mt-16"
-        aria-label="Provence landscape"
-        data-testid="section-mont-ventoux-footer"
-      >
-        <div 
-          className="absolute top-0 left-0 right-0 h-40 z-10 pointer-events-none"
-          style={{ 
-            background: `linear-gradient(to bottom,
-              #030508 0%,
-              #030508CC 25%,
-              #03050899 45%,
-              #03050866 65%,
-              #03050833 80%,
-              transparent 100%
-            )`
-          }}
-          aria-hidden="true"
-        />
-        
-        <div className="w-full">
-          <img 
-            src={montVentouxUrl} 
-            alt="Mont Ventoux, Provence landscape with lavender fields"
-            className="w-full h-auto block"
-          />
-        </div>
-        
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-32 z-10 pointer-events-none"
-          style={{ 
-            background: `linear-gradient(to top,
-              #000000 0%,
-              #000000CC 30%,
-              #00000099 50%,
-              #00000066 70%,
-              #00000033 85%,
-              transparent 100%
-            )`
-          }}
-          aria-hidden="true"
-        />
-        
-        <div className="absolute bottom-6 left-0 right-0 z-20">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p className="text-white/80 text-sm">Mont Ventoux, Provence</p>
-          </div>
-        </div>
-      </section>
     </div>
+
+    <div className="relative w-full bg-[#0a0a0a]">
+      <div
+        className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
+        style={{
+          height: '160px',
+          background: `linear-gradient(to bottom,
+            #0a0a0a                  0%,
+            rgba(10,10,10,0.88)     22%,
+            rgba(10,10,10,0.60)     46%,
+            rgba(10,10,10,0.24)     72%,
+            transparent            100%
+          )`,
+        }}
+      />
+      <img
+        src={archipelagoUrl}
+        alt="Finnish Archipelago"
+        className="w-full h-auto block"
+      />
+      <div
+        className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
+        style={{
+          height: '160px',
+          background: `linear-gradient(to top,
+            #000000                  0%,
+            rgba(0,0,0,0.88)        22%,
+            rgba(0,0,0,0.60)        46%,
+            rgba(0,0,0,0.24)        72%,
+            transparent            100%
+          )`,
+        }}
+      />
+      <div className="absolute bottom-4 left-0 right-0 z-20 text-center">
+        <p className="text-white/65 text-xs tracking-wide">Finnish Archipelago</p>
+      </div>
+    </div>
+
+    <Footer />
+    </>
   );
 }

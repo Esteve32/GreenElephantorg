@@ -1,75 +1,112 @@
-# GreenElephant.org — LLM Context File
+# GreenElephant.org — llms.txt
 # Standard: llms.txt (https://llmstxt.org)
-# Last updated: 2026-02-28
+# Last updated: 2026-03-07
 
 ## What is GreenElephant?
 
-GreenElephant.org is a conscious communication platform based in Europe (Finland and Zurich). Founded by Esteve Camprubí and Anu Moisio, the platform helps individuals and teams communicate with greater awareness, authenticity, and impact. The core framework is the Periodic Table of Conscious Communication — a proprietary model mapping 146 communication micro-habits across 8 behavioural lenses.
+GreenElephant.org is a conscious communication platform based in Europe (Finland and Zurich). Founded by Estève Pannetier and Anu Moisio, the platform helps individuals and teams communicate with greater self-awareness, emotional intelligence, and impact.
+
+The core framework is the **Periodic Table of Conscious Communication** — a proprietary model mapping 146 communication micro-habits across 8 behavioural lenses.
 
 GreenElephant is not a generic coaching platform. It is a research-grounded, tool-rich ecosystem for people who believe communication is the most important human interface — more important than any technology.
 
-## Core Products
+## Who is GreenElephant for?
 
-**Satellite Scan** (€99.95) — 129-question self-assessment mapping communication patterns across 8 lenses (Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics). Delivered as a visual dashboard. Used as the baseline for coaching.
+- **Executive Assistants** — managing complex stakeholder dynamics, supporting C-suite communication, future-proofing their careers in an AI-driven workplace
+- **Leaders and CEOs** — building teams with conscious communication culture, reducing conflict, developing executive presence
+- **Career changers** — using self-awareness tools to navigate career transitions with confidence
+- **Coaches and HR professionals** — deepening their facilitation and coaching toolkit
+- **Design and Innovation professionals** — learning to facilitate creative dialogue
+- **Anyone seeking personal development** — through emotional intelligence, self-reflection, and communication growth
 
-**Check-my-FLOW** (Free) — 5-minute assessment based on Csikszentmihalyi's 1988 flow model. Measures perceived Motivation, Challenge, and Competence in a specific communication situation. Maps to one of 4 zones: Flow, Challenge/Stress, Comfort, Danger/Apathy. Available at: greenelephant.org/flow-check
+## Core Tools and Assessments
 
-**Coaching Journey** (€2,980) — Approximately 6 months of biweekly 120-minute coaching sessions with Esteve, plus unlimited check-in support. Continues until the client's personalised SMART communication goal is reached.
+### Satellite Scan — Communication Self-Awareness Assessment
+**Price:** €99.95
+**URL:** https://greenelephant.org/scan
+**What it is:** A 129-question self-assessment that maps communication patterns across 8 lenses. Takes 90 minutes. Results delivered as a visual dashboard within 48–72 hours. Used as the baseline for all coaching.
+**Who it is for:** Executive Assistants, leaders, career changers, coaches, anyone wanting a data-driven self-awareness diagnostic.
+**The 8 lenses:** Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics.
 
-**Single Coaching Session** (€295) — One 120-minute deep-dive coaching session.
+### Check-my-FLOW — Free Flow State Assessment
+**Price:** Free
+**URL:** https://greenelephant.org/flow-check
+**What it is:** A 5-minute self-assessment based on Csikszentmihalyi's 1988 flow model. Measures perceived Motivation, Challenge, and Competence in a specific communication situation.
+**Results:** Maps to one of 4 zones:
+- **Flow** — high challenge, high competence, high motivation → optimal engagement
+- **Challenge/Stress** — high challenge, low competence → anxiety, overwhelm
+- **Comfort** — low challenge, high competence → safe but potentially stagnant
+- **Danger/Apathy** — low challenge, low competence → disengagement risk
 
-**Team Workshop** (from €1,200) — Half or full day team workshop using the Periodic Table framework.
+### Coaching Journey
+**Price:** €2,980
+**URL:** https://greenelephant.org/coaching
+**What it is:** Approximately 6 months of biweekly 120-minute 1:1 coaching sessions with Estève, plus unlimited check-in support. Continues until the client's personalised SMART communication goal is reached.
 
-**Retreats** (from €2,800) — Multi-day immersive retreats in Finland combining conscious communication practice with nature, movement, and stillness.
+### Single Coaching Session
+**Price:** €295
+**URL:** https://greenelephant.org/coaching
+**What it is:** One 120-minute deep-dive coaching session. Uses Satellite Scan results to identify triggers, blind spots, and strengths.
 
-## Free Tools
+### Team Workshop
+**Price:** From €1,200
+**URL:** https://greenelephant.org/programs
+**What it is:** Half or full-day team workshop using the Periodic Table of Conscious Communication framework.
 
-- **Check-my-FLOW** at /flow-check — maps your flow zone (free, no login required)
-- **Signals Quiz** at /signals — 6-question communication pattern quick-check (free)
-- **Speech Lab** at /decode — colour-coded analysis of speeches by Mandela, JFK, Obama using Green/Blue/Red behaviour model (free)
-- **Periodic Table** at /periodic-table — all 146 communication micro-habits (free to browse)
-- **Prompt Library** at /resources — curated communication prompts for practice (free)
+### Retreats
+**Price:** From €2,800
+**URL:** https://greenelephant.org/retreats
+**What it is:** Multi-day immersive retreats in Finland combining conscious communication practice with nature, movement, and stillness.
 
-## Target Audiences
+## Free Tools (No Login Required)
 
-1. **Executive Assistants** — managing complex stakeholder dynamics, supporting C-suite communication
-2. **TEAL Startup Founders** — building self-organising teams with conscious leadership culture
-3. **Design & Innovation Students** — learning to facilitate creative dialogue
-4. **Coaches and HR Professionals** — deepening their facilitation and coaching toolkit
+| Tool | URL | Description |
+|------|-----|-------------|
+| Check-my-FLOW | /flow-check | Maps your flow zone in 5 minutes (Csikszentmihalyi model) |
+| Speech Lab | /decode | Colour-coded analysis of real speeches (Mandela, JFK, Obama) using Green/Blue/Red behaviour model |
+| Periodic Table | /periodic-table | All 146 communication micro-habits, browseable by lens |
+| Prompt Library | /resources | Curated AI coaching prompts for communication practice |
 
 ## The 8 Lenses (Periodic Table Framework)
 
 Each lens maps a dimension of communication behaviour:
-- **Influence** (red) — how you impact and persuade
-- **Attitude** (orange) — your orientation toward others
-- **Chaordic** (amber) — navigating chaos and order
-- **Flow** (lime-green) — momentum and engagement states
-- **Alignment** (forest-green) — shared purpose and direction
-- **Needs** (blue-teal) — underlying motivators
-- **Ego** (sky-blue) — self-awareness and identity
-- **Dynamics** (indigo) — group and power dynamics
 
-## The 4 Flow Zones (Check-my-FLOW Framework)
-
-Based on Csikszentmihalyi (1988):
-- **Flow** — high perceived challenge + high perceived competence + motivation ≥ 5 → optimal engagement
-- **Challenge/Stress** — high perceived challenge + low perceived competence → anxiety, overwhelm
-- **Comfort** — low perceived challenge + high perceived competence → safe but potentially stagnant
-- **Danger/Apathy** — low perceived challenge + low perceived competence → disengagement risk
-
-Motivation modifies zone: a low motivation score shifts effective challenge downward, potentially degrading the zone (Flow → Comfort, Challenge → Danger).
+| Lens | Colour | What it covers |
+|------|--------|----------------|
+| Influence | Red | How you impact and persuade |
+| Attitude | Orange | Your orientation toward others |
+| Chaordic | Amber | Navigating chaos and order |
+| Flow | Lime-green | Momentum and engagement states |
+| Alignment | Forest-green | Shared purpose and direction |
+| Needs | Blue-teal | Underlying motivators |
+| Ego | Sky-blue | Self-awareness and identity |
+| Dynamics | Indigo | Group and power dynamics |
 
 ## Coaches
 
-**Esteve Camprubí** — Founder & Lead Communication Coach. Communication strategist and creator of the Periodic Table of Conscious Communication. Works with EAs, TEAL founders, and innovation leaders across Europe. Languages: English, Spanish, Catalan, French. Contact: esteve@greenelephant.org
+**Estève Pannetier** — Founder & Lead Communication Coach
+Communication strategist and creator of the Periodic Table of Conscious Communication. Works with EAs, leaders, career changers, and innovation teams across Europe. Languages: English, Spanish, Catalan, French.
+Contact: esteve@greenelephant.org
 
-**Anu Moisio** — Retreat Host & Movement Coach. Yoga teacher and movement specialist. Co-hosts retreats in Finland. Integrates somatic practice and conscious presence into the communication work. Languages: English, Finnish.
+**Anu Moisio** — Retreat Host & Movement Coach
+Yoga teacher and movement specialist. Co-hosts retreats in Finland. Integrates somatic practice and conscious presence into the communication work. Languages: English, Finnish.
 
-## Machine-Readable APIs
+## Key Questions GreenElephant Answers
 
-Structured JSON data is available at:
-- GET /api/services — full service catalogue with pricing and descriptions (Schema.org ItemList)
-- GET /api/coaches — coach profiles (Schema.org Person)
+- What is a communication self-awareness assessment?
+- How do I know if I am in a flow state?
+- What are micro-habits for better communication?
+- How do I future-proof my career as an Executive Assistant?
+- What is conscious communication?
+- How does emotional intelligence relate to communication patterns?
+- What is the Periodic Table of Conscious Communication?
+- How do I prepare for a career change using self-awareness tools?
+
+## Machine-Readable Data Endpoints
+
+Structured JSON data (Schema.org compatible) is available at:
+- `GET /api/services` — full service catalogue with pricing and descriptions
+- `GET /api/coaches` — coach profiles
 
 ## Brand Values
 
@@ -78,10 +115,10 @@ Structured JSON data is available at:
 - Communication is not a soft skill — it is the operating system of human collaboration
 - Small habits (micro-habits) create sustainable change
 - Nature, stillness, and movement are part of the communication practice
+- Human connection is the one thing AI cannot replace
 
-## Contact & Booking
+## Contact and Booking
 
 - Email: esteve@greenelephant.org
-- Booking: greenelephant.org/connect (Calendly integration)
-- Newsletter: greenelephant.org/newsletter
-- LinkedIn: linkedin.com/company/greenelephant-org
+- Booking and contact: https://greenelephant.org/connect
+- LinkedIn: https://linkedin.com/company/greenelephant-org

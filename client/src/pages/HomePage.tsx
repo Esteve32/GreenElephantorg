@@ -6,9 +6,8 @@ import { LENSES, type LensType } from "@/constants/lenses";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowRight, Sparkles, ChevronDown, Smartphone, BarChart3, MessageSquare, Bot, Video, FileText, Play, Download, Briefcase, Users, Compass, Check, Rocket, Target, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, Sparkles, ChevronDown, Smartphone, BarChart3, MessageSquare, Bot, Video, FileText, Play, Download, Briefcase, Users, Compass, Check, Rocket, Target, Zap, ClipboardList } from "lucide-react";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
-import archipelagoUrl from "@assets/finnish_archipelago_landscape_aerial_view_1764797904449.png";
 import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1764350733090.png";
 import { atmosphericPalette, footerFadeGradient } from "@/constants/atmosphericGradient";
 import { SEO } from "@/components/SEO";
@@ -92,7 +91,34 @@ function HeroSection() {
             )`
           }}
         />
+        {/* Animated aurora ribbon — slow horizontal drift */}
+        <div
+          className="absolute pointer-events-none animate-aurora-drift"
+          style={{
+            top: '25%',
+            left: '-10%',
+            right: '-10%',
+            height: '180px',
+            background: `linear-gradient(90deg,
+              transparent 0%,
+              rgba(0, 153, 153, 0.18) 30%,
+              rgba(139, 92, 246, 0.22) 60%,
+              transparent 100%
+            )`,
+            filter: 'blur(40px)',
+            borderRadius: '50%'
+          }}
+        />
       </motion.div>
+
+      {/* Static bottom-fade — outside parallax so it never shifts with the image */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "35%",
+          background: "linear-gradient(to bottom, transparent 0%, #0a0a0a 100%)"
+        }}
+      />
       
       <motion.div 
         className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24"
@@ -114,7 +140,7 @@ function HeroSection() {
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md" data-testid="text-hero-subtitle">
-            Discover your unique communication patterns through our diagnostic. Then use those insights again and again—for difficult emails, interviews, conflicts, and more.
+            Your communication patterns, mapped in 90 minutes. Deep self-awareness you can act on immediately — and a personal dataset you can run through AI prompts, agents, and coaching tools for years to come.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -159,7 +185,7 @@ function IsThisForYouSection() {
     <section 
       className="relative py-20"
       style={{
-        background: "linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%)"
+        background: "#0a0a0a"
       }}
       data-testid="section-is-this-for-you"
     >
@@ -279,40 +305,44 @@ const lensColorClasses = {
 function PeriodicPreviewSection() {
   const sampleElements = [
     {
-      symbol: "GQ",
-      name: "Green Questions",
+      symbol: "GR",
+      name: "GreenBlueRed™",
+      lens: "influence" as const,
+      prompt: "Code every message: Blue = inform · Green = connect · Red = align. Notice what's missing."
+    },
+    {
+      symbol: "Et",
+      name: "Ego Triggers",
+      lens: "ego" as const,
+      prompt: "Notice the comparison: 'Am I reacting to what was said — or to what it implies about me?'"
+    },
+    {
+      symbol: "Rq",
+      name: "Conscious Request",
+      lens: "needs" as const,
+      prompt: "State what you need + 'Would you be willing to [action] by [date]?'"
+    },
+    {
+      symbol: "Mi",
+      name: "Mirroring",
       lens: "alignment" as const,
-      prompt: "What would it look like if this went beautifully?"
-    },
-    {
-      symbol: "MH",
-      name: "Micro-Habits",
-      lens: "attitude" as const,
-      prompt: "After I [existing habit], I will [new tiny behavior]."
-    },
-    {
-      symbol: "PS",
-      name: "Pause & Sense",
-      lens: "chaordic" as const,
-      prompt: "Before speaking, pause. What does this conversation need?"
-    },
-    {
-      symbol: "Lb",
-      name: "Labelling",
-      lens: "alignment" as const,
-      prompt: "It seems like you're feeling [emotion]. Is that present for you?"
+      prompt: "Reflect their words back: 'So what I'm hearing is…' — the fastest way to make someone feel truly heard."
     }
   ];
 
   return (
     <section 
-      className="relative py-20"
+      className="relative py-24"
       style={{
-        background: "linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%)"
+        background: "#0a0a0a"
       }}
       data-testid="section-periodic-preview"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Vertical glow — fades in from top, peaks at centre, fades out at bottom */}
+      <div className="absolute inset-0 opacity-25 pointer-events-none" 
+           style={{ background: "linear-gradient(180deg, transparent 0%, #102952 40%, #102952 60%, transparent 100%)" }} />
+      
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -320,12 +350,11 @@ function PeriodicPreviewSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <Badge className="mb-6 bg-chaordic/20 text-chaordic border-chaordic/30">The Tools</Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-4" data-testid="text-periodic-preview-title">
             What You'll Discover
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            146 communication elements across 8 lenses—each with ready-to-use prompts for real conversations
+            127 communication elements across 8 lenses—each with ready-to-use prompts for real conversations
           </p>
         </motion.div>
 
@@ -447,7 +476,7 @@ function ProductLadderSection() {
       }}
       data-testid="section-product-ladder"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -455,12 +484,11 @@ function ProductLadderSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <Badge className="mb-6 bg-needs/20 text-needs border-needs/30">Your Journey</Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-4" data-testid="text-product-ladder-title">
             Start Where You Are
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Whether you're exploring solo or transforming a team, there's a path for you
+            Whether you're exploring solo or going deeper with coaching, there's a path for you
           </p>
         </motion.div>
 
@@ -540,11 +568,15 @@ function ProblemSection() {
       id="problem-section" 
       className="relative min-h-[120vh] flex items-center py-32"
       style={{
-        background: "linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 10%, #0a1d30 25%, #0a1628 50%, #0b1a30 70%, #0d1f3c 100%)"
+        background: "#0a0a0a"
       }}
       data-testid="section-problem"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* High-altitude horizon glow effect */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" 
+           style={{ background: "linear-gradient(180deg, transparent 0%, #0a2a48 50%, transparent 100%)" }} />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -552,10 +584,9 @@ function ProblemSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <Badge className="mb-6 bg-influence/20 text-influence border-influence/30">The Problem</Badge>
           <h2 className="text-4xl md:text-6xl font-bold mb-8" data-testid="text-problem-title">
             Most communication problems<br />
-            come from <span className="text-influence">lack of altitude</span>.
+            come from <span className="text-influence">lack of altitude</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             When you're too close, you can't see the patterns. The triggers. The habits you repeat without realizing. 
@@ -682,13 +713,17 @@ function FrameworkSection() {
 
   return (
     <section 
-      className="relative py-24 md:py-32"
+      className="relative py-24 md:py-32 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #0d1f3c 0%, #0e2341 20%, #0f2847 40%, #102952 70%, #102952 100%)"
+        background: "#0a0a0a"
       }}
       data-testid="section-framework"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Deep blue glow behind the wheel */}
+      <div className="absolute inset-0 opacity-40 pointer-events-none" 
+           style={{ background: "radial-gradient(circle at 50% 50%, #102952 0%, transparent 60%)" }} />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -696,9 +731,8 @@ function FrameworkSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-8 md:mb-12"
         >
-          <Badge className="mb-6 bg-needs/20 text-needs border-needs/30">The Framework</Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-6" data-testid="text-framework-title">
-            8 Lenses. 129 Elements.<br />
+            8 Lenses. 127 Elements.<br />
             One Complete Picture.
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -713,7 +747,55 @@ function FrameworkSection() {
             {/* Decorative ring */}
             <div className="absolute inset-4 sm:inset-6 md:inset-8 rounded-full border border-white/10" />
             <div className="absolute inset-8 sm:inset-12 md:inset-16 rounded-full border border-white/5" />
-            
+
+            {/* Animated SVG spokes + traveling dot */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              viewBox="0 0 500 500"
+              preserveAspectRatio="xMidYMid meet"
+              style={{ zIndex: 0 }}
+              aria-hidden="true"
+            >
+              {/* Slowly rotating dashed orbit ring */}
+              <circle
+                cx="250" cy="250" r="190"
+                fill="none"
+                stroke="rgba(255,255,255,0.06)"
+                strokeWidth="1"
+                strokeDasharray="6 10"
+                style={{ animation: 'svg-spin 40s linear infinite', transformOrigin: '250px 250px' }}
+              />
+              {/* Spokes — one per lens, each color-coded and stagger-pulsing */}
+              {([
+                [250, 60,  "#cc3333"],
+                [384, 116, "#ff9933"],
+                [440, 250, "#cccc33"],
+                [384, 384, "#99cc33"],
+                [250, 440, "#669966"],
+                [116, 384, "#009999"],
+                [60,  250, "#3399cc"],
+                [116, 116, "#666699"],
+              ] as [number, number, string][]).map(([x, y, color], i) => (
+                <line
+                  key={i}
+                  x1="250" y1="250"
+                  x2={x} y2={y}
+                  stroke={color}
+                  strokeWidth="1"
+                  style={{
+                    animation: `spoke-pulse 3s ease-in-out infinite`,
+                    animationDelay: `${i * 0.38}s`,
+                  }}
+                />
+              ))}
+              {/* Teal glow dot that travels the outer ring */}
+              <circle
+                cx="250" cy="60" r="3.5"
+                fill="rgba(0,153,153,0.75)"
+                style={{ animation: 'svg-spin 8s linear infinite', transformOrigin: '250px 250px', filter: 'blur(0.5px)' }}
+              />
+            </svg>
+
             {/* Center content - Logo */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
@@ -868,11 +950,15 @@ function JourneySection() {
     <section 
       className="relative py-32"
       style={{
-        background: `linear-gradient(180deg, #102952 0%, #0e3358 40%, ${atmosphericPalette.highAtmosphere} 100%)`
+        background: "#0a0a0a"
       }}
       data-testid="section-journey"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Atmospheric transition to deeper space */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" 
+           style={{ background: "linear-gradient(180deg, transparent 0%, #102952 50%, transparent 100%)" }} />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -880,7 +966,6 @@ function JourneySection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <Badge className="mb-6 bg-white/10 text-white border-white/20">Your Journey</Badge>
           <h2 className="text-4xl md:text-5xl font-bold mb-6" data-testid="text-journey-title">
             Your Three-Step Journey
           </h2>
@@ -1005,7 +1090,7 @@ function JourneySection() {
                       style={{ background: `linear-gradient(135deg, ${v.color}40, transparent)` }}
                     />
                     <Play className="w-4 h-4 text-white/50" />
-                    <span className="absolute bottom-1 right-1 text-[8px] text-white/40">{v.lens}</span>
+                    <span className="absolute bottom-1 right-1 text-[8px] text-white/65">{v.lens}</span>
                   </div>
                 ))}
               </div>
@@ -1033,15 +1118,15 @@ function JourneySection() {
               {/* Visual preview - mini resource cards */}
               <div className="w-full max-w-[200px] space-y-2">
                 {[
-                  { title: "Periodic Table", icon: "📊" },
-                  { title: "Micro-habits", icon: "✨" },
-                  { title: "Worksheet", icon: "📝" }
+                  { title: "Periodic Table", Icon: BarChart3 },
+                  { title: "Micro-habits", Icon: Sparkles },
+                  { title: "Worksheet", Icon: ClipboardList }
                 ].map((r) => (
                   <div 
                     key={r.title}
                     className="bg-white/5 backdrop-blur-sm rounded-lg p-2 border border-white/10 flex items-center gap-2"
                   >
-                    <span className="text-sm">{r.icon}</span>
+                    <r.Icon className="w-3.5 h-3.5 text-white/60 shrink-0" />
                     <span className="text-xs text-white/70 truncate">{r.title}</span>
                     <Download className="w-3 h-3 text-white/40 ml-auto shrink-0" />
                   </div>
@@ -1057,7 +1142,7 @@ function JourneySection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mt-32 pt-16 border-t border-white/10"
+          className="text-center mt-32 pt-16"
         >
           <h2 className="text-4xl md:text-6xl font-bold mb-6" data-testid="text-landing-title">
             Begin Your Ascent
@@ -1082,7 +1167,7 @@ function JourneySection() {
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <span className="text-needs font-bold">✓</span>
-              <span>129 diagnostic elements</span>
+              <span>127 communication elements</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-needs font-bold">✓</span>
@@ -1129,7 +1214,7 @@ function JourneySection() {
 function TrustSignalsSection() {
   const stats = [
     { value: "27+", label: "Years of Research", icon: FileText },
-    { value: "146", label: "Communication Elements", icon: Target },
+    { value: "127", label: "Communication Elements", icon: Target },
     { value: "8", label: "Behavioral Lenses", icon: Compass },
   ];
 
@@ -1148,11 +1233,13 @@ function TrustSignalsSection() {
     <section 
       className="relative py-16"
       style={{
-        background: `linear-gradient(180deg, ${atmosphericPalette.space} 0%, ${atmosphericPalette.highAtmosphere} 100%)`
+        background: "#0a0a0a"
       }}
       data-testid="section-trust-signals"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="absolute inset-0 opacity-35 pointer-events-none"
+           style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, #0e3358 0%, transparent 70%)" }} />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1172,7 +1259,10 @@ function TrustSignalsSection() {
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-needs/20 mb-2">
+                  <div
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-needs/20 mb-2 animate-float-slow"
+                    style={{ animationDelay: `${index * 1.5}s` }}
+                  >
                     <Icon className="h-5 w-5 text-needs" />
                   </div>
                   <div className="text-3xl md:text-4xl font-bold text-white mb-1" data-testid={`stat-value-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}>{stat.value}</div>
@@ -1182,7 +1272,7 @@ function TrustSignalsSection() {
             })}
           </div>
 
-          <div className="border-t border-white/10 pt-10">
+          <div className="pt-10">
             <p className="text-sm text-muted-foreground uppercase tracking-wider mb-6">
               Trusted by professionals from
             </p>
@@ -1220,39 +1310,44 @@ function TrustSignalsSection() {
 }
 
 function TestimonialsSection() {
-  const testimonials = [
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const stats = [
     {
-      quote: "Managing calendars for three executives means navigating conflicting priorities daily. The Satellite Scan helped me see my communication patterns and now I handle those tough 'no' conversations with confidence.",
-      name: "Sophie M.",
-      role: "Executive Assistant to C-Suite, Munich",
-      audience: "Executive Assistant",
-      lens: "alignment"
+      number: "+41%",
+      title: "Self-reported improvement across 127 metrics",
+      color: "#009999",
+      detail: "Business owner. 12 coaching sessions over 6 months. Average score across all 127 Satellite Scan™ metrics moved from 5.7 → 8.0 out of 10. Top gains: learning intent (+7), communication efficacy (+6), storytelling (+6). Self-reported data via Typeform self-assessment. Not independently verified."
     },
     {
-      quote: "As a founder, I was burning bridges without realizing it. The 8 lenses showed me exactly where my communication style was creating friction with my team and investors.",
-      name: "Marcus T.",
-      role: "Founder & CEO, Tech Startup, Berlin",
-      audience: "Founder/Product Leader",
-      lens: "ego"
+      number: "×2",
+      title: "Communication effectiveness score doubled",
+      color: "#009999",
+      detail: "Senior Executive Assistant. 13 coaching sessions over 6 months. Overall self-assessment rose from 4 → 8 out of 10. Scheduling organisation: 5 → 9. Wasted communication time: 'A lot' → 'Not much'. Self-reported data via Typeform self-assessment. Not independently verified."
     },
     {
-      quote: "We've been transitioning to a self-managing structure for two years. The framework finally gave our team a common language for the difficult conversations that transformation requires.",
-      name: "Elena R.",
-      role: "People Lead, TEAL Organization, Amsterdam",
-      audience: "TEAL Leader",
-      lens: "needs"
-    }
+      number: "+9/10",
+      title: "Biggest single-metric gain — 9 points on the 1–10 scale",
+      color: "#009999",
+      detail: "One coachee's score for 'Hosting — holding space for conversations' moved from 1 → 10 within 6 months. This metric sits in the Alignment lens of the Satellite Scan™. Ego withdrawal (disappearing under pressure) also dropped from 10 → 5 in the same period."
+    },
+    {
+      number: "127",
+      title: "Communication behaviours tracked in one Satellite Scan",
+      color: "#009999",
+      detail: "The Satellite Scan™ self-assessment covers 127 individual communication behaviours across 8 lenses: Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, and Dynamics. Each behaviour is scored 1–10, giving a precise before-and-after picture of a coaching journey."
+    },
   ];
 
   return (
     <section 
-      className="relative py-32"
+      className="relative py-24 md:py-32"
       style={{
-        background: `linear-gradient(180deg, ${atmosphericPalette.highAtmosphere} 0%, #0a2540 50%, #071c30 100%)`
+        background: "#0a0a0a"
       }}
       data-testid="section-testimonials"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1260,39 +1355,60 @@ function TestimonialsSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <Badge className="mb-6 bg-white/10 text-white border-white/20">Voices of Transformation</Badge>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6" data-testid="text-testimonials-title">
-            What Professionals Are Saying
+          <h2 className="text-3xl md:text-5xl font-bold mb-4" data-testid="text-testimonials-title">
+            What Structured Coaching Moves
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            From executive assistants to founders to TEAL leaders—hear how the framework transforms real conversations.
+          <p className="text-base text-muted-foreground max-w-xl mx-auto">
+            Two coaching journeys, measured before and after with the Satellite Scan™.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+        <div className="grid sm:grid-cols-2 gap-5">
+          {stats.map((stat, index) => (
             <motion.div
-              key={testimonial.name}
-              initial={{ opacity: 0, y: 40 }}
+              key={stat.title}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full bg-white/5 border-white/10 backdrop-blur-sm">
-                <CardContent className="p-8">
-                  <div className={`w-2 h-2 rounded-full bg-${testimonial.lens} mb-6`} />
-                  <blockquote className="text-lg text-white/90 mb-6 leading-relaxed italic">
-                    "{testimonial.quote}"
-                  </blockquote>
-                  <div className="border-t border-white/10 pt-4">
-                    <p className="font-semibold text-white">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <Collapsible
+                open={openIndex === index}
+                onOpenChange={(open) => setOpenIndex(open ? index : null)}
+              >
+                <Card className="bg-white/5 border-white/10 transition-colors duration-200">
+                  <CardContent className="p-7">
+                    <div
+                      className="text-6xl md:text-7xl font-bold mb-3 leading-none"
+                      style={{ color: stat.color, fontFamily: 'Poppins, sans-serif' }}
+                      data-testid={`stat-number-${index}`}
+                    >
+                      {stat.number}
+                    </div>
+                    <p className="text-white font-semibold text-lg leading-snug mb-4" data-testid={`stat-title-${index}`}>
+                      {stat.title}
+                    </p>
+                    <CollapsibleTrigger asChild>
+                      <button
+                        className="flex items-center gap-1.5 text-xs text-white/65 hover:text-white transition-colors"
+                        data-testid={`button-stat-toggle-${index}`}
+                      >
+                        <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''}`} />
+                        {openIndex === index ? 'Less detail' : 'Detail'}
+                      </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <p className="text-xs text-white/65 leading-relaxed mt-3 pt-3">
+                        {stat.detail}
+                      </p>
+                    </CollapsibleContent>
+                  </CardContent>
+                </Card>
+              </Collapsible>
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );
@@ -1301,49 +1417,27 @@ function TestimonialsSection() {
 function LandingSection() {
   return (
     <section 
-      className="relative min-h-[80vh]"
+      className="relative min-h-[80vh] overflow-hidden"
+      style={{
+        background: "#0a0a0a"
+      }}
       data-testid="section-landing"
     >
-      {/* Base background - matches the dark sky of the archipelago image */}
+      {/* Subtle horizon glow at the top to transition from testimonials */}
+      <div className="absolute top-0 left-0 right-0 h-[30vh] opacity-20 pointer-events-none" 
+           style={{ background: "linear-gradient(to bottom, #102952 0%, transparent 100%)" }} />
+
+      {/* Base background - starts black to match TestimonialsSection, then deepens into the archipelago sky */}
       <div 
         className="absolute inset-0"
         style={{ 
           background: `linear-gradient(to bottom,
-            #071c30 0%,
-            #061828 20%,
-            #051420 40%,
-            #040f18 60%,
-            #030a10 80%,
+            #0a0a0a 0%,
+            #071c30 18%,
+            #061828 35%,
+            #051420 55%,
+            #040f18 75%,
             #000000 100%
-          )`
-        }}
-      />
-      
-      {/* Finnish archipelago image - with top mask to fade into background */}
-      <div 
-        className="absolute inset-0"
-        style={{ 
-          backgroundImage: `url(${archipelagoUrl})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 5%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.3) 15%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.85) 30%, black 40%, black 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 5%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.3) 15%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.85) 30%, black 40%, black 100%)'
-        }}
-      />
-      
-      {/* Bottom gradient overlay to fade tree line to black */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{ 
-          height: '35%',
-          background: `linear-gradient(to top,
-            #000000 0%,
-            rgba(0, 0, 0, 0.95) 20%,
-            rgba(0, 0, 0, 0.8) 40%,
-            rgba(0, 0, 0, 0.5) 60%,
-            rgba(0, 0, 0, 0.2) 80%,
-            transparent 100%
           )`
         }}
       />
@@ -1380,7 +1474,7 @@ export default function HomePage() {
       <SEO 
         title="Communication Coaching for EAs, CEOs & Leaders | GreenElephant"
         description="Satellite Scan communication assessment for Executive Assistants, CEOs, and leaders. Data-driven diagnostic mapping your patterns across 8 lenses. Executive coaching and team workshops for conscious communication."
-        keywords="executive assistant communication training, CEO communication coaching, executive coaching assessment, leadership communication, communication diagnostic, team alignment, EA professional development, managing up skills"
+        keywords="self-awareness assessment, communication self-assessment, emotional intelligence coaching, personal development tools, career change assessment, future-proof career skills, executive assistant communication training, CEO communication coaching, executive coaching assessment, leadership communication, communication diagnostic, team alignment, EA professional development, managing up skills, conscious communication, self-reflection tools"
         canonicalPath="/"
         faqItems={[
           {
@@ -1407,12 +1501,12 @@ export default function HomePage() {
       />
       <ScrollProgressLine />
       <HeroSection />
-      <IsThisForYouSection />
-      <ProductLadderSection />
-      <PeriodicPreviewSection />
       <ProblemSection />
       <FrameworkSection />
+      <PeriodicPreviewSection />
       <JourneySection />
+      <IsThisForYouSection />
+      <ProductLadderSection />
       <TrustSignalsSection />
       <TestimonialsSection />
       <LandingSection />

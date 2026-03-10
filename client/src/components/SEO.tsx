@@ -20,6 +20,7 @@ interface SEOProps {
   structuredData?: object;
   faqItems?: FAQItem[];
   breadcrumbs?: BreadcrumbItem[];
+  noIndex?: boolean;
 }
 
 export function SEO({
@@ -31,7 +32,8 @@ export function SEO({
   ogType = 'website',
   structuredData,
   faqItems,
-  breadcrumbs
+  breadcrumbs,
+  noIndex = false,
 }: SEOProps) {
   useEffect(() => {
     const fullTitle = title.includes('GreenElephant') ? title : `${title} | GreenElephant`;
@@ -64,6 +66,7 @@ export function SEO({
     updateMeta('og:url', fullUrl, true);
     updateMeta('og:image', `${baseUrl}${ogImage}`, true);
 
+    updateMeta('twitter:card', 'summary_large_image');
     updateMeta('twitter:title', fullTitle);
     updateMeta('twitter:description', description);
     updateMeta('twitter:image', `${baseUrl}${ogImage}`);
@@ -77,6 +80,9 @@ export function SEO({
       }
       canonical.setAttribute('href', fullUrl);
     }
+
+    // noIndex support for admin/private pages
+    updateMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
 
     // Organisation schema — injected on every page for AI agent discoverability
     if (!document.getElementById('org-structured-data')) {
@@ -93,7 +99,7 @@ export function SEO({
         "description": "Conscious communication platform. Tools, coaching, and retreats built around the Periodic Table of Conscious Communication.",
         "email": "esteve@greenelephant.org",
         "areaServed": "Worldwide",
-        "knowsAbout": ["Conscious Communication", "Executive Coaching", "Flow Theory", "Micro-habits", "Behavioural Change"],
+        "knowsAbout": ["Conscious Communication", "Self-Awareness", "Emotional Intelligence", "Personal Development", "Career Transition Coaching", "Executive Coaching", "Communication Diagnostics", "Flow Theory", "Micro-habits", "Behavioural Change", "Leadership Presence", "Future-Proof Career Skills"],
         "sameAs": ["https://www.linkedin.com/company/greenelephant-org"],
         "founder": { "@type": "Person", "name": "Esteve Camprubí", "email": "esteve@greenelephant.org" }
       });
@@ -182,6 +188,11 @@ export const ORGANIZATION_SCHEMA = {
   "foundingDate": "2022",
   "knowsAbout": [
     "Conscious Communication",
+    "Self-Awareness",
+    "Emotional Intelligence",
+    "Personal Development",
+    "Career Transition Coaching",
+    "Future-Proof Career Skills",
     "Executive Coaching",
     "Communication Diagnostics",
     "Flow Theory",

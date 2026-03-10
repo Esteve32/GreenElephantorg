@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useLocation, useSearch } from "wouter";
+import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, FileText, Mail, Gift } from "lucide-react";
@@ -18,6 +19,12 @@ export default function PaymentSuccessPage() {
   }, [isFreeActivation]);
 
   return (
+    <>
+    <SEO
+      title="Payment Confirmed | GreenElephant"
+      description="Your GreenElephant purchase is confirmed. Check your email for next steps."
+      noIndex={true}
+    />
     <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4">
       <Card className="max-w-2xl w-full backdrop-blur-sm bg-card/95 text-center">
         <CardHeader>
@@ -99,5 +106,6 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

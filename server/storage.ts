@@ -37,6 +37,10 @@ import {
   type InsertNewsletterRecipient,
   type WebinarSettings,
   type InsertWebinarSettings,
+  type WebinarSession,
+  type InsertWebinarSession,
+  type CalendarEvent,
+  type InsertCalendarEvent,
   type FlowCheckResult,
   type InsertFlowCheckResult,
   users,
@@ -59,6 +63,8 @@ import {
   newsletterCampaigns,
   newsletterRecipients,
   webinarSettings,
+  webinarSessions,
+  calendarEvents,
   flowCheckResults
 } from "@shared/schema";
 import { randomUUID } from "crypto";
@@ -117,6 +123,7 @@ export interface IStorage {
   getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]>;
   updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void>;
   markTypeformCompletedByEmail(email: string): Promise<number>; // Returns count of updated purchases
+  updateSatellitescanRole(email: string, role: string): Promise<void>;
 
   // Coupons
   getCouponByCode(code: string): Promise<Coupon | undefined>;
@@ -189,6 +196,18 @@ export interface IStorage {
   getWebinarSettings(): Promise<WebinarSettings | undefined>;
   upsertWebinarSettings(settings: InsertWebinarSettings): Promise<WebinarSettings>;
 
+  // Webinar sessions (admin-configurable upcoming sessions)
+  getAllWebinarSessions(): Promise<WebinarSession[]>;
+  createWebinarSession(session: InsertWebinarSession): Promise<WebinarSession>;
+  updateWebinarSession(id: string, session: Partial<InsertWebinarSession>): Promise<WebinarSession | undefined>;
+  deleteWebinarSession(id: string): Promise<boolean>;
+
+  // Calendar events (12-month lens calendar, admin-editable)
+  getAllCalendarEvents(): Promise<CalendarEvent[]>;
+  createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
+  updateCalendarEvent(id: string, event: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined>;
+  deleteCalendarEvent(id: string): Promise<boolean>;
+
   // Flow check results
   createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult>;
   getAllFlowCheckResults(): Promise<FlowCheckResult[]>;
@@ -205,6 +224,8 @@ export class MemStorage implements IStorage {
   private contactMessages: Map<string, ContactMessage>;
   private satellitescanPurchases: Map<string, SatellitescanPurchase>;
   private flowCheckResultsMap: Map<string, FlowCheckResult>;
+  private webinarSessionsMap: Map<string, WebinarSession>;
+  private calendarEventsMap: Map<string, CalendarEvent>;
 
   constructor() {
     this.users = new Map();
@@ -217,6 +238,8 @@ export class MemStorage implements IStorage {
     this.contactMessages = new Map();
     this.satellitescanPurchases = new Map();
     this.flowCheckResultsMap = new Map();
+    this.webinarSessionsMap = new Map();
+    this.calendarEventsMap = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -257,12 +280,17 @@ export class MemStorage implements IStorage {
   // Contact management methods
   async createContact(insertContact: InsertContact): Promise<Contact> {
     const id = randomUUID();
+    const { channelsReached: chReached, ...restInsert } = insertContact;
     const contact: Contact = {
-      ...insertContact,
+      ...restInsert,
       id,
       name: insertContact.name || null,
       consentedAt: new Date(),
       createdAt: new Date(),
+      notionPageId: null,
+      notionSyncedAt: null,
+      scanSubmittedAt: null,
+      channelsReached: chReached ?? null,
     };
     this.contacts.set(id, contact);
     console.log(`✓ Contact created: ${insertContact.email} (${insertContact.source})`);
@@ -438,6 +466,7 @@ export class MemStorage implements IStorage {
       ...insertPurchase,
       id,
       customerName: insertPurchase.customerName || null,
+      role: insertPurchase.role ?? null,
       typeformCompleted: "false",
       typeformCompletedAt: null,
       dashboardSent: "false",
@@ -495,6 +524,16 @@ export class MemStorage implements IStorage {
       }
     }
     return count;
+  }
+
+  async updateSatellitescanRole(email: string, role: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
+    for (const [id, purchase] of Array.from(this.satellitescanPurchases.entries())) {
+      if (purchase.customerEmail.toLowerCase().trim() === normalizedEmail) {
+        (purchase as any).role = role;
+        this.satellitescanPurchases.set(id, purchase);
+      }
+    }
   }
   
   // Email verification methods (memory implementation - not used in production)
@@ -600,6 +639,46 @@ export class MemStorage implements IStorage {
   }
   async upsertWebinarSettings(settings: InsertWebinarSettings): Promise<WebinarSettings> {
     throw new Error("Not implemented in MemStorage");
+  }
+
+  async getAllWebinarSessions(): Promise<WebinarSession[]> {
+    return Array.from(this.webinarSessionsMap.values()).sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+  async createWebinarSession(session: InsertWebinarSession): Promise<WebinarSession> {
+    const id = randomUUID();
+    const record: WebinarSession = { ...session, id, createdAt: new Date() };
+    this.webinarSessionsMap.set(id, record);
+    return record;
+  }
+  async updateWebinarSession(id: string, session: Partial<InsertWebinarSession>): Promise<WebinarSession | undefined> {
+    const existing = this.webinarSessionsMap.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...session };
+    this.webinarSessionsMap.set(id, updated);
+    return updated;
+  }
+  async deleteWebinarSession(id: string): Promise<boolean> {
+    return this.webinarSessionsMap.delete(id);
+  }
+
+  async getAllCalendarEvents(): Promise<CalendarEvent[]> {
+    return Array.from(this.calendarEventsMap.values()).sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+  async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
+    const id = randomUUID();
+    const record: CalendarEvent = { ...event, id, createdAt: new Date() };
+    this.calendarEventsMap.set(id, record);
+    return record;
+  }
+  async updateCalendarEvent(id: string, event: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined> {
+    const existing = this.calendarEventsMap.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...event };
+    this.calendarEventsMap.set(id, updated);
+    return updated;
+  }
+  async deleteCalendarEvent(id: string): Promise<boolean> {
+    return this.calendarEventsMap.delete(id);
   }
 
   async createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult> {
@@ -845,6 +924,13 @@ export class DatabaseStorage implements IStorage {
       )
       .returning();
     return result.length;
+  }
+
+  async updateSatellitescanRole(email: string, role: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
+    await db.update(satellitescanPurchases)
+      .set({ role })
+      .where(sql`LOWER(${satellitescanPurchases.customerEmail}) = ${normalizedEmail}`);
   }
 
   // Coupon methods
@@ -1285,6 +1371,38 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return result;
     }
+  }
+
+  async getAllWebinarSessions(): Promise<WebinarSession[]> {
+    return await db.select().from(webinarSessions).orderBy(webinarSessions.sortOrder, webinarSessions.createdAt);
+  }
+  async createWebinarSession(session: InsertWebinarSession): Promise<WebinarSession> {
+    const [record] = await db.insert(webinarSessions).values(session).returning();
+    return record;
+  }
+  async updateWebinarSession(id: string, session: Partial<InsertWebinarSession>): Promise<WebinarSession | undefined> {
+    const [record] = await db.update(webinarSessions).set(session).where(eq(webinarSessions.id, id)).returning();
+    return record;
+  }
+  async deleteWebinarSession(id: string): Promise<boolean> {
+    const result = await db.delete(webinarSessions).where(eq(webinarSessions.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getAllCalendarEvents(): Promise<CalendarEvent[]> {
+    return await db.select().from(calendarEvents).orderBy(calendarEvents.sortOrder, calendarEvents.createdAt);
+  }
+  async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
+    const [record] = await db.insert(calendarEvents).values(event).returning();
+    return record;
+  }
+  async updateCalendarEvent(id: string, event: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined> {
+    const [record] = await db.update(calendarEvents).set(event).where(eq(calendarEvents.id, id)).returning();
+    return record;
+  }
+  async deleteCalendarEvent(id: string): Promise<boolean> {
+    const result = await db.delete(calendarEvents).where(eq(calendarEvents.id, id)).returning();
+    return result.length > 0;
   }
 
   async createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult> {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1734,6 +1734,28 @@ export default function ResourcesPromptsPage() {
     window.location.href = "mailto:esteve@greenelephant.org?subject=Missing%20Satellite%20Scan%20Data&body=Hi%20Esteve%2C%0A%0AI%20haven't%20received%20my%20Satellite%20Scan%20data%20yet.%20My%20details%3A%0A%0AName%3A%20%0AEmail%3A%20%0ADate%20of%20purchase%3A%20%0A%0ACould%20you%20please%20help%20me%20access%20my%20results%3F%0A%0AThank%20you!";
   };
 
+  const [activeSection, setActiveSection] = useState<string>("prompts");
+
+  useEffect(() => {
+    const sectionIds = ["dashboard", "prompts", "understanding-data", "science", "calendar"];
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id);
+        },
+        { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
   return (
     <div className="min-h-screen bg-black">
       <SEO
@@ -1786,48 +1808,47 @@ export default function ResourcesPromptsPage() {
           ))}
         </div>
         
-        {/* Earth image container with background-color fallback to prevent seams */}
+        {/* Earth image container — full cover, no background-color seam */}
         <div 
           className="absolute left-0 right-0"
           style={{
             top: '0',
-            height: '65vh',
-            minHeight: '400px',
-            backgroundColor: '#050510',
+            height: '70vh',
+            minHeight: '360px',
             backgroundImage: `url(${earthImageUrl})`,
-            backgroundSize: '100% auto',
-            backgroundPosition: 'center bottom',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
             backgroundRepeat: 'no-repeat',
             transform: 'scaleY(-1)',
-            maskImage: 'linear-gradient(to bottom, black 0%, black 10%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 50%, transparent 65%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 10%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 50%, transparent 65%)'
+            maskImage: 'linear-gradient(to bottom, black 0%, black 15%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 15%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)'
           }}
         />
         
-        {/* Unified overlay: dark at top for header, transparent mid for earth, dark at bottom for blend */}
+        {/* Top overlay — dark header area */}
         <div 
           className="absolute top-0 left-0 right-0 pointer-events-none"
           style={{
-            height: '180px',
+            height: '200px',
             background: `linear-gradient(180deg, 
               #000000 0%,
-              rgba(0, 0, 0, 0.9) 40%,
-              rgba(0, 0, 0, 0.5) 70%,
+              rgba(0, 0, 0, 0.85) 50%,
               transparent 100%
             )`
           }}
         />
-        {/* Bottom blend overlay - extends beyond earth for seamless transition */}
+        {/* Bottom blend overlay — wide coverage to kill any seam on all screen sizes */}
         <div 
           className="absolute left-0 right-0 bottom-0 pointer-events-none"
           style={{
-            top: '35vh',
+            top: '20vh',
             background: `linear-gradient(180deg, 
               transparent 0%,
-              rgba(5, 5, 16, 0.2) 20%,
-              rgba(5, 5, 16, 0.5) 40%,
-              #050510 70%,
-              #050510 100%
+              rgba(4, 4, 12, 0.15) 15%,
+              rgba(4, 4, 12, 0.45) 35%,
+              #040410 60%,
+              #030308 80%,
+              #000000 100%
             )`
           }}
         />
@@ -1854,8 +1875,8 @@ export default function ResourcesPromptsPage() {
               Congratulations, Explorer
             </h1>
             
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              You've completed your Satellite Scan. Now it's time to deepen your journey with videos, prompts, infographics, and live workshops to help you apply your insights.
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              Deepen your journey with AI prompts, videos, and infographics — each aligned with your 8-lens results.
             </p>
           </motion.div>
           
@@ -1870,20 +1891,37 @@ export default function ResourcesPromptsPage() {
           </motion.div>
         </div>
       </section>
+
+      <div className="sticky top-[72px] z-30 bg-black">
+        <div className="flex justify-center px-4 py-3">
+          <nav
+            className="flex items-center gap-1 overflow-x-auto no-scrollbar px-2 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07]"
+            data-testid="nav-resources-tabs"
+          >
+            {[
+              { label: "Prompts",   href: "#prompts",           id: "prompts" },
+              { label: "Videos",    href: "#understanding-data", id: "understanding-data" },
+              { label: "Downloads", href: "#science",            id: "science" },
+              { label: "Calendar",  href: "#calendar",           id: "calendar" },
+            ].map((tab) => (
+              <a
+                key={tab.href}
+                href={tab.href}
+                className={`shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  activeSection === tab.id
+                    ? "bg-needs/20 text-needs"
+                    : "text-white/40 hover:text-white/70 hover:bg-white/5"
+                }`}
+                data-testid={`nav-tab-${tab.label.toLowerCase()}`}
+              >
+                {tab.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </div>
       
-      <div 
-        className="relative"
-        style={{
-          background: `linear-gradient(180deg,
-            #050510 0%,
-            #040410 10%,
-            #030308 25%,
-            #020205 50%,
-            #010103 75%,
-            #000000 100%
-          )`
-        }}
-      >
+      <div className="relative bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative py-20">
           
           <div className="space-y-24">
@@ -2001,14 +2039,14 @@ export default function ResourcesPromptsPage() {
                       <ExternalLink className="w-4 h-4 ml-2" />
                     </Button>
                   </a>
-                  <span className="text-xs text-white/40" data-testid="text-chatgpt-note">
+                  <span className="text-xs text-white/65" data-testid="text-chatgpt-note">
                     Free ChatGPT account required · <a href="https://chat.openai.com/auth/login" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline" data-testid="link-chatgpt-signup">Sign up</a>
                   </span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleContactSupport}
-                    className="text-xs text-white/40 h-auto py-1 px-2"
+                    className="text-xs text-white/65 h-auto py-1 px-2"
                     data-testid="button-contact-support"
                   >
                     Can't find your data? Contact Estève
@@ -2243,7 +2281,7 @@ export default function ResourcesPromptsPage() {
                         <span className="text-xs text-white/50">{video.duration}</span>
                       </div>
                       <h3 className="font-semibold text-white text-sm leading-tight">{video.title}</h3>
-                      {video.infographic && (
+                      {video.infographic ? (
                         <Button
                           variant="outline"
                           size="sm"
@@ -2255,6 +2293,17 @@ export default function ResourcesPromptsPage() {
                             <Download className="w-4 h-4 mr-2" />
                             Download Infographic
                           </a>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full opacity-50 cursor-not-allowed"
+                          disabled
+                          data-testid={`download-science-${video.id}-soon`}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Coming soon
                         </Button>
                       )}
                     </div>
@@ -2338,7 +2387,8 @@ export default function ResourcesPromptsPage() {
                 </div>
                 <Button 
                   size="lg"
-                  className="bg-needs hover:bg-needs/90 text-white"
+                  className="text-white"
+                  style={{ backgroundColor: "#0A66C2" }}
                   data-testid="button-join-linkedin"
                   asChild
                 >

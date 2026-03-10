@@ -17,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 const logoUrl = "/ge-logo-512.png";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
-import archipelagoUrl from "@assets/finnish_archipelago_landscape_aerial_view_1764797904449.png";
 import { SEO, PRODUCT_STRUCTURED_DATA } from "@/components/SEO";
 
 interface Persona {
@@ -357,18 +356,12 @@ function HeroSection() {
         />
       </motion.div>
       
-      {/* Bottom fade overlay - bridges hero to content section smoothly */}
+      {/* Static bottom-fade — outside parallax so it never shifts with the image */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[40vh] pointer-events-none z-[1]"
+        className="absolute bottom-0 left-0 right-0 pointer-events-none z-[1]"
         style={{
-          background: `linear-gradient(to top,
-            #0a1628 0%,
-            #0a1628 20%,
-            rgba(10, 22, 40, 0.85) 40%,
-            rgba(10, 22, 40, 0.5) 60%,
-            rgba(10, 22, 40, 0.2) 80%,
-            transparent 100%
-          )`
+          height: "35%",
+          background: "linear-gradient(to bottom, transparent 0%, #0a0a0a 100%)"
         }}
         aria-hidden="true"
       />
@@ -391,7 +384,7 @@ function HeroSection() {
             The Satellite Scan
           </h1>
           <p className="text-xl md:text-2xl text-white font-medium mb-8 max-w-4xl mx-auto leading-relaxed" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
-            Map your communication patterns in 90 minutes with a structured self-reflection that surfaces your tendencies and blind spots across 8 coaching-developed lenses.
+            You can't change what you can't see. In 90 minutes, the Satellite Scan maps your behavioral patterns across 8 dimensions — surfacing the tendencies, blind spots, and strengths that shape how you show up in every conversation.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
@@ -477,6 +470,7 @@ function BenefitsSection() {
                     <Switch 
                       checked={expandedPersona === persona.id}
                       onCheckedChange={() => setExpandedPersona(expandedPersona === persona.id ? null : persona.id)}
+                      className="data-[state=checked]:!bg-needs data-[state=unchecked]:!bg-white/20"
                       data-testid={`switch-persona-${persona.id}`}
                     />
                   </div>
@@ -625,8 +619,11 @@ function WhatIsItSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white" data-testid="text-what-title">
-            What Is The Satellite Scan?
+            A Mirror, Not a Test
           </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            The Satellite Scan doesn't measure your intelligence or judge your choices. It reveals the behavioral patterns you already have — so you can choose what to do with them. Self-awareness is the foundation. Everything else follows.
+          </p>
         </motion.div>
 
         {/* Original 2-column section */}
@@ -694,7 +691,7 @@ function WhatIsItSection() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <p className="text-xs text-white/40 max-w-xs text-center">
+              <p className="text-xs text-white/65 max-w-xs text-center">
                 For personal development only
               </p>
             </div>
@@ -835,7 +832,7 @@ function WhatIsItSection() {
                       style={{ background: `linear-gradient(135deg, ${v.color}40, transparent)` }}
                     />
                     <Play className="w-4 h-4 text-white/50" />
-                    <span className="absolute bottom-1 right-1 text-[8px] text-white/40">{v.lens}</span>
+                    <span className="absolute bottom-1 right-1 text-[8px] text-white/65">{v.lens}</span>
                   </div>
                 ))}
               </div>
@@ -940,7 +937,7 @@ function SocialProofSection() {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setCurrent((prev) => (prev + 1) % SCAN_TESTIMONIALS.length);
-    }, 6000);
+    }, 10000);
   };
 
   useEffect(() => {
@@ -1054,7 +1051,14 @@ function SocialProofSection() {
                         style={{ backgroundColor: lens.hexColor }}
                       />
                       <blockquote className="text-lg md:text-xl text-white/90 leading-relaxed italic mb-6" data-testid={`text-scan-testimonial-${current}`}>
-                        "{testimonial.quote}"
+                        "
+                        {testimonial.quote.split(". ").map((sentence, i, arr) => (
+                          <span key={i}>
+                            {sentence}{i < arr.length - 1 ? "." : ""}
+                            {i < arr.length - 1 && <><br /><br /></>}
+                          </span>
+                        ))}
+                        "
                       </blockquote>
                       <div className="border-t border-white/10 pt-4">
                         <p className="font-semibold text-white">{testimonial.name}</p>
@@ -1582,7 +1586,87 @@ function HowItWorksSection() {
               </Button>
             </Link>
             <p className="text-sm text-white/50">48-72 hour dashboard delivery</p>
-            <p className="text-xs text-white/40">For personal development and coaching only. Not for hiring or selection.</p>
+            <p className="text-xs text-white/65">For personal development and coaching only. Not for hiring or selection.</p>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function RepeatableMeasurementSection() {
+  return (
+    <section className="relative py-20 md:py-24" data-testid="section-repeatable-measurement">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-12"
+        >
+          <Badge className="mb-6 bg-white/10 text-white/80 border-white/20">
+            Not a personality test
+          </Badge>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+            Not a personality test.<br />A repeatable measurement.
+          </h2>
+          <p className="text-lg text-white/60 max-w-xl mx-auto">
+            Your communication patterns change. Your scan should keep up.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          {[
+            {
+              label: "Use it before a difficult conversation or presentation",
+              icon: "01",
+              timing: "Before",
+            },
+            {
+              label: "Use it after a promotion, a job change, or a conflict",
+              icon: "02",
+              timing: "After",
+            },
+            {
+              label: "Re-scan every 6–12 months to measure your growth",
+              icon: "03",
+              timing: "Ongoing",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={item.icon}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.12 }}
+            >
+              <Card className="bg-white/5 border-white/10 h-full text-center" data-testid={`card-measurement-${item.icon}`}>
+                <CardContent className="p-7 flex flex-col items-center">
+                  <div className="w-10 h-10 rounded-full bg-needs/20 border border-needs/30 flex items-center justify-center mb-4">
+                    <span className="text-needs font-bold text-sm">{item.timing}</span>
+                  </div>
+                  <p className="text-white/80 text-sm leading-relaxed">{item.label}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex justify-center"
+        >
+          <div className="flex items-center gap-0">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center">
+                <div className="w-3 h-3 rounded-full bg-needs" />
+                {i < 2 && <div className="w-16 md:w-24 h-0.5 bg-needs/30" />}
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -1767,7 +1851,7 @@ function LeadMagnetSection() {
                           </>
                         )}
                       </Button>
-                      <span className="flex items-center gap-1 text-xs text-white/40">
+                      <span className="flex items-center gap-1 text-xs text-white/65">
                         <Lock className="w-3 h-3" />
                         GDPR compliant. No spam.
                       </span>
@@ -1816,7 +1900,7 @@ export default function ScanPage() {
       <SEO 
         title="Satellite Scan | Communication Assessment for Executive Assistants & Leaders"
         description="90-minute communication diagnostic for EAs, CEOs, and executives. Map your patterns across 8 lenses including Influence, Dynamics, and Alignment. €99.95 with personalized insights in 48-72 hours."
-        keywords="executive assistant communication assessment, CEO communication diagnostic, leadership communication tool, executive coaching assessment, communication patterns analysis, EA training, managing up communication"
+        keywords="self-awareness assessment, communication self-assessment, emotional intelligence test, personal development diagnostic, career change assessment, future-proof career skills, executive assistant communication assessment, CEO communication diagnostic, leadership communication tool, executive coaching assessment, communication patterns analysis, EA training, managing up communication, self-reflection tool, EQ assessment, behavioral assessment"
         canonicalPath="/scan"
         structuredData={PRODUCT_STRUCTURED_DATA.satelliteScan}
         faqItems={FAQ_ITEMS.map(item => ({ question: item.question, answer: item.answer }))}
@@ -1825,53 +1909,25 @@ export default function ScanPage() {
           { name: "Satellite Scan", url: "/scan" }
         ]}
       />
-      {/* Page content with gradient background */}
-      <div 
-        style={{
-          background: `linear-gradient(180deg, 
-            #030508 0%,
-            #050810 3%,
-            #080c16 6%,
-            #0a1020 9%,
-            #0c1428 12%,
-            #0e1830 15%,
-            #101c38 18%,
-            #122040 21%,
-            #142448 24%,
-            #162850 27%,
-            #182c58 30%,
-            #1a3060 35%,
-            #1e3468 40%,
-            #223a72 45%,
-            #26407c 50%,
-            #2a4684 55%,
-            #2e4c8c 60%,
-            #325292 65%,
-            #385896 70%,
-            #3a5690 75%,
-            #344e82 80%,
-            #2e4674 85%,
-            #1a3654 90%,
-            #102840 93%,
-            #0c2238 96%,
-            #071c30 100%
-          )`
-        }}
-      >
+      {/* Page content */}
+      <div style={{ background: "#0a0a0a" }}>
         <HeroSection />
         
         {/* Content sections with vertical teal train track line */}
         <div className="relative">
-          {/* Vertical teal line - the train track */}
-          <div 
-            className="absolute left-4 md:left-8 lg:left-12 top-0 w-[2px] bg-needs/60 z-10"
+          {/* Ghost track + traveling light beacon — hidden on small screens, gutter-safe at md+ */}
+          <div
+            className="hidden md:block absolute left-20 lg:left-24 top-0 w-[2px] bg-needs/[0.08] z-10 overflow-hidden"
             style={{ bottom: 'calc(20vh + 60px)' }}
             aria-hidden="true"
-          />
-          {/* Metro terminus station */}
-          <div 
-            className="absolute left-4 md:left-8 lg:left-12 w-6 h-6 rounded-full bg-needs border-2 border-needs/40 z-20 -translate-x-1/2"
-            style={{ bottom: 'calc(20vh + 48px)' }}
+          >
+            {/* Animated pulse that travels downward — scroll direction signal */}
+            <div className="absolute inset-x-0 top-0 h-[90px] bg-gradient-to-b from-transparent via-needs/70 to-transparent animate-beacon" />
+          </div>
+          {/* Hollow terminus ring */}
+          <div
+            className="hidden md:block absolute left-20 lg:left-24 w-5 h-5 rounded-full bg-transparent border-2 border-needs/40 z-20 -translate-x-1/2"
+            style={{ bottom: 'calc(20vh + 50px)' }}
             aria-hidden="true"
           />
           
@@ -1879,6 +1935,7 @@ export default function ScanPage() {
           <SignalsSection />
           <WhatIsItSection />
           <SocialProofSection />
+          <RepeatableMeasurementSection />
           <LensesSection />
           <FAQSection />
           <LeadMagnetSection />
@@ -1886,62 +1943,6 @@ export default function ScanPage() {
         </div>
       </div>
       
-      {/* Finnish Archipelago section - OUTSIDE the page gradient */}
-      <section 
-        className="relative min-h-[80vh]"
-        aria-label="Finnish Archipelago landscape" 
-        data-testid="section-cityscape"
-      >
-        {/* Base background - matches the dark sky of the archipelago image */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            background: `linear-gradient(to bottom,
-              #071c30 0%,
-              #061828 20%,
-              #051420 40%,
-              #040f18 60%,
-              #030a10 80%,
-              #000000 100%
-            )`
-          }}
-        />
-        
-        {/* Finnish archipelago image - with top mask to fade into background */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            backgroundImage: `url(${archipelagoUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-            maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 5%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.3) 15%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.85) 30%, black 40%, black 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 5%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.3) 15%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.85) 30%, black 40%, black 100%)'
-          }}
-        />
-        
-        {/* Bottom gradient overlay to fade tree line to black */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ 
-            height: '35%',
-            background: `linear-gradient(to top,
-              #000000 0%,
-              rgba(0, 0, 0, 0.95) 20%,
-              rgba(0, 0, 0, 0.8) 40%,
-              rgba(0, 0, 0, 0.5) 60%,
-              rgba(0, 0, 0, 0.2) 80%,
-              transparent 100%
-            )`
-          }}
-        />
-        
-        <div className="absolute bottom-8 left-0 right-0 z-10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p className="text-white/80 text-sm">Finnish Archipelago</p>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

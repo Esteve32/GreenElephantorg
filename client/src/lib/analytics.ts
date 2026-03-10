@@ -116,3 +116,35 @@ export const PARTNER_LINKS = {
   arbora: 'https://arbora.partners/nest',
   esteve: 'https://estevepannetier.com'
 } as const;
+
+export const trackScanCTAClicked = (location: string) => {
+  trackEvent('scan_cta_clicked', 'Satellite Scan', location);
+};
+
+export const trackFlowCheckCompleted = (zone: string) => {
+  trackEvent('flow_check_completed', 'Flow Check', zone);
+};
+
+export const trackNewsletterSubscribed = () => {
+  trackEvent('newsletter_subscribed', 'Newsletter', 'footer');
+};
+
+export const trackWebinarSignup = (lens?: string) => {
+  trackEvent('webinar_signup', 'Webinar', lens ?? 'all');
+};
+
+export const trackContactFormSubmitted = (intent: string) => {
+  trackEvent('contact_form_submitted', 'Contact', intent);
+};
+
+export const trackQuizCompleted = (score: number) => {
+  trackEvent('quiz_completed', 'Quiz', undefined, score);
+};
+
+export const trackPromptCopied = (lens: string) => {
+  trackEvent('prompt_copied', 'Resources', lens);
+};
+
+export const trackCoachingCTAClicked = (location: string) => {
+  trackEvent('coaching_cta_clicked', 'Coaching', location);
+};

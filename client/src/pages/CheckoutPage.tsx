@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState, useCallback } from 'react';
@@ -374,6 +375,12 @@ export default function CheckoutPage() {
   }
 
   return (
+    <>
+    <SEO
+      title="Checkout | GreenElephant"
+      description="Complete your purchase of the Satellite Scan communication assessment or coaching session."
+      noIndex={true}
+    />
     <div className="min-h-screen pt-24 pb-16 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-card/30 -z-10" />
       
@@ -562,5 +569,6 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
