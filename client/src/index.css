@@ -409,3 +409,37 @@
   0%, 100% { opacity: 0.06; }
   50%       { opacity: 0.20; }
 }
+
+@keyframes bioelectric-pulse {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(0, 153, 153, 0.3), 0 0 12px rgba(0, 153, 153, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(0, 153, 153, 0.5), 0 0 20px rgba(0, 153, 153, 0.2), 0 0 40px rgba(0, 153, 153, 0.05);
+    transform: scale(1.03);
+  }
+}
+
+.bioelectric-cta {
+  animation: bioelectric-pulse 3s ease-in-out infinite;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 8px rgba(0, 153, 153, 0.3);
+}
+
+@keyframes tour-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(0, 153, 153, 0.4), 0 0 12px rgba(0, 153, 153, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(0, 153, 153, 0.6), 0 0 24px rgba(0, 153, 153, 0.3), 0 0 48px rgba(0, 153, 153, 0.1);
+  }
+}
+
+.tour-highlight {
+  animation: tour-pulse 1.5s ease-in-out infinite;
+  position: relative;
+  z-index: 60;
+  border-radius: 12px;
+}

@@ -66,6 +66,11 @@ function isBinary(filePath: string): boolean {
 }
 
 export async function pushToGitHub(commitMessage: string) {
+  const { isConnectorEnabled } = await import('./lib/connectorGuard');
+  if (!(await isConnectorEnabled("github"))) {
+    console.log('⏸️ GitHub connector disabled — skipping push');
+    throw new Error('GitHub connector is currently disabled. Enable it in Admin > Connected Tools.');
+  }
   const octokit = await getUncachableGitHubClient();
   const rootDir = '/home/runner/workspace';
 

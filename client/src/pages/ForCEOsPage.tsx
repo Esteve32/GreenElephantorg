@@ -103,9 +103,15 @@ export default function ForCEOsPage() {
               Your communication shapes company culture. Get data-driven insights into your leadership patterns and blind spots.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/scan">
+              <Link href="/signals">
                 <Button size="lg" className="bg-influence text-white" data-testid="button-ceo-start-scan">
-                  Start Your Satellite Scan
+                  Free 2-Min Leadership Check
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/checkout?product=satellitescan">
+                <Button size="lg" variant="outline" className="border-white/30 text-white" data-testid="button-ceo-full-scan">
+                  Full Satellite Scan (€99.95)
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -227,9 +233,9 @@ export default function ForCEOsPage() {
                       Executive prompt library access
                     </li>
                   </ul>
-                  <Link href="/scan">
+                  <Link href="/signals">
                     <Button size="lg" className="w-full bg-influence text-white" data-testid="button-ceo-cta">
-                      Start Your Assessment
+                      Take the Free Quick Check
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
@@ -284,12 +290,20 @@ export default function ForCEOsPage() {
             viewport={{ once: true }}
             className="text-center mt-12 flex flex-col items-center gap-4"
           >
-            <Link href="/scan">
-              <Button size="lg" className="bg-influence text-white" data-testid="button-ceo-final-cta">
-                Start Your Leadership Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/signals">
+                <Button size="lg" className="bg-influence text-white" data-testid="button-ceo-final-cta">
+                  Free 2-Min Leadership Check
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/checkout?product=satellitescan">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" data-testid="button-ceo-full-scan">
+                  Full Satellite Scan (€99.95)
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
               <Link href="/signals">
                 <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-ceo-quiz">

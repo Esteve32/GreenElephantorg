@@ -266,7 +266,7 @@ export default function DecodingPage() {
                             >
                               {seg.text}
                             </span>
-                            <span className="text-[10px] text-muted-foreground px-1">
+                            <span className="text-xs text-muted-foreground px-1">
                               <GBRPip color={seg.color} /> · {seg.element} ({seg.elementCode})
                             </span>
                           </div>

@@ -43,6 +43,25 @@ import {
   type InsertCalendarEvent,
   type FlowCheckResult,
   type InsertFlowCheckResult,
+  type ConnectorState,
+  type InsertConnectorState,
+  type ConnectorToggleLog,
+  type InsertConnectorToggleLog,
+  type ClientUser,
+  type InsertClientUser,
+  type ClientSubscription,
+  type InsertClientSubscription,
+  type AdminSetting,
+  type Testimonial,
+  type InsertTestimonial,
+  type AdminUser,
+  type InsertAdminUser,
+  type AuditLog,
+  type InsertAuditLog,
+  type PortalTimelineEvent,
+  type InsertPortalTimelineEvent,
+  type PortalUserContext,
+  type InsertPortalUserContext,
   users,
   recommendationSubmissions,
   contacts,
@@ -65,11 +84,21 @@ import {
   webinarSettings,
   webinarSessions,
   calendarEvents,
-  flowCheckResults
+  flowCheckResults,
+  connectorStates,
+  connectorToggleLogs,
+  clientUsers,
+  clientSubscriptions,
+  adminSettings,
+  testimonials,
+  adminUsers,
+  auditLogs,
+  portalTimelineEvents,
+  portalUserContext
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, avg, and, lt, sql } from "drizzle-orm";
+import { eq, avg, and, lt, sql, desc } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -124,6 +153,7 @@ export interface IStorage {
   updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void>;
   markTypeformCompletedByEmail(email: string): Promise<number>; // Returns count of updated purchases
   updateSatellitescanRole(email: string, role: string): Promise<void>;
+  getSatellitescanPurchasesByEmail(email: string): Promise<SatellitescanPurchase[]>;
 
   // Coupons
   getCouponByCode(code: string): Promise<Coupon | undefined>;
@@ -165,6 +195,7 @@ export interface IStorage {
   getOnboardingEmailLogsByCustomer(customerEmail: string): Promise<OnboardingEmailLog[]>;
   getLastSentEmailForCustomer(customerEmail: string): Promise<OnboardingEmailLog | undefined>;
   hasEmailBeenSent(customerEmail: string, sequenceNumber: string): Promise<boolean>;
+  getAllOnboardingEmailLogs(): Promise<OnboardingEmailLog[]>;
   getCustomersDueForEmail(triggerEvent: string, sequenceNumber: string): Promise<string[]>;
   
   // Batch email campaigns
@@ -211,6 +242,70 @@ export interface IStorage {
   // Flow check results
   createFlowCheckResult(result: InsertFlowCheckResult): Promise<FlowCheckResult>;
   getAllFlowCheckResults(): Promise<FlowCheckResult[]>;
+
+  // Connector states
+  getAllConnectorStates(): Promise<ConnectorState[]>;
+  getConnectorState(name: string): Promise<ConnectorState | undefined>;
+  upsertConnectorState(name: string, enabled: string): Promise<ConnectorState>;
+  isConnectorEnabled(name: string): Promise<boolean>;
+
+  // Connector toggle logs
+  createConnectorToggleLog(log: InsertConnectorToggleLog): Promise<ConnectorToggleLog>;
+  getConnectorToggleLogs(limit?: number): Promise<ConnectorToggleLog[]>;
+
+  // Client users (portal)
+  createClientUser(user: InsertClientUser): Promise<ClientUser>;
+  getClientUserById(id: string): Promise<ClientUser | undefined>;
+  getClientUserByEmail(email: string): Promise<ClientUser | undefined>;
+  getClientUserByGoogleId(googleId: string): Promise<ClientUser | undefined>;
+  getClientUserByLinkedinSub(linkedinSub: string): Promise<ClientUser | undefined>;
+  updateClientUser(id: string, data: Partial<ClientUser>): Promise<ClientUser | undefined>;
+  getAllClientUsers(): Promise<ClientUser[]>;
+
+  // Client subscriptions
+  createClientSubscription(sub: InsertClientSubscription): Promise<ClientSubscription>;
+  getClientSubscriptionByUserId(userId: string): Promise<ClientSubscription | undefined>;
+  updateClientSubscription(id: string, data: Partial<InsertClientSubscription>): Promise<ClientSubscription | undefined>;
+  getAllClientSubscriptions(): Promise<ClientSubscription[]>;
+
+  // Admin settings (key-value store)
+  getAdminSetting(key: string): Promise<string | undefined>;
+  setAdminSetting(key: string, value: string): Promise<AdminSetting>;
+  getAllAdminSettings(): Promise<AdminSetting[]>;
+
+  // Testimonials
+  getAllTestimonials(): Promise<Testimonial[]>;
+  getVisibleTestimonials(): Promise<Testimonial[]>;
+  createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
+  updateTestimonial(id: string, testimonial: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
+  deleteTestimonial(id: string): Promise<boolean>;
+
+  // Admin users (role-based access)
+  createAdminUser(user: InsertAdminUser): Promise<AdminUser>;
+  getAdminUserById(id: string): Promise<AdminUser | undefined>;
+  getAdminUserByEmail(email: string): Promise<AdminUser | undefined>;
+  getAdminUserByGoogleId(googleId: string): Promise<AdminUser | undefined>;
+  updateAdminUser(id: string, data: Partial<AdminUser>): Promise<AdminUser | undefined>;
+  getAllAdminUsers(): Promise<AdminUser[]>;
+  deleteAdminUser(id: string): Promise<boolean>;
+
+  // Audit logs
+  createAuditLog(log: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogs(limit?: number, offset?: number, filters?: { userEmail?: string; actionType?: string }): Promise<AuditLog[]>;
+  getAuditLogsByUser(email: string): Promise<AuditLog[]>;
+  getAuditLogCount(filters?: { userEmail?: string; actionType?: string }): Promise<number>;
+
+  // Portal timeline events
+  createPortalTimelineEvent(event: InsertPortalTimelineEvent): Promise<PortalTimelineEvent>;
+  getPortalTimelineEvents(userId: string): Promise<PortalTimelineEvent[]>;
+  deletePortalTimelineEvent(id: string, userId: string): Promise<boolean>;
+  deleteAllPortalTimelineEvents(userId: string): Promise<number>;
+
+  // Portal user context (cross-tool shared data)
+  getPortalUserContext(userId: string): Promise<PortalUserContext[]>;
+  setPortalUserContext(userId: string, key: string, value: string): Promise<PortalUserContext>;
+  getPortalUserContextByKey(userId: string, key: string): Promise<PortalUserContext | undefined>;
+  deleteAllPortalUserContext(userId: string): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
@@ -488,6 +583,13 @@ export class MemStorage implements IStorage {
     return Array.from(this.satellitescanPurchases.values());
   }
 
+  async getSatellitescanPurchasesByEmail(email: string): Promise<SatellitescanPurchase[]> {
+    const normalizedEmail = email.toLowerCase().trim();
+    return Array.from(this.satellitescanPurchases.values()).filter(
+      (p) => p.customerEmail.toLowerCase().trim() === normalizedEmail
+    );
+  }
+
   async getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]> {
     const now = new Date();
     const thresholdMs = hoursThreshold * 60 * 60 * 1000;
@@ -702,6 +804,113 @@ export class MemStorage implements IStorage {
   async getAllFlowCheckResults(): Promise<FlowCheckResult[]> {
     return Array.from(this.flowCheckResultsMap.values());
   }
+
+  async getAllConnectorStates(): Promise<ConnectorState[]> { return []; }
+  async getConnectorState(_name: string): Promise<ConnectorState | undefined> { return undefined; }
+  async upsertConnectorState(name: string, enabled: string): Promise<ConnectorState> {
+    return { id: randomUUID(), name, enabled, updatedAt: new Date() };
+  }
+  async isConnectorEnabled(_name: string): Promise<boolean> { return true; }
+  async createConnectorToggleLog(log: InsertConnectorToggleLog): Promise<ConnectorToggleLog> {
+    return { id: randomUUID(), connectorName: log.connectorName, action: log.action, performedBy: log.performedBy || "admin", createdAt: new Date() };
+  }
+  async getConnectorToggleLogs(_limit?: number): Promise<ConnectorToggleLog[]> { return []; }
+
+  async createClientUser(user: InsertClientUser): Promise<ClientUser> {
+    const id = randomUUID();
+    return { id, email: user.email, name: user.name || null, googleId: user.googleId || null, avatarUrl: user.avatarUrl || null, passwordHash: user.passwordHash || null, twoFactorSecret: null, twoFactorEnabled: "false", resetToken: null, resetTokenExpiry: null, isActive: "true", createdAt: new Date(), lastLoginAt: null };
+  }
+  async getClientUserById(_id: string): Promise<ClientUser | undefined> { return undefined; }
+  async getClientUserByEmail(_email: string): Promise<ClientUser | undefined> { return undefined; }
+  async getClientUserByGoogleId(_googleId: string): Promise<ClientUser | undefined> { return undefined; }
+  async getClientUserByLinkedinSub(_linkedinSub: string): Promise<ClientUser | undefined> { return undefined; }
+  async updateClientUser(_id: string, _data: Partial<ClientUser>): Promise<ClientUser | undefined> { return undefined; }
+  async getAllClientUsers(): Promise<ClientUser[]> { return []; }
+  async createClientSubscription(sub: InsertClientSubscription): Promise<ClientSubscription> {
+    return { id: randomUUID(), userId: sub.userId, plan: sub.plan, stripeSubscriptionId: sub.stripeSubscriptionId || null, stripeCustomerId: sub.stripeCustomerId || null, status: sub.status || "active", currentPeriodStart: sub.currentPeriodStart || null, currentPeriodEnd: sub.currentPeriodEnd || null, cancelledAt: null, createdAt: new Date() };
+  }
+  async getClientSubscriptionByUserId(_userId: string): Promise<ClientSubscription | undefined> { return undefined; }
+  async updateClientSubscription(_id: string, _data: Partial<InsertClientSubscription>): Promise<ClientSubscription | undefined> { return undefined; }
+  async getAllClientSubscriptions(): Promise<ClientSubscription[]> { return []; }
+  async getAdminSetting(_key: string): Promise<string | undefined> { return undefined; }
+  async setAdminSetting(key: string, value: string): Promise<AdminSetting> { return { key, value, updatedAt: new Date() }; }
+  async getAllAdminSettings(): Promise<AdminSetting[]> { return []; }
+  async getAllTestimonials(): Promise<Testimonial[]> { return []; }
+  async getVisibleTestimonials(): Promise<Testimonial[]> { return []; }
+  async createTestimonial(_t: InsertTestimonial): Promise<Testimonial> { return {} as Testimonial; }
+  async updateTestimonial(_id: string, _t: Partial<InsertTestimonial>): Promise<Testimonial | undefined> { return undefined; }
+  async deleteTestimonial(_id: string): Promise<boolean> { return false; }
+  async createAdminUser(_u: InsertAdminUser): Promise<AdminUser> { return {} as AdminUser; }
+  async getAdminUserById(_id: string): Promise<AdminUser | undefined> { return undefined; }
+  async getAdminUserByEmail(_email: string): Promise<AdminUser | undefined> { return undefined; }
+  async getAdminUserByGoogleId(_gid: string): Promise<AdminUser | undefined> { return undefined; }
+  async updateAdminUser(_id: string, _data: Partial<AdminUser>): Promise<AdminUser | undefined> { return undefined; }
+  async getAllAdminUsers(): Promise<AdminUser[]> { return []; }
+  async deleteAdminUser(_id: string): Promise<boolean> { return false; }
+  async createAuditLog(_log: InsertAuditLog): Promise<AuditLog> { return {} as AuditLog; }
+  async getAuditLogs(_limit?: number, _offset?: number, _filters?: { userEmail?: string; actionType?: string }): Promise<AuditLog[]> { return []; }
+  async getAuditLogsByUser(_email: string): Promise<AuditLog[]> { return []; }
+  async getAuditLogCount(_filters?: { userEmail?: string; actionType?: string }): Promise<number> { return 0; }
+  private portalTimelineEvents: Map<string, PortalTimelineEvent> = new Map();
+  async createPortalTimelineEvent(event: InsertPortalTimelineEvent): Promise<PortalTimelineEvent> {
+    const id = randomUUID();
+    const created: PortalTimelineEvent = { ...event, id, createdAt: new Date(), date: event.date || new Date(), description: event.description ?? null, details: event.details ?? null, lens: event.lens ?? null, toolId: event.toolId ?? null };
+    this.portalTimelineEvents.set(id, created);
+    return created;
+  }
+  async getPortalTimelineEvents(userId: string): Promise<PortalTimelineEvent[]> {
+    return Array.from(this.portalTimelineEvents.values())
+      .filter((e) => e.userId === userId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+  async deletePortalTimelineEvent(id: string, userId: string): Promise<boolean> {
+    const event = this.portalTimelineEvents.get(id);
+    if (event && event.userId === userId) {
+      this.portalTimelineEvents.delete(id);
+      return true;
+    }
+    return false;
+  }
+  async deleteAllPortalTimelineEvents(userId: string): Promise<number> {
+    let count = 0;
+    for (const [id, event] of this.portalTimelineEvents.entries()) {
+      if (event.userId === userId) {
+        this.portalTimelineEvents.delete(id);
+        count++;
+      }
+    }
+    return count;
+  }
+  private portalUserContextMap: Map<string, PortalUserContext> = new Map();
+  async getPortalUserContext(userId: string): Promise<PortalUserContext[]> {
+    return Array.from(this.portalUserContextMap.values()).filter((c) => c.userId === userId);
+  }
+  async setPortalUserContext(userId: string, key: string, value: string): Promise<PortalUserContext> {
+    const existing = Array.from(this.portalUserContextMap.values()).find((c) => c.userId === userId && c.key === key);
+    if (existing) {
+      existing.value = value;
+      existing.updatedAt = new Date();
+      this.portalUserContextMap.set(existing.id, existing);
+      return existing;
+    }
+    const id = randomUUID();
+    const created: PortalUserContext = { id, userId, key, value, updatedAt: new Date() };
+    this.portalUserContextMap.set(id, created);
+    return created;
+  }
+  async getPortalUserContextByKey(userId: string, key: string): Promise<PortalUserContext | undefined> {
+    return Array.from(this.portalUserContextMap.values()).find((c) => c.userId === userId && c.key === key);
+  }
+  async deleteAllPortalUserContext(userId: string): Promise<number> {
+    let count = 0;
+    for (const [id, ctx] of this.portalUserContextMap.entries()) {
+      if (ctx.userId === userId) {
+        this.portalUserContextMap.delete(id);
+        count++;
+      }
+    }
+    return count;
+  }
 }
 
 // PostgreSQL-based storage using Drizzle ORM
@@ -889,6 +1098,12 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSatellitescanPurchases(): Promise<SatellitescanPurchase[]> {
     return await db.select().from(satellitescanPurchases);
+  }
+
+  async getSatellitescanPurchasesByEmail(email: string): Promise<SatellitescanPurchase[]> {
+    const normalizedEmail = email.toLowerCase().trim();
+    return await db.select().from(satellitescanPurchases)
+      .where(sql`LOWER(${satellitescanPurchases.customerEmail}) = ${normalizedEmail}`);
   }
 
   async getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]> {
@@ -1180,6 +1395,10 @@ export class DatabaseStorage implements IStorage {
     return !!log;
   }
   
+  async getAllOnboardingEmailLogs(): Promise<OnboardingEmailLog[]> {
+    return await db.select().from(onboardingEmailLogs);
+  }
+
   async getCustomersDueForEmail(triggerEvent: string, sequenceNumber: string): Promise<string[]> {
     // This will be used by the scheduler to find customers who need emails
     // For now, return empty array - the scheduler will handle the logic
@@ -1423,6 +1642,289 @@ export class DatabaseStorage implements IStorage {
 
   async getAllFlowCheckResults(): Promise<FlowCheckResult[]> {
     return await db.select().from(flowCheckResults).orderBy(flowCheckResults.createdAt);
+  }
+
+  async getAllConnectorStates(): Promise<ConnectorState[]> {
+    return await db.select().from(connectorStates).orderBy(connectorStates.name);
+  }
+
+  async getConnectorState(name: string): Promise<ConnectorState | undefined> {
+    const [record] = await db.select().from(connectorStates).where(eq(connectorStates.name, name)).limit(1);
+    return record;
+  }
+
+  async upsertConnectorState(name: string, enabled: string): Promise<ConnectorState> {
+    const existing = await this.getConnectorState(name);
+    if (existing) {
+      const [record] = await db.update(connectorStates)
+        .set({ enabled, updatedAt: new Date() })
+        .where(eq(connectorStates.name, name))
+        .returning();
+      return record;
+    }
+    const [record] = await db.insert(connectorStates)
+      .values({ name, enabled })
+      .returning();
+    return record;
+  }
+
+  async isConnectorEnabled(name: string): Promise<boolean> {
+    const state = await this.getConnectorState(name);
+    if (!state) return true;
+    return state.enabled === "true";
+  }
+
+  async createConnectorToggleLog(log: InsertConnectorToggleLog): Promise<ConnectorToggleLog> {
+    const [record] = await db.insert(connectorToggleLogs).values(log).returning();
+    return record;
+  }
+
+  async getConnectorToggleLogs(limit?: number): Promise<ConnectorToggleLog[]> {
+    const query = db.select().from(connectorToggleLogs).orderBy(sql`${connectorToggleLogs.createdAt} DESC`);
+    if (limit) {
+      return await query.limit(limit);
+    }
+    return await query;
+  }
+
+  async createClientUser(user: InsertClientUser): Promise<ClientUser> {
+    const [record] = await db.insert(clientUsers).values(user).returning();
+    return record;
+  }
+
+  async getClientUserById(id: string): Promise<ClientUser | undefined> {
+    const [record] = await db.select().from(clientUsers).where(eq(clientUsers.id, id)).limit(1);
+    return record;
+  }
+
+  async getClientUserByEmail(email: string): Promise<ClientUser | undefined> {
+    const [record] = await db.select().from(clientUsers).where(eq(clientUsers.email, email.toLowerCase().trim())).limit(1);
+    return record;
+  }
+
+  async getClientUserByGoogleId(googleId: string): Promise<ClientUser | undefined> {
+    const [record] = await db.select().from(clientUsers).where(eq(clientUsers.googleId, googleId)).limit(1);
+    return record;
+  }
+
+  async getClientUserByLinkedinSub(linkedinSub: string): Promise<ClientUser | undefined> {
+    const [record] = await db.select().from(clientUsers).where(eq(clientUsers.linkedinSub, linkedinSub)).limit(1);
+    return record;
+  }
+
+  async updateClientUser(id: string, data: Partial<ClientUser>): Promise<ClientUser | undefined> {
+    const [record] = await db.update(clientUsers).set(data).where(eq(clientUsers.id, id)).returning();
+    return record;
+  }
+
+  async getAllClientUsers(): Promise<ClientUser[]> {
+    return await db.select().from(clientUsers).orderBy(sql`${clientUsers.createdAt} DESC`);
+  }
+
+  async createClientSubscription(sub: InsertClientSubscription): Promise<ClientSubscription> {
+    const [record] = await db.insert(clientSubscriptions).values(sub).returning();
+    return record;
+  }
+
+  async getClientSubscriptionByUserId(userId: string): Promise<ClientSubscription | undefined> {
+    const [record] = await db.select().from(clientSubscriptions)
+      .where(eq(clientSubscriptions.userId, userId))
+      .orderBy(sql`${clientSubscriptions.createdAt} DESC`)
+      .limit(1);
+    return record;
+  }
+
+  async updateClientSubscription(id: string, data: Partial<InsertClientSubscription>): Promise<ClientSubscription | undefined> {
+    const [record] = await db.update(clientSubscriptions).set(data).where(eq(clientSubscriptions.id, id)).returning();
+    return record;
+  }
+
+  async getAllClientSubscriptions(): Promise<ClientSubscription[]> {
+    return await db.select().from(clientSubscriptions).orderBy(sql`${clientSubscriptions.createdAt} DESC`);
+  }
+
+  async getAdminSetting(key: string): Promise<string | undefined> {
+    const [record] = await db.select().from(adminSettings).where(eq(adminSettings.key, key)).limit(1);
+    return record?.value;
+  }
+
+  async setAdminSetting(key: string, value: string): Promise<AdminSetting> {
+    const existing = await this.getAdminSetting(key);
+    if (existing !== undefined) {
+      const [record] = await db.update(adminSettings)
+        .set({ value, updatedAt: new Date() })
+        .where(eq(adminSettings.key, key))
+        .returning();
+      return record;
+    }
+    const [record] = await db.insert(adminSettings).values({ key, value }).returning();
+    return record;
+  }
+
+  async getAllAdminSettings(): Promise<AdminSetting[]> {
+    return await db.select().from(adminSettings);
+  }
+
+  async getAllTestimonials(): Promise<Testimonial[]> {
+    return await db.select().from(testimonials).orderBy(testimonials.sortOrder);
+  }
+
+  async getVisibleTestimonials(): Promise<Testimonial[]> {
+    return await db.select().from(testimonials)
+      .where(and(eq(testimonials.visible, "true"), eq(testimonials.consentGiven, "true")))
+      .orderBy(testimonials.sortOrder);
+  }
+
+  async createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial> {
+    const [record] = await db.insert(testimonials).values(testimonial).returning();
+    return record;
+  }
+
+  async updateTestimonial(id: string, data: Partial<InsertTestimonial>): Promise<Testimonial | undefined> {
+    const [record] = await db.update(testimonials)
+      .set(data)
+      .where(eq(testimonials.id, id))
+      .returning();
+    return record;
+  }
+
+  async deleteTestimonial(id: string): Promise<boolean> {
+    const result = await db.delete(testimonials).where(eq(testimonials.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async createAdminUser(user: InsertAdminUser): Promise<AdminUser> {
+    const [record] = await db.insert(adminUsers).values(user).returning();
+    return record;
+  }
+
+  async getAdminUserById(id: string): Promise<AdminUser | undefined> {
+    const [record] = await db.select().from(adminUsers).where(eq(adminUsers.id, id)).limit(1);
+    return record;
+  }
+
+  async getAdminUserByEmail(email: string): Promise<AdminUser | undefined> {
+    const [record] = await db.select().from(adminUsers).where(eq(adminUsers.email, email.toLowerCase())).limit(1);
+    return record;
+  }
+
+  async getAdminUserByGoogleId(googleId: string): Promise<AdminUser | undefined> {
+    const [record] = await db.select().from(adminUsers).where(eq(adminUsers.googleId, googleId)).limit(1);
+    return record;
+  }
+
+  async updateAdminUser(id: string, data: Partial<AdminUser>): Promise<AdminUser | undefined> {
+    const [record] = await db.update(adminUsers).set(data).where(eq(adminUsers.id, id)).returning();
+    return record;
+  }
+
+  async getAllAdminUsers(): Promise<AdminUser[]> {
+    return await db.select().from(adminUsers).orderBy(adminUsers.createdAt);
+  }
+
+  async deleteAdminUser(id: string): Promise<boolean> {
+    const result = await db.delete(adminUsers).where(eq(adminUsers.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async createAuditLog(log: InsertAuditLog): Promise<AuditLog> {
+    const [record] = await db.insert(auditLogs).values(log).returning();
+    return record;
+  }
+
+  async getAuditLogs(limit = 100, offset = 0, filters?: { userEmail?: string; actionType?: string }): Promise<AuditLog[]> {
+    const conditions = [];
+    if (filters?.userEmail) {
+      conditions.push(eq(auditLogs.userEmail, filters.userEmail));
+    }
+    if (filters?.actionType) {
+      conditions.push(sql`${auditLogs.actionType} ILIKE ${'%' + filters.actionType + '%'}`);
+    }
+    const query = db.select().from(auditLogs);
+    if (conditions.length > 0) {
+      return await query.where(and(...conditions)).orderBy(desc(auditLogs.createdAt)).limit(limit).offset(offset);
+    }
+    return await query.orderBy(desc(auditLogs.createdAt)).limit(limit).offset(offset);
+  }
+
+  async getAuditLogsByUser(email: string): Promise<AuditLog[]> {
+    return await db.select().from(auditLogs).where(eq(auditLogs.userEmail, email)).orderBy(desc(auditLogs.createdAt));
+  }
+
+  async getAuditLogCount(filters?: { userEmail?: string; actionType?: string }): Promise<number> {
+    const conditions = [];
+    if (filters?.userEmail) {
+      conditions.push(eq(auditLogs.userEmail, filters.userEmail));
+    }
+    if (filters?.actionType) {
+      conditions.push(sql`${auditLogs.actionType} ILIKE ${'%' + filters.actionType + '%'}`);
+    }
+    const query = db.select({ count: sql<number>`count(*)` }).from(auditLogs);
+    if (conditions.length > 0) {
+      const [result] = await query.where(and(...conditions));
+      return Number(result?.count || 0);
+    }
+    const [result] = await query;
+    return Number(result?.count || 0);
+  }
+
+  async createPortalTimelineEvent(event: InsertPortalTimelineEvent): Promise<PortalTimelineEvent> {
+    const [created] = await db.insert(portalTimelineEvents).values(event).returning();
+    return created;
+  }
+
+  async getPortalTimelineEvents(userId: string): Promise<PortalTimelineEvent[]> {
+    return db.select().from(portalTimelineEvents)
+      .where(eq(portalTimelineEvents.userId, userId))
+      .orderBy(desc(portalTimelineEvents.date));
+  }
+
+  async deletePortalTimelineEvent(id: string, userId: string): Promise<boolean> {
+    const result = await db.delete(portalTimelineEvents)
+      .where(and(eq(portalTimelineEvents.id, id), eq(portalTimelineEvents.userId, userId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  async deleteAllPortalTimelineEvents(userId: string): Promise<number> {
+    const result = await db.delete(portalTimelineEvents)
+      .where(eq(portalTimelineEvents.userId, userId))
+      .returning();
+    return result.length;
+  }
+
+  async getPortalUserContext(userId: string): Promise<PortalUserContext[]> {
+    return db.select().from(portalUserContext)
+      .where(eq(portalUserContext.userId, userId));
+  }
+
+  async setPortalUserContext(userId: string, key: string, value: string): Promise<PortalUserContext> {
+    const existing = await this.getPortalUserContextByKey(userId, key);
+    if (existing) {
+      const [updated] = await db.update(portalUserContext)
+        .set({ value, updatedAt: new Date() })
+        .where(eq(portalUserContext.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(portalUserContext)
+      .values({ userId, key, value })
+      .returning();
+    return created;
+  }
+
+  async getPortalUserContextByKey(userId: string, key: string): Promise<PortalUserContext | undefined> {
+    const [result] = await db.select().from(portalUserContext)
+      .where(and(eq(portalUserContext.userId, userId), eq(portalUserContext.key, key)))
+      .limit(1);
+    return result;
+  }
+
+  async deleteAllPortalUserContext(userId: string): Promise<number> {
+    const result = await db.delete(portalUserContext)
+      .where(eq(portalUserContext.userId, userId))
+      .returning();
+    return result.length;
   }
 }
 

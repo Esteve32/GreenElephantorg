@@ -10,11 +10,12 @@ import { LENSES, type LensType } from "@/constants/lenses";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { Link, useLocation } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2, Sparkles, Brain, Timer, Users, Gift, AlertTriangle, Target, Zap, ArrowDown, HelpCircle, Smartphone, BarChart3, MessageSquare, Bot, Video, FileText, Play, Download, Table, Star, Shield, Award, Quote, ChevronLeft, ChevronRight, BookOpen, Mail, Lock } from "lucide-react";
+import { ArrowRight, CheckCircle, CheckCircle2, Sparkles, Brain, Timer, Users, Gift, AlertTriangle, Target, Zap, ArrowDown, HelpCircle, Smartphone, BarChart3, MessageSquare, Bot, Video, FileText, Play, Download, Table, Star, Shield, Award, Quote, ChevronLeft, ChevronRight, BookOpen, Mail, Lock, Repeat } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 const logoUrl = "/ge-logo-512.png";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
 import { SEO, PRODUCT_STRUCTURED_DATA } from "@/components/SEO";
@@ -273,6 +274,31 @@ const FAQ_ITEMS = [
     answer: "Communication patterns can contribute to workplace stress. The scan may help you reflect on patterns that create tension—perhaps suppressing needs to please others, getting triggered in meetings, or rarely experiencing flow in conversations. By making these patterns visible, you can explore setting better boundaries and having more authentic conversations. Note that workplace wellbeing involves many systemic factors beyond individual communication; the scan is one reflective tool, not a comprehensive wellbeing solution."
   },
   {
+    id: "resilience",
+    question: "How does the Satellite Scan help build resilience?",
+    answer: "Resilience in communication means recovering from difficult conversations, adapting to conflict, and maintaining emotional balance under pressure. The Scan maps your patterns across lenses like Attitude (how you orient toward challenges), Flow (whether you're overwhelmed or disengaged), and Ego (how you handle criticism and defensiveness). By seeing your stress-response patterns clearly, you can build more resilient communication habits—bouncing back faster and staying grounded when conversations get tough."
+  },
+  {
+    id: "social-intelligence",
+    question: "How does this develop social intelligence?",
+    answer: "Social intelligence—the ability to read situations, navigate relationships, and influence group dynamics—is exactly what the 8 lenses map. The Dynamics lens shows how you navigate power and role-shifting. The Needs lens reveals whether you recognise what others need (not just what they say). The Influence lens maps your persuasion style. Together, these dimensions give you a data-driven picture of your social intelligence strengths and blind spots, with actionable patterns you can work on."
+  },
+  {
+    id: "ai-assisted-growth",
+    question: "How does AI-assisted personal growth work here?",
+    answer: "After completing the Scan, you receive your communication data as a structured dashboard. You can then use our AI prompt library to explore your patterns in depth—paste your results into ChatGPT, Claude, or any AI tool to get personalised insights, prepare for specific conversations, or develop targeted micro-habits. The AI amplifies the value of your human-coached baseline—it doesn't replace the coaching relationship. This is ethical AI-assisted personal growth: human insight first, AI as a thinking partner second."
+  },
+  {
+    id: "ethical-hr-alternative",
+    question: "How is this different from HRIS personality tests?",
+    answer: "Traditional HR Information Systems (HRIS) often include personality assessments used for hiring, screening, or performance management—raising ethical concerns about labelling people and making employment decisions based on personality categories. The Satellite Scan is fundamentally different: it's designed exclusively for personal development and coaching, never for hiring or evaluation. It measures self-reported communication preferences (not fixed personality types), results belong entirely to the individual, and we explicitly prohibit organisational use for selection or performance decisions. It's an ethical alternative for leaders who want self-awareness tools without the ethical baggage of corporate personality classification."
+  },
+  {
+    id: "leadership-development",
+    question: "How does this support leadership development?",
+    answer: "Leadership is fundamentally about communication—how you influence, align teams, navigate power dynamics, and manage your own ego under pressure. The Scan maps all of these dimensions through the 8 lenses. Leaders typically discover patterns they hadn't named: perhaps they're strong in Influence but weak in listening (Needs), or they default to control (Dynamics) when they could build more trust through vulnerability (Ego). The coaching programs then build on these insights with targeted leadership development exercises."
+  },
+  {
     id: "what-it-measures",
     question: "What does the Satellite Scan actually measure?",
     answer: "The scan measures your self-reported responses to 129 communication scenarios across 8 lenses. It captures how you say you would behave in various situations—your preferences and tendencies as you perceive them today. It does not measure abilities, predict performance, or assess personality traits in the way validated psychometric instruments do. Think of it as a structured self-reflection that surfaces patterns worth exploring, not as a diagnosis or objective measurement of who you are."
@@ -322,7 +348,27 @@ const LENS_BENEFITS: Record<LensType, { benefit: string; insight: string }[]> = 
   ]
 };
 
+interface PublicSettings {
+  saasEnabled: boolean;
+  oneTimeScanFeatures?: string[];
+  subscriptionFeatures?: string[];
+  coachingJourneyFeatures?: string[];
+}
+
+function usePublicSettings() {
+  const { data } = useQuery<PublicSettings>({
+    queryKey: ["/api/portal/settings/public"],
+  });
+  return data;
+}
+
+function useSaasEnabled() {
+  const settings = usePublicSettings();
+  return settings?.saasEnabled ?? false;
+}
+
 function HeroSection() {
+  const saasEnabled = useSaasEnabled();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -403,6 +449,19 @@ function HeroSection() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
+          {saasEnabled && (
+            <Link href="/checkout?product=subscription">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-white backdrop-blur-sm min-w-[280px] mt-3 gap-2"
+                data-testid="button-subscribe-hero"
+              >
+                <Repeat className="h-4 w-4" />
+                Or Subscribe — €9.95/month
+              </Button>
+            </Link>
+          )}
           <p className="text-xs text-white/50 mt-4 max-w-md mx-auto">
             For personal development and coaching only. Not for hiring, selection, or performance evaluation.
           </p>
@@ -417,6 +476,65 @@ function HeroSection() {
           <ArrowDown className="h-6 w-6 mx-auto" />
         </motion.div>
       </motion.div>
+    </section>
+  );
+}
+
+function TestimonialMarquee() {
+  return (
+    <section className="relative py-12 overflow-hidden" data-testid="section-scan-testimonial-marquee">
+      <style>{`
+        @keyframes scan-marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        .scan-marquee-track {
+          display: flex;
+          width: max-content;
+          animation: scan-marquee 90s linear infinite;
+        }
+        .scan-marquee-track:hover,
+        .scan-marquee-track:focus-within {
+          animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .scan-marquee-track {
+            animation: none;
+            flex-wrap: wrap;
+            width: auto;
+            justify-content: center;
+          }
+        }
+      `}</style>
+      <div className="scan-marquee-track">
+        {[...MARQUEE_TESTIMONIALS, ...MARQUEE_TESTIMONIALS].map((t, i) => {
+          const lens = LENSES[t.lens];
+          return (
+            <div
+              key={i}
+              className="flex-shrink-0 w-80 mx-4 backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6"
+              data-testid={`marquee-testimonial-${i}`}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Quote className="w-4 h-4 text-white/30" />
+                <div
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: lens.hexColor }}
+                />
+              </div>
+              <p className="text-white/80 text-sm leading-relaxed mb-5">
+                "{t.quote}"
+              </p>
+              <div>
+                <p className="text-white font-semibold text-sm">{t.name}</p>
+                <p className="text-white/50 text-xs mt-0.5">
+                  {t.role}{t.country ? ` · ${t.country}` : ""}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -579,6 +697,9 @@ function SignalsSection() {
 }
 
 function WhatIsItSection() {
+  const publicSettings = usePublicSettings();
+  const saasEnabled = publicSettings?.saasEnabled ?? false;
+  const dynamicScanFeatures = publicSettings?.oneTimeScanFeatures;
   const steps = [
     {
       number: 1,
@@ -648,36 +769,47 @@ function WhatIsItSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="space-y-6"
           >
-            <div className="space-y-4">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <div className="flex items-start gap-3">
-                  <Timer className="w-5 h-5 text-ego flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-white">90-Minute Deep Dive</p>
-                    <p className="text-sm text-white/70">Thoughtfully designed questionnaire covering 129 real-life communication scenarios to reveal your unique patterns</p>
+            <div className="space-y-4" data-testid="scan-features-list">
+              {dynamicScanFeatures && dynamicScanFeatures.length > 0 ? (
+                dynamicScanFeatures.map((feature, idx) => (
+                  <div key={idx} className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-flow flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-white/80">{feature}</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <div className="flex items-start gap-3">
-                  <Brain className="w-5 h-5 text-needs flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-white">Human-Crafted Dashboard</p>
-                    <p className="text-sm text-white/70">Our coaches personally review your answers and create a custom visual map showing your strengths and growth areas</p>
+                ))
+              ) : (
+                <>
+                  <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                    <div className="flex items-start gap-3">
+                      <Timer className="w-5 h-5 text-ego flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white">90-Minute Deep Dive</p>
+                        <p className="text-sm text-white/70">Thoughtfully designed questionnaire covering 129 real-life communication scenarios to reveal your unique patterns</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <div className="flex items-start gap-3">
-                  <Sparkles className="w-5 h-5 text-flow flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-white">Growing Prompt Library</p>
-                    <p className="text-sm text-white/70">Unlock multiple times the value from your raw data by prompting your results in our custom GPT, the Conscious Communicator</p>
+                  <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                    <div className="flex items-start gap-3">
+                      <Brain className="w-5 h-5 text-needs flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white">Human-Crafted Dashboard</p>
+                        <p className="text-sm text-white/70">Our coaches personally review your answers and create a custom visual map showing your strengths and growth areas</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                  <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                    <div className="flex items-start gap-3">
+                      <Sparkles className="w-5 h-5 text-flow flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white">Growing Prompt Library</p>
+                        <p className="text-sm text-white/70">Unlock multiple times the value from your raw data by prompting your results in our custom GPT, the Conscious Communicator</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex flex-col items-center gap-4 pt-4">
@@ -691,6 +823,14 @@ function WhatIsItSection() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
+              {saasEnabled && (
+                <Link href="/checkout?product=subscription">
+                  <Button variant="outline" className="border-white/30 text-white backdrop-blur-sm gap-2" data-testid="button-subscribe-what">
+                    <Repeat className="h-3.5 w-3.5" />
+                    Subscribe — €9.95/month
+                  </Button>
+                </Link>
+              )}
               <p className="text-xs text-white/65 max-w-xs text-center">
                 For personal development only
               </p>
@@ -832,7 +972,7 @@ function WhatIsItSection() {
                       style={{ background: `linear-gradient(135deg, ${v.color}40, transparent)` }}
                     />
                     <Play className="w-4 h-4 text-white/50" />
-                    <span className="absolute bottom-1 right-1 text-[8px] text-white/65">{v.lens}</span>
+                    <span className="absolute bottom-1 right-1 text-xs text-white/65">{v.lens}</span>
                   </div>
                 ))}
               </div>
@@ -920,6 +1060,31 @@ const SCAN_TESTIMONIALS = [
     role: "Operations Manager",
     country: "Finland",
     lens: "ego" as LensType,
+  },
+];
+
+const MARQUEE_TESTIMONIALS = [
+  ...SCAN_TESTIMONIALS,
+  {
+    quote: "The 8 lenses framework gave me language for patterns I'd been feeling but couldn't articulate. Now I prepare differently for every difficult conversation.",
+    name: "Daniela F.",
+    role: "Innovation Manager",
+    country: "Switzerland",
+    lens: "chaordic" as LensType,
+  },
+  {
+    quote: "After 15 years in leadership, I thought I knew my communication style. The Scan showed me three blind spots I'd been working around instead of through.",
+    name: "James W.",
+    role: "VP of Operations",
+    country: "UK",
+    lens: "flow" as LensType,
+  },
+  {
+    quote: "I used the Scan results with the AI prompt library to prepare for a board presentation. It completely changed how I structured my argument.",
+    name: "Aisha K.",
+    role: "Startup Founder",
+    country: "UAE",
+    lens: "influence" as LensType,
   },
 ];
 
@@ -1268,8 +1433,8 @@ function LensesSection() {
                               <div className={`${lens.color} w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg ${isOpen ? 'ring-2 ring-white/40 scale-110' : ''}`}>
                                 <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
                               </div>
-                              <span className="text-[10px] sm:text-xs md:text-sm font-medium text-foreground mt-1 whitespace-nowrap">{lens.name}</span>
-                              <span className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground">{lens.code}</span>
+                              <span className="text-xs sm:text-xs md:text-sm font-medium text-foreground mt-1 whitespace-nowrap">{lens.name}</span>
+                              <span className="text-xs sm:text-xs md:text-xs text-muted-foreground">{lens.code}</span>
                             </button>
                           </CollapsibleTrigger>
                           
@@ -1286,12 +1451,12 @@ function LensesSection() {
                                 >
                                   <p className="text-xs sm:text-sm text-white/90 mb-3 italic leading-relaxed">{lens.description}</p>
                                   <div className="mb-2">
-                                    <p className="text-[10px] sm:text-xs text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">{details.painSignal}</p>
+                                    <p className="text-xs sm:text-xs text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
+                                    <p className="text-xs sm:text-xs text-muted-foreground leading-relaxed">{details.painSignal}</p>
                                   </div>
                                   <div>
-                                    <p className="text-[10px] sm:text-xs text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">{details.benefit}</p>
+                                    <p className="text-xs sm:text-xs text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
+                                    <p className="text-xs sm:text-xs text-muted-foreground leading-relaxed">{details.benefit}</p>
                                   </div>
                                 </motion.div>
                               </CollapsibleContent>
@@ -1349,7 +1514,7 @@ function LensesSection() {
                             <div className="flex-1 text-left">
                               <div className="flex items-center gap-2">
                                 <span className="font-semibold text-white">{lens.name}</span>
-                                <Badge variant="outline" className="text-[10px] border-white/20 text-white/60">
+                                <Badge variant="outline" className="text-xs border-white/20 text-white/60">
                                   {lens.code}
                                 </Badge>
                               </div>
@@ -1511,6 +1676,7 @@ function FAQSection() {
 }
 
 function HowItWorksSection() {
+  const saasEnabled = useSaasEnabled();
   return (
     <section 
       id="how-it-works" 
@@ -1585,6 +1751,14 @@ function HowItWorksSection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
+            {saasEnabled && (
+              <Link href="/checkout?product=subscription">
+                <Button size="lg" variant="outline" className="border-white/30 text-white backdrop-blur-sm gap-2" data-testid="button-subscribe-bottom">
+                  <Repeat className="h-4 w-4" />
+                  Or Subscribe — €9.95/month
+                </Button>
+              </Link>
+            )}
             <p className="text-sm text-white/50">48-72 hour dashboard delivery</p>
             <p className="text-xs text-white/65">For personal development and coaching only. Not for hiring or selection.</p>
           </div>
@@ -1898,9 +2072,9 @@ export default function ScanPage() {
   return (
     <div className="min-h-screen" data-testid="page-scan">
       <SEO 
-        title="Satellite Scan | Communication Assessment for Executive Assistants & Leaders"
-        description="90-minute communication diagnostic for EAs, CEOs, and executives. Map your patterns across 8 lenses including Influence, Dynamics, and Alignment. €99.95 with personalized insights in 48-72 hours."
-        keywords="self-awareness assessment, communication self-assessment, emotional intelligence test, personal development diagnostic, career change assessment, future-proof career skills, executive assistant communication assessment, CEO communication diagnostic, leadership communication tool, executive coaching assessment, communication patterns analysis, EA training, managing up communication, self-reflection tool, EQ assessment, behavioral assessment"
+        title="Satellite Scan | Self-Awareness & Resilience Assessment for Leaders & EAs"
+        description="90-minute self-assessment mapping your communication, resilience, and social intelligence across 8 lenses. AI-assisted personal growth tool for EAs, leaders, and career changers. Ethical alternative to HRIS personality tests. €99.95 with personalized insights in 48-72 hours."
+        keywords="self-awareness assessment, communication self-assessment, emotional intelligence test, personal development diagnostic, career change assessment, future-proof career skills, executive assistant communication assessment, CEO communication diagnostic, leadership communication tool, executive coaching assessment, communication patterns analysis, EA training, managing up communication, self-reflection tool, EQ assessment, behavioral assessment, resilience assessment, social intelligence tool, personal growth assessment, ethical personal development, AI personal growth, AI-assisted communication, ethical HR tool alternative, HRIS alternative self-awareness, leadership development assessment, self-assessment tool"
         canonicalPath="/scan"
         structuredData={PRODUCT_STRUCTURED_DATA.satelliteScan}
         faqItems={FAQ_ITEMS.map(item => ({ question: item.question, answer: item.answer }))}
@@ -1912,6 +2086,7 @@ export default function ScanPage() {
       {/* Page content */}
       <div style={{ background: "#0a0a0a" }}>
         <HeroSection />
+        <TestimonialMarquee />
         
         {/* Content sections with vertical teal train track line */}
         <div className="relative">

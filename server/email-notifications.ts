@@ -1,4 +1,5 @@
 import { getUncachableResendClient } from './resend-client';
+import { isConnectorEnabled } from './lib/connectorGuard';
 
 interface EmailVerificationData {
   email: string;
@@ -7,6 +8,10 @@ interface EmailVerificationData {
 
 export async function sendVerificationEmail(data: EmailVerificationData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log(`⏸️ Resend connector disabled — skipping verification email to ${data.email}`);
+      return false;
+    }
     const { client, fromEmail } = await getUncachableResendClient();
 
     await client.emails.send({
@@ -61,6 +66,10 @@ interface SatellitescanPurchaseData {
 
 export async function sendPurchaseNotification(data: PurchaseNotificationData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log(`⏸️ Resend connector disabled — skipping purchase notification for ${data.customerEmail}`);
+      return false;
+    }
     const { client, fromEmail } = await getUncachableResendClient();
     
     const adminEmails = ['esteve@greenelephant.org', 'anu@greenelephant.org'];
@@ -227,6 +236,10 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
     console.error('❌ Purchase data:', JSON.stringify(data, null, 2));
     return false;
   }
+  if (!(await isConnectorEnabled("resend"))) {
+    console.log(`⏸️ Resend connector disabled — skipping Satellitescan purchase emails for ${data.customerEmail}`);
+    return false;
+  }
   
   console.log('📧 Attempting to send Satellitescan purchase emails...');
   console.log('📧 Customer email:', data.customerEmail);
@@ -344,6 +357,7 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
 
 export async function sendSatellitescanReminderEmail(customerEmail: string, customerName: string | null) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping reminder for ${customerEmail}`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     const firstName = customerName?.split(' ')[0] || 'there';
 
@@ -399,6 +413,7 @@ interface WebinarWaitlistData {
 
 export async function sendWebinarWaitlistConfirmation(data: WebinarWaitlistData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendWebinarWaitlistConfirmation`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     
     const adminEmail = 'esteve@greenelephant.org';
@@ -495,6 +510,7 @@ interface TypeformScanData {
 
 export async function sendTypeformScanCompletionEmail(data: TypeformScanData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendTypeformScanCompletionEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     
     const adminEmails = ['esteve@greenelephant.org', 'anu@greenelephant.org'];
@@ -624,6 +640,7 @@ interface OnboardingEmailData {
 
 export async function sendOnboardingEmail(data: OnboardingEmailData): Promise<boolean> {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendOnboardingEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     
     const firstName = data.customerName?.split(' ')[0] || 'Explorer';
@@ -725,6 +742,7 @@ interface NewsletterConfirmationData {
 
 export async function sendNewsletterConfirmationEmail(data: NewsletterConfirmationData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendNewsletterConfirmationEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     const body = `
@@ -784,6 +802,7 @@ interface ScanInterestConfirmationData {
 
 export async function sendScanInterestConfirmationEmail(data: ScanInterestConfirmationData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendScanInterestConfirmationEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     const body = `
@@ -851,6 +870,7 @@ export async function sendScanInterestConfirmationEmail(data: ScanInterestConfir
 
 export async function sendScanInterestAdminNotification(data: { email: string; name: string | null }) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendScanInterestAdminNotification`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     const adminEmail = 'esteve@greenelephant.org';
 
@@ -898,6 +918,7 @@ interface WaitlistConfirmationData {
 
 export async function sendWaitlistConfirmationEmail(data: WaitlistConfirmationData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendWaitlistConfirmationEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     const adminEmail = 'esteve@greenelephant.org';
@@ -983,6 +1004,7 @@ interface ContactFormData {
 
 export async function sendContactFormEmails(data: ContactFormData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendContactFormEmails`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     const adminEmail = 'esteve@greenelephant.org';
@@ -1073,6 +1095,7 @@ interface QuizResultsData {
 
 export async function sendQuizResultsEmail(data: QuizResultsData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendQuizResultsEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     const scoreLevel = data.score >= 80 ? 'High' : data.score >= 50 ? 'Moderate' : 'Developing';
@@ -1224,6 +1247,7 @@ const FLOW_ZONE_CONFIG: Record<string, { label: string; color: string; descripti
 
 export async function sendFlowCheckResultEmail(data: FlowCheckResultEmailData) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendFlowCheckResultEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     const zone = FLOW_ZONE_CONFIG[data.zone] || FLOW_ZONE_CONFIG.comfort;
 
@@ -1314,6 +1338,7 @@ export async function sendFlowCheckResultEmail(data: FlowCheckResultEmailData) {
 
 export async function sendFlowCheckAdminNotification(data: { email: string; name: string | null; zone: string; situation: string; role: string; motivation: number; challenge: number; competence: number }) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendFlowCheckAdminNotification`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
     const adminEmail = 'esteve@greenelephant.org';
     const zone = FLOW_ZONE_CONFIG[data.zone] || FLOW_ZONE_CONFIG.comfort;
@@ -1364,6 +1389,7 @@ export async function sendFlowCheckAdminNotification(data: { email: string; name
 // Webinar replay gate confirmation email
 export async function sendWebinarReplayConfirmationEmail(data: { name: string; email: string }) {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendWebinarReplayConfirmationEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     await client.emails.send({
@@ -1416,6 +1442,7 @@ export interface DailyPulseData {
 
 export async function sendDailyPulseEmail(data: DailyPulseData): Promise<boolean> {
   try {
+    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendDailyPulseEmail`); return false; }
     const { client, fromEmail } = await getUncachableResendClient();
 
     const zoneRows = Object.entries(data.flowZones)
@@ -1480,6 +1507,320 @@ export async function sendDailyPulseEmail(data: DailyPulseData): Promise<boolean
     return true;
   } catch (error) {
     console.error('❌ Failed to send daily pulse email:', error);
+    return false;
+  }
+}
+
+interface ContentFlywheelEmailData {
+  recipients: string[];
+  generatorType: string;
+  lensName: string;
+  lensColor: string;
+  article: string;
+  poll: string;
+  artDirection: string;
+  seoKeywords: string[];
+  seoFaqItems: Array<{ question: string; answer: string }>;
+  seoInternalLinks: string[];
+}
+
+export async function sendContentFlywheelEmail(data: ContentFlywheelEmailData) {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log('⏸️ Resend connector disabled — skipping content flywheel email');
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const generatorLabels: Record<string, string> = {
+      headlines: 'Decode the Headlines',
+      'ai-gap': 'The AI Communication Gap',
+      workplace: 'Workplace Conflict Decoded',
+    };
+
+    const articleHtml = data.article.replace(/\n/g, '<br/>');
+    const pollHtml = data.poll.replace(/\n/g, '<br/>');
+    const artHtml = data.artDirection.replace(/\n/g, '<br/>');
+
+    const bodyHtml = `
+      <div style="text-align: center; margin-bottom: 24px;">
+        <span style="display: inline-block; background-color: ${data.lensColor}22; color: ${data.lensColor}; border: 1px solid ${data.lensColor}44; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">
+          ${data.lensName} Lens
+        </span>
+      </div>
+      <p style="color: #ff6666; font-size: 14px; font-weight: 700; text-align: center; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;">
+        HITL Review — Not for posting until approved
+      </p>
+
+      ${darkCard(`
+        <h3 style="color: #ffffff; margin: 0 0 16px 0; font-family: 'Poppins', Arial, sans-serif; font-size: 18px;">LinkedIn Article Draft</h3>
+        <p style="color: #cccccc; font-size: 13px; margin-bottom: 12px; font-style: italic;">For Esteve's personal LinkedIn profile</p>
+        <div style="color: #dddddd; font-size: 14px; line-height: 1.7;">${articleHtml}</div>
+      `, data.lensColor)}
+
+      ${darkCard(`
+        <h3 style="color: #ffffff; margin: 0 0 16px 0; font-family: 'Poppins', Arial, sans-serif; font-size: 18px;">LinkedIn Poll Draft</h3>
+        <p style="color: #cccccc; font-size: 13px; margin-bottom: 12px; font-style: italic;">For GreenElephant company page</p>
+        <div style="color: #dddddd; font-size: 14px; line-height: 1.7;">${pollHtml}</div>
+      `, '#009999')}
+
+      ${darkCard(`
+        <h3 style="color: #ffffff; margin: 0 0 16px 0; font-family: 'Poppins', Arial, sans-serif; font-size: 18px;">Art Direction for Canva</h3>
+        <div style="color: #dddddd; font-size: 14px; line-height: 1.7;">${artHtml}</div>
+      `, '#663399')}
+
+      ${data.seoKeywords.length > 0 ? darkCard(`
+        <h3 style="color: #ffffff; margin: 0 0 12px 0; font-family: 'Poppins', Arial, sans-serif; font-size: 16px;">SEO/GEO Enrichment Summary</h3>
+        <p style="color: #999999; font-size: 13px; margin-bottom: 12px;">Keywords: ${data.seoKeywords.join(', ')}</p>
+        ${data.seoFaqItems.map(f => `<p style="color: #cccccc; font-size: 13px;"><strong>Q:</strong> ${f.question}<br/><strong>A:</strong> ${f.answer}</p>`).join('')}
+        ${data.seoInternalLinks.length > 0 ? `<p style="color: #999999; font-size: 13px; margin-top: 12px;">Internal linking: ${data.seoInternalLinks.join(' | ')}</p>` : ''}
+      `, '#669966') : ''}
+    `;
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.recipients,
+      subject: `[Content Flywheel] ${generatorLabels[data.generatorType] || data.generatorType} — ${data.lensName} Lens`,
+      html: brandedEmailWrapper(
+        'Content Flywheel',
+        `${generatorLabels[data.generatorType] || data.generatorType} — ${data.lensName} Lens`,
+        bodyHtml,
+        'This is an internal GreenElephant admin email. Content requires human review before publishing. Do not forward or post without approval.'
+      ),
+    });
+
+    console.log(`✅ Content flywheel email sent to ${data.recipients.join(', ')}`);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to send content flywheel email:', error);
+    return false;
+  }
+}
+
+interface CoachingRawDataEmailData {
+  coacheeEmail: string;
+  coacheeName: string | null;
+  rawData: Record<string, string>;
+}
+
+export async function sendCoachingRawDataEmail(data: CoachingRawDataEmailData): Promise<boolean> {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log(`⏸️ Resend disabled — skipping coaching raw data email to ${data.coacheeEmail}`);
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+    const firstName = data.coacheeName?.split(' ')[0] || 'there';
+
+    const rawDataRows = Object.entries(data.rawData)
+      .map(([q, a]) => `<tr><td style="padding:6px 10px;border-bottom:1px solid #222;color:#999;font-size:13px;vertical-align:top;white-space:nowrap;">${q}</td><td style="padding:6px 10px;border-bottom:1px solid #222;color:#e0e0e0;font-size:13px;">${a}</td></tr>`)
+      .join('');
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.coacheeEmail,
+      subject: `Your Satellite Scan Raw Data — GreenElephant`,
+      html: brandedEmailWrapper(
+        "Your Satellite Scan Data",
+        "Copy-paste ready for the Conscious Communicator GPT",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Hi ${firstName},
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+          Here is your raw Satellite Scan data. You can select all the text in the box below and paste it directly into the
+          <a href="https://chatgpt.com/g/g-A2D8HFqGl-conscious-communicator" style="color:#009999;text-decoration:none;">Conscious Communicator GPT</a>
+          for a personalized analysis.
+        </p>
+        <div style="background-color:#111111;border:1px solid #333;border-radius:8px;padding:0;margin:0 0 24px 0;overflow:auto;max-height:500px;">
+          <table cellpadding="0" cellspacing="0" border="0" style="width:100%;font-family:monospace;">
+            ${rawDataRows}
+          </table>
+        </div>
+        <p style="color:#999;font-size:13px;line-height:1.7;margin:0;">
+          Questions? Reply to this email and we'll get back to you.
+        </p>
+        `,
+        "You received this because your coach at GreenElephant sent you your Satellite Scan data."
+      ),
+    });
+
+    console.log(`✅ Coaching raw data email sent to: ${data.coacheeEmail}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send coaching raw data email to ${data.coacheeEmail}:`, error);
+    return false;
+  }
+}
+
+interface CoachingDocLinkEmailData {
+  coacheeEmail: string;
+  coacheeName: string | null;
+  docUrl: string;
+  reportText: string;
+}
+
+export async function sendCoachingDocLinkEmail(data: CoachingDocLinkEmailData): Promise<boolean> {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log(`⏸️ Resend disabled — skipping coaching doc link email to ${data.coacheeEmail}`);
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+    const firstName = data.coacheeName?.split(' ')[0] || 'there';
+
+    const reportHtml = data.reportText
+      .split('\n')
+      .map(line => line.trim() ? `<p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0 0 8px 0;">${line}</p>` : '<br/>')
+      .join('');
+
+    await client.emails.send({
+      from: fromEmail,
+      to: data.coacheeEmail,
+      subject: `Your Coaching Dashboard is Ready — GreenElephant`,
+      html: brandedEmailWrapper(
+        "Your Coaching Dashboard",
+        "Review your personalized communication insights",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
+          Hi ${firstName},
+        </p>
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+          Your coaching dashboard is ready. You can view the full interactive version using the link below,
+          or read the summary right here in this email.
+        </p>
+        <div style="text-align:center;margin:0 0 28px 0;">
+          <a href="${data.docUrl}" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
+            Open Your Dashboard
+          </a>
+        </div>
+        <div style="background-color:#111111;border:1px solid #333;border-radius:8px;padding:22px;margin:0 0 24px 0;">
+          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">Report Summary</h3>
+          ${reportHtml}
+        </div>
+        <p style="color:#999;font-size:13px;line-height:1.7;margin:0;">
+          Questions about your results? Reply to this email and your coach will follow up.
+        </p>
+        `,
+        "You received this because your coach at GreenElephant prepared your coaching dashboard."
+      ),
+    });
+
+    console.log(`✅ Coaching doc link email sent to: ${data.coacheeEmail}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send coaching doc link email to ${data.coacheeEmail}:`, error);
+    return false;
+  }
+}
+
+interface CoachOnlyEmailData {
+  coacheeName: string | null;
+  rawData: Record<string, string>;
+  notes?: string;
+}
+
+export async function sendCoachOnlyEmail(data: CoachOnlyEmailData): Promise<boolean> {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log(`⏸️ Resend disabled — skipping coach-only email`);
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+    const coachEmails = ['esteve@greenelephant.org', 'anu@greenelephant.org'];
+    const coacheeName = data.coacheeName || 'Unknown';
+
+    const rawDataRows = Object.entries(data.rawData)
+      .map(([q, a]) => `<tr><td style="padding:6px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px;vertical-align:top;white-space:nowrap;">${q}</td><td style="padding:6px 10px;border-bottom:1px solid #e5e7eb;color:#374151;font-size:13px;">${a}</td></tr>`)
+      .join('');
+
+    await client.emails.send({
+      from: fromEmail,
+      to: coachEmails,
+      subject: `[Internal] Scan Data for ${coacheeName} — Review Before Delivery`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%); padding: 24px 28px; border-radius: 8px 8px 0 0;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 20px;">Internal: Scan Data Review</h1>
+            <p style="color: #93c5fd; margin-top: 6px; margin-bottom: 0; font-size: 14px;">Coachee: ${coacheeName}</p>
+          </div>
+          
+          ${data.notes ? `
+          <div style="background-color: #fef3c7; padding: 16px 20px; border-left: 4px solid #f59e0b;">
+            <h3 style="margin-top: 0; color: #92400e; font-size: 14px;">Coach Notes</h3>
+            <p style="color: #78350f; font-size: 14px; margin-bottom: 0;">${data.notes}</p>
+          </div>
+          ` : ''}
+          
+          <div style="padding: 24px; background-color: #ffffff;">
+            <h3 style="margin-top: 0; color: #1f2937; font-size: 16px;">Raw Scan Data</h3>
+            <div style="border:1px solid #e5e7eb;border-radius:6px;overflow:auto;">
+              <table cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                ${rawDataRows}
+              </table>
+            </div>
+          </div>
+          
+          <div style="background-color: #f9fafb; padding: 16px 24px; border-top: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+              This is an internal email — the coachee was NOT notified. Sent automatically from the Coaching Cockpit.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+
+    console.log(`✅ Coach-only email sent to: ${coachEmails.join(', ')} for coachee: ${coacheeName}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to send coach-only email:`, error);
+    return false;
+  }
+}
+
+export async function sendPortalDataExportEmail(email: string, name: string | null, exportData: { timeline: unknown[]; context: Record<string, string> }): Promise<boolean> {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log("⏸️ Resend disabled — skipping portal data export email");
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    const eventCount = exportData.timeline.length;
+    const exportDate = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+    await client.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: "Your Communication Journey Data Export",
+      html: brandedEmailWrapper(
+        "Your Data Export",
+        `Exported on ${exportDate}`,
+        `
+          <p style="color: #cccccc; font-size: 15px; line-height: 1.8;">
+            Hi${name ? ` ${name}` : ""},
+          </p>
+          <p style="color: #cccccc; font-size: 15px; line-height: 1.8;">
+            Here is your complete GreenElephant communication journey data. This export contains
+            <strong style="color: #009999;">${eventCount} timeline event${eventCount !== 1 ? "s" : ""}</strong>
+            and your stored preferences.
+          </p>
+          <div style="background: #111; border: 1px solid #222; border-radius: 8px; padding: 16px; margin: 20px 0;">
+            <p style="color: #999; font-size: 12px; margin: 0 0 8px;">Attached below as JSON:</p>
+            <pre style="color: #009999; font-size: 11px; white-space: pre-wrap; word-break: break-all; margin: 0;">${JSON.stringify(exportData, null, 2).slice(0, 3000)}${JSON.stringify(exportData).length > 3000 ? "\n... (truncated — full data in attachment)" : ""}</pre>
+          </div>
+          <p style="color: #888; font-size: 13px;">
+            You can re-export your data anytime from your portal Settings page.
+          </p>
+        `,
+        "This email was sent because you requested a data export from your GreenElephant portal account. Under GDPR Article 20, you have the right to receive your personal data in a structured, commonly used format. If you did not request this, please contact us at hello@greenelephant.org."
+      ),
+    });
+
+    console.log(`✅ Portal data export email sent to: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Failed to send portal data export email:", error);
     return false;
   }
 }

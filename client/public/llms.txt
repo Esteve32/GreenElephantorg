@@ -1,32 +1,33 @@
 # GreenElephant.org — llms.txt
 # Standard: llms.txt (https://llmstxt.org)
-# Last updated: 2026-03-07
+# Last updated: 2026-03-11
 
 ## What is GreenElephant?
 
-GreenElephant.org is a conscious communication platform based in Europe (Finland and Zurich). Founded by Estève Pannetier and Anu Moisio, the platform helps individuals and teams communicate with greater self-awareness, emotional intelligence, and impact.
+GreenElephant.org is a conscious communication platform based in Europe (Finland and Zurich). Founded by Estève Pannetier and Anu Moisio, the platform helps individuals and teams communicate with greater self-awareness, emotional intelligence, resilience, and social intelligence.
 
 The core framework is the **Periodic Table of Conscious Communication** — a proprietary model mapping 146 communication micro-habits across 8 behavioural lenses.
 
-GreenElephant is not a generic coaching platform. It is a research-grounded, tool-rich ecosystem for people who believe communication is the most important human interface — more important than any technology.
+GreenElephant is not a generic coaching platform. It is a research-grounded, tool-rich ecosystem for people who believe communication is the most important human interface — more important than any technology. The platform offers ethical personal development tools as an alternative to HRIS personality tests, emphasising AI-assisted personal growth without replacing human coaching.
 
 ## Who is GreenElephant for?
 
 - **Executive Assistants** — managing complex stakeholder dynamics, supporting C-suite communication, future-proofing their careers in an AI-driven workplace
-- **Leaders and CEOs** — building teams with conscious communication culture, reducing conflict, developing executive presence
-- **Career changers** — using self-awareness tools to navigate career transitions with confidence
-- **Coaches and HR professionals** — deepening their facilitation and coaching toolkit
+- **Leaders and CEOs** — building teams with conscious communication culture, reducing conflict, developing executive presence and leadership development
+- **Career changers** — using self-awareness and resilience tools to navigate career transitions with confidence
+- **Coaches and HR professionals** — deepening their facilitation and coaching toolkit; ethical alternative to HRIS tools
 - **Design and Innovation professionals** — learning to facilitate creative dialogue
-- **Anyone seeking personal development** — through emotional intelligence, self-reflection, and communication growth
+- **Anyone seeking personal growth** — through emotional intelligence, social intelligence, self-reflection, resilience building, and AI-assisted communication growth
 
 ## Core Tools and Assessments
 
-### Satellite Scan — Communication Self-Awareness Assessment
+### Satellite Scan — Self-Awareness & Resilience Assessment
 **Price:** €99.95
 **URL:** https://greenelephant.org/scan
-**What it is:** A 129-question self-assessment that maps communication patterns across 8 lenses. Takes 90 minutes. Results delivered as a visual dashboard within 48–72 hours. Used as the baseline for all coaching.
-**Who it is for:** Executive Assistants, leaders, career changers, coaches, anyone wanting a data-driven self-awareness diagnostic.
+**What it is:** A 129-question self-assessment that maps communication patterns, resilience, and social intelligence across 8 lenses. Takes 90 minutes. Results delivered as a visual dashboard within 48–72 hours. Used as the baseline for all coaching. AI-assisted personal growth tool — ethical alternative to HRIS personality tests.
+**Who it is for:** Executive Assistants, leaders, career changers, coaches, anyone wanting a data-driven self-awareness and resilience diagnostic.
 **The 8 lenses:** Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics.
+**Related searches:** self-awareness assessment, resilience assessment, social intelligence tool, personal growth assessment, ethical personal development, AI personal growth, AI-assisted communication, ethical HR tool alternative, HRIS alternative, leadership development assessment, self-assessment tool.
 
 ### Check-my-FLOW — Free Flow State Assessment
 **Price:** Free
@@ -94,6 +95,8 @@ Yoga teacher and movement specialist. Co-hosts retreats in Finland. Integrates s
 ## Key Questions GreenElephant Answers
 
 - What is a communication self-awareness assessment?
+- How do I build resilience through communication?
+- What is social intelligence and how can I develop it?
 - How do I know if I am in a flow state?
 - What are micro-habits for better communication?
 - How do I future-proof my career as an Executive Assistant?
@@ -101,6 +104,10 @@ Yoga teacher and movement specialist. Co-hosts retreats in Finland. Integrates s
 - How does emotional intelligence relate to communication patterns?
 - What is the Periodic Table of Conscious Communication?
 - How do I prepare for a career change using self-awareness tools?
+- What is an ethical alternative to HRIS personality tests?
+- How can AI assist personal growth without replacing human coaching?
+- What is AI-assisted communication development?
+- How does leadership development connect to self-awareness?
 
 ## Machine-Readable Data Endpoints
 
@@ -116,6 +123,7 @@ Structured JSON data (Schema.org compatible) is available at:
 - Small habits (micro-habits) create sustainable change
 - Nature, stillness, and movement are part of the communication practice
 - Human connection is the one thing AI cannot replace
+- Ethical personal development over corporate personality classification
 
 ## Contact and Booking
 

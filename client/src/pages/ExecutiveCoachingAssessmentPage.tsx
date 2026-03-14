@@ -103,9 +103,15 @@ export default function ExecutiveCoachingAssessmentPage() {
               Start your coaching journey with data, not guesswork. The Satellite Scan provides the baseline that makes coaching more effective from day one.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/scan">
+              <Link href="/signals">
                 <Button size="lg" className="bg-ego hover:bg-ego/90 text-white" data-testid="button-assessment-start">
-                  Start Your Assessment
+                  Free 2-Min Quick Check
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/checkout?product=satellitescan">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" data-testid="button-assessment-full-scan">
+                  Full Satellite Scan (€99.95)
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -227,9 +233,9 @@ export default function ExecutiveCoachingAssessmentPage() {
                       10+ self-coaching prompts
                     </li>
                   </ul>
-                  <Link href="/scan">
+                  <Link href="/signals">
                     <Button size="lg" className="w-full bg-ego hover:bg-ego/90" data-testid="button-assessment-cta">
-                      Start Your Assessment
+                      Take the Free Quick Check
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
@@ -287,12 +293,20 @@ export default function ExecutiveCoachingAssessmentPage() {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <Link href="/scan">
-              <Button size="lg" className="bg-ego hover:bg-ego/90" data-testid="button-assessment-final-cta">
-                Start Your Coaching Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/signals">
+                <Button size="lg" className="bg-ego hover:bg-ego/90" data-testid="button-assessment-final-cta">
+                  Take the Free Quick Check
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/checkout?product=satellitescan">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" data-testid="button-assessment-final-scan">
+                  Get the Full Satellite Scan
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>

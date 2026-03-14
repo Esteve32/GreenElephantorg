@@ -629,3 +629,235 @@ export const insertFlowCheckResultSchema = createInsertSchema(flowCheckResults).
 
 export type InsertFlowCheckResult = z.infer<typeof insertFlowCheckResultSchema>;
 export type FlowCheckResult = typeof flowCheckResults.$inferSelect;
+
+export const connectorStates = pgTable("connector_states", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().unique(),
+  enabled: text("enabled").notNull().default("true"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertConnectorStateSchema = createInsertSchema(connectorStates).pick({
+  name: true,
+  enabled: true,
+});
+
+export type InsertConnectorState = z.infer<typeof insertConnectorStateSchema>;
+export type ConnectorState = typeof connectorStates.$inferSelect;
+
+export const connectorToggleLogs = pgTable("connector_toggle_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  connectorName: text("connector_name").notNull(),
+  action: text("action").notNull(),
+  previousEnabled: text("previous_enabled"),
+  newEnabled: text("new_enabled"),
+  triggeredBy: text("triggered_by").notNull().default("individual"),
+  performedBy: text("performed_by").notNull().default("admin"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertConnectorToggleLogSchema = createInsertSchema(connectorToggleLogs).pick({
+  connectorName: true,
+  action: true,
+  previousEnabled: true,
+  newEnabled: true,
+  triggeredBy: true,
+  performedBy: true,
+});
+
+export type InsertConnectorToggleLog = z.infer<typeof insertConnectorToggleLogSchema>;
+export type ConnectorToggleLog = typeof connectorToggleLogs.$inferSelect;
+
+export const seoSuggestions = pgTable("seo_suggestions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  generatorType: text("generator_type").notNull(),
+  targetPage: text("target_page").notNull(),
+  suggestionType: text("suggestion_type").notNull(),
+  content: jsonb("content").notNull(),
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSeoSuggestionSchema = createInsertSchema(seoSuggestions).pick({
+  generatorType: true,
+  targetPage: true,
+  suggestionType: true,
+  content: true,
+  status: true,
+});
+
+export type InsertSeoSuggestion = z.infer<typeof insertSeoSuggestionSchema>;
+export type SeoSuggestion = typeof seoSuggestions.$inferSelect;
+
+export const clientUsers = pgTable("client_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  googleId: text("google_id").unique(),
+  avatarUrl: text("avatar_url"),
+  passwordHash: text("password_hash"),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorEnabled: text("two_factor_enabled").default("false").notNull(),
+  resetToken: text("reset_token"),
+  resetTokenExpiry: timestamp("reset_token_expiry"),
+  isActive: text("is_active").default("true").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastLoginAt: timestamp("last_login_at"),
+  notionAccessToken: text("notion_access_token"),
+  notionWorkspaceName: text("notion_workspace_name"),
+  notionWorkspaceId: text("notion_workspace_id"),
+  notionBotId: text("notion_bot_id"),
+  linkedinSub: text("linkedin_sub").unique(),
+  linkedinAccessToken: text("linkedin_access_token"),
+  linkedinTokenExpiry: timestamp("linkedin_token_expiry"),
+});
+
+export const insertClientUserSchema = createInsertSchema(clientUsers).pick({
+  email: true,
+  name: true,
+  googleId: true,
+  avatarUrl: true,
+  passwordHash: true,
+  linkedinSub: true,
+}).extend({
+  email: z.string().email("Please enter a valid email address"),
+  name: z.string().optional(),
+  linkedinSub: z.string().optional(),
+});
+
+export type InsertClientUser = z.infer<typeof insertClientUserSchema>;
+export type ClientUser = typeof clientUsers.$inferSelect;
+
+export const clientSubscriptions = pgTable("client_subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  plan: text("plan").notNull(),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  stripeCustomerId: text("stripe_customer_id"),
+  status: text("status").notNull().default("active"),
+  currentPeriodStart: timestamp("current_period_start"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  cancelledAt: timestamp("cancelled_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertClientSubscriptionSchema = createInsertSchema(clientSubscriptions).pick({
+  userId: true,
+  plan: true,
+  stripeSubscriptionId: true,
+  stripeCustomerId: true,
+  status: true,
+  currentPeriodStart: true,
+  currentPeriodEnd: true,
+});
+
+export type InsertClientSubscription = z.infer<typeof insertClientSubscriptionSchema>;
+export type ClientSubscription = typeof clientSubscriptions.$inferSelect;
+
+export const adminSettings = pgTable("admin_settings", {
+  key: varchar("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type AdminSetting = typeof adminSettings.$inferSelect;
+
+export const testimonials = pgTable("testimonials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  role: text("role"),
+  company: text("company"),
+  quote: text("quote").notNull(),
+  consentGiven: text("consent_given").notNull().default("false"),
+  visible: text("visible").notNull().default("false"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+export type Testimonial = typeof testimonials.$inferSelect;
+
+export const adminUsers = pgTable("admin_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  avatarUrl: text("avatar_url"),
+  googleId: text("google_id").unique(),
+  role: text("role").notNull().default("viewer"),
+  invitedBy: text("invited_by"),
+  isActive: text("is_active").notNull().default("true"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastLoginAt: timestamp("last_login_at"),
+});
+
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+  lastLoginAt: true,
+}).extend({
+  email: z.string().email(),
+  role: z.enum(["super_admin", "admin", "viewer"]),
+});
+
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
+export type AdminUser = typeof adminUsers.$inferSelect;
+
+export const auditLogs = pgTable("audit_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userEmail: text("user_email").notNull(),
+  actionType: text("action_type").notNull(),
+  resource: text("resource"),
+  details: jsonb("details"),
+  ipAddress: text("ip_address"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;
+
+export const portalTimelineEvents = pgTable("portal_timeline_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  type: text("type").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  details: text("details"),
+  lens: text("lens"),
+  toolId: text("tool_id"),
+  date: timestamp("date").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPortalTimelineEventSchema = createInsertSchema(portalTimelineEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPortalTimelineEvent = z.infer<typeof insertPortalTimelineEventSchema>;
+export type PortalTimelineEvent = typeof portalTimelineEvents.$inferSelect;
+
+export const portalUserContext = pgTable("portal_user_context", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  key: text("key").notNull(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPortalUserContextSchema = createInsertSchema(portalUserContext).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertPortalUserContext = z.infer<typeof insertPortalUserContextSchema>;
+export type PortalUserContext = typeof portalUserContext.$inferSelect;

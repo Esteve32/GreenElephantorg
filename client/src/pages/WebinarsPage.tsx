@@ -348,7 +348,7 @@ export default function WebinarsPage() {
                         {isSubmitting ? "Sending…" : "Send me the replay link"}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <p className="text-[11px] text-white/60 text-center">
+                      <p className="text-xs text-white/60 text-center">
                         We store your email and consent date as required by GDPR. We never share your data. You received this email because you requested the replay.
                       </p>
                     </form>

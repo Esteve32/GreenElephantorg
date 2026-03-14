@@ -2,6 +2,7 @@ import { SEO } from "@/components/SEO";
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState, useCallback } from 'react';
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
@@ -9,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ArrowLeft, CreditCard, User, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, ArrowLeft, CreditCard, User, AlertCircle, Loader2, Repeat } from "lucide-react";
 
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
@@ -177,9 +178,15 @@ export default function CheckoutPage() {
   const productType = urlParams.get('product');
   const packageType = urlParams.get('package') || '1on1-single';
   
+  const { data: publicSettings } = useQuery<{ saasEnabled: boolean; subscriptionFeatures?: string[] | null; oneTimeScanFeatures?: string[] | null; coachingJourneyFeatures?: string[] | null }>({
+    queryKey: ["/api/portal/settings/public"],
+  });
+  const saasEnabled = publicSettings?.saasEnabled ?? false;
+
   const isSatellitescan = productType === 'satellitescan';
+  const isSubscription = productType === 'subscription';
   
-  const packages: Record<string, { name: string; price: number; features: string[]; savings?: string }> = {
+  const packages: Record<string, { name: string; price: number; features: string[]; savings?: string; recurring?: string }> = {
     '1on1-single': {
       name: "1:1 Single Session",
       price: 295,
@@ -193,7 +200,7 @@ export default function CheckoutPage() {
     'coaching-journey': {
       name: "Coaching Journey",
       price: 2980,
-      features: [
+      features: publicSettings?.coachingJourneyFeatures || [
         "AI-powered Satellite Scan (90 questions, ~120 min)",
         "Clarity & goal-setting session",
         "Biweekly coaching sessions (2 hours each)",
@@ -217,7 +224,7 @@ export default function CheckoutPage() {
     'satellitescan': {
       name: "Satellite Scan",
       price: 99.95,
-      features: [
+      features: publicSettings?.oneTimeScanFeatures || [
         "90-minute AI-powered Typeform scan",
         "Personalized dashboard (manual creation by human coach)",
         "10+ prompts to reuse your scan data",
@@ -243,10 +250,24 @@ export default function CheckoutPage() {
         "30-day email follow-up support",
         "Self-paced learning resources access"
       ]
+    },
+    'subscription': {
+      name: "Portal Subscription",
+      price: 9.95,
+      recurring: "/month",
+      features: publicSettings?.subscriptionFeatures || [
+        "Unlimited Satellite Scans",
+        "Prompting Playground with AI tools",
+        "Personal development data dashboard",
+        "Growth tracking over time",
+        "Calendar event & micro-habit suggestions",
+        "Data export to Notion, Google Calendar",
+        "Cancel anytime"
+      ]
     }
   };
 
-  const selectedPackage = isSatellitescan ? packages['satellitescan'] : packages[packageType];
+  const selectedPackage = isSubscription ? packages['subscription'] : isSatellitescan ? packages['satellitescan'] : packages[packageType];
   const finalPrice = Math.max(0, selectedPackage.price - discountAmount);
 
   useEffect(() => {
@@ -322,10 +343,10 @@ export default function CheckoutPage() {
   const proceedToPayment = async () => {
     setIsCreatingIntent(true);
     
-    const isFreeCheckout = finalPrice < 0.01 && isSatellitescan && couponCode;
+    const isFreeCheckout = finalPrice < 0.01 && couponCode;
 
     try {
-      if (isFreeCheckout) {
+      if (isFreeCheckout && isSatellitescan) {
         const response = await apiRequest("POST", "/api/satellitescan/free-purchase", {
           customerEmail,
           customerName,
@@ -345,17 +366,68 @@ export default function CheckoutPage() {
           throw new Error(data.error || 'Free purchase failed');
         }
       }
+
+      if (isFreeCheckout && isSubscription) {
+        const response = await apiRequest("POST", "/api/subscription/free-purchase", {
+          customerEmail,
+          customerName,
+          couponCode
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          setIsCreatingIntent(false);
+          toast({
+            title: "Success!",
+            description: "Your free subscription has been activated!",
+          });
+          window.location.href = "/payment-success?free=true";
+          return;
+        } else {
+          throw new Error(data.error || 'Free subscription failed');
+        }
+      }
       
-      const endpoint = isSatellitescan 
-        ? "/api/satellitescan/create-payment-intent" 
-        : "/api/create-payment-intent";
+      const endpoint = isSubscription
+        ? "/api/subscription/create-payment-intent"
+        : isSatellitescan 
+          ? "/api/satellitescan/create-payment-intent" 
+          : "/api/create-payment-intent";
       
-      const payload = isSatellitescan
-        ? { customerEmail, customerName }
-        : { packageId: packageType, customerEmail, customerName };
+      const payload = isSubscription
+        ? { customerEmail, customerName, couponCode: couponCode || undefined }
+        : isSatellitescan
+          ? { customerEmail, customerName }
+          : { packageId: packageType, customerEmail, customerName };
       
       const response = await apiRequest("POST", endpoint, payload);
       const data = await response.json();
+
+      if (data.couponStatus === 'invalid') {
+        toast({ title: "Invalid coupon", description: "That coupon code is not valid or has expired.", variant: "destructive" });
+      } else if (data.couponStatus === 'exhausted') {
+        toast({ title: "Coupon expired", description: "That coupon has reached its usage limit.", variant: "destructive" });
+      } else if (data.couponStatus === 'applied' && data.amount < data.originalAmount) {
+        toast({ title: "Coupon applied!", description: `Discount applied. New price: €${data.amount.toFixed(2)}` });
+      }
+
+      if (data.freeAccess && isSubscription && couponCode) {
+        const freeRes = await apiRequest("POST", "/api/subscription/free-purchase", {
+          customerEmail,
+          customerName,
+          couponCode
+        });
+        const freeData = await freeRes.json();
+        if (freeData.success) {
+          setIsCreatingIntent(false);
+          toast({ title: "Success!", description: "Your free subscription has been activated!" });
+          window.location.href = "/payment-success?free=true";
+          return;
+        } else {
+          throw new Error(freeData.message || 'Free subscription activation failed');
+        }
+      }
+
       setClientSecret(data.clientSecret);
       setCurrentStep('payment');
     } catch (error) {
@@ -387,12 +459,12 @@ export default function CheckoutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          onClick={() => setLocation(isSatellitescan ? '/scan' : '/coaching')}
+          onClick={() => setLocation(isSubscription || isSatellitescan ? '/scan' : '/coaching')}
           className="mb-6"
           data-testid="button-back-to-product"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {isSatellitescan ? 'Back to Satellite Scan' : 'Back to Coaching'}
+          {isSubscription || isSatellitescan ? 'Back to Satellite Scan' : 'Back to Coaching'}
         </Button>
 
         <ProgressIndicator currentStep={currentStep} />
@@ -401,13 +473,18 @@ export default function CheckoutPage() {
           <Card className="backdrop-blur-sm bg-card/95 h-fit sticky top-24">
             <CardHeader>
               <Badge className="w-fit mb-2 bg-alignment text-white">
-                {isSatellitescan ? 'Satellite Scan' : 'Conscious Communication Coaching'}
+                {isSubscription ? 'Portal Subscription' : isSatellitescan ? 'Satellite Scan' : 'Conscious Communication Coaching'}
               </Badge>
               <CardTitle className="text-2xl">{selectedPackage.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <div className="text-4xl font-bold mb-1">€{finalPrice.toFixed(2)}</div>
+                <div className="text-4xl font-bold mb-1" data-testid="text-checkout-price">
+                  €{finalPrice.toFixed(2)}
+                  {selectedPackage.recurring && (
+                    <span className="text-lg text-muted-foreground font-normal">{selectedPackage.recurring}</span>
+                  )}
+                </div>
                 {discountAmount > 0 && (
                   <div className="text-sm text-green-500">Discount: -€{discountAmount.toFixed(2)}</div>
                 )}
@@ -425,6 +502,36 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
+
+              {saasEnabled && isSatellitescan && !isSubscription && (
+                <div className="pt-4 border-t border-border/50">
+                  <div className="p-3 rounded-md bg-flow/5 border border-flow/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Repeat className="h-4 w-4 text-flow" />
+                      <p className="text-sm font-semibold text-flow">Want unlimited scans instead?</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Get the Portal Subscription for €9.95/month — unlimited scans, AI playground, data dashboard, and growth tracking. Cancel anytime.
+                    </p>
+                    <Link href="/checkout?product=subscription">
+                      <Button size="sm" variant="outline" className="border-flow/30 text-flow gap-1.5 w-full" data-testid="button-switch-to-subscription">
+                        <Repeat className="h-3.5 w-3.5" />
+                        Switch to Subscription (€9.95/mo)
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {saasEnabled && isSubscription && (
+                <div className="pt-4 border-t border-border/50">
+                  <div className="p-3 rounded-md bg-white/[0.02] border border-white/5">
+                    <p className="text-xs text-muted-foreground">
+                      Just need one scan? <Link href="/checkout?product=satellitescan" className="text-flow underline" data-testid="link-switch-to-onetimescan">Get a single Satellite Scan for €99.95</Link> (no portal access).
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="pt-4 border-t border-border/50">
                 <div className="text-sm text-muted-foreground space-y-2">

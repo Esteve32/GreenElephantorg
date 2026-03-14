@@ -743,7 +743,7 @@ function FrameworkSection() {
         {/* Circular lens wheel */}
         <div className="relative flex items-center justify-center" style={{ zIndex: 1 }}>
           {/* Circle container */}
-          <div className="relative w-[320px] h-[320px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
+          <div className="relative w-[360px] h-[360px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
             {/* Decorative ring */}
             <div className="absolute inset-4 sm:inset-6 md:inset-8 rounded-full border border-white/10" />
             <div className="absolute inset-8 sm:inset-12 md:inset-16 rounded-full border border-white/5" />
@@ -815,7 +815,7 @@ function FrameworkSection() {
               const details = LENS_DETAILS[lensKey];
               
               const mobileRadius = 120;
-              const smRadius = 150;
+              const smRadius = 160;
               const mdRadius = 190;
               
               const mobilePos = getCirclePosition(index, 8, mobileRadius);
@@ -857,11 +857,11 @@ function FrameworkSection() {
                         className="group flex flex-col items-center focus:outline-none"
                         data-testid={`button-lens-${lens.value}`}
                       >
-                        <div className={`${lens.color} w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg ${isOpen ? 'ring-2 ring-white/40 scale-110' : ''}`}>
-                          <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
+                        <div className={`${lens.color} w-8 h-8 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg ${isOpen ? 'ring-2 ring-white/40 scale-110' : ''}`}>
+                          <Icon className="h-3.5 w-3.5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
                         </div>
-                        <span className="text-[10px] sm:text-xs md:text-sm font-medium text-foreground mt-1 whitespace-nowrap">{lens.name}</span>
-                        <span className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground">{lens.code}</span>
+                        <span className="text-xs sm:text-sm md:text-base font-medium text-foreground mt-0.5 whitespace-nowrap">{lens.name}</span>
+                        <span className="hidden sm:block text-xs md:text-sm text-muted-foreground">{lens.code}</span>
                       </button>
                     </CollapsibleTrigger>
                     
@@ -878,12 +878,12 @@ function FrameworkSection() {
                           >
                             <p className="text-xs sm:text-sm text-white/90 mb-3 italic leading-relaxed">{lens.description}</p>
                             <div className="mb-2">
-                              <p className="text-[10px] sm:text-xs text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
-                              <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">{details.painSignal}</p>
+                              <p className="text-xs sm:text-sm text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{details.painSignal}</p>
                             </div>
                             <div>
-                              <p className="text-[10px] sm:text-xs text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
-                              <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">{details.benefit}</p>
+                              <p className="text-xs sm:text-sm text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{details.benefit}</p>
                             </div>
                           </motion.div>
                         </CollapsibleContent>
@@ -1090,7 +1090,7 @@ function JourneySection() {
                       style={{ background: `linear-gradient(135deg, ${v.color}40, transparent)` }}
                     />
                     <Play className="w-4 h-4 text-white/50" />
-                    <span className="absolute bottom-1 right-1 text-[8px] text-white/65">{v.lens}</span>
+                    <span className="absolute bottom-1 right-1 text-xs text-white/65">{v.lens}</span>
                   </div>
                 ))}
               </div>
@@ -1474,7 +1474,7 @@ export default function HomePage() {
       <SEO 
         title="Communication Coaching for EAs, CEOs & Leaders | GreenElephant"
         description="Satellite Scan communication assessment for Executive Assistants, CEOs, and leaders. Data-driven diagnostic mapping your patterns across 8 lenses. Executive coaching and team workshops for conscious communication."
-        keywords="self-awareness assessment, communication self-assessment, emotional intelligence coaching, personal development tools, career change assessment, future-proof career skills, executive assistant communication training, CEO communication coaching, executive coaching assessment, leadership communication, communication diagnostic, team alignment, EA professional development, managing up skills, conscious communication, self-reflection tools"
+        keywords="self-awareness assessment, communication self-assessment, emotional intelligence coaching, personal development tools, career change assessment, future-proof career skills, executive assistant communication training, CEO communication coaching, executive coaching assessment, leadership communication, communication diagnostic, team alignment, EA professional development, managing up skills, conscious communication, self-reflection tools, resilience assessment, social intelligence, personal growth, ethical personal development, AI personal growth, AI-assisted communication, leadership development, ethical HR tools, HRIS alternative, self-assessment tool"
         canonicalPath="/"
         faqItems={[
           {

@@ -91,6 +91,10 @@ export default {
         ego: "hsl(var(--ego) / <alpha-value>)",
         dynamics: "hsl(var(--dynamics) / <alpha-value>)",
       },
+      fontSize: {
+        xs: ["0.8125rem", { lineHeight: "1.25rem" }],
+        sm: ["0.9375rem", { lineHeight: "1.375rem" }],
+      },
       fontFamily: {
         sans: ['var(--font-sans)'],
         poppins: ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif'],

@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Pencil, Trash2, X, Check } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, X, Check, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { CalendarEvent } from "@shared/schema";
 
 const LENS_OPTIONS = [
@@ -106,7 +107,7 @@ export default function CalendarEventsAdmin() {
       <div className="space-y-4 pt-4 border-t border-white/10">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label className="text-white/70 text-xs">Month (date)</Label>
+            <Label className="text-white/70 text-xs flex items-center gap-1">Month (date) <Tooltip><TooltipTrigger asChild><HelpCircle className="h-3 w-3 text-white/30 cursor-help" /></TooltipTrigger><TooltipContent className="max-w-xs text-xs">Which calendar month this lens focus applies to. The rotation follows the Periodic Table sequence.</TooltipContent></Tooltip></Label>
             <select
               value={form.month}
               onChange={e => setForm(f => ({ ...f, month: e.target.value }))}
@@ -119,7 +120,7 @@ export default function CalendarEventsAdmin() {
             </select>
           </div>
           <div className="space-y-2">
-            <Label className="text-white/70 text-xs">Lens (title)</Label>
+            <Label className="text-white/70 text-xs flex items-center gap-1">Lens (title) <Tooltip><TooltipTrigger asChild><HelpCircle className="h-3 w-3 text-white/30 cursor-help" /></TooltipTrigger><TooltipContent className="max-w-xs text-xs">The communication lens featured this month. Best practice: align webinars, social posts, and coaching themes with the active lens.</TooltipContent></Tooltip></Label>
             <select
               value={form.color}
               onChange={e => handleLensChange(e.target.value)}
@@ -132,7 +133,7 @@ export default function CalendarEventsAdmin() {
             </select>
           </div>
           <div className="space-y-2">
-            <Label className="text-white/70 text-xs">Sort order</Label>
+            <Label className="text-white/70 text-xs flex items-center gap-1">Sort order <Tooltip><TooltipTrigger asChild><HelpCircle className="h-3 w-3 text-white/30 cursor-help" /></TooltipTrigger><TooltipContent className="max-w-xs text-xs">Controls the display sequence on the calendar page. Use 1-12 to match month order.</TooltipContent></Tooltip></Label>
             <Input
               type="number"
               value={form.sortOrder}
@@ -143,7 +144,7 @@ export default function CalendarEventsAdmin() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label className="text-white/70 text-xs">Description (subtext)</Label>
+          <Label className="text-white/70 text-xs flex items-center gap-1">Description (subtext) <Tooltip><TooltipTrigger asChild><HelpCircle className="h-3 w-3 text-white/30 cursor-help" /></TooltipTrigger><TooltipContent className="max-w-xs text-xs">A brief description of the communication theme for this month. Appears under the lens name on the public Calendar page.</TooltipContent></Tooltip></Label>
           <textarea
             value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
@@ -185,9 +186,9 @@ export default function CalendarEventsAdmin() {
     <div className="min-h-screen bg-[#0a0f1a] text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/submissions")} data-testid="button-back">
+          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="sm" onClick={() => navigate("/admin/submissions")} data-testid="button-back">
             <ArrowLeft className="h-4 w-4 mr-1" /> Admin
-          </Button>
+          </Button></TooltipTrigger><TooltipContent>Back to Admin Hub</TooltipContent></Tooltip>
           <div>
             <h1 className="text-2xl font-bold">Calendar Events</h1>
             <p className="text-white/50 text-sm mt-0.5">Edit the 12-month lens calendar shown on the Calendar page</p>
@@ -195,14 +196,19 @@ export default function CalendarEventsAdmin() {
         </div>
 
         <div className="flex justify-end mb-6">
-          <Button
-            className="bg-needs text-white gap-2"
-            onClick={() => { setShowAddForm(true); setEditingId(null); setForm(EMPTY_FORM); }}
-            disabled={showAddForm}
-            data-testid="button-add-event"
-          >
-            <Plus className="h-4 w-4" /> Add month
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="bg-needs text-white gap-2"
+                onClick={() => { setShowAddForm(true); setEditingId(null); setForm(EMPTY_FORM); }}
+                disabled={showAddForm}
+                data-testid="button-add-event"
+              >
+                <Plus className="h-4 w-4" /> Add month
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs text-xs">Add a new month to the 12-month lens rotation calendar. Each month is tied to one communication lens — visitors see this on the Calendar page.</TooltipContent>
+          </Tooltip>
         </div>
 
         {showAddForm && (
@@ -268,18 +274,28 @@ export default function CalendarEventsAdmin() {
                           <p className="text-xs text-white/50 line-clamp-2">{event.description}</p>
                         </div>
                         <div className="flex gap-2 flex-shrink-0">
-                          <Button size="icon" variant="ghost" onClick={() => startEdit(event)} data-testid={`button-edit-${event.id}`}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => deleteMutation.mutate(event.id)}
-                            disabled={deleteMutation.isPending}
-                            data-testid={`button-delete-${event.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-400" />
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button size="icon" variant="ghost" onClick={() => startEdit(event)} data-testid={`button-edit-${event.id}`}>
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="text-xs">Edit this month's lens, description, or sort order</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => deleteMutation.mutate(event.id)}
+                                disabled={deleteMutation.isPending}
+                                data-testid={`button-delete-${event.id}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-400" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="text-xs">Remove this month from the calendar. The public page will update immediately.</TooltipContent>
+                          </Tooltip>
                         </div>
                       </div>
                     )}

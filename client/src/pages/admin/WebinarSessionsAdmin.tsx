@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { AdminTooltip } from "@/components/AdminTooltip";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Calendar,
   Clock,
@@ -18,6 +21,11 @@ import {
   X,
   Check,
   ArrowLeft,
+  BarChart3,
+  Loader2,
+  Copy,
+  ExternalLink,
+  Zap,
 } from "lucide-react";
 import type { WebinarSession } from "@shared/schema";
 
@@ -61,6 +69,11 @@ export default function WebinarSessionsAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [pollContext, setPollContext] = useState('');
+  const [pollResult, setPollResult] = useState<{ question: string; options: string[]; context: string } | null>(null);
+  const [pollCopied, setPollCopied] = useState<string | null>(null);
+  const [pollElapsed, setPollElapsed] = useState(0);
+  const pollStartRef = useRef<number | null>(null);
 
   const { data: sessions = [], isLoading } = useQuery<WebinarSession[]>({
     queryKey: ["/api/admin/webinar-sessions"],
@@ -133,6 +146,37 @@ export default function WebinarSessionsAdmin() {
       return;
     }
     createMutation.mutate(form);
+  };
+
+  const pollMutation = useMutation({
+    mutationFn: async (topicContext: string) => {
+      pollStartRef.current = Date.now();
+      const res = await apiRequest("POST", "/api/admin/generate-poll", { topicContext });
+      return await res.json();
+    },
+    onSuccess: (data: { question: string; options: string[]; context: string }) => {
+      setPollResult(data);
+      pollStartRef.current = null;
+      toast({ title: "Poll ready", description: "LinkedIn poll generated. Review and copy below." });
+    },
+    onError: (err: any) => {
+      pollStartRef.current = null;
+      toast({ title: "Poll generation failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  useEffect(() => {
+    if (!pollMutation.isPending) return;
+    const timer = setInterval(() => {
+      if (pollStartRef.current) setPollElapsed(Math.floor((Date.now() - pollStartRef.current) / 1000));
+    }, 500);
+    return () => clearInterval(timer);
+  }, [pollMutation.isPending]);
+
+  const copyPoll = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setPollCopied(field);
+    setTimeout(() => setPollCopied(null), 2000);
   };
 
   const SessionForm = ({ onSave, onCancel, saving }: { onSave: () => void; onCancel: () => void; saving: boolean }) => (
@@ -237,29 +281,39 @@ export default function WebinarSessionsAdmin() {
     <div className="min-h-screen bg-[#0a0f1a] text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Button
+          <Tooltip><TooltipTrigger asChild><Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/admin/email-control-room")}
+            onClick={() => navigate("/admin/submissions")}
             data-testid="button-back"
           >
             <ArrowLeft className="h-4 w-4 mr-1" /> Admin
-          </Button>
+          </Button></TooltipTrigger><TooltipContent>Back to Admin Hub</TooltipContent></Tooltip>
           <div>
             <h1 className="text-2xl font-bold">Webinar Sessions</h1>
             <p className="text-white/50 text-sm mt-0.5">Manage upcoming sessions shown on the webinars page</p>
           </div>
+          <AdminTooltip
+            what="Schedule and manage monthly Lens Webinar sessions. Each session is tied to one of the 8 communication lenses."
+            how="Add sessions with a date, lens, and description. Edit or delete existing sessions. Sessions appear on the public webinars page when their date is upcoming."
+            debug={[{ label: "Webinars page", href: "/webinars" }]}
+          />
         </div>
 
         <div className="flex justify-end mb-6">
-          <Button
-            className="bg-needs text-white gap-2"
-            onClick={() => { setShowAddForm(true); setEditingId(null); setForm(EMPTY_FORM); }}
-            disabled={showAddForm}
-            data-testid="button-add-session"
-          >
-            <Plus className="h-4 w-4" /> Add session
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="bg-needs text-white gap-2"
+                onClick={() => { setShowAddForm(true); setEditingId(null); setForm(EMPTY_FORM); }}
+                disabled={showAddForm}
+                data-testid="button-add-session"
+              >
+                <Plus className="h-4 w-4" /> Add session
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Create a new webinar session</TooltipContent>
+          </Tooltip>
         </div>
 
         {showAddForm && (
@@ -367,6 +421,131 @@ export default function WebinarSessionsAdmin() {
             ))}
           </div>
         )}
+
+        <div className="mt-10 pt-8 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-6 flex-wrap">
+            <BarChart3 className="h-5 w-5 text-needs" />
+            <h2 className="text-xl font-bold">LinkedIn Poll Generator</h2>
+            <AdminTooltip
+              what="Generate a LinkedIn poll based on current news, geopolitical trends, and this month's lens theme."
+              how="AI analyses current events and connects them to the webinar lens rotation. Output: a ready-to-post poll question, 4 options, and context text. Copy directly to LinkedIn."
+              debug={[
+                { label: 'Content Flywheel', href: '/admin/content-lab' },
+                { label: 'LinkedIn Page', href: 'https://www.linkedin.com/company/greenelephant' },
+                { label: 'Thesys API', href: '/admin/integrations' },
+              ]}
+            />
+          </div>
+
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-5 space-y-4">
+              <div className="space-y-2">
+                <Label className="text-white/70 text-xs">Topic context (optional — guides the AI toward specific themes)</Label>
+                <Textarea
+                  value={pollContext}
+                  onChange={(e) => setPollContext(e.target.value)}
+                  placeholder="e.g. AI regulation debates, remote work trends, leadership communication during crisis..."
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 text-sm min-h-[80px] resize-y"
+                  data-testid="textarea-poll-context"
+                />
+              </div>
+
+              <Button
+                onClick={() => pollMutation.mutate(pollContext || 'current news and geopolitical trends relevant to conscious communication')}
+                disabled={pollMutation.isPending}
+                className="bg-needs text-white gap-2"
+                data-testid="button-generate-poll"
+              >
+                {pollMutation.isPending ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Generating poll...</>
+                ) : (
+                  <><Zap className="h-4 w-4" /> Generate LinkedIn Poll</>
+                )}
+              </Button>
+
+              {pollMutation.isPending && (
+                <div className="rounded-md bg-white/5 p-4 space-y-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <Loader2 className="h-4 w-4 animate-spin text-needs" />
+                    <span className="text-sm font-medium">Creating poll idea...</span>
+                    <Badge variant="outline" className="text-xs text-white/40 border-white/10">{pollElapsed}s</Badge>
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      {pollElapsed >= 2 ? <Check className="h-3 w-3 text-green-500" /> : <Loader2 className="h-3 w-3 animate-spin text-needs" />}
+                      <span className={`text-xs ${pollElapsed >= 2 ? 'text-white/40 line-through' : 'text-white/70'}`}>Loading current lens and webinar themes</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pollElapsed >= 6 ? <Check className="h-3 w-3 text-green-500" /> : pollElapsed >= 2 ? <Loader2 className="h-3 w-3 animate-spin text-needs" /> : <div className="w-1.5 h-1.5 rounded-full bg-white/20 ml-0.5" />}
+                      <span className={`text-xs ${pollElapsed >= 6 ? 'text-white/40 line-through' : pollElapsed >= 2 ? 'text-white/70' : 'text-white/20'}`}>Analysing news and geopolitical trends</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pollElapsed >= 10 ? <Check className="h-3 w-3 text-green-500" /> : pollElapsed >= 6 ? <Loader2 className="h-3 w-3 animate-spin text-needs" /> : <div className="w-1.5 h-1.5 rounded-full bg-white/20 ml-0.5" />}
+                      <span className={`text-xs ${pollElapsed >= 10 ? 'text-white/40 line-through' : pollElapsed >= 6 ? 'text-white/70' : 'text-white/20'}`}>Crafting poll question and options</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-white/30 pt-1">Usually takes 10-20 seconds. Check <a href="/admin/integrations" className="text-needs underline">Connected Tools</a> if this fails.</p>
+                </div>
+              )}
+
+              {pollResult && !pollMutation.isPending && (
+                <div className="rounded-md bg-white/5 border border-white/10 p-5 space-y-4">
+                  {pollResult.context && (
+                    <div>
+                      <span className="text-xs text-white/40 uppercase tracking-wide">Post text (above poll):</span>
+                      <p className="text-sm text-white/90 mt-1 leading-relaxed">{pollResult.context}</p>
+                    </div>
+                  )}
+
+                  <div className="rounded-md bg-white/8 p-4 space-y-3">
+                    <p className="font-semibold text-sm">{pollResult.question}</p>
+                    <div className="space-y-1.5">
+                      {pollResult.options.map((opt, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 rounded bg-white/5 px-3 py-2 text-sm"
+                        >
+                          <div className="w-4 h-4 rounded-full border border-white/20 flex-shrink-0" />
+                          <span className="text-white/80">{opt}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-white/30">LinkedIn poll preview</p>
+                  </div>
+
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const fullText = `${pollResult.context}\n\nPoll: ${pollResult.question}\n${pollResult.options.map((o, i) => `${String.fromCharCode(65 + i)}) ${o}`).join('\n')}`;
+                        copyPoll(fullText, 'all');
+                      }}
+                      data-testid="button-copy-poll-all"
+                    >
+                      {pollCopied === 'all' ? <Check className="h-3.5 w-3.5 mr-1.5 text-green-500" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
+                      Copy all
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyPoll(pollResult.question, 'question')}
+                      data-testid="button-copy-poll-question"
+                    >
+                      {pollCopied === 'question' ? <Check className="h-3.5 w-3.5 mr-1.5 text-green-500" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
+                      Question only
+                    </Button>
+                    <a href="https://www.linkedin.com/company/greenelephant" target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="ghost" data-testid="link-linkedin-poll">
+                        <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Open LinkedIn
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

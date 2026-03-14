@@ -2,6 +2,7 @@ import { getNotionClient } from './notionClient';
 import { db } from '../db';
 import { contacts } from '@shared/schema';
 import { eq, isNull, and, or } from 'drizzle-orm';
+import { isConnectorEnabled } from './connectorGuard';
 
 const NOTION_DATABASE_ID = '8818608d251c426c8538920ec88bbde3';
 
@@ -45,6 +46,10 @@ interface SyncResult {
 }
 
 export async function getNotionDatabaseSchema() {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log('⏸️ Notion disabled — skipping schema fetch');
+    return null;
+  }
   try {
     const notion = await getNotionClient();
     const database = await notion.databases.retrieve({ database_id: NOTION_DATABASE_ID });
@@ -58,6 +63,9 @@ export async function getNotionDatabaseSchema() {
 // IMPORTANT: Do NOT catch errors - let them propagate to trigger retries
 // This prevents creating duplicates when Notion API fails
 export async function findNotionContactByEmail(email: string): Promise<{ found: true; pageId: string; name?: string } | { found: false }> {
+  if (!(await isConnectorEnabled("notion"))) {
+    return { found: false };
+  }
   const notion = await getNotionClient();
   const normalizedEmail = normalizeEmail(email);
   
@@ -138,6 +146,10 @@ async function pushContactToNotionInternal(contact: typeof contacts.$inferSelect
 
 // Public function with race condition lock
 export async function pushContactToNotion(contact: typeof contacts.$inferSelect): Promise<string | null> {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log(`⏸️ Notion connector disabled — skipping push for ${contact.email}`);
+    return null;
+  }
   const normalizedEmail = normalizeEmail(contact.email);
   
   // Wait for any existing lock on this email
@@ -241,6 +253,10 @@ function buildNotionUpdateProperties(contact: typeof contacts.$inferSelect): any
 }
 
 export async function pullContactsFromNotion(): Promise<{ updated: number; created: number; errors: string[] }> {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log('⏸️ Notion disabled — skipping pull');
+    return { updated: 0, created: 0, errors: ['Notion connector disabled'] };
+  }
   const result = { updated: 0, created: 0, errors: [] as string[] };
   
   try {
@@ -318,6 +334,10 @@ export async function pullContactsFromNotion(): Promise<{ updated: number; creat
 }
 
 export async function pushAllContactsToNotion(): Promise<{ pushed: number; errors: string[] }> {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log('⏸️ Notion disabled — skipping pushAll');
+    return { pushed: 0, errors: ['Notion connector disabled'] };
+  }
   const result = { pushed: 0, errors: [] as string[] };
   
   try {
@@ -398,6 +418,10 @@ export async function markContactAsCustomer(
     customerName?: string;
   }
 ): Promise<{ success: boolean; isNewContact: boolean; notionPageId?: string; linkedExisting?: boolean }> {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log(`⏸️ Notion disabled — skipping markContactAsCustomer for ${email}`);
+    return { success: false, isNewContact: false };
+  }
   try {
     const notion = await getNotionClient();
     
@@ -501,6 +525,10 @@ export async function findContactByEmail(email: string): Promise<typeof contacts
 // Sync newsletter campaign status to Notion CRM
 // Updates "Satellite Scan Reachout Campaign Comments" column with sent/opened status
 export async function syncNewsletterToNotion(campaignId: string, contactId?: string): Promise<{ synced: number; errors: string[] }> {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log('⏸️ Notion disabled — skipping newsletter sync');
+    return { synced: 0, errors: ['Notion connector disabled'] };
+  }
   const result = { synced: 0, errors: [] as string[] };
   
   try {
@@ -578,5 +606,62 @@ export async function syncNewsletterToNotion(campaignId: string, contactId?: str
     console.error("Newsletter Notion sync error:", error.message);
     result.errors.push(error.message);
     return result;
+  }
+}
+
+const PIPELINE_OS_DATABASE_ID = '6a43844676574202a5a8e30a935c9eaa';
+
+export async function getPipelineOSTasks(): Promise<string> {
+  if (!(await isConnectorEnabled("notion"))) {
+    console.log('⏸️ Notion connector disabled — skipping Pipeline OS read');
+    return '';
+  }
+
+  try {
+    const notion = await getNotionClient();
+    const response = await notion.databases.query({
+      database_id: PIPELINE_OS_DATABASE_ID,
+      page_size: 20,
+    });
+
+    const tasks: string[] = [];
+    for (const page of response.results) {
+      if (!('properties' in page)) continue;
+      const props = page.properties as any;
+
+      let title = '';
+      for (const key of Object.keys(props)) {
+        const prop = props[key];
+        if (prop.type === 'title' && prop.title?.length > 0) {
+          title = prop.title.map((t: any) => t.plain_text).join('');
+          break;
+        }
+      }
+
+      let status = '';
+      for (const key of Object.keys(props)) {
+        const prop = props[key];
+        if (prop.type === 'status' && prop.status?.name) {
+          status = prop.status.name;
+          break;
+        } else if (prop.type === 'select' && prop.select?.name) {
+          if (key.toLowerCase().includes('status') || key.toLowerCase().includes('stage')) {
+            status = prop.select.name;
+            break;
+          }
+        }
+      }
+
+      if (title) {
+        tasks.push(status ? `- [${status}] ${title}` : `- ${title}`);
+      }
+    }
+
+    return tasks.length > 0
+      ? `Active Pipeline OS tasks:\n${tasks.join('\n')}`
+      : '';
+  } catch (error: any) {
+    console.error('Failed to read Pipeline OS:', error.message);
+    return '';
   }
 }

@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { isConnectorEnabled } from './connectorGuard';
 
 let connectionSettings: any;
 
@@ -48,6 +49,10 @@ export async function getUncachableGoogleSheetClient() {
 }
 
 export async function getSheetData(spreadsheetId: string, range: string) {
+  if (!(await isConnectorEnabled("google-sheets"))) {
+    console.log('⏸️ Google Sheets connector disabled — skipping data fetch');
+    return [];
+  }
   const sheets = await getUncachableGoogleSheetClient();
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,

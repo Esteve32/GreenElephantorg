@@ -81,11 +81,11 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
         data-testid={`element-${symbol.toLowerCase()}`}
       >
         <div className="flex flex-col h-full p-2 text-white">
-          <div className="text-[10px] font-medium opacity-80 text-left leading-none">{number}</div>
+          <div className="text-xs font-medium opacity-80 text-left leading-none">{number}</div>
           <div className="flex-1 flex items-center justify-center">
             <div className="text-2xl md:text-3xl font-bold leading-none">{symbol}</div>
           </div>
-          <div className="text-[9px] md:text-[10px] font-medium text-center leading-tight opacity-90 line-clamp-2">{name}</div>
+          <div className="text-xs md:text-xs font-medium text-center leading-tight opacity-90 line-clamp-2">{name}</div>
         </div>
       </button>
 

@@ -2074,7 +2074,7 @@ export default function ResourcesPromptsPage() {
                             <div className="w-20 h-20 shrink-0 rounded-lg bg-gradient-to-br from-needs/30 to-flow/30 border border-needs/40 flex items-center justify-center">
                               <div className="text-center">
                                 <FileText className="w-6 h-6 text-needs mx-auto mb-1" />
-                                <span className="text-[10px] text-white/60 font-medium">SAMPLE</span>
+                                <span className="text-xs text-white/60 font-medium">SAMPLE</span>
                               </div>
                             </div>
 
@@ -2089,12 +2089,12 @@ export default function ResourcesPromptsPage() {
                                   <Badge
                                     key={lens}
                                     variant="outline"
-                                    className="text-[10px] px-2 py-0.5 border-white/20 text-white/60"
+                                    className="text-xs px-2 py-0.5 border-white/20 text-white/60"
                                   >
                                     {lens.charAt(0).toUpperCase() + lens.slice(1)}
                                   </Badge>
                                 ))}
-                                <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-white/20 text-white/60">
+                                <Badge variant="outline" className="text-xs px-2 py-0.5 border-white/20 text-white/60">
                                   +4 more
                                 </Badge>
                               </div>

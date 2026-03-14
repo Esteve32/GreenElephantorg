@@ -3,6 +3,7 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
 import { registerRoutes } from "./routes";
+import { registerPortalRoutes } from "./portal-auth";
 import { setupVite, serveStatic, log } from "./vite";
 import { startOnboardingScheduler } from "./onboarding-scheduler";
 import { startDailyPulseScheduler } from "./daily-pulse";
@@ -89,6 +90,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  registerPortalRoutes(app);
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

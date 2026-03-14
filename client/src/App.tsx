@@ -12,11 +12,11 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { initGA } from "@/lib/analytics";
 import NotFound from "@/pages/not-found";
 
-const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table'];
+const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table', '/portal', '/admin/login'];
 
 function shouldHideGlobalFooter(location: string): boolean {
   return pagesWithCustomFooter.some(path => 
-    location === path || location.startsWith(path + '#') || location.startsWith(path + '?')
+    location === path || location.startsWith(path + '/') || location.startsWith(path + '#') || location.startsWith(path + '?')
   );
 }
 
@@ -53,6 +53,29 @@ const ScanResultsDashboard = lazy(() => import("@/pages/ScanResultsDashboard"));
 const EmailControlRoom = lazy(() => import("@/pages/admin/EmailControlRoom"));
 const WebinarSessionsAdmin = lazy(() => import("@/pages/admin/WebinarSessionsAdmin"));
 const CalendarEventsAdmin = lazy(() => import("@/pages/admin/CalendarEventsAdmin"));
+const IntegrationsAdmin = lazy(() => import("@/pages/admin/IntegrationsAdmin"));
+const SocialMediaAdmin = lazy(() => import("@/pages/admin/SocialMediaAdmin"));
+const ContentFlywheelLab = lazy(() => import("@/pages/admin/ContentFlywheelLab"));
+const PromptGeneratorAdmin = lazy(() => import("@/pages/admin/PromptGeneratorAdmin"));
+const LinkedInSetupAdmin = lazy(() => import("@/pages/admin/LinkedInSetupAdmin"));
+const GDPRControlsAdmin = lazy(() => import("@/pages/admin/GDPRControlsAdmin"));
+const TestimonialsAdmin = lazy(() => import("@/pages/admin/TestimonialsAdmin"));
+const BacklinksAdmin = lazy(() => import("@/pages/admin/BacklinksAdmin"));
+const SEODashboardAdmin = lazy(() => import("@/pages/admin/SEODashboardAdmin"));
+const WebinarSettingsAdmin = lazy(() => import("@/pages/admin/WebinarSettingsAdmin"));
+const CouponsAdmin = lazy(() => import("@/pages/admin/CouponsAdmin"));
+const AccessControlAdmin = lazy(() => import("@/pages/admin/AccessControlAdmin"));
+const CoachingCockpit = lazy(() => import("@/pages/admin/CoachingCockpit"));
+const DebriefingToolAdmin = lazy(() => import("@/pages/admin/DebriefingToolAdmin"));
+const CalendlySetupAdmin = lazy(() => import("@/pages/admin/CalendlySetupAdmin"));
+const AnalyticsAdmin = lazy(() => import("@/pages/admin/AnalyticsAdmin"));
+const SaaSSettingsAdmin = lazy(() => import("@/pages/admin/SaaSSettingsAdmin"));
+const AIToolsDashboard = lazy(() => import("@/pages/admin/AIToolsDashboard"));
+const ResearchFlywheelLab = lazy(() => import("@/pages/admin/ResearchFlywheelLab"));
+const ClientLoginPage = lazy(() => import("@/pages/portal/ClientLoginPage"));
+const PortalSettingsPage = lazy(() => import("@/pages/portal/PortalSettingsPage"));
+const PlaygroundPage = lazy(() => import("@/pages/portal/PlaygroundPage"));
+const PortalDashboard = lazy(() => import("@/pages/portal/PortalDashboard"));
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -72,6 +95,7 @@ function ScrollToTop() {
 function Router() {
   const [location] = useLocation();
   const hideGlobalFooter = shouldHideGlobalFooter(location);
+  const isPortalRoute = location.startsWith("/portal");
   
   useHashScroll();
   useAnalytics();
@@ -86,15 +110,15 @@ function Router() {
       >
         Skip to main content
       </a>
-      <Header />
-      <main id="main" tabIndex={-1} className="pt-[72px]">
+      {!isPortalRoute && <Header />}
+      <main id="main" tabIndex={-1} className={isPortalRoute ? "" : "pt-[72px]"}>
       <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/scan" component={ScanPage} />
         <Route path="/programs" component={ProgramsPage} />
         <Route path="/what-is-conscious-communication">{() => <Redirect to="/scan" />}</Route>
-        <Route path="/signals">{() => <Redirect to="/scan" />}</Route>
+        <Route path="/signals" component={SignalsQuizPage} />
         <Route path="/choose-your-path">{() => <Redirect to="/scan" />}</Route>
         <Route path="/periodic-table" component={PeriodicTablePage} />
         <Route path="/retreats" component={RetreatsPage} />
@@ -133,6 +157,29 @@ function Router() {
         <Route path="/admin/email-control-room" component={EmailControlRoom} />
         <Route path="/admin/webinar-sessions" component={WebinarSessionsAdmin} />
         <Route path="/admin/calendar-events" component={CalendarEventsAdmin} />
+        <Route path="/admin/social-media" component={SocialMediaAdmin} />
+        <Route path="/admin/integrations" component={IntegrationsAdmin} />
+        <Route path="/admin/content-lab" component={ContentFlywheelLab} />
+        <Route path="/admin/prompt-generator" component={PromptGeneratorAdmin} />
+        <Route path="/admin/linkedin-setup" component={LinkedInSetupAdmin} />
+        <Route path="/admin/gdpr-controls" component={GDPRControlsAdmin} />
+        <Route path="/admin/testimonials" component={TestimonialsAdmin} />
+        <Route path="/admin/backlinks" component={BacklinksAdmin} />
+        <Route path="/admin/seo" component={SEODashboardAdmin} />
+        <Route path="/admin/webinar-settings" component={WebinarSettingsAdmin} />
+        <Route path="/admin/coupons" component={CouponsAdmin} />
+        <Route path="/admin/access-control" component={AccessControlAdmin} />
+        <Route path="/admin/coaching-cockpit" component={CoachingCockpit} />
+        <Route path="/admin/debriefing" component={DebriefingToolAdmin} />
+        <Route path="/admin/calendly-setup" component={CalendlySetupAdmin} />
+        <Route path="/admin/analytics" component={AnalyticsAdmin} />
+        <Route path="/admin/saas-settings" component={SaaSSettingsAdmin} />
+        <Route path="/admin/ai-tools" component={AIToolsDashboard} />
+        <Route path="/admin/research-flywheel" component={ResearchFlywheelLab} />
+        <Route path="/portal/login" component={ClientLoginPage} />
+        <Route path="/portal/settings" component={PortalSettingsPage} />
+        <Route path="/portal/playground" component={PlaygroundPage} />
+        <Route path="/portal" component={PortalDashboard} />
         <Route component={NotFound} />
       </Switch>
       </Suspense>

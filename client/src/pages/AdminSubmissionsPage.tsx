@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { queryClient } from "@/lib/queryClient";
@@ -8,12 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2, HelpCircle, Info, ShoppingCart, Trash2, ToggleLeft, Download, Send, Clock, Edit2, Save, X, Eye, RefreshCw, Database, Radio, Loader2, BarChart3, Settings } from "lucide-react";
+import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2, HelpCircle, Info, ShoppingCart, Trash2, ToggleLeft, Download, Send, Clock, Edit2, Save, X, Eye, RefreshCw, Database, Radio, Loader2, BarChart3, Settings, Linkedin, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, Zap, Atom, Shield, Share2, Globe, Star, Megaphone, UserCheck, KeyRound, RotateCw, Heart, Quote, Link2, Search, Lock, ClipboardCheck, CreditCard, Bot, MessageCircle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LENSES, type LensType } from "@/constants/lenses";
+import geLogo from "@assets/GE logo 512x512 transparent BG 2023 _1764343412596.png";
+import adminHeroBg from "@assets/lapland_winter_night_aurora_1773358495605.png";
 
 const getLensColor = (lensType: string): string => {
   const lens = LENSES[lensType as LensType];
@@ -174,9 +177,152 @@ interface OnboardingEmailLog {
   createdAt: string;
 }
 
+
+interface JourneyToolItem {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  href: string;
+  color: string;
+}
+
+interface JourneyStage {
+  stage: string;
+  subtitle: string;
+  tip: string;
+  color: string;
+  stageBg: string;
+  tools: JourneyToolItem[];
+}
+
+const JOURNEY_STAGES: JourneyStage[] = [
+  {
+    stage: "Awareness",
+    subtitle: "How do people first hear about us?",
+    tip: "Top of funnel: LinkedIn posts, SEO, backlinks, and word of mouth. Best practice: publish at least 2 LinkedIn posts per week using the Content Flywheel.",
+    color: "text-blue-400 border-blue-400/30",
+    stageBg: "bg-blue-400/10",
+    tools: [
+      { label: "Social Media", icon: Linkedin, href: "/admin/social-media", color: "text-blue-400 border-blue-400/30 bg-blue-400/5" },
+      { label: "Content Flywheel", icon: Zap, href: "/admin/content-lab", color: "text-blue-400 border-blue-400/30 bg-blue-400/5" },
+      { label: "SEO / GEO", icon: Search, href: "/admin/seo", color: "text-blue-400 border-blue-400/30 bg-blue-400/5" },
+      { label: "Backlinks", icon: Link2, href: "/admin/backlinks", color: "text-blue-400 border-blue-400/30 bg-blue-400/5" },
+    ],
+  },
+  {
+    stage: "Interest",
+    subtitle: "What makes them stay and explore?",
+    tip: "Nurturing stage: automated onboarding emails, calendar events, and newsletter. Best practice: set up Fibonacci-timed onboarding so new subscribers get value in the first week.",
+    color: "text-yellow-400 border-yellow-400/30",
+    stageBg: "bg-yellow-400/10",
+    tools: [
+      { label: "Email Control Room", icon: Mail, href: "/admin/email-control-room", color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/5" },
+      { label: "Calendar Events", icon: Calendar, href: "/admin/calendar-events", color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/5" },
+      { label: "Research Flywheel", icon: Search, href: "/admin/research-flywheel", color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/5" },
+      { label: "Audience & CRM", icon: Users, href: "#audience-data", color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/5" },
+    ],
+  },
+  {
+    stage: "Engagement",
+    subtitle: "What gets them actively involved?",
+    tip: "Deepening stage: webinars, research, and interactive content. Best practice: run monthly Lens Webinars tied to the calendar rotation to build community.",
+    color: "text-orange-400 border-orange-400/30",
+    stageBg: "bg-orange-400/10",
+    tools: [
+      { label: "Webinars", icon: Radio, href: "/admin/webinar-settings", color: "text-orange-400 border-orange-400/30 bg-orange-400/5" },
+      { label: "Webinar Sessions", icon: Radio, href: "/admin/webinar-sessions", color: "text-orange-400 border-orange-400/30 bg-orange-400/5" },
+      { label: "Calendly Setup", icon: Calendar, href: "/admin/calendly-setup", color: "text-orange-400 border-orange-400/30 bg-orange-400/5" },
+      { label: "Analytics", icon: BarChart3, href: "/admin/analytics", color: "text-orange-400 border-orange-400/30 bg-orange-400/5" },
+    ],
+  },
+  {
+    stage: "Purchase",
+    subtitle: "What triggers a buying decision?",
+    tip: "Conversion stage: Satellite Scan purchases, coaching packages, coupons. Best practice: follow up within 24 hours of purchase with a personal welcome email from a coach.",
+    color: "text-red-400 border-red-400/30",
+    stageBg: "bg-red-400/10",
+    tools: [
+      { label: "Coaching Cockpit", icon: BarChart3, href: "/admin/coaching-cockpit", color: "text-red-400 border-red-400/30 bg-red-400/5" },
+      { label: "Scan Results", icon: BarChart3, href: "/admin/scan-results", color: "text-red-400 border-red-400/30 bg-red-400/5" },
+    ],
+  },
+  {
+    stage: "Use",
+    subtitle: "First experience after buying",
+    tip: "Onboarding stage: first coaching session, portal access, prompt library. Best practice: deliver the Satellite Scan dashboard within 48-72 hours of purchase.",
+    color: "text-green-400 border-green-400/30",
+    stageBg: "bg-green-400/10",
+    tools: [
+      { label: "Research Dashboard", icon: Sparkles, href: "/dashboard", color: "text-green-400 border-green-400/30 bg-green-400/5" },
+      { label: "Prompt Generator", icon: Atom, href: "/admin/prompt-generator", color: "text-green-400 border-green-400/30 bg-green-400/5" },
+    ],
+  },
+  {
+    stage: "Use More",
+    subtitle: "What brings them back for more?",
+    tip: "Retention stage: follow-up coaching, debriefs, advanced webinars. Best practice: debrief within 24 hours of each session and send the summary to the client.",
+    color: "text-green-500 border-green-500/30",
+    stageBg: "bg-green-500/10",
+    tools: [
+      { label: "Debriefing Tool", icon: ClipboardCheck, href: "/admin/debriefing", color: "text-green-500 border-green-500/30 bg-green-500/5" },
+      { label: "AI Tools", icon: Bot, href: "/admin/ai-tools", color: "text-green-500 border-green-500/30 bg-green-500/5" },
+    ],
+  },
+  {
+    stage: "Advocacy",
+    subtitle: "How do they spread the word?",
+    tip: "Growth stage: testimonials, referrals, case studies. Best practice: ask for a LinkedIn testimonial at the end of every coaching journey — clients are most willing right after a breakthrough.",
+    color: "text-purple-400 border-purple-400/30",
+    stageBg: "bg-purple-400/10",
+    tools: [
+      { label: "Testimonials", icon: Heart, href: "/admin/testimonials", color: "text-purple-400 border-purple-400/30 bg-purple-400/5" },
+    ],
+  },
+];
+
+const SETTINGS_TOOLS = [
+  { label: "LinkedIn Setup", icon: Settings, href: "/admin/linkedin-setup", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "Coupons & Pricing", icon: Ticket, href: "/admin/coupons", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "SaaS Settings", icon: CreditCard, href: "/admin/saas-settings", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "GDPR Controls", icon: Shield, href: "/admin/gdpr-controls", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "Connected Tools", icon: Settings, href: "/admin/integrations", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "Access & Security", icon: Lock, href: "/admin/access-control", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+];
+
 export default function AdminSubmissionsPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("contacts");
+  const [funnelWindow, setFunnelWindow] = useState<"7d" | "30d" | "all">("all");
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [aiDialogStage, setAiDialogStage] = useState("");
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [aiAnswer, setAiAnswer] = useState("");
+
+  const journeyAiMutation = useMutation({
+    mutationFn: async ({ stage, question }: { stage: string; question: string }) => {
+      const res = await apiRequest("POST", "/api/admin/journey-ai", { stage, question });
+      return res.json();
+    },
+    onSuccess: (data: { answer: string }) => {
+      setAiAnswer(data.answer || "No response received.");
+    },
+    onError: (err: Error) => {
+      setAiAnswer(`Error: ${err.message || "AI query failed. Check that Thesys is enabled."}`);
+    },
+  });
+
+  const openAiDialog = (stepName: string) => {
+    setAiDialogStage(stepName);
+    setAiQuestion("");
+    setAiAnswer("");
+    setAiDialogOpen(true);
+  };
+
+  const submitAiQuestion = () => {
+    if (!aiQuestion.trim()) return;
+    setAiAnswer("");
+    journeyAiMutation.mutate({ stage: aiDialogStage, question: aiQuestion });
+  };
 
   // Check authentication status on mount - refetch on every mount
   const { data: authStatus, isLoading: authLoading } = useQuery<{ isAuthenticated: boolean }>({
@@ -241,6 +387,25 @@ export default function AdminSubmissionsPage() {
   const { data: webinarSettingsData, isLoading: webinarSettingsLoading, refetch: refetchWebinarSettings } = useQuery<any>({
     queryKey: ['/api/admin/webinar-settings'],
     enabled: isAuthenticated,
+  });
+
+  const { data: funnelData, isLoading: funnelLoading } = useQuery<{
+    window: string;
+    funnel: Record<string, {
+      primary: { label: string; value: string | number | null; prev?: number | null };
+      secondary: Array<{ label: string; value: string | number | null; prev?: number | null }>;
+      source: string;
+      gaNote?: string;
+    }>;
+  }>({
+    queryKey: ['/api/admin/funnel-metrics', funnelWindow],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/funnel-metrics?window=${funnelWindow}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch funnel metrics');
+      return res.json();
+    },
+    enabled: isAuthenticated,
+    staleTime: 60 * 1000,
   });
 
   const [webinarForm, setWebinarForm] = useState<{
@@ -601,92 +766,6 @@ export default function AdminSubmissionsPage() {
     return `${Math.round(mins / 1440)} days`;
   };
 
-  // Batch email state
-  const CHANNEL_OPTIONS = ['Newsletter', 'Purchase', 'Quiz', 'Webinar', 'Waitlist'];
-  const [batchIncludeChannels, setBatchIncludeChannels] = useState<string[]>([]);
-  const [batchExcludeChannels, setBatchExcludeChannels] = useState<string[]>([]);
-  const [batchPreview, setBatchPreview] = useState<{ count: number; contacts: any[] } | null>(null);
-  const [batchLoading, setBatchLoading] = useState(false);
-  const [batchSending, setBatchSending] = useState(false);
-
-  const { data: batchHistoryData, refetch: refetchBatchHistory } = useQuery<any[]>({
-    queryKey: ['/api/admin/batch-email/history'],
-    enabled: isAuthenticated,
-  });
-
-  const handleBatchPreview = async () => {
-    setBatchLoading(true);
-    try {
-      const response = await apiRequest("POST", "/api/admin/batch-email/preview", {
-        includeChannels: batchIncludeChannels,
-        excludeChannels: batchExcludeChannels,
-      });
-      const data = await response.json();
-      setBatchPreview(data);
-      toast({ title: `Found ${data.count} matching contacts` });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Could not preview recipients", variant: "destructive" });
-    } finally {
-      setBatchLoading(false);
-    }
-  };
-
-  const handleBatchSend = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const subject = (form.elements.namedItem('batchSubject') as HTMLInputElement)?.value;
-    const body = (form.elements.namedItem('batchBody') as HTMLTextAreaElement)?.value;
-
-    if (!batchPreview || batchPreview.count === 0) {
-      toast({ title: "Error", description: "Please preview recipients first", variant: "destructive" });
-      return;
-    }
-
-    if (!confirm(`Send email to ${batchPreview.count} recipients? This action cannot be undone.`)) return;
-
-    setBatchSending(true);
-    try {
-      const response = await apiRequest("POST", "/api/admin/batch-email/send", {
-        subject,
-        body,
-        includeChannels: batchIncludeChannels,
-        excludeChannels: batchExcludeChannels,
-      });
-      const data = await response.json();
-      toast({ 
-        title: "Batch email sent!", 
-        description: `${data.successCount} sent, ${data.failedCount} failed` 
-      });
-      form.reset();
-      setBatchPreview(null);
-      setBatchIncludeChannels([]);
-      setBatchExcludeChannels([]);
-      refetchBatchHistory();
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Could not send batch email", variant: "destructive" });
-    } finally {
-      setBatchSending(false);
-    }
-  };
-
-  const toggleBatchChannel = (channel: string, type: 'include' | 'exclude') => {
-    if (type === 'include') {
-      if (batchIncludeChannels.includes(channel)) {
-        setBatchIncludeChannels(batchIncludeChannels.filter(c => c !== channel));
-      } else {
-        setBatchIncludeChannels([...batchIncludeChannels, channel]);
-        setBatchExcludeChannels(batchExcludeChannels.filter(c => c !== channel));
-      }
-    } else {
-      if (batchExcludeChannels.includes(channel)) {
-        setBatchExcludeChannels(batchExcludeChannels.filter(c => c !== channel));
-      } else {
-        setBatchExcludeChannels([...batchExcludeChannels, channel]);
-        setBatchIncludeChannels(batchIncludeChannels.filter(c => c !== channel));
-      }
-    }
-    setBatchPreview(null);
-  };
 
   // Email resend and Notion sync state
   const [resendingEmail, setResendingEmail] = useState<string | null>(null);
@@ -1020,111 +1099,425 @@ export default function AdminSubmissionsPage() {
     );
   }
 
+
+  const TAB_LABELS: Record<string, { label: string; icon: typeof Mail; count?: number }> = {
+    contacts: { label: "Contacts", icon: MessageSquare, count: contactsData?.length || 0 },
+    newsletter: { label: "Subs", icon: Mail, count: newsletterData?.length || 0 },
+    waitlist: { label: "Waitlist", icon: Users, count: waitlistData?.length || 0 },
+    quiz: { label: "Quiz", icon: Sparkles, count: quizData?.length || 0 },
+    recommendations: { label: "Recs", icon: FileText, count: recommendationData?.length || 0 },
+  };
+
   return (
-    <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-between max-w-3xl mx-auto mb-6">
-            <div className="flex-1" />
-            <Badge className="bg-needs text-white">Admin Dashboard</Badge>
-            <div className="flex-1 flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                data-testid="button-admin-logout"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+    <div className="min-h-screen bg-[#0A0C14] text-white relative">
+      <div className="fixed inset-0 z-0">
+        <img src={adminHeroBg} alt="" className="w-full h-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0C14]/40 via-[#0A0C14]/75 to-[#0A0C14]/95" />
+        <div className="absolute inset-0 bg-[#0A0C14]/30 backdrop-blur-[1px]" />
+      </div>
+
+      {/* Hero Section */}
+      <div className="relative z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-needs/10 via-transparent to-ego/10" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <img src={geLogo} alt="GreenElephant" className="w-14 h-14 rounded-full ring-2 ring-needs/30" />
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>GreenElephant OS</h1>
+                <p className="text-sm text-white/40">Admin Hub &middot; Customer Journey &middot; Operations</p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="border-white/20 text-white/60"
+              data-testid="button-admin-logout"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+
+          {/* Quick stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+            {[
+              { label: "Contacts", value: contactsData?.length || 0, color: "text-needs", tip: "Total contact form submissions received. Each contact is synced to Notion CRM." },
+              { label: "Purchases", value: purchasesData?.length || 0, color: "text-attitude", tip: "Completed Stripe payments — includes Satellite Scans, coaching sessions, and journeys." },
+              { label: "Newsletter", value: newsletterData?.length || 0, color: "text-ego", tip: "Active newsletter subscribers who opted in via website forms. GDPR consent recorded." },
+              { label: "Waitlist", value: waitlistData?.length || 0, color: "text-alignment", tip: "People who signed up for the waitlist — early interest before purchasing." },
+            ].map(stat => (
+              <Tooltip key={stat.label}>
+                <TooltipTrigger asChild>
+                  <div className="bg-white/5 rounded-md p-4 border border-white/10 cursor-help">
+                    <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+                    <div className="text-xs text-white/40 mt-1">{stat.label}</div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">{stat.tip}</TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+
+          {/* Customer Journey Funnel — data summary at the top */}
+          <div className="mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-needs" />
+                <h2 className="text-lg font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>Customer Journey Funnel</h2>
+              </div>
+              <div className="flex items-center gap-1 rounded-md border border-white/10 p-0.5" data-testid="funnel-window-toggle">
+                {(["7d", "30d", "all"] as const).map(w => (
+                  <button
+                    key={w}
+                    onClick={() => setFunnelWindow(w)}
+                    className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                      funnelWindow === w
+                        ? "bg-needs/20 text-needs border border-needs/30"
+                        : "text-white/50 hover-elevate"
+                    }`}
+                    data-testid={`button-funnel-${w}`}
+                  >
+                    {w === "all" ? "All Time" : w === "7d" ? "7 Days" : "30 Days"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {funnelLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-needs" />
+                <span className="ml-2 text-sm text-white/50">Loading funnel data...</span>
+              </div>
+            ) : funnelData?.funnel ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Object.entries(funnelData.funnel).map(([stepName, step], i) => {
+                  const stepColors = [
+                    "from-influence/20 to-influence/5 border-influence/20",
+                    "from-attitude/20 to-attitude/5 border-attitude/20",
+                    "from-chaordic/20 to-chaordic/5 border-chaordic/20",
+                    "from-flow/20 to-flow/5 border-flow/20",
+                    "from-alignment/20 to-alignment/5 border-alignment/20",
+                    "from-needs/20 to-needs/5 border-needs/20",
+                    "from-ego/20 to-ego/5 border-ego/20",
+                    "from-dynamics/20 to-dynamics/5 border-dynamics/20",
+                  ];
+                  const textColors = [
+                    "text-influence", "text-attitude", "text-chaordic", "text-flow",
+                    "text-alignment", "text-needs", "text-ego", "text-dynamics",
+                  ];
+                  const stepTooltips: Record<string, string> = {
+                    "AWARENESS": "Website visits and impressions. Source: GA4 (when connected) or internal page-view estimates.",
+                    "INTEREST": "Quiz completions, /scan page views, and flow checks. Source: internal contact database + GA4.",
+                    "ENGAGEMENT": "Newsletter signups, webinar registrations, and waitlist entries. Source: internal events + GA4.",
+                    "PURCHASE": "Completed Stripe payments — Satellite Scans and coaching packages. Source: Stripe + internal DB.",
+                    "ONBOARDING": "Post-purchase onboarding: Typeform completion rate, emails sent, Notion sync. Set TYPEFORM_PERSONAL_ACCESS_TOKEN and TYPEFORM_FORM_ID in Secrets for API-sourced analytics.",
+                    "USE": "Repeat flow users, prompt engagement, and return visitors. Source: DB + GA4.",
+                    "USE MORE": "Multi-channel engagement — contacts with 3+ touchpoints. Source: internal DB.",
+                    "ADVOCACY": "Referral mentions, referral-sourced waitlist entries. Source: DB + GA4.",
+                  };
+                  const metricUnits: Record<string, Record<string, string>> = {
+                    "AWARENESS": { "Sessions": "count", "Unique Users": "count", "Organic Users": "count", "Total Contacts (DB)": "count" },
+                    "INTEREST": { "Quiz Completions": "count", "/scan Page Views": "count", "Coaching CTA Clicks": "count", "Flow Checks": "count" },
+                    "ENGAGEMENT": { "Newsletter Signups": "count", "Webinar Signups": "count", "Contact Messages": "count", "Waitlist Entries": "count" },
+                    "PURCHASE": { "Total Revenue": "EUR", "Scan Purchases": "count", "Other Purchases": "count", "Avg Order Value": "EUR" },
+                    "ONBOARDING": { "Typeform Rate": "%", "Typeform Completed": "count", "Typeform API Responses": "count", "Onboarding Emails Sent": "count", "Reminders Triggered": "count", "Notion Sync Rate": "%" },
+                    "USE": { "Repeat Flow Users": "count", "Total Flow Checks": "count", "Return Visitor Rate": "%" },
+                    "USE MORE": { "3+ Channels": "count", "Scan + Newsletter": "count", "Webinar + Scan": "count" },
+                    "ADVOCACY": { "Referral Mentions": "count", "Referral-Sourced Waitlist": "count", "Direct Traffic Share": "%" },
+                  };
+                  const metricDescriptions: Record<string, Record<string, string>> = {
+                    "AWARENESS": {
+                      "Sessions": "Total GA4 sessions in this period",
+                      "Unique Users": "Distinct visitors tracked by GA4",
+                      "Organic Users": "Visitors from organic search",
+                      "Total Contacts (DB)": "Contacts stored in the internal database",
+                    },
+                    "INTEREST": {
+                      "Quiz Completions": "Number of Signals Quiz completions",
+                      "/scan Page Views": "Page views on the /scan landing page (GA4)",
+                      "Coaching CTA Clicks": "Clicks on coaching call-to-action buttons (GA4)",
+                      "Flow Checks": "Check-my-FLOW assessments completed",
+                    },
+                    "ENGAGEMENT": {
+                      "Newsletter Signups": "New newsletter opt-ins with GDPR consent",
+                      "Webinar Signups": "Registrations for Lens Webinars",
+                      "Contact Messages": "Contact form submissions received",
+                      "Prompt Copies": "Prompt Library copy-to-clipboard events (GA4)",
+                      "Waitlist Entries": "People who joined the waitlist",
+                    },
+                    "PURCHASE": {
+                      "Total Revenue": "Sum of all Stripe payments in EUR",
+                      "Scan Purchases": "Satellite Scan purchases completed",
+                      "Other Purchases": "Coaching and other package purchases",
+                      "Avg Order Value": "Average payment amount per transaction",
+                    },
+                    "ONBOARDING": {
+                      "Typeform Rate": "Percentage of scan purchasers who completed the Typeform questionnaire",
+                      "Typeform Completed": "Number of completed Typeform questionnaires",
+                      "Typeform API Responses": "Total responses reported by the Typeform API (requires TYPEFORM_PERSONAL_ACCESS_TOKEN and TYPEFORM_FORM_ID)",
+                      "Onboarding Emails Sent": "Fibonacci-timed onboarding emails delivered",
+                      "Reminders Triggered": "Typeform completion reminders sent",
+                      "Notion Sync Rate": "Percentage of contacts synced to Notion CRM",
+                    },
+                    "USE": {
+                      "Repeat Flow Users": "Users who completed Check-my-FLOW more than once",
+                      "Total Flow Checks": "All flow check completions",
+                      "Prompt Copies/Session": "Average prompt copies per user session (GA4)",
+                      "Return Visitor Rate": "Percentage of returning visitors (GA4)",
+                    },
+                    "USE MORE": {
+                      "3+ Channels": "Contacts reached through 3 or more touchpoints",
+                      "Scan + Newsletter": "People who both purchased a scan and subscribed",
+                      "Webinar + Scan": "Webinar attendees who also bought a scan",
+                    },
+                    "ADVOCACY": {
+                      "Referral Mentions": "Contact messages mentioning referrals or recommendations",
+                      "Referral-Sourced Waitlist": "Waitlist entries mentioning referrals",
+                      "Direct Traffic Share": "Percentage of traffic from direct/bookmarked visits (GA4)",
+                    },
+                  };
+                  const getUnit = (label: string) => metricUnits[stepName]?.[label] || "";
+                  const getMetricTip = (label: string) => metricDescriptions[stepName]?.[label] || "";
+                  const formatUnit = (unit: string) => {
+                    if (!unit) return "";
+                    if (unit === "EUR") return "";
+                    return unit;
+                  };
+                  const getTrend = (current: number | string | null | undefined, prev: number | null | undefined): "up" | "down" | "flat" | null => {
+                    if (prev === null || prev === undefined || current === null || current === undefined) return null;
+                    const cur = typeof current === "string" ? parseFloat(current.replace(/[^0-9.-]/g, "")) : current;
+                    if (isNaN(cur) || isNaN(prev)) return null;
+                    if (cur > prev) return "up";
+                    if (cur < prev) return "down";
+                    return "flat";
+                  };
+                  const TrendIcon = ({ trend, size = "h-3 w-3" }: { trend: "up" | "down" | "flat" | null; size?: string }) => {
+                    if (!trend) return null;
+                    if (trend === "up") return <TrendingUp className={`${size} text-green-400`} />;
+                    if (trend === "down") return <TrendingDown className={`${size} text-red-400`} />;
+                    return <Minus className={`${size} text-white/30`} />;
+                  };
+                  return (
+                    <Card
+                      key={stepName}
+                      className={`backdrop-blur-sm bg-gradient-to-br ${stepColors[i]} overflow-visible`}
+                      data-testid={`funnel-card-${stepName.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <CardContent className="pt-5 pb-4 px-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold ${textColors[i]} opacity-60`}>STEP {i + 1}</span>
+                            <span className="text-sm font-bold text-white uppercase tracking-wider">{stepName}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={() => openAiDialog(stepName)}
+                                  className={`p-1 rounded ${textColors[i]} opacity-50 hover:opacity-100 transition-opacity`}
+                                  data-testid={`button-ai-${stepName.toLowerCase().replace(/\s+/g, '-')}`}
+                                >
+                                  <MessageCircle className="h-3.5 w-3.5" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">Ask AI about this stage</TooltipContent>
+                            </Tooltip>
+                            <Badge className="text-xs px-1.5 py-0 bg-white/10 text-white/40 border-white/10 no-default-hover-elevate no-default-active-elevate">
+                              {step.source}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="cursor-help">
+                              <div className="flex items-end gap-2">
+                                <div className={`text-4xl font-bold ${step.primary.value === null ? "text-white/20 italic" : textColors[i]} mb-1`} data-testid={`funnel-primary-${stepName.toLowerCase().replace(/\s+/g, '-')}`}>
+                                  {step.primary.value === null ? "—" : step.primary.value}
+                                  {step.primary.value !== null && formatUnit(getUnit(step.primary.label)) && (
+                                    <span className="text-lg ml-1 opacity-50">{formatUnit(getUnit(step.primary.label))}</span>
+                                  )}
+                                </div>
+                                {funnelWindow !== "all" && (
+                                  <span className="mb-2" data-testid={`trend-primary-${stepName.toLowerCase().replace(/\s+/g, '-')}`}>
+                                    <TrendIcon trend={getTrend(step.primary.value, step.primary.prev)} size="h-4 w-4" />
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-white/40 mb-3">
+                                {step.primary.label}
+                                {funnelWindow !== "all" && step.primary.prev !== null && step.primary.prev !== undefined && (
+                                  <span className="ml-1 text-white/25">(prev: {step.primary.prev})</span>
+                                )}
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-xs text-xs">
+                            {getMetricTip(step.primary.label) || stepTooltips[stepName] || `${stepName} primary metric`}
+                          </TooltipContent>
+                        </Tooltip>
+                        <div className="space-y-1.5 border-t border-white/10 pt-2">
+                          {step.secondary.map((s: { label: string; value: any; prev?: number | null }) => (
+                            <Tooltip key={s.label}>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center justify-between text-xs cursor-help gap-1">
+                                  <span className="text-white/40 truncate">{s.label}</span>
+                                  <span className={`font-medium shrink-0 flex items-center gap-1 ${s.value === null ? "text-white/20 italic" : "text-white/70"}`}>
+                                    {s.value === null ? "—" : s.value}
+                                    {s.value !== null && formatUnit(getUnit(s.label)) && (
+                                      <span className="opacity-50">{formatUnit(getUnit(s.label))}</span>
+                                    )}
+                                    {funnelWindow !== "all" && <TrendIcon trend={getTrend(s.value, s.prev)} />}
+                                  </span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="bottom" className="max-w-xs text-xs">
+                                {getMetricTip(s.label) || `${s.label} metric for ${stepName}`}
+                                {funnelWindow !== "all" && s.prev !== null && s.prev !== undefined && (
+                                  ` (Previous period: ${s.prev})`
+                                )}
+                              </TooltipContent>
+                            </Tooltip>
+                          ))}
+                        </div>
+                        {step.gaNote && (
+                          <div className="mt-2 flex items-center gap-1.5 text-xs text-white/25">
+                            <span className="flex items-center gap-1">
+                              <Info className="h-3 w-3" />
+                              GA4 not connected
+                            </span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Quick-access tools — organized by Customer Journey */}
+          <div className="space-y-4">
+            {(JOURNEY_STAGES as JourneyStage[]).map(group => (
+              <div key={group.stage} className="rounded-md border border-white/10 bg-white/[0.02]">
+                <div className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className={`text-xs font-bold uppercase tracking-widest cursor-help ${group.color.split(' ')[0]}`}>{group.stage}</span>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-xs text-xs">{group.tip}</TooltipContent>
+                    </Tooltip>
+                    <span className="text-xs text-muted-foreground italic">{group.subtitle}</span>
+                    <div className={`flex-1 h-px ${group.stageBg} opacity-50`} />
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {group.tools.map(tool => (
+                      <button
+                        key={`${group.stage}-${tool.href}`}
+                        onClick={() => {
+                          if (tool.href.startsWith('#')) {
+                            const el = document.getElementById(tool.href.slice(1));
+                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                          } else {
+                            setLocation(tool.href);
+                          }
+                        }}
+                        className={`flex flex-col items-center gap-2 rounded-md border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
+                        data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
+                      >
+                        <tool.icon className="h-5 w-5" />
+                        <span className="text-xs font-medium leading-tight">{tool.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <div className="rounded-md border border-white/10 bg-white/[0.02]">
+              <div className="p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-xs font-bold uppercase tracking-widest cursor-help text-slate-400">Settings & Operations</span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs text-xs">Configuration, integrations, pricing, access control, and compliance. These tools run across all journey stages.</TooltipContent>
+                  </Tooltip>
+                  <span className="text-xs text-muted-foreground italic">Cross-stage admin tools</span>
+                  <div className="flex-1 h-px bg-slate-400/10 opacity-50" />
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                  {SETTINGS_TOOLS.map(tool => (
+                    <button
+                      key={`settings-${tool.href}`}
+                      onClick={() => setLocation(tool.href)}
+                      className={`flex flex-col items-center gap-2 rounded-md border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
+                      data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <tool.icon className="h-5 w-5" />
+                      <span className="text-xs font-medium leading-tight">{tool.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 font-archivo">
-            Admin Hub
-          </h1>
-          <p className="text-muted-foreground">
-            GreenElephant backend — data, content, and email controls
-          </p>
+        </div>
+      </div>
+
+      {/* Audience & CRM — data tables for contacts, subscribers, waitlist, quiz results */}
+      <div id="audience-data" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-yellow-400/15 to-transparent" />
+          <div className="flex items-center gap-2 px-5 py-2 rounded-md bg-yellow-400/[0.04] border border-yellow-400/20">
+            <Users className="h-5 w-5 text-yellow-400/60" />
+            <span className="text-sm font-semibold text-yellow-400/60 uppercase tracking-widest">Audience & CRM</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="shrink-0 cursor-help">
+                  <HelpCircle className="h-3 w-3 text-yellow-400/30" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-xs">
+                View and manage contacts, newsletter subscribers, waitlist entries, quiz results, and recommendations. These are the people in your pipeline.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-yellow-400/15 to-transparent" />
         </div>
 
-        {/* Admin tools quick-access */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-          {[
-            { label: "Email Control Room", icon: Mail, href: "/admin/email-control-room", color: "text-needs border-needs/30 bg-needs/5" },
-            { label: "Webinar Sessions", icon: Radio, href: "/admin/webinar-sessions", color: "text-ego border-ego/30 bg-ego/5" },
-            { label: "Calendar Events", icon: Calendar, href: "/admin/calendar-events", color: "text-alignment border-alignment/30 bg-alignment/5" },
-            { label: "Scan Results", icon: BarChart3, href: "/admin/scan-results", color: "text-attitude border-attitude/30 bg-attitude/5" },
-          ].map(tool => (
-            <button
-              key={tool.href}
-              onClick={() => setLocation(tool.href)}
-              className={`flex flex-col items-center gap-2 rounded-lg border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
-              data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
-            >
-              <tool.icon className="h-5 w-5" />
-              <span className="text-xs font-medium leading-tight">{tool.label}</span>
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-1 mb-6">
+          {(["contacts", "newsletter", "waitlist", "quiz", "recommendations"] as const).map(tabId => {
+            const tabInfo = TAB_LABELS[tabId];
+            if (!tabInfo) return null;
+            const TabIcon = tabInfo.icon;
+            return (
+              <button
+                key={tabId}
+                onClick={() => setActiveTab(tabId)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === tabId
+                    ? "bg-yellow-400/20 text-yellow-400 border border-yellow-400/30"
+                    : "text-white/50 hover-elevate"
+                }`}
+                data-testid={`tab-${tabId}`}
+              >
+                <TabIcon className="h-3.5 w-3.5" />
+                {tabInfo.label}
+                {tabInfo.count !== undefined && (
+                  <Badge className="text-xs px-1.5 py-0 bg-white/10 text-white/50 border-white/10 ml-1">
+                    {tabInfo.count}
+                  </Badge>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        <Tabs defaultValue="prompts" className="space-y-8">
-          <TabsList className="flex flex-wrap gap-1 w-full mb-8">
-            <TabsTrigger value="webinar" data-testid="tab-webinar">
-              <Radio className="h-4 w-4 mr-2" />
-              Webinar
-            </TabsTrigger>
-            <TabsTrigger value="batch" data-testid="tab-batch">
-              <Mail className="h-4 w-4 mr-2" />
-              Batch
-            </TabsTrigger>
-            <TabsTrigger value="emails" data-testid="tab-emails">
-              <Send className="h-4 w-4 mr-2" />
-              Emails ({emailTemplatesData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="prompts" data-testid="tab-prompts">
-              <FileText className="h-4 w-4 mr-2" />
-              Prompts ({promptsData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="coupons" data-testid="tab-coupons">
-              <Ticket className="h-4 w-4 mr-2" />
-              Coupons ({couponsData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="purchases" data-testid="tab-purchases">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Purchases ({purchasesData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="notion" data-testid="tab-notion">
-              <Database className="h-4 w-4 mr-2" />
-              Notion
-            </TabsTrigger>
-            <TabsTrigger value="satellitescan" data-testid="tab-satellitescan">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Scans ({satellitescanData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="waitlist" data-testid="tab-waitlist">
-              <Users className="h-4 w-4 mr-2" />
-              Waitlist ({waitlistData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="newsletter" data-testid="tab-newsletter">
-              <Mail className="h-4 w-4 mr-2" />
-              Subs ({newsletterData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="campaigns" data-testid="tab-campaigns">
-              <Send className="h-4 w-4 mr-2" />
-              Campaigns
-            </TabsTrigger>
-            <TabsTrigger value="quiz" data-testid="tab-quiz">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Quiz ({quizData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="recommendations" data-testid="tab-recommendations">
-              <FileText className="h-4 w-4 mr-2" />
-              Recs ({recommendationData?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="contacts" data-testid="tab-contacts">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Contacts ({contactsData?.length || 0})
-            </TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="hidden">
+            {Object.keys(TAB_LABELS).map(t => <TabsTrigger key={t} value={t}>{t}</TabsTrigger>)}
           </TabsList>
 
           <TabsContent value="webinar" className="space-y-6">
@@ -1277,165 +1670,6 @@ export default function AdminSubmissionsPage() {
                         </Button>
                       </a>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="batch" className="space-y-6">
-            <Card className="backdrop-blur-sm bg-card/50 border-white/10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Send Batch Email
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Filter contacts by channel and send personalized emails. Use variables: {`{{firstName}}`}, {`{{name}}`}, {`{{email}}`}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleBatchSend} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="text-sm font-medium mb-3 block text-green-400">Include channels (has any of these)</label>
-                      <div className="flex flex-wrap gap-2">
-                        {CHANNEL_OPTIONS.map(channel => (
-                          <Button
-                            key={`include-${channel}`}
-                            type="button"
-                            size="sm"
-                            variant={batchIncludeChannels.includes(channel) ? "default" : "outline"}
-                            className={batchIncludeChannels.includes(channel) ? "bg-green-600 hover:bg-green-700" : ""}
-                            onClick={() => toggleBatchChannel(channel, 'include')}
-                            data-testid={`button-include-${channel.toLowerCase()}`}
-                          >
-                            {channel}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-3 block text-red-400">Exclude channels (has any of these)</label>
-                      <div className="flex flex-wrap gap-2">
-                        {CHANNEL_OPTIONS.map(channel => (
-                          <Button
-                            key={`exclude-${channel}`}
-                            type="button"
-                            size="sm"
-                            variant={batchExcludeChannels.includes(channel) ? "default" : "outline"}
-                            className={batchExcludeChannels.includes(channel) ? "bg-red-600 hover:bg-red-700" : ""}
-                            onClick={() => toggleBatchChannel(channel, 'exclude')}
-                            data-testid={`button-exclude-${channel.toLowerCase()}`}
-                          >
-                            {channel}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={handleBatchPreview}
-                      disabled={batchLoading}
-                      data-testid="button-batch-preview"
-                    >
-                      {batchLoading ? "Loading..." : "Preview Recipients"}
-                    </Button>
-                    {batchPreview && (
-                      <Badge variant="outline" className="text-lg px-4 py-2">
-                        {batchPreview.count} contacts match
-                      </Badge>
-                    )}
-                  </div>
-
-                  {batchPreview && batchPreview.contacts.length > 0 && (
-                    <div className="max-h-40 overflow-y-auto border border-white/10 rounded-lg p-3 bg-background/50">
-                      <div className="flex flex-wrap gap-2">
-                        {batchPreview.contacts.slice(0, 20).map(contact => (
-                          <Badge key={contact.id} variant="secondary" className="text-xs">
-                            {contact.email} {contact.channelsReached?.length > 0 && `(${contact.channelsReached.join(', ')})`}
-                          </Badge>
-                        ))}
-                        {batchPreview.contacts.length > 20 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{batchPreview.contacts.length - 20} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium mb-1 block">Subject</label>
-                      <Input 
-                        name="batchSubject" 
-                        placeholder="Email subject line" 
-                        required 
-                        data-testid="input-batch-subject"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-1 block">Body (HTML)</label>
-                      <textarea 
-                        name="batchBody" 
-                        className="w-full min-h-[200px] px-3 py-2 rounded-md bg-background/50 border border-white/10 resize-y font-mono text-sm"
-                        placeholder="<p>Hi {{firstName}},</p><p>Your message here...</p>"
-                        required
-                        data-testid="textarea-batch-body"
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="bg-needs text-white"
-                    disabled={batchSending || !batchPreview || batchPreview.count === 0}
-                    data-testid="button-batch-send"
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    {batchSending ? "Sending..." : `Send to ${batchPreview?.count || 0} Recipients`}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            <Card className="backdrop-blur-sm bg-card/50 border-white/10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Batch Email History
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {(!batchHistoryData || batchHistoryData.length === 0) && (
-                  <p className="text-muted-foreground">No batch emails sent yet.</p>
-                )}
-                {batchHistoryData && batchHistoryData.length > 0 && (
-                  <div className="space-y-3">
-                    {batchHistoryData.map((batch: any) => (
-                      <div key={batch.id} className="p-4 rounded-lg bg-background/50 border border-white/10">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-semibold">{batch.subject}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {batch.successCount} sent, {batch.failedCount} failed of {batch.recipientCount} total
-                            </p>
-                          </div>
-                          <Badge variant={batch.status === 'completed' ? 'default' : 'outline'}>
-                            {batch.status}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          {batch.sentAt ? formatDate(batch.sentAt) : formatDate(batch.createdAt)}
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 )}
               </CardContent>
@@ -2407,22 +2641,22 @@ export default function AdminSubmissionsPage() {
 
                       {/* Stats */}
                       <div className="grid grid-cols-4 gap-4 mb-4">
-                        <div className="p-3 bg-background/50 rounded-lg text-center">
-                          <p className="text-2xl font-bold">{campaignRecipients.length}</p>
-                          <p className="text-xs text-muted-foreground">Total</p>
-                        </div>
-                        <div className="p-3 bg-background/50 rounded-lg text-center">
-                          <p className="text-2xl font-bold text-green-500">{campaignRecipients.filter(r => r.status === 'sent').length}</p>
-                          <p className="text-xs text-muted-foreground">Sent</p>
-                        </div>
-                        <div className="p-3 bg-background/50 rounded-lg text-center">
-                          <p className="text-2xl font-bold text-blue-500">{campaignRecipients.filter(r => r.openedAt).length}</p>
-                          <p className="text-xs text-muted-foreground">Opened</p>
-                        </div>
-                        <div className="p-3 bg-background/50 rounded-lg text-center">
-                          <p className="text-2xl font-bold text-yellow-500">{campaignRecipients.filter(r => r.excluded === 'true').length}</p>
-                          <p className="text-xs text-muted-foreground">Excluded</p>
-                        </div>
+                        {[
+                          { value: campaignRecipients.length, label: "Total", color: "", tip: "Total recipients in this campaign batch" },
+                          { value: campaignRecipients.filter(r => r.status === 'sent').length, label: "Sent", color: "text-green-500", tip: "Emails successfully delivered by Resend" },
+                          { value: campaignRecipients.filter(r => r.openedAt).length, label: "Opened", color: "text-blue-500", tip: "Recipients who opened the email (tracked via Resend)" },
+                          { value: campaignRecipients.filter(r => r.excluded === 'true').length, label: "Excluded", color: "text-yellow-500", tip: "Recipients excluded from sending — unsubscribed or bounced" },
+                        ].map(stat => (
+                          <Tooltip key={stat.label}>
+                            <TooltipTrigger asChild>
+                              <div className="p-3 bg-background/50 rounded-lg text-center cursor-help">
+                                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="max-w-xs">{stat.tip}</TooltipContent>
+                          </Tooltip>
+                        ))}
                       </div>
 
                       {/* Recipient list */}
@@ -3234,6 +3468,61 @@ export default function AdminSubmissionsPage() {
                 }} 
               />
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
+        <DialogContent className="bg-[#0a0f1a] border-white/10 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <MessageCircle className="h-5 w-5 text-needs" />
+              Ask AI about {aiDialogStage}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-white/40">
+              Ask questions about the {aiDialogStage} stage — data validation, best practices, calculations, or tracking advice. AI has context from your connected systems.
+            </p>
+            <div className="flex gap-2">
+              <Textarea
+                placeholder={`e.g. "Is my ${aiDialogStage.toLowerCase()} conversion rate healthy?" or "What should I track next?"`}
+                value={aiQuestion}
+                onChange={(e) => setAiQuestion(e.target.value)}
+                className="bg-white/5 border-white/10 text-white text-sm resize-none"
+                rows={3}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    submitAiQuestion();
+                  }
+                }}
+                data-testid="input-ai-question"
+              />
+            </div>
+            <Button
+              onClick={submitAiQuestion}
+              disabled={!aiQuestion.trim() || journeyAiMutation.isPending}
+              className="w-full bg-needs/20 text-needs border border-needs/30"
+              data-testid="button-ai-submit"
+            >
+              {journeyAiMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Thinking...
+                </>
+              ) : (
+                <>
+                  <Bot className="h-4 w-4 mr-2" />
+                  Ask AI
+                </>
+              )}
+            </Button>
+            {aiAnswer && (
+              <div className="rounded-md border border-white/10 bg-white/[0.03] p-4 text-sm text-white/80 whitespace-pre-wrap max-h-64 overflow-y-auto" data-testid="text-ai-answer">
+                {aiAnswer}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -16,18 +17,25 @@ import {
   MessageSquare,
   AlertTriangle,
   Clock,
-  TrendingUp,
   BookOpen,
-  Target
+  Target,
+  HelpCircle,
+  Info,
+  FileSpreadsheet,
+  Wrench
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import geLogo from "@assets/GE logo 512x512 transparent BG 2023 _1764343412596.png";
 
 const SPREADSHEET_ID = "15nV63jCMFGsKWZGzKRPT9WEVkY5MI8oDNR74q7u--gs";
+const SPREADSHEET_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}`;
 const RANGE = "A:Z";
 
 interface AggregatedInsights {
   totalParticipants: number;
   totalRawRows: number;
+  totalSituationTypes: number;
+  totalSituationMentions: number;
   educationBreakdown: Record<string, number>;
   genderBreakdown: Record<string, number>;
   nationalityBreakdown: Record<string, number>;
@@ -49,6 +57,8 @@ function parseData(rawData: string[][]): AggregatedInsights {
   const insights: AggregatedInsights = {
     totalParticipants: dataRows.length,
     totalRawRows: rawData.length,
+    totalSituationTypes: 0,
+    totalSituationMentions: 0,
     educationBreakdown: {},
     genderBreakdown: {},
     nationalityBreakdown: {},
@@ -65,6 +75,7 @@ function parseData(rawData: string[][]): AggregatedInsights {
   const needsCounts: Record<string, number> = {};
   let totalHours = 0;
   let hoursCount = 0;
+  let totalMentions = 0;
 
   dataRows.forEach(row => {
     const education = row[7] || "Unknown";
@@ -95,19 +106,30 @@ function parseData(rawData: string[][]): AggregatedInsights {
       insights.activationLevels[activation] = (insights.activationLevels[activation] || 0) + 1;
     }
 
-    allSituations.split(", ").forEach(sit => {
-      const match = sit.match(/^([A-Z\s]+)\s*\(/);
-      if (match) {
-        const sitName = match[1].trim();
-        situationCounts[sitName] = (situationCounts[sitName] || 0) + 1;
-      }
-    });
+    if (allSituations.trim()) {
+      const parts = allSituations.split(/\),\s*/);
+      parts.forEach(sit => {
+        const trimmed = sit.trim().replace(/\)$/, '');
+        if (!trimmed) return;
+        const match = trimmed.match(/^([A-Z][A-Z\s&/'-]+)/);
+        if (match) {
+          const sitName = match[1].trim();
+          if (sitName.length > 1) {
+            situationCounts[sitName] = (situationCounts[sitName] || 0) + 1;
+            totalMentions++;
+          }
+        }
+      });
+    }
 
     if (challengingSituation) {
-      const match = challengingSituation.match(/^([A-Z\s]+)\s*\(/);
+      const trimmedChallenge = challengingSituation.trim();
+      const match = trimmedChallenge.match(/^([A-Z][A-Z\s&/'-]+)/);
       if (match) {
         const sitName = match[1].trim();
-        challengingCounts[sitName] = (challengingCounts[sitName] || 0) + 1;
+        if (sitName.length > 1) {
+          challengingCounts[sitName] = (challengingCounts[sitName] || 0) + 1;
+        }
       }
     }
 
@@ -120,9 +142,11 @@ function parseData(rawData: string[][]): AggregatedInsights {
 
   insights.avgLearningHours = hoursCount > 0 ? Math.round(totalHours / hoursCount * 10) / 10 : 0;
 
-  insights.topCommunicationSituations = Object.entries(situationCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8)
+  const allSituationEntries = Object.entries(situationCounts).sort((a, b) => b[1] - a[1]);
+  insights.totalSituationTypes = allSituationEntries.length;
+  insights.totalSituationMentions = totalMentions;
+  insights.topCommunicationSituations = allSituationEntries
+    .slice(0, 10)
     .map(([situation, count]) => ({ situation, count }));
 
   insights.topChallengingSituations = Object.entries(challengingCounts)
@@ -197,17 +221,95 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <Badge className="mb-4 bg-needs text-white">Live Research Dashboard</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Conscious Communication Insights
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Aggregated macro insights from our participant research - no individual data shown
-          </p>
+    <div className="min-h-screen bg-[#0A0C14] text-white">
+
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <img 
+          src="/retreat-finland.jpg" 
+          alt="" 
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0C14]/60 via-[#0A0C14]/80 to-[#0A0C14]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-needs/10 via-transparent to-ego/10" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+          <div className="flex flex-col items-center text-center">
+            <img src={geLogo} alt="GreenElephant" className="w-16 h-16 rounded-full mb-4" />
+            <Badge className="mb-4 bg-needs/20 text-needs border-needs/30">Live Research Dashboard</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 font-['Poppins']" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Conscious Communication Insights
+            </h1>
+            <p className="text-lg text-white/60 max-w-3xl mx-auto mb-6">
+              Aggregated macro insights from our participant research — no individual data shown.
+              Powered by the GreenElephant 8-Lens Periodic Table.
+            </p>
+
+            {/* Info bar with data source + help */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={SPREADSHEET_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 text-white/70 text-xs hover-elevate"
+                    data-testid="link-google-sheet"
+                  >
+                    <FileSpreadsheet className="h-3.5 w-3.5" />
+                    Google Sheet Source
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                  Opens the Google Sheet aggregator that feeds this dashboard. Rows are pulled from columns A-Z. Only rows with consent=TRUE in column A are counted.
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 text-white/70 text-xs cursor-help">
+                    <Wrench className="h-3.5 w-3.5" />
+                    How It Works
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-sm text-xs leading-relaxed">
+                  <p className="font-semibold mb-1">Dashboard Data Flow</p>
+                  <ul className="space-y-0.5 list-disc pl-3">
+                    <li>Data is fetched from Google Sheets via the Sheets API</li>
+                    <li>First 3 rows are headers — data starts at row 4</li>
+                    <li>Only rows with consent=TRUE (col A) are processed</li>
+                    <li>Situations are parsed from col W (index 22), split on commas</li>
+                    <li>Challenging situations from col Y (index 24)</li>
+                    <li>Nationality col G, Education col H, Gender col I</li>
+                    <li>Learning hours col N, GE experience col P</li>
+                  </ul>
+                  <p className="mt-1.5 text-white/50">If counts look wrong, check that the Google Sheet column order hasn't changed.</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 text-white/70 text-xs cursor-help">
+                    <HelpCircle className="h-3.5 w-3.5" />
+                    Troubleshooting
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-sm text-xs leading-relaxed">
+                  <p className="font-semibold mb-1">Common Issues</p>
+                  <ul className="space-y-0.5 list-disc pl-3">
+                    <li><strong>0 participants:</strong> Google Sheets API key may have expired — check server logs</li>
+                    <li><strong>Wrong counts:</strong> Column positions may have shifted in the Sheet</li>
+                    <li><strong>Situations missing:</strong> Situations are parsed via regex from comma-separated text. Entries without parenthetical descriptions or with unexpected formatting are now included as fallback.</li>
+                    <li><strong>Stale data:</strong> Click "Refresh Data" — dashboard caches for 5 minutes</li>
+                  </ul>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
         {isLoading && (
           <div className="flex items-center justify-center py-12">
@@ -233,14 +335,24 @@ export default function DashboardPage() {
           <>
             <div className="mb-6 p-4 rounded-lg bg-white/5 border border-white/10 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-6">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Raw rows in sheet:</span>
-                  <span className="ml-2 font-bold">{insights.totalRawRows}</span>
-                </div>
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Valid consented entries:</span>
-                  <span className="ml-2 font-bold text-needs">{insights.totalParticipants}</span>
-                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="text-sm cursor-help">
+                      <span className="text-white/40">Raw rows in sheet:</span>
+                      <span className="ml-2 font-bold">{insights.totalRawRows}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-xs">Total rows in the Google Sheet including headers and empty rows</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="text-sm cursor-help">
+                      <span className="text-white/40">Valid consented entries:</span>
+                      <span className="ml-2 font-bold text-needs">{insights.totalParticipants}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-xs">Rows where column A (consent) = TRUE, starting from row 4</TooltipContent>
+                </Tooltip>
               </div>
               <Button 
                 onClick={() => refetch()} 
@@ -258,34 +370,42 @@ export default function DashboardPage() {
               <Card className="backdrop-blur-sm bg-gradient-to-br from-needs/20 to-needs/5 border-needs/20">
                 <CardContent className="pt-6 text-center">
                   <Users className="h-8 w-8 mx-auto mb-2 text-needs" />
-                  <div className="text-4xl font-bold text-needs">{insights.totalParticipants}</div>
-                  <p className="text-sm text-muted-foreground mt-1">Consented Participants</p>
+                  <div className="text-4xl font-bold text-needs" data-testid="text-total-participants">{insights.totalParticipants}</div>
+                  <p className="text-sm text-white/50 mt-1">Consented Participants</p>
                 </CardContent>
               </Card>
 
               <Card className="backdrop-blur-sm bg-gradient-to-br from-alignment/20 to-alignment/5 border-alignment/20">
                 <CardContent className="pt-6 text-center">
                   <Clock className="h-8 w-8 mx-auto mb-2 text-alignment" />
-                  <div className="text-4xl font-bold text-alignment">{insights.avgLearningHours}</div>
-                  <p className="text-sm text-muted-foreground mt-1">Avg. Learning Hours/Week</p>
+                  <div className="text-4xl font-bold text-alignment" data-testid="text-avg-hours">{insights.avgLearningHours}</div>
+                  <p className="text-sm text-white/50 mt-1">Avg. Learning Hours/Week</p>
                 </CardContent>
               </Card>
 
               <Card className="backdrop-blur-sm bg-gradient-to-br from-chaordic/20 to-chaordic/5 border-chaordic/20">
                 <CardContent className="pt-6 text-center">
                   <Globe className="h-8 w-8 mx-auto mb-2 text-chaordic" />
-                  <div className="text-4xl font-bold text-chaordic">{Object.keys(insights.nationalityBreakdown).length}</div>
-                  <p className="text-sm text-muted-foreground mt-1">Countries Represented</p>
+                  <div className="text-4xl font-bold text-chaordic" data-testid="text-total-countries">{Object.keys(insights.nationalityBreakdown).length}</div>
+                  <p className="text-sm text-white/50 mt-1">Countries Represented</p>
                 </CardContent>
               </Card>
 
-              <Card className="backdrop-blur-sm bg-gradient-to-br from-ego/20 to-ego/5 border-ego/20">
-                <CardContent className="pt-6 text-center">
-                  <MessageSquare className="h-8 w-8 mx-auto mb-2 text-ego" />
-                  <div className="text-4xl font-bold text-ego">{insights.topCommunicationSituations.length}</div>
-                  <p className="text-sm text-muted-foreground mt-1">Situation Types Tracked</p>
-                </CardContent>
-              </Card>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Card className="backdrop-blur-sm bg-gradient-to-br from-ego/20 to-ego/5 border-ego/20 cursor-help">
+                    <CardContent className="pt-6 text-center">
+                      <MessageSquare className="h-8 w-8 mx-auto mb-2 text-ego" />
+                      <div className="text-4xl font-bold text-ego" data-testid="text-total-situations">{insights.totalSituationTypes}</div>
+                      <p className="text-sm text-white/50 mt-1">Situation Types Tracked</p>
+                      <p className="text-xs text-white/30 mt-0.5">{insights.totalSituationMentions} total mentions</p>
+                    </CardContent>
+                  </Card>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs">
+                  Unique communication situation types identified across all participants (parsed from col W). Each participant can report multiple situations. Total mentions = sum of all situation selections across all participants.
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8 mb-8">
@@ -293,25 +413,38 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MessageSquare className="h-5 w-5 text-needs" />
-                    Most Common Communication Situations
+                    Top Communication Situations
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="shrink-0"><Info className="h-3.5 w-3.5 text-white/30" /></span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">
+                        Showing top 10 of {insights.totalSituationTypes} unique situation types. Parsed from col W of the Google Sheet. Bar width = percentage of all participants who mentioned this situation.
+                      </TooltipContent>
+                    </Tooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {insights.topCommunicationSituations.map((item, i) => (
+                    {insights.topCommunicationSituations.map((item) => (
                       <div key={item.situation} className="space-y-1">
                         <div className="flex justify-between text-sm">
                           <span className="capitalize">{item.situation.toLowerCase()}</span>
-                          <span className="font-medium text-muted-foreground">{item.count} responses</span>
+                          <span className="font-medium text-white/50">{item.count} responses</span>
                         </div>
                         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-needs transition-all duration-500"
-                            style={{ width: `${(item.count / insights.totalParticipants) * 100}%` }}
+                            style={{ width: `${Math.min((item.count / insights.totalParticipants) * 100, 100)}%` }}
                           />
                         </div>
                       </div>
                     ))}
+                    {insights.totalSituationTypes > 10 && (
+                      <p className="text-xs text-white/30 text-center pt-2">
+                        + {insights.totalSituationTypes - 10} more situation types not shown
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -321,6 +454,14 @@ export default function DashboardPage() {
                   <CardTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-influence" />
                     Most Challenging Situations
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="shrink-0"><Info className="h-3.5 w-3.5 text-white/30" /></span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">
+                        Single most challenging situation selected by each participant (col Y). Ranked by how many participants chose this situation.
+                      </TooltipContent>
+                    </Tooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -333,12 +474,12 @@ export default function DashboardPage() {
                           </div>
                           <div className="flex-1">
                             <span className="capitalize font-medium">{item.situation.toLowerCase()}</span>
-                            <p className="text-xs text-muted-foreground">{item.count} participants find this challenging</p>
+                            <p className="text-xs text-white/50">{item.count} participants find this challenging</p>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="text-muted-foreground text-center py-4">No challenging situations reported yet</p>
+                      <p className="text-white/50 text-center py-4">No challenging situations reported yet</p>
                     )}
                   </div>
                 </CardContent>
@@ -349,8 +490,14 @@ export default function DashboardPage() {
               <Card className="backdrop-blur-sm bg-card/50 border-white/10">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5 text-wisdom" />
+                    <GraduationCap className="h-5 w-5 text-chaordic" />
                     Education Levels
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="shrink-0"><Info className="h-3.5 w-3.5 text-white/30" /></span>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs">From col H of the Google Sheet</TooltipContent>
+                    </Tooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -370,6 +517,12 @@ export default function DashboardPage() {
                   <CardTitle className="flex items-center gap-2">
                     <Globe className="h-5 w-5 text-chaordic" />
                     Top Nationalities
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="shrink-0"><Info className="h-3.5 w-3.5 text-white/30" /></span>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs">From col G of the Google Sheet</TooltipContent>
+                    </Tooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -389,6 +542,12 @@ export default function DashboardPage() {
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-alignment" />
                     Learning Preferences
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="shrink-0"><Info className="h-3.5 w-3.5 text-white/30" /></span>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs">From col V of the Google Sheet — comma-separated learning needs</TooltipContent>
+                    </Tooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -409,6 +568,14 @@ export default function DashboardPage() {
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-needs" />
                   AI-Powered Analysis
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="shrink-0"><Info className="h-3.5 w-3.5 text-white/30" /></span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      Uses the Thesys AI API to analyze the aggregated (non-personal) research data. Enter a question and click Generate to get strategic recommendations.
+                    </TooltipContent>
+                  </Tooltip>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -448,7 +615,7 @@ export default function DashboardPage() {
                       AI Analysis
                     </h4>
                     <div className="prose prose-invert prose-sm max-w-none">
-                      <pre className="whitespace-pre-wrap text-muted-foreground text-sm">
+                      <pre className="whitespace-pre-wrap text-white/50 text-sm">
                         {aiResponse}
                       </pre>
                     </div>
@@ -461,8 +628,8 @@ export default function DashboardPage() {
 
         <Card className="backdrop-blur-sm bg-needs/10 border-needs/20 p-8 text-center">
           <h3 className="text-2xl font-bold mb-4">Want Your Personal Communication Profile?</h3>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Get your own Satellite Scan™ with detailed lens analysis, micro-habit recommendations, and personalized coaching insights.
+          <p className="text-white/50 mb-6 max-w-2xl mx-auto">
+            Get your own Satellite Scan with detailed lens analysis, micro-habit recommendations, and personalized coaching insights.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
@@ -470,7 +637,7 @@ export default function DashboardPage() {
               onClick={() => window.location.href = '/checkout?product=satellitescan'}
               data-testid="button-get-satellite-scan"
             >
-              Get Your Scan - €99.95
+              Get Your Scan
               <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
             <Button 

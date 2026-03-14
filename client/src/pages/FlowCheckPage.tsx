@@ -580,7 +580,7 @@ export default function FlowCheckPage() {
                   const shifted = Math.abs(effCh - challenge) >= 0.5;
                   const dir = motivation < 5 ? "reduced" : motivation > 5 ? "amplified" : null;
                   return (
-                    <div className="mt-3 text-[11px] text-white/65 text-center leading-snug space-y-0.5">
+                    <div className="mt-3 text-xs text-white/65 text-center leading-snug space-y-0.5">
                       {shifted && dir ? (
                         <>
                           <div>
@@ -631,7 +631,7 @@ export default function FlowCheckPage() {
                   {ZONE_CONFIG[z].name}
                 </span>
                 {zone === z && (
-                  <span className="text-[10px] font-bold text-white/60 uppercase tracking-wide">You</span>
+                  <span className="text-xs font-bold text-white/60 uppercase tracking-wide">You</span>
                 )}
               </div>
             ))}
@@ -775,7 +775,7 @@ export default function FlowCheckPage() {
         title="Check Your Communication Flow | Free Assessment | GreenElephant"
         description="Measure your communication flow state using Csikszentmihalyi's model. Discover if you're in the Flow, Challenge, Comfort, or Danger zone in your key communication situations."
         canonicalPath="/flow-check"
-        keywords="flow state assessment, self-awareness tool, free emotional intelligence test, personal development check, communication self-reflection, Csikszentmihalyi flow model, flow zone, motivation challenge competence, free communication assessment, free EQ check, conscious communication test"
+        keywords="flow state assessment, self-awareness tool, free emotional intelligence test, personal development check, communication self-reflection, Csikszentmihalyi flow model, flow zone, motivation challenge competence, free communication assessment, free EQ check, conscious communication test, resilience check, personal growth tool, self-assessment, AI personal growth"
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Flow Check", url: "/flow-check" },
@@ -845,7 +845,7 @@ export default function FlowCheckPage() {
                       style={{ background: ZONE_COLORS[z] + "12", border: `1px solid ${ZONE_COLORS[z]}30` }}
                     >
                       <FlowDiamond zone={z} size="sm" showDot={false} highlightZone={z} />
-                      <span className="text-[11px] font-medium text-center" style={{ color: ZONE_COLORS[z] }}>
+                      <span className="text-xs font-medium text-center" style={{ color: ZONE_COLORS[z] }}>
                         {ZONE_CONFIG[z].name}
                       </span>
                     </div>
