@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -40,6 +40,7 @@ import {
   XCircle,
   MinusCircle,
   Linkedin,
+  Activity,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -98,7 +99,7 @@ const CONNECTORS: ConnectorConfig[] = [
   {
     name: "google-analytics",
     label: "Google Analytics",
-    description: "GA4 Data API for funnel metrics and event tracking",
+    description: "GA4 tracking (frontend) + Data API (server-side metrics)",
     icon: BarChart3,
     tier: "standard",
     envKey: "GA4_PROPERTY_ID",
@@ -137,7 +138,7 @@ const CONNECTORS: ConnectorConfig[] = [
     description: "Coaching session booking links",
     icon: Calendar,
     tier: "standard",
-    envKey: "CALENDLY_URL",
+    envKey: "CALENDLY_API_TOKEN",
     color: "#006bff",
   },
   {
@@ -166,6 +167,15 @@ const CONNECTORS: ConnectorConfig[] = [
     tier: "standard",
     envKey: "GMAIL_OAUTH_TOKEN",
     color: "#EA4335",
+  },
+  {
+    name: "fathom",
+    label: "Fathom Analytics",
+    description: "Privacy-first website analytics — real-time visitors, pageviews, and referrers via OAuth",
+    icon: Activity,
+    tier: "important",
+    envKey: "FATHOM_CLIENT_ID",
+    color: "#8B5CF6",
   },
 ];
 
@@ -230,6 +240,20 @@ export default function IntegrationsAdmin() {
     open: boolean;
     confirmText: string;
   }>({ open: false, confirmText: "" });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("fathom_connected") === "true") {
+      toast({ title: "Fathom connected", description: "Fathom Analytics is now linked to your account." });
+      window.history.replaceState({}, "", window.location.pathname);
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/connectors/status"] });
+    }
+    const fathomErr = params.get("fathom_error");
+    if (fathomErr) {
+      toast({ title: "Fathom connection failed", description: `OAuth error: ${fathomErr}. Check that FATHOM_CLIENT_ID and FATHOM_CLIENT_SECRET are set.`, variant: "destructive" });
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   const { data: statuses, isLoading: statusLoading } = useQuery<Record<string, ConnectorStatus>>({
     queryKey: ["/api/admin/connectors/status"],
@@ -345,7 +369,7 @@ export default function IntegrationsAdmin() {
   const commsConnectors = CONNECTORS.filter((c) => c.name === "resend");
   const crmConnectors = CONNECTORS.filter((c) => c.name === "notion");
   const aiConnectors = CONNECTORS.filter((c) => c.name === "thesys");
-  const dataConnectors = CONNECTORS.filter((c) => ["google-analytics", "google-sheets"].includes(c.name));
+  const dataConnectors = CONNECTORS.filter((c) => ["google-analytics", "google-sheets", "fathom"].includes(c.name));
   const formsConnectors = CONNECTORS.filter((c) => c.name === "typeform");
   const contentConnectors = CONNECTORS.filter((c) => ["youtube", "calendly"].includes(c.name));
   const codeConnectors = CONNECTORS.filter((c) => c.name === "github");
@@ -833,24 +857,42 @@ function ConnectorGroup({
                     <p className="text-xs text-white/40 line-clamp-1">{connector.description}</p>
                   </div>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="flex-shrink-0 cursor-help">
-                        <Switch
-                          checked={isEnabled}
-                          onCheckedChange={(checked) => onToggle(connector, checked)}
-                          disabled={isPending}
-                          className="data-[state=checked]:!bg-needs"
-                          data-testid={`switch-connector-${connector.name}`}
-                        />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs text-xs">
-                      {isEnabled
-                        ? `${connector.label} is active. Toggle off to disable this integration. ${connector.tier === "critical" ? "Warning: this is a critical service — disabling it requires typed confirmation." : ""}`
-                        : `${connector.label} is disabled. Toggle on to re-enable this integration.`}
-                    </TooltipContent>
-                  </Tooltip>
+                  {connector.name === "fathom" && !status?.hasEnvKey ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-purple-400/30 text-purple-400 flex-shrink-0"
+                          onClick={() => window.location.href = "/api/admin/auth/fathom"}
+                          data-testid="button-connect-fathom"
+                        >
+                          <Activity className="h-3.5 w-3.5 mr-1.5" />
+                          Connect
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">Start Fathom OAuth flow — you'll be redirected to Fathom to authorize access to your analytics data.</TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="flex-shrink-0 cursor-help">
+                          <Switch
+                            checked={isEnabled}
+                            onCheckedChange={(checked) => onToggle(connector, checked)}
+                            disabled={isPending}
+                            className="data-[state=checked]:!bg-needs"
+                            data-testid={`switch-connector-${connector.name}`}
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">
+                        {isEnabled
+                          ? `${connector.label} is active. Toggle off to disable this integration. ${connector.tier === "critical" ? "Warning: this is a critical service — disabling it requires typed confirmation." : ""}`
+                          : `${connector.label} is disabled. Toggle on to re-enable this integration.`}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
               </CardContent>
             </Card>

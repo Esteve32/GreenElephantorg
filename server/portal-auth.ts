@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
+import { sendPasswordResetEmail } from "./email-notifications";
 
 export function getBaseUrl(req: Request): string {
   if (process.env.REPLIT_DEV_DOMAIN) {
@@ -206,6 +207,74 @@ export function registerPortalRoutes(app: Express) {
     res.json({ message: "Logged out" });
   });
 
+  app.post("/api/portal/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+      const user = await storage.getClientUserByEmail(normalizedEmail);
+
+      if (!user || !user.passwordHash) {
+        return res.json({ message: "If an account exists with that email, a reset link has been sent." });
+      }
+
+      const token = randomBytes(32).toString("hex");
+      const expiry = new Date(Date.now() + 60 * 60 * 1000);
+      await storage.updateClientUser(user.id, {
+        resetToken: token,
+        resetTokenExpiry: expiry,
+      });
+
+      const baseUrl = getBaseUrl(req);
+      const resetUrl = `${baseUrl}/portal/reset-password?token=${token}`;
+      await sendPasswordResetEmail(normalizedEmail, resetUrl);
+
+      res.json({ message: "If an account exists with that email, a reset link has been sent." });
+    } catch (error: unknown) {
+      console.error("Forgot password error:", error instanceof Error ? error.message : "Unknown");
+      res.json({ message: "If an account exists with that email, a reset link has been sent." });
+    }
+  });
+
+  app.post("/api/portal/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const allUsers = await storage.getAllClientUsers();
+      const user = allUsers.find(u => u.resetToken === token);
+
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired reset link" });
+      }
+
+      if (!user.resetTokenExpiry || new Date(user.resetTokenExpiry) < new Date()) {
+        return res.status(400).json({ message: "Reset link has expired. Please request a new one." });
+      }
+
+      const passwordHash = await hashPassword(password);
+      await storage.updateClientUser(user.id, {
+        passwordHash,
+        resetToken: null,
+        resetTokenExpiry: null,
+      });
+
+      res.json({ message: "Password has been reset. You can now log in with your new password." });
+    } catch (error: unknown) {
+      console.error("Reset password error:", error instanceof Error ? error.message : "Unknown");
+      res.status(500).json({ message: "Password reset failed" });
+    }
+  });
+
   app.get("/api/portal/me", async (req, res) => {
     if (!req.session?.clientUserId) {
       return res.json({ authenticated: false });
@@ -244,16 +313,84 @@ export function registerPortalRoutes(app: Express) {
     }
   });
 
+  app.post("/api/portal/change-password", requirePortalAuth, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters" });
+      }
+
+      const user = await storage.getClientUserById(req.session.clientUserId!);
+      if (!user || !user.passwordHash) {
+        return res.status(400).json({ message: "No password set on this account. Use Google or LinkedIn login." });
+      }
+
+      const valid = await verifyPassword(currentPassword, user.passwordHash);
+      if (!valid) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+
+      const hash = await hashPassword(newPassword);
+      await storage.updateClientUser(user.id, { passwordHash: hash });
+
+      res.json({ message: "Password updated successfully" });
+    } catch (error: unknown) {
+      console.error("Change password error:", error instanceof Error ? error.message : "Unknown");
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
+  app.post("/api/portal/profile/avatar", requirePortalAuth, async (req, res) => {
+    try {
+      const { avatar } = req.body;
+      if (!avatar || typeof avatar !== "string") {
+        return res.status(400).json({ message: "Avatar image data is required" });
+      }
+      if (!avatar.match(/^data:image\/(jpeg|png|webp);base64,/)) {
+        return res.status(400).json({ message: "Invalid image format. Only JPEG, PNG, and WebP are allowed." });
+      }
+      if (avatar.length > 3 * 1024 * 1024) {
+        return res.status(400).json({ message: "Image too large (max 2MB)" });
+      }
+      await storage.updateClientUser(req.session.clientUserId!, { avatarUrl: avatar });
+      res.json({ message: "Avatar updated" });
+    } catch (error: unknown) {
+      console.error("Avatar upload error:", error instanceof Error ? error.message : "Unknown");
+      res.status(500).json({ message: "Failed to update avatar" });
+    }
+  });
+
+  app.delete("/api/portal/profile/avatar", requirePortalAuth, async (req, res) => {
+    try {
+      await storage.updateClientUser(req.session.clientUserId!, { avatarUrl: null });
+      res.json({ message: "Avatar removed" });
+    } catch (error: unknown) {
+      console.error("Avatar remove error:", error instanceof Error ? error.message : "Unknown");
+      res.status(500).json({ message: "Failed to remove avatar" });
+    }
+  });
+
   app.get("/api/portal/auth/google", async (req, res) => {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (!clientId) {
       return res.status(503).json({ message: "Google login is not configured yet" });
     }
 
+    const baseUrl = getBaseUrl(req);
+    if (baseUrl.includes(".replit.dev")) {
+      console.log("Portal Google OAuth: dev domain detected, redirecting to login with dev_google error");
+      return res.redirect("/portal/login?error=dev_google");
+    }
+
     const oauthNonce = randomBytes(24).toString("hex");
     req.session.googleOAuthState = oauthNonce;
 
-    const redirectUri = `${getBaseUrl(req)}/api/portal/auth/google/callback`;
+    const redirectUri = `${baseUrl}/api/portal/auth/google/callback`;
     const scope = encodeURIComponent("openid email profile");
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account&state=${oauthNonce}`;
 
@@ -418,6 +555,7 @@ export function registerPortalRoutes(app: Express) {
     "portal_email_login_enabled",
     "linkedin_access_token",
     "linkedin_org_id",
+    "linkedin_oauth_enabled",
     "admin_password_hash",
   ];
 
@@ -644,6 +782,9 @@ export function registerPortalRoutes(app: Express) {
     const baseUrl = process.env.REPLIT_DEV_DOMAIN
       ? `https://${process.env.REPLIT_DEV_DOMAIN}`
       : "https://greenelephant.org";
+    if (baseUrl.includes(".replit.dev")) {
+      return res.redirect("/portal/login?error=dev_linkedin");
+    }
     const redirectUri = `${baseUrl}/api/portal/auth/linkedin/callback`;
     const state = randomBytes(16).toString("hex");
     req.session.linkedinOAuthState = state;
@@ -803,6 +944,535 @@ export function registerPortalRoutes(app: Express) {
       res.status(500).json({ message: "Failed to disconnect" });
     }
   });
+
+  app.get("/api/portal/spotify/connect", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    if (!clientId) {
+      return res.status(503).json({ message: "Spotify integration is not configured yet" });
+    }
+
+    const baseUrl = process.env.REPLIT_DEV_DOMAIN
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : "https://greenelephant.org";
+    if (baseUrl.includes(".replit.dev")) {
+      return res.status(400).json({ message: "Spotify connection only works on the published site (greenelephant.org). Please try again after publishing." });
+    }
+    const redirectUri = `${baseUrl}/api/portal/spotify/callback`;
+    const oauthNonce = randomBytes(24).toString("hex");
+    req.session.spotifyOAuthState = oauthNonce;
+
+    const scopes = "user-read-recently-played user-read-email user-top-read";
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=${oauthNonce}`;
+    res.redirect(authUrl);
+  });
+
+  app.get("/api/portal/spotify/callback", async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      if (!code || !state) {
+        return res.redirect("/portal/settings?spotify=error&reason=no_code");
+      }
+
+      if (!req.session?.clientUserId || !req.session.spotifyOAuthState || req.session.spotifyOAuthState !== state) {
+        return res.redirect("/portal/settings?spotify=error&reason=invalid_state");
+      }
+      delete req.session.spotifyOAuthState;
+
+      const clientId = process.env.SPOTIFY_CLIENT_ID;
+      const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+      if (!clientId || !clientSecret) {
+        return res.redirect("/portal/settings?spotify=error&reason=not_configured");
+      }
+
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : "https://greenelephant.org";
+      const redirectUri = `${baseUrl}/api/portal/spotify/callback`;
+
+      const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code: code as string,
+          redirect_uri: redirectUri,
+        }),
+      });
+
+      const tokenData = await tokenRes.json();
+      if (!tokenData.access_token) {
+        console.error("Spotify OAuth token error:", tokenData);
+        return res.redirect("/portal/settings?spotify=error&reason=token_failed");
+      }
+
+      const profileRes = await fetch("https://api.spotify.com/v1/me", {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      if (!profileRes.ok) {
+        console.error("Spotify profile fetch failed:", profileRes.status);
+        return res.redirect("/portal/settings?spotify=error&reason=profile_failed");
+      }
+      const profile = await profileRes.json();
+      if (!profile.id) {
+        console.error("Spotify profile missing id:", profile);
+        return res.redirect("/portal/settings?spotify=error&reason=no_profile_id");
+      }
+
+      const userId = req.session.clientUserId;
+      await storage.updateClientUser(userId, {
+        spotifyId: profile.id,
+        spotifyAccessToken: tokenData.access_token,
+        spotifyRefreshToken: tokenData.refresh_token || null,
+        spotifyTokenExpiry: tokenData.expires_in
+          ? new Date(Date.now() + tokenData.expires_in * 1000)
+          : null,
+      });
+
+      res.redirect("/portal/settings?spotify=connected");
+    } catch (error: any) {
+      console.error("Spotify OAuth callback error:", error);
+      res.redirect("/portal/settings?spotify=error&reason=callback_failed");
+    }
+  });
+
+  app.post("/api/portal/spotify/disconnect", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+    try {
+      await storage.updateClientUser(req.session.clientUserId, {
+        spotifyId: null,
+        spotifyAccessToken: null,
+        spotifyRefreshToken: null,
+        spotifyTokenExpiry: null,
+      });
+      res.json({ message: "Spotify disconnected" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to disconnect" });
+    }
+  });
+
+  app.get("/api/portal/spotify/status", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+    try {
+      const user = await storage.getClientUserById(req.session.clientUserId);
+      if (!user) return res.json({ connected: false });
+      res.json({
+        connected: !!user.spotifyAccessToken,
+        spotifyId: user.spotifyId || null,
+      });
+    } catch {
+      res.json({ connected: false });
+    }
+  });
+
+  app.get("/api/portal/spotify/recent-tracks", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+    try {
+      const user = await storage.getClientUserById(req.session.clientUserId);
+      if (!user?.spotifyAccessToken) {
+        return res.status(400).json({ message: "Spotify not connected" });
+      }
+
+      const refreshSpotifyToken = async (): Promise<string | null> => {
+        if (!user.spotifyRefreshToken) return null;
+        const clientId = process.env.SPOTIFY_CLIENT_ID;
+        const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+        if (!clientId || !clientSecret) return null;
+        const refreshRes = await fetch("https://accounts.spotify.com/api/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+          },
+          body: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: user.spotifyRefreshToken,
+          }),
+        });
+        const refreshData = await refreshRes.json();
+        if (!refreshData.access_token) return null;
+        const updateFields: any = {
+          spotifyAccessToken: refreshData.access_token,
+          spotifyTokenExpiry: refreshData.expires_in
+            ? new Date(Date.now() + refreshData.expires_in * 1000)
+            : null,
+        };
+        if (refreshData.refresh_token) {
+          updateFields.spotifyRefreshToken = refreshData.refresh_token;
+        }
+        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        return refreshData.access_token;
+      };
+
+      let accessToken = user.spotifyAccessToken;
+      if (user.spotifyTokenExpiry && new Date(user.spotifyTokenExpiry) < new Date()) {
+        const newToken = await refreshSpotifyToken();
+        if (!newToken) {
+          return res.status(401).json({ message: "Spotify token expired. Please reconnect.", reconnectRequired: true });
+        }
+        accessToken = newToken;
+      }
+
+      const limit = Math.min(Number(req.query.limit) || 20, 50);
+      let recentRes = await fetch(`https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (recentRes.status === 401) {
+        const newToken = await refreshSpotifyToken();
+        if (!newToken) {
+          return res.status(401).json({ message: "Spotify session expired. Please reconnect.", reconnectRequired: true });
+        }
+        accessToken = newToken;
+        recentRes = await fetch(`https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+      }
+
+      if (!recentRes.ok) {
+        return res.status(502).json({ message: "Spotify API error. Try again later." });
+      }
+
+      const recentData = await recentRes.json();
+
+      if (!recentData.items || !Array.isArray(recentData.items)) {
+        return res.json({ tracks: [] });
+      }
+
+      const trackIds = recentData.items
+        .map((item: any) => item.track?.id)
+        .filter(Boolean)
+        .filter((id: string, i: number, arr: string[]) => arr.indexOf(id) === i);
+
+      let audioFeatures: Record<string, any> = {};
+      if (trackIds.length > 0) {
+        const featuresRes = await fetch(`https://api.spotify.com/v1/audio-features?ids=${trackIds.join(",")}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const featuresData = await featuresRes.json();
+        if (featuresData.audio_features) {
+          for (const f of featuresData.audio_features) {
+            if (f) audioFeatures[f.id] = f;
+          }
+        }
+      }
+
+      const tracks = recentData.items.map((item: any) => {
+        const track = item.track;
+        const features = audioFeatures[track.id] || {};
+        return {
+          id: track.id,
+          name: track.name,
+          artist: track.artists?.map((a: any) => a.name).join(", ") || "Unknown",
+          album: track.album?.name || "",
+          albumArt: track.album?.images?.[0]?.url || null,
+          playedAt: item.played_at,
+          previewUrl: track.preview_url,
+          spotifyUrl: track.external_urls?.spotify || null,
+          valence: features.valence ?? null,
+          energy: features.energy ?? null,
+          danceability: features.danceability ?? null,
+          tempo: features.tempo ?? null,
+          mode: features.mode ?? null,
+          key: features.key ?? null,
+        };
+      });
+
+      const valences = tracks.filter((t: any) => t.valence !== null).map((t: any) => t.valence);
+      const energies = tracks.filter((t: any) => t.energy !== null).map((t: any) => t.energy);
+      const avgValence = valences.length > 0 ? valences.reduce((s: number, v: number) => s + v, 0) / valences.length : null;
+      const avgEnergy = energies.length > 0 ? energies.reduce((s: number, v: number) => s + v, 0) / energies.length : null;
+
+      const moodLabel = avgValence !== null
+        ? avgValence > 0.7 ? "Upbeat & Positive"
+          : avgValence > 0.5 ? "Balanced & Reflective"
+          : avgValence > 0.3 ? "Introspective & Calm"
+          : "Deep & Contemplative"
+        : null;
+
+      res.json({
+        tracks,
+        emotionalLandscape: {
+          avgValence: avgValence !== null ? Math.round(avgValence * 100) / 100 : null,
+          avgEnergy: avgEnergy !== null ? Math.round(avgEnergy * 100) / 100 : null,
+          moodLabel,
+          trackCount: tracks.length,
+        },
+      });
+    } catch (error: any) {
+      console.error("Spotify recent tracks error:", error);
+      res.status(500).json({ message: "Failed to fetch Spotify data" });
+    }
+  });
+
+  // ─── Oura Ring Integration ───────────────────────────────────────────────
+
+  app.get("/api/portal/oura/connect", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+
+    const clientId = process.env.OURA_CLIENT_ID;
+    if (!clientId) {
+      return res.status(503).json({ message: "Oura integration is not configured yet" });
+    }
+
+    const baseUrl = process.env.REPLIT_DEV_DOMAIN
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : "https://greenelephant.org";
+    const redirectUri = `${baseUrl}/api/portal/auth/oura/callback`;
+    const oauthNonce = randomBytes(24).toString("hex");
+    req.session.ouraOAuthState = oauthNonce;
+
+    const scopes = "email personal daily tag workout session spo2 ring_configuration stress heart_health heartrate";
+    const authUrl = `https://cloud.ouraring.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=${oauthNonce}`;
+    res.redirect(authUrl);
+  });
+
+  app.get("/api/portal/auth/oura/callback", async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      if (!code || !state) {
+        return res.redirect("/portal/settings?oura=error&reason=no_code");
+      }
+
+      if (!req.session?.clientUserId || !req.session.ouraOAuthState || req.session.ouraOAuthState !== state) {
+        return res.redirect("/portal/settings?oura=error&reason=invalid_state");
+      }
+      delete req.session.ouraOAuthState;
+
+      const clientId = process.env.OURA_CLIENT_ID;
+      const clientSecret = process.env.OURA_CLIENT_SECRET;
+      if (!clientId || !clientSecret) {
+        return res.redirect("/portal/settings?oura=error&reason=not_configured");
+      }
+
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : "https://greenelephant.org";
+      const redirectUri = `${baseUrl}/api/portal/auth/oura/callback`;
+
+      const tokenRes = await fetch("https://api.ouraring.com/oauth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code: code as string,
+          redirect_uri: redirectUri,
+          client_id: clientId,
+          client_secret: clientSecret,
+        }),
+      });
+
+      const tokenData = await tokenRes.json();
+      if (!tokenData.access_token) {
+        console.error("Oura OAuth token error:", tokenData);
+        return res.redirect("/portal/settings?oura=error&reason=token_failed");
+      }
+
+      const profileRes = await fetch("https://api.ouraring.com/v2/usercollection/personal_info", {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      const profile = profileRes.ok ? await profileRes.json() : {};
+
+      const userId = req.session.clientUserId;
+      await storage.updateClientUser(userId, {
+        ouraId: profile.id || `oura_${userId}`,
+        ouraAccessToken: tokenData.access_token,
+        ouraRefreshToken: tokenData.refresh_token || null,
+        ouraTokenExpiry: tokenData.expires_in
+          ? new Date(Date.now() + tokenData.expires_in * 1000)
+          : null,
+        ouraConsentGrantedAt: new Date(),
+      });
+
+      res.redirect("/portal/settings?oura=connected");
+    } catch (error: any) {
+      console.error("Oura OAuth callback error:", error);
+      res.redirect("/portal/settings?oura=error&reason=callback_failed");
+    }
+  });
+
+  app.post("/api/portal/oura/disconnect", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+    try {
+      await storage.updateClientUser(req.session.clientUserId, {
+        ouraId: null,
+        ouraAccessToken: null,
+        ouraRefreshToken: null,
+        ouraTokenExpiry: null,
+        ouraConsentGrantedAt: null,
+      });
+      res.json({ message: "Oura disconnected" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to disconnect" });
+    }
+  });
+
+  app.get("/api/portal/oura/status", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+    try {
+      const user = await storage.getClientUserById(req.session.clientUserId);
+      if (!user) return res.json({ connected: false });
+      res.json({
+        connected: !!user.ouraAccessToken,
+        ouraId: user.ouraId || null,
+        consentGrantedAt: user.ouraConsentGrantedAt || null,
+      });
+    } catch {
+      res.json({ connected: false });
+    }
+  });
+
+  app.get("/api/portal/oura/daily", async (req, res) => {
+    if (!req.session?.clientUserId) {
+      return res.status(401).json({ message: "Login required" });
+    }
+    try {
+      const user = await storage.getClientUserById(req.session.clientUserId);
+      if (!user?.ouraAccessToken) {
+        return res.status(400).json({ message: "Oura not connected" });
+      }
+
+      const refreshOuraToken = async (): Promise<string | null> => {
+        if (!user.ouraRefreshToken) return null;
+        const clientId = process.env.OURA_CLIENT_ID;
+        const clientSecret = process.env.OURA_CLIENT_SECRET;
+        if (!clientId || !clientSecret) return null;
+        const refreshRes = await fetch("https://api.ouraring.com/oauth/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: user.ouraRefreshToken,
+            client_id: clientId,
+            client_secret: clientSecret,
+          }),
+        });
+        const refreshData = await refreshRes.json();
+        if (!refreshData.access_token) return null;
+        const updateFields: any = {
+          ouraAccessToken: refreshData.access_token,
+          ouraTokenExpiry: refreshData.expires_in
+            ? new Date(Date.now() + refreshData.expires_in * 1000)
+            : null,
+        };
+        if (refreshData.refresh_token) {
+          updateFields.ouraRefreshToken = refreshData.refresh_token;
+        }
+        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        return refreshData.access_token;
+      };
+
+      let accessToken = user.ouraAccessToken;
+      if (user.ouraTokenExpiry && new Date(user.ouraTokenExpiry) < new Date()) {
+        const newToken = await refreshOuraToken();
+        if (!newToken) {
+          return res.status(401).json({ message: "Oura token expired. Please reconnect.", reconnectRequired: true });
+        }
+        accessToken = newToken;
+      }
+
+      const days = Math.min(Number(req.query.days) || 7, 30);
+      const endDate = new Date().toISOString().split("T")[0];
+      const startDate = new Date(Date.now() - days * 86400000).toISOString().split("T")[0];
+
+      const fetchOura = async (endpoint: string) => {
+        let response = await fetch(
+          `https://api.ouraring.com/v2/usercollection/${endpoint}?start_date=${startDate}&end_date=${endDate}`,
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+        if (response.status === 401) {
+          const newToken = await refreshOuraToken();
+          if (!newToken) return null;
+          accessToken = newToken;
+          response = await fetch(
+            `https://api.ouraring.com/v2/usercollection/${endpoint}?start_date=${startDate}&end_date=${endDate}`,
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+        }
+        if (!response.ok) return null;
+        return response.json();
+      };
+
+      const [readinessData, sleepData, activityData] = await Promise.all([
+        fetchOura("daily_readiness"),
+        fetchOura("daily_sleep"),
+        fetchOura("daily_activity"),
+      ]);
+
+      const readiness = (readinessData?.data || []).map((d: any) => ({
+        day: d.day,
+        score: d.score,
+        temperatureDeviation: d.temperature_deviation,
+        contributors: d.contributors || {},
+      }));
+
+      const sleep = (sleepData?.data || []).map((d: any) => ({
+        day: d.day,
+        score: d.score,
+        totalSleepDuration: d.contributors?.total_sleep,
+        deepSleepDuration: d.contributors?.deep_sleep,
+        remSleepDuration: d.contributors?.rem_sleep,
+        efficiency: d.contributors?.efficiency,
+        restfulness: d.contributors?.restfulness,
+      }));
+
+      const activity = (activityData?.data || []).map((d: any) => ({
+        day: d.day,
+        score: d.score,
+        activeCalories: d.active_calories,
+        steps: d.steps,
+        totalCalories: d.total_calories,
+        contributors: d.contributors || {},
+      }));
+
+      const avgReadiness = readiness.length > 0
+        ? Math.round(readiness.reduce((s: number, r: any) => s + (r.score || 0), 0) / readiness.length)
+        : null;
+      const avgSleep = sleep.length > 0
+        ? Math.round(sleep.reduce((s: number, r: any) => s + (r.score || 0), 0) / sleep.length)
+        : null;
+      const avgActivity = activity.length > 0
+        ? Math.round(activity.reduce((s: number, r: any) => s + (r.score || 0), 0) / activity.length)
+        : null;
+
+      res.json({
+        readiness,
+        sleep,
+        activity,
+        summary: {
+          avgReadiness,
+          avgSleep,
+          avgActivity,
+          days,
+          startDate,
+          endDate,
+        },
+      });
+    } catch (error: any) {
+      console.error("Oura daily data error:", error);
+      res.status(502).json({ message: "Failed to fetch Oura data. Try again later." });
+    }
+  });
+
+  // ─── End Oura ──────────────────────────────────────────────────────────
 
   app.get("/api/portal/settings/public", async (_req, res) => {
     try {

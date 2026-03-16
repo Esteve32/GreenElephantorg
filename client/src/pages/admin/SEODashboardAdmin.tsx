@@ -56,7 +56,7 @@ export default function SEODashboardAdmin() {
 
   return (
     <>
-      <SEO title="SEO / GEO Dashboard | GreenElephant Admin" />
+      <SEO title="SEO / GEO Dashboard | GreenElephant Admin" description="Monitor SEO health and Generative Engine Optimization readiness for GreenElephant." />
       <div className="min-h-screen bg-background p-6 max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => setLocation("/admin/submissions")} data-testid="button-back-admin">
@@ -94,9 +94,9 @@ export default function SEODashboardAdmin() {
                       <span className="text-sm">{item.label}</span>
                     </div>
                     {item.href && (
-                      <Button variant="ghost" size="icon" onClick={() => window.open(item.href!, "_blank")} data-testid={`button-check-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => window.open(item.href!, "_blank")} data-testid={`button-check-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
                         <ExternalLink className="h-3 w-3" />
-                      </Button>
+                      </Button></TooltipTrigger><TooltipContent>Open {item.label} in a new tab</TooltipContent></Tooltip>
                     )}
                   </div>
                 ))}
@@ -132,9 +132,9 @@ export default function SEODashboardAdmin() {
                       <span className="text-sm">{item.label}</span>
                     </div>
                     {item.href && (
-                      <Button variant="ghost" size="icon" onClick={() => window.open(item.href!, "_blank")} data-testid={`button-geo-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => window.open(item.href!, "_blank")} data-testid={`button-geo-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
                         <ExternalLink className="h-3 w-3" />
-                      </Button>
+                      </Button></TooltipTrigger><TooltipContent>Open {item.label} in a new tab</TooltipContent></Tooltip>
                     )}
                   </div>
                 ))}

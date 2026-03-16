@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AdminTooltip } from "@/components/AdminTooltip";
+import { AIContextSelector } from "@/components/AIContextSelector";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   ArrowLeft,
@@ -271,6 +272,8 @@ export default function PromptGeneratorAdmin() {
           </div>
         </div>
 
+        <AIContextSelector compact />
+
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-4">
             <Card className="border-white/10">
@@ -303,10 +306,9 @@ export default function PromptGeneratorAdmin() {
                             : "hover-elevate"
                         }`}
                         style={{
-                          borderColor: l.color + "40",
                           backgroundColor: selectedLens === l.value ? l.color + "20" : "transparent",
                           color: l.color,
-                          ringColor: l.color,
+                          borderColor: l.color,
                           border: "1px solid",
                         }}
                         data-testid={`button-lens-${l.value}`}
@@ -328,14 +330,14 @@ export default function PromptGeneratorAdmin() {
                     <Atom className="h-4 w-4" style={{ color: lensColor }} />
                     {LENS_OPTIONS.find((l) => l.value === selectedLens)?.label} Elements ({filteredElements.length})
                   </CardTitle>
-                  <Button
+                  <Tooltip><TooltipTrigger asChild><Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setElementsOpen(!elementsOpen)}
                     data-testid="button-toggle-elements"
                   >
                     {elementsOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </Button>
+                  </Button></TooltipTrigger><TooltipContent>{elementsOpen ? "Collapse" : "Expand"} element list</TooltipContent></Tooltip>
                 </div>
               </CardHeader>
               {elementsOpen && (
@@ -366,7 +368,7 @@ export default function PromptGeneratorAdmin() {
                           }`}
                           style={{
                             backgroundColor: isSelected ? lensColor + "15" : "transparent",
-                            ringColor: lensColor,
+                            borderColor: lensColor,
                           }}
                           data-testid={`button-element-${el.code}`}
                         >
@@ -509,7 +511,7 @@ export default function PromptGeneratorAdmin() {
                           />
                         </CardTitle>
                         <div className="flex gap-2 flex-wrap">
-                          <Button
+                          <Tooltip><TooltipTrigger asChild><Button
                             variant="ghost"
                             size="sm"
                             onClick={() => {
@@ -519,8 +521,8 @@ export default function PromptGeneratorAdmin() {
                             data-testid="button-discard-prompt"
                           >
                             <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Discard
-                          </Button>
-                          <Button
+                          </Button></TooltipTrigger><TooltipContent>Discard this generated prompt without saving</TooltipContent></Tooltip>
+                          <Tooltip><TooltipTrigger asChild><Button
                             size="sm"
                             onClick={() => saveMutation.mutate()}
                             disabled={saveMutation.isPending}
@@ -533,7 +535,7 @@ export default function PromptGeneratorAdmin() {
                               <Save className="h-3.5 w-3.5 mr-1.5" />
                             )}
                             Save to Library
-                          </Button>
+                          </Button></TooltipTrigger><TooltipContent>Save this prompt to the public Prompt Library</TooltipContent></Tooltip>
                         </div>
                       </div>
                     </CardHeader>
@@ -561,14 +563,14 @@ export default function PromptGeneratorAdmin() {
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-2">
                           What It Does
-                          <Button
+                          <Tooltip><TooltipTrigger asChild><Button
                             variant="ghost"
                             size="sm"
                             onClick={() => updateEditedField("whatItDoes", [...editedPrompt.whatItDoes, ""])}
                             data-testid="button-add-bullet"
                           >
                             <Plus className="h-3 w-3 mr-1" /> Add
-                          </Button>
+                          </Button></TooltipTrigger><TooltipContent>Add a new bullet point</TooltipContent></Tooltip>
                         </label>
                         <div className="space-y-2">
                           {editedPrompt.whatItDoes.map((item, i) => (
@@ -585,7 +587,7 @@ export default function PromptGeneratorAdmin() {
                                 data-testid={`input-edit-whatitdoes-${i}`}
                               />
                               {editedPrompt.whatItDoes.length > 1 && (
-                                <Button
+                                <Tooltip><TooltipTrigger asChild><Button
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => {
@@ -595,7 +597,7 @@ export default function PromptGeneratorAdmin() {
                                   data-testid={`button-remove-bullet-${i}`}
                                 >
                                   <X className="h-3.5 w-3.5" />
-                                </Button>
+                                </Button></TooltipTrigger><TooltipContent>Remove this bullet point</TooltipContent></Tooltip>
                               )}
                             </div>
                           ))}
@@ -615,7 +617,7 @@ export default function PromptGeneratorAdmin() {
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
                           <label className="text-xs font-medium text-muted-foreground">Prompt Content</label>
-                          <Button
+                          <Tooltip><TooltipTrigger asChild><Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleCopy(editedPrompt.promptContent, "promptContent")}
@@ -627,7 +629,7 @@ export default function PromptGeneratorAdmin() {
                               <Copy className="h-3 w-3 mr-1" />
                             )}
                             Copy
-                          </Button>
+                          </Button></TooltipTrigger><TooltipContent>Copy prompt content to clipboard</TooltipContent></Tooltip>
                         </div>
                         <Textarea
                           value={editedPrompt.promptContent}
@@ -659,7 +661,7 @@ export default function PromptGeneratorAdmin() {
                       </div>
 
                       <div className="flex gap-2 justify-end flex-wrap">
-                        <Button
+                        <Tooltip><TooltipTrigger asChild><Button
                           variant="ghost"
                           size="sm"
                           onClick={() => {
@@ -669,8 +671,8 @@ export default function PromptGeneratorAdmin() {
                           data-testid="button-discard-bottom"
                         >
                           <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Discard
-                        </Button>
-                        <Button
+                        </Button></TooltipTrigger><TooltipContent>Discard this generated prompt without saving</TooltipContent></Tooltip>
+                        <Tooltip><TooltipTrigger asChild><Button
                           size="sm"
                           onClick={() => saveMutation.mutate()}
                           disabled={saveMutation.isPending}
@@ -683,7 +685,7 @@ export default function PromptGeneratorAdmin() {
                             <Save className="h-3.5 w-3.5 mr-1.5" />
                           )}
                           Save to Prompt Library
-                        </Button>
+                        </Button></TooltipTrigger><TooltipContent>Save this prompt to the public Prompt Library</TooltipContent></Tooltip>
                       </div>
                     </CardContent>
                   </Card>
@@ -720,23 +722,23 @@ export default function PromptGeneratorAdmin() {
               <CardContent>
                 <div className="flex gap-2 flex-wrap">
                   <a href="/resources/prompts" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" data-testid="link-prompt-library">
+                    <Tooltip><TooltipTrigger asChild><Button variant="outline" size="sm" data-testid="link-prompt-library">
                       <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> View Prompt Library
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Open the public Prompt Library page</TooltipContent></Tooltip>
                   </a>
                   <a href="/periodic-table" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" data-testid="link-periodic-table">
+                    <Tooltip><TooltipTrigger asChild><Button variant="outline" size="sm" data-testid="link-periodic-table">
                       <Atom className="h-3.5 w-3.5 mr-1.5" /> Periodic Table
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Open the Periodic Table of Conscious Communication</TooltipContent></Tooltip>
                   </a>
-                  <Button
+                  <Tooltip><TooltipTrigger asChild><Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate("/admin/submissions")}
                     data-testid="link-admin-hub"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 mr-1.5" /> Admin Hub
-                  </Button>
+                  </Button></TooltipTrigger><TooltipContent>Navigate back to Admin Hub</TooltipContent></Tooltip>
                 </div>
               </CardContent>
             </Card>

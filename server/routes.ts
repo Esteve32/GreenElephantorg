@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { db } from "./db";
 import { storage } from "./storage";
 import { requireAdminAuth, verifyAdminPassword, requireAdminRole, requireWriteAccess, auditMiddleware, logAuditEvent, hashAdminPassword } from "./auth";
-import { fetchGA4Metrics, isGA4Configured } from "./lib/ga4Client";
+import { fetchGA4Metrics, isGA4Configured, isGA4DataApiConfigured } from "./lib/ga4Client";
 import { isConnectorEnabled } from "./lib/connectorGuard";
 import Stripe from "stripe";
 import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
@@ -1319,12 +1319,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(503).json({ message: "Google login is not configured" });
     }
 
+    const { getBaseUrl } = await import("./portal-auth");
+    const baseUrl = getBaseUrl(req);
+    if (baseUrl.includes(".replit.dev")) {
+      console.log("Admin Google OAuth: dev domain detected, redirecting to admin login");
+      return res.redirect("/admin?error=dev_google");
+    }
+
     const { randomBytes } = await import("crypto");
     const state = randomBytes(16).toString("hex");
     req.session.adminOAuthState = state;
 
-    const { getBaseUrl } = await import("./portal-auth");
-    const redirectUri = `${getBaseUrl(req)}/api/admin/auth/google/callback`;
+    const redirectUri = `${baseUrl}/api/admin/auth/google/callback`;
     const scope = encodeURIComponent("openid email profile");
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account&state=${state}`;
 
@@ -1445,6 +1451,301 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Admin Google OAuth error:", error);
       res.redirect("/admin/login?error=callback_failed");
+    }
+  });
+
+  // Fathom OAuth — initiate
+  app.get("/api/admin/auth/fathom", requireAdminAuth, async (req, res) => {
+    const clientId = process.env.FATHOM_CLIENT_ID;
+    if (!clientId) {
+      return res.status(503).json({ message: "Fathom integration is not configured — set FATHOM_CLIENT_ID" });
+    }
+
+    const { randomBytes } = await import("crypto");
+    const state = randomBytes(16).toString("hex");
+    req.session.fathomOAuthState = state;
+
+    const { getBaseUrl } = await import("./portal-auth");
+    const redirectUri = `${getBaseUrl(req)}/api/admin/auth/fathom/callback`;
+    const scope = "site:read";
+
+    const authUrl = `https://app.usefathom.com/api/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${state}`;
+
+    console.log("Fathom OAuth: redirecting to Fathom. Redirect URI:", redirectUri);
+
+    req.session.save(() => {
+      res.redirect(authUrl);
+    });
+  });
+
+  // Fathom OAuth — callback
+  app.get("/api/admin/auth/fathom/callback", async (req, res) => {
+    try {
+      const { code, state, error: fathomError } = req.query;
+
+      if (fathomError) {
+        console.error("Fathom OAuth returned error:", fathomError, req.query);
+        return res.redirect("/admin/integrations?fathom_error=auth_denied");
+      }
+
+      if (!code) {
+        console.warn("Fathom OAuth callback: no code received. Query:", req.query);
+        return res.redirect("/admin/integrations?fathom_error=no_code");
+      }
+
+      if (state !== req.session.fathomOAuthState) {
+        console.warn("Fathom OAuth state mismatch.");
+        return res.redirect("/admin/integrations?fathom_error=state_mismatch");
+      }
+      delete req.session.fathomOAuthState;
+
+      const clientId = process.env.FATHOM_CLIENT_ID;
+      const clientSecret = process.env.FATHOM_CLIENT_SECRET;
+      if (!clientId || !clientSecret) {
+        return res.redirect("/admin/integrations?fathom_error=not_configured");
+      }
+
+      const { getBaseUrl: getBase } = await import("./portal-auth");
+      const redirectUri = `${getBase(req)}/api/admin/auth/fathom/callback`;
+
+      const tokenRes = await fetch("https://app.usefathom.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          code: code as string,
+        }),
+      });
+
+      const tokenData = await tokenRes.json();
+      if (!tokenData.access_token) {
+        console.error("Fathom token exchange failed:", tokenData);
+        return res.redirect("/admin/integrations?fathom_error=token_failed");
+      }
+
+      process.env.FATHOM_ACCESS_TOKEN = tokenData.access_token;
+
+      await storage.upsertConnectorState("fathom", "true");
+      await storage.createConnectorToggleLog({
+        connectorName: "fathom",
+        action: "enabled",
+        previousEnabled: "false",
+        newEnabled: "true",
+        triggeredBy: "oauth",
+        performedBy: req.session?.adminEmail || "admin",
+      });
+
+      console.log("Fathom OAuth: successfully connected");
+
+      req.session.save(() => {
+        res.redirect("/admin/integrations?fathom_connected=true");
+      });
+    } catch (error: unknown) {
+      console.error("Fathom OAuth error:", error instanceof Error ? error.message : error);
+      res.redirect("/admin/integrations?fathom_error=callback_failed");
+    }
+  });
+
+  // Fathom API proxy — fetch sites
+  app.get("/api/admin/fathom/sites", requireAdminAuth, async (_req, res) => {
+    try {
+      const token = process.env.FATHOM_ACCESS_TOKEN;
+      if (!token) {
+        return res.status(503).json({ message: "Fathom not connected — complete OAuth first" });
+      }
+      const response = await fetch("https://api.usefathom.com/v1/sites?limit=20", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Fathom API error:", response.status, text);
+        return res.status(response.status).json({ message: "Fathom API error", detail: text });
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error: unknown) {
+      console.error("Fathom sites fetch error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ message: "Error fetching Fathom sites" });
+    }
+  });
+
+  // Fathom API proxy — fetch current visitors for a site
+  app.get("/api/admin/fathom/current-visitors", requireAdminAuth, async (req, res) => {
+    try {
+      const token = process.env.FATHOM_ACCESS_TOKEN;
+      if (!token) {
+        return res.status(503).json({ message: "Fathom not connected" });
+      }
+      let siteId = req.query.site_id as string;
+      if (!siteId) {
+        const sitesRes = await fetch("https://api.usefathom.com/v1/sites?limit=1", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (sitesRes.ok) {
+          const sitesData = await sitesRes.json();
+          const sites = sitesData?.data || sitesData;
+          if (Array.isArray(sites) && sites.length > 0) {
+            siteId = sites[0].id;
+          }
+        }
+        if (!siteId) {
+          return res.status(400).json({ message: "No Fathom site found. Add a site_id query parameter or configure a site in Fathom." });
+        }
+      }
+      const response = await fetch(`https://api.usefathom.com/v1/current_visitors?site_id=${siteId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ message: "Fathom API error", detail: text });
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error: unknown) {
+      console.error("Fathom current visitors error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ message: "Error fetching current visitors" });
+    }
+  });
+
+  app.get("/api/admin/fathom/aggregations", requireAdminAuth, async (req, res) => {
+    try {
+      const token = process.env.FATHOM_ACCESS_TOKEN;
+      if (!token) {
+        return res.status(503).json({ message: "Fathom not connected" });
+      }
+      let siteId = req.query.site_id as string;
+      if (!siteId) {
+        const sitesRes = await fetch("https://api.usefathom.com/v1/sites?limit=1", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (sitesRes.ok) {
+          const sitesData = await sitesRes.json();
+          const sites = sitesData?.data || sitesData;
+          if (Array.isArray(sites) && sites.length > 0) {
+            siteId = sites[0].id;
+          }
+        }
+        if (!siteId) {
+          return res.status(400).json({ message: "No Fathom site found." });
+        }
+      }
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const dateFrom = sevenDaysAgo.toISOString().slice(0, 10) + " 00:00:00";
+      const dateTo = now.toISOString().slice(0, 10) + " 23:59:59";
+
+      const params = new URLSearchParams({
+        entity: "pageview",
+        entity_id: siteId,
+        aggregates: "visits,uniques,pageviews,avg_duration,bounce_rate",
+        date_from: dateFrom,
+        date_to: dateTo,
+        timezone: "Europe/Amsterdam",
+      });
+
+      const response = await fetch(`https://api.usefathom.com/v1/aggregations?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Fathom aggregations error:", response.status, text);
+        return res.status(response.status).json({ message: "Fathom API error", detail: text });
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error: unknown) {
+      console.error("Fathom aggregations error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ message: "Error fetching Fathom aggregations" });
+    }
+  });
+
+  app.get("/api/admin/fathom/status", requireAdminAuth, async (_req, res) => {
+    const hasClientId = !!process.env.FATHOM_CLIENT_ID;
+    const hasClientSecret = !!process.env.FATHOM_CLIENT_SECRET;
+    const hasAccessToken = !!process.env.FATHOM_ACCESS_TOKEN;
+    res.json({
+      configured: hasClientId && hasClientSecret,
+      connected: hasAccessToken,
+      clientIdPresent: hasClientId,
+      clientSecretPresent: hasClientSecret,
+      accessTokenPresent: hasAccessToken,
+    });
+  });
+
+  // ── Calendly API proxy routes ──────────────────────────────────
+  app.get("/api/admin/calendly/me", requireAdminAuth, async (_req, res) => {
+    try {
+      const token = process.env.CALENDLY_API_TOKEN;
+      if (!token) return res.status(503).json({ message: "Calendly not connected" });
+      const response = await fetch("https://api.calendly.com/users/me", {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ message: "Calendly API error", detail: text });
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error: unknown) {
+      console.error("Calendly me error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ message: "Error fetching Calendly user" });
+    }
+  });
+
+  app.get("/api/admin/calendly/event-types", requireAdminAuth, async (_req, res) => {
+    try {
+      const token = process.env.CALENDLY_API_TOKEN;
+      if (!token) return res.status(503).json({ message: "Calendly not connected" });
+      const meRes = await fetch("https://api.calendly.com/users/me", {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (!meRes.ok) return res.status(meRes.status).json({ message: "Calendly auth error" });
+      const meData = await meRes.json();
+      const userUri = meData.resource.uri;
+      const response = await fetch(`https://api.calendly.com/event_types?user=${encodeURIComponent(userUri)}&active=true`, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ message: "Calendly API error", detail: text });
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error: unknown) {
+      console.error("Calendly event types error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ message: "Error fetching Calendly event types" });
+    }
+  });
+
+  app.get("/api/admin/calendly/scheduled-events", requireAdminAuth, async (req, res) => {
+    try {
+      const token = process.env.CALENDLY_API_TOKEN;
+      if (!token) return res.status(503).json({ message: "Calendly not connected" });
+      const meRes = await fetch("https://api.calendly.com/users/me", {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (!meRes.ok) return res.status(meRes.status).json({ message: "Calendly auth error" });
+      const meData = await meRes.json();
+      const userUri = meData.resource.uri;
+      const status = (req.query.status as string) || "active";
+      const minTime = (req.query.min_start_time as string) || new Date().toISOString();
+      const count = (req.query.count as string) || "20";
+      const url = `https://api.calendly.com/scheduled_events?user=${encodeURIComponent(userUri)}&status=${status}&min_start_time=${encodeURIComponent(minTime)}&count=${count}&sort=start_time:asc`;
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ message: "Calendly API error", detail: text });
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error: unknown) {
+      console.error("Calendly scheduled events error:", error instanceof Error ? error.message : error);
+      res.status(500).json({ message: "Error fetching Calendly scheduled events" });
     }
   });
 
@@ -2443,7 +2744,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }).length;
 
       const ga4Enabled = await isConnectorEnabled("google-analytics");
-      const ga4 = ga4Enabled ? await fetchGA4Metrics(window) : null;
+      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : null;
       const ga4Connected = ga4Enabled && isGA4Configured();
 
       let typeformApiRate: number | null = null;
@@ -3205,14 +3506,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const voiceMode = voice === 'I' ? 'I' : 'we';
       const calibrationLevel = ['low', 'medium', 'high'].includes(calibration) ? calibration : 'medium';
 
+      const aiPrefsRaw = await storage.getAdminSetting("ai_context_enabled_sources");
+      const aiContextPrefs: Record<string, boolean> = aiPrefsRaw ? JSON.parse(aiPrefsRaw) : { "local-crm": true, "notion": true, "google-sheets": true, "stripe": true, "fathom": true, "typeform": true };
+
       const { getPipelineOSTasks } = await import("./lib/notionSync");
       const { generateFlywheelContent, generateSeoSuggestions, getCurrentLens } = await import("./lib/thesysApi");
 
       let pipelineContext = '';
-      try {
-        pipelineContext = await getPipelineOSTasks();
-      } catch (e: any) {
-        console.warn('Pipeline OS read failed (non-blocking):', e.message);
+      if (aiContextPrefs["notion"] !== false) {
+        try {
+          pipelineContext = await getPipelineOSTasks();
+        } catch (e: any) {
+          console.warn('Pipeline OS read failed (non-blocking):', e.message);
+        }
       }
 
       let enhancedPrompt = customPrompt;
@@ -5326,7 +5632,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     try {
       const connectorNames = [
         "stripe", "resend", "notion", "google-sheets", "google-analytics",
-        "thesys", "typeform", "youtube", "calendly", "github", "linkedin", "gmail"
+        "thesys", "typeform", "youtube", "calendly", "github", "linkedin", "gmail", "fathom"
       ];
       const statuses: Record<string, { enabled: boolean; hasEnvKey: boolean }> = {};
       const envKeyMap: Record<string, string> = {
@@ -5338,10 +5644,11 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
         thesys: "THESYS_API_KEY",
         typeform: "TYPEFORM_WEBHOOK_SECRET",
         youtube: "YOUTUBE_API_KEY",
-        calendly: "CALENDLY_URL",
+        calendly: "CALENDLY_API_TOKEN",
         github: "GITHUB_TOKEN",
         linkedin: "LINKEDIN_CLIENT_ID",
         gmail: "GMAIL_OAUTH_TOKEN",
+        fathom: "FATHOM_CLIENT_ID",
       };
       for (const name of connectorNames) {
         const enabled = await storage.isConnectorEnabled(name);
@@ -5358,7 +5665,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
 
   const VALID_CONNECTOR_NAMES = [
     "stripe", "resend", "notion", "google-sheets", "google-analytics",
-    "thesys", "typeform", "youtube", "calendly", "github", "linkedin", "gmail"
+    "thesys", "typeform", "youtube", "calendly", "github", "linkedin", "gmail", "fathom"
   ];
 
   app.put("/api/admin/connectors/:name", requireAdminAuth, requireWriteAccess, async (req, res) => {
@@ -5429,6 +5736,54 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     } catch (error: any) {
       console.error("Seed connectors error:", error);
       res.status(500).json({ message: "Error seeding connectors" });
+    }
+  });
+
+  app.get("/api/admin/connector-status", requireAdminAuth, async (_req, res) => {
+    try {
+      const result: Record<string, boolean> = {};
+      for (const name of ["notion", "google-sheets", "stripe", "typeform", "fathom"]) {
+        result[name] = await isConnectorEnabled(name);
+      }
+      result["local-crm"] = true;
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching connector status" });
+    }
+  });
+
+  app.get("/api/admin/ai-context-prefs", requireAdminAuth, async (_req, res) => {
+    try {
+      const raw = await storage.getAdminSetting("ai_context_enabled_sources");
+      if (raw) {
+        res.json({ enabledSources: JSON.parse(raw) });
+      } else {
+        res.json({
+          enabledSources: {
+            "local-crm": true,
+            "notion": true,
+            "google-sheets": true,
+            "stripe": true,
+            "fathom": true,
+            "typeform": true,
+          },
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching AI context preferences" });
+    }
+  });
+
+  app.post("/api/admin/ai-context-prefs", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { enabledSources } = req.body;
+      if (!enabledSources || typeof enabledSources !== "object") {
+        return res.status(400).json({ message: "enabledSources object is required" });
+      }
+      await storage.setAdminSetting("ai_context_enabled_sources", JSON.stringify(enabledSources));
+      res.json({ message: "AI context preferences saved", enabledSources });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error saving AI context preferences" });
     }
   });
 
@@ -5559,8 +5914,30 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       if (!targetingCategories || typeof targetingCategories !== 'object') {
         return res.status(400).json({ message: "targetingCategories object is required" });
       }
+      const aiPrefsRaw = await storage.getAdminSetting("ai_context_enabled_sources");
+      const aiContextPrefs: Record<string, boolean> = aiPrefsRaw ? JSON.parse(aiPrefsRaw) : { "local-crm": true, "notion": true, "google-sheets": true, "stripe": true, "fathom": true, "typeform": true };
+
+      let enrichedContext = customContext || '';
+      if (aiContextPrefs["notion"] !== false) {
+        try {
+          const { getPipelineOSTasks } = await import("./lib/notionSync");
+          const tasks = await getPipelineOSTasks();
+          if (tasks) enrichedContext += `\n\nPipeline OS context:\n${tasks}`;
+        } catch (_e) {}
+      }
+      if (aiContextPrefs["local-crm"] !== false) {
+        try {
+          const contacts = await storage.getAllContacts();
+          const sources = contacts.reduce((acc: Record<string, number>, c) => {
+            acc[c.source || "unknown"] = (acc[c.source || "unknown"] || 0) + 1;
+            return acc;
+          }, {});
+          enrichedContext += `\n\nCRM context: ${contacts.length} total contacts. Sources: ${JSON.stringify(sources)}`;
+        } catch (_e) {}
+      }
+
       const { generatePMFAssumptions } = await import("./lib/thesysApi");
-      const result = await generatePMFAssumptions(targetingCategories, customContext || '');
+      const result = await generatePMFAssumptions(targetingCategories, enrichedContext);
       res.json(result);
     } catch (error: any) {
       console.error("PMF assumptions generation error:", error);
@@ -5574,8 +5951,19 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       if (!calibration || !calibration.why || !calibration.what) {
         return res.status(400).json({ message: "calibration (why, what, how) is required" });
       }
+      const aiPrefsRaw = await storage.getAdminSetting("ai_context_enabled_sources");
+      const aiContextPrefs: Record<string, boolean> = aiPrefsRaw ? JSON.parse(aiPrefsRaw) : { "local-crm": true, "notion": true, "google-sheets": true, "stripe": true, "fathom": true, "typeform": true };
+
+      const enrichedFilters = { ...filters };
+      if (aiContextPrefs["local-crm"] !== false) {
+        try {
+          const contacts = await storage.getAllContacts();
+          enrichedFilters._crmContext = `${contacts.length} existing contacts in CRM`;
+        } catch (_e) {}
+      }
+
       const { generateLeadListSuggestions } = await import("./lib/thesysApi");
-      const result = await generateLeadListSuggestions(calibration, filters || {});
+      const result = await generateLeadListSuggestions(calibration, enrichedFilters);
       res.json(result);
     } catch (error: any) {
       console.error("Lead list generation error:", error);
@@ -5843,6 +6231,24 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       const errMsg = error instanceof Error ? error.message : "Unknown error";
       console.error("Timeline fetch error:", errMsg);
       res.status(500).json({ message: "Failed to fetch timeline events" });
+    }
+  });
+
+  app.post("/api/portal/nudge-dev", async (req, res) => {
+    if (!req.session || !req.session.clientUserId) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    try {
+      const context = typeof req.body?.context === "string" ? req.body.context.slice(0, 500) : "No context provided";
+      const userId = req.session.clientUserId as string;
+      console.log(`[Nudge Dev] User ${userId}: ${context}`);
+      const { sendNudgeDevNotification } = await import("./email-notifications");
+      sendNudgeDevNotification(userId, context).catch(err =>
+        console.error("[Nudge Dev] Email send failed:", err)
+      );
+      res.json({ success: true, message: "Dev team notified" });
+    } catch (error: unknown) {
+      res.status(500).json({ message: "Failed to send nudge" });
     }
   });
 
@@ -6115,7 +6521,9 @@ Provide preparation notes that include:
 6. OPENING LINE: A strong, conscious way to begin the conversation
 7. IF IT GOES SIDEWAYS: A recovery phrase or technique
 
-Be practical, specific, and actionable. No generic advice.${userContextBlock}${timelineBlock}`,
+Be practical, specific, and actionable. No generic advice.
+
+CRITICAL FORMAT INSTRUCTIONS: Return your response as plain readable text only. Use clear section headers with ALL CAPS followed by a colon (e.g. "SITUATION READ:"). Use bullet points with dashes for lists. Use quotation marks for suggested phrases. Do NOT use any XML, HTML, JSX, component names, or structured markup. Do NOT output tags like Card, Header, MiniCard, DataTile, Icon, SectionBlock, TextContent, CalloutV2, ButtonGroup, or any similar component/element names. Just write natural, readable text that a human can scan quickly.${userContextBlock}${timelineBlock}`,
 
         flowcheck: `You are a conscious communication coach for GreenElephant.org. The user completed a Flow Check with three slider scores (Motivation, Challenge, Competence each on a 1-10 scale) and landed in a specific zone.
 
@@ -6178,9 +6586,12 @@ Be warm, practical, and specific.${userContextBlock}${timelineBlock}`,
         storage.getAllOnboardingEmailLogs(),
       ]);
 
+      const aiPrefsRaw = await storage.getAdminSetting("ai_context_enabled_sources");
+      const aiContextPrefs: Record<string, boolean> = aiPrefsRaw ? JSON.parse(aiPrefsRaw) : { "local-crm": true, "notion": true, "google-sheets": true, "stripe": true, "fathom": true, "typeform": true };
+
       const connectorStatus: Record<string, boolean> = {};
       for (const name of ["notion", "google-sheets", "stripe", "typeform"]) {
-        connectorStatus[name] = await isConnectorEnabled(name);
+        connectorStatus[name] = (await isConnectorEnabled(name)) && aiContextPrefs[name] !== false;
       }
 
       let notionContactCount: number | null = null;
@@ -6325,6 +6736,315 @@ Be warm, practical, and specific.${userContextBlock}${timelineBlock}`,
         return res.status(503).json({ message: "Thesys AI connector is disabled. Enable it in Admin > Connected Tools." });
       }
       res.status(500).json({ message: error.message || "AI query failed" });
+    }
+  });
+
+  app.get("/qr/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const qrCode = await storage.getQrCodeBySlug(slug);
+      if (!qrCode || qrCode.isActive !== "true") {
+        return res.redirect("/portal/login");
+      }
+
+      const rawIp = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
+      const userAgent = req.headers["user-agent"] || "";
+      const referer = req.headers["referer"] || "";
+
+      const { createHash } = await import("crypto");
+      const ipHash = rawIp && rawIp !== "unknown"
+        ? createHash("sha256").update(rawIp + "ge-qr-salt-2026").digest("hex").slice(0, 16)
+        : "unknown";
+
+      let deviceType = "desktop";
+      if (/mobile|android|iphone|ipad/i.test(userAgent)) deviceType = "mobile";
+      else if (/tablet|ipad/i.test(userAgent)) deviceType = "tablet";
+
+      let geoData: any = {};
+      try {
+        if (rawIp && rawIp !== "unknown" && rawIp !== "127.0.0.1" && rawIp !== "::1") {
+          const geoRes = await fetch(`http://ip-api.com/json/${rawIp}?fields=status,country,regionName`);
+          const geo = await geoRes.json();
+          if (geo.status === "success") {
+            geoData = {
+              country: geo.country || null,
+              region: geo.regionName || null,
+            };
+          }
+        }
+      } catch (geoErr) {
+        console.error("QR geo lookup error:", geoErr);
+      }
+
+      await storage.createQrScan({
+        qrCodeId: qrCode.id,
+        ipAddress: ipHash,
+        userAgent: userAgent.slice(0, 200),
+        referer: referer.slice(0, 500),
+        deviceType,
+        ...geoData,
+      });
+
+      res.redirect(qrCode.targetUrl);
+    } catch (error: any) {
+      console.error("QR redirect error:", error);
+      res.redirect("/portal/login");
+    }
+  });
+
+  app.get("/api/admin/qr-codes", requireAdminAuth, async (_req, res) => {
+    try {
+      const codes = await storage.getAllQrCodes();
+      const codesWithCounts = await Promise.all(
+        codes.map(async (code) => {
+          const scanCount = await storage.getQrScanCount(code.id);
+          return { ...code, scanCount };
+        })
+      );
+      res.json(codesWithCounts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch QR codes" });
+    }
+  });
+
+  app.post("/api/admin/qr-codes", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { name, slug, targetUrl, type, description } = req.body;
+      if (!name || !slug || !targetUrl) {
+        return res.status(400).json({ message: "Name, slug, and target URL are required" });
+      }
+      const normalizedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, "");
+      if (!normalizedSlug || normalizedSlug.length < 2) {
+        return res.status(400).json({ message: "Slug must be at least 2 characters (letters, numbers, hyphens)" });
+      }
+      const isInternalPath = targetUrl.startsWith("/");
+      const isGreenElephantUrl = targetUrl.startsWith("https://greenelephant.org") || targetUrl.startsWith("https://www.greenelephant.org");
+      if (!isInternalPath && !isGreenElephantUrl) {
+        return res.status(400).json({ message: "Target URL must be an internal path (e.g. /portal/login) or a greenelephant.org URL" });
+      }
+      const existing = await storage.getQrCodeBySlug(normalizedSlug);
+      if (existing) {
+        return res.status(409).json({ message: "A QR code with this slug already exists" });
+      }
+      const created = await storage.createQrCode({
+        name: name.slice(0, 200),
+        slug: normalizedSlug,
+        targetUrl,
+        type: type || "campaign",
+        description: description ? description.slice(0, 500) : null,
+        isActive: "true",
+      });
+      res.json(created);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to create QR code" });
+    }
+  });
+
+  app.patch("/api/admin/qr-codes/:id", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, targetUrl, description, isActive } = req.body;
+      const safeUpdates: Record<string, any> = {};
+      if (name !== undefined) safeUpdates.name = String(name).slice(0, 200);
+      if (description !== undefined) safeUpdates.description = description ? String(description).slice(0, 500) : null;
+      if (isActive !== undefined) safeUpdates.isActive = isActive === "true" ? "true" : "false";
+      if (targetUrl !== undefined) {
+        const isInternalPath = targetUrl.startsWith("/");
+        const isGreenElephantUrl = targetUrl.startsWith("https://greenelephant.org") || targetUrl.startsWith("https://www.greenelephant.org");
+        if (!isInternalPath && !isGreenElephantUrl) {
+          return res.status(400).json({ message: "Target URL must be an internal path or greenelephant.org URL" });
+        }
+        safeUpdates.targetUrl = targetUrl;
+      }
+      if (Object.keys(safeUpdates).length === 0) {
+        return res.status(400).json({ message: "No valid fields to update" });
+      }
+      const updated = await storage.updateQrCode(id, safeUpdates);
+      if (!updated) return res.status(404).json({ message: "QR code not found" });
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to update QR code" });
+    }
+  });
+
+  app.delete("/api/admin/qr-codes/:id", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const qr = await storage.getQrCodeById(id);
+      if (!qr) return res.status(404).json({ message: "QR code not found" });
+      if (qr.type === "master") {
+        return res.status(403).json({ message: "Cannot delete the master QR code. You can deactivate it instead." });
+      }
+      await storage.deleteQrScansByCodeId(id);
+      await storage.deleteQrCode(id);
+      res.json({ message: "QR code and associated scans deleted" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to delete QR code" });
+    }
+  });
+
+  app.get("/api/admin/qr-codes/:id/scans", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const limit = Math.min(Number(req.query.limit) || 100, 500);
+      const scans = await storage.getQrScansByCodeId(id);
+      const count = await storage.getQrScanCount(id);
+
+      const countryCounts: Record<string, number> = {};
+      const cityCounts: Record<string, number> = {};
+      const deviceCounts: Record<string, number> = {};
+      const dailyCounts: Record<string, number> = {};
+
+      for (const scan of scans) {
+        if (scan.country) countryCounts[scan.country] = (countryCounts[scan.country] || 0) + 1;
+        if (scan.city) cityCounts[scan.city] = (cityCounts[scan.city] || 0) + 1;
+        if (scan.deviceType) deviceCounts[scan.deviceType] = (deviceCounts[scan.deviceType] || 0) + 1;
+        const day = new Date(scan.scannedAt).toISOString().slice(0, 10);
+        dailyCounts[day] = (dailyCounts[day] || 0) + 1;
+      }
+
+      res.json({
+        totalScans: count,
+        scans: scans.slice(0, limit),
+        analytics: {
+          byCountry: Object.entries(countryCounts).sort((a, b) => b[1] - a[1]),
+          byCity: Object.entries(cityCounts).sort((a, b) => b[1] - a[1]),
+          byDevice: Object.entries(deviceCounts).sort((a, b) => b[1] - a[1]),
+          byDay: Object.entries(dailyCounts).sort((a, b) => a[0].localeCompare(b[0])),
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch scans" });
+    }
+  });
+
+  app.delete("/api/admin/qr-codes/:id/scans", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const count = await storage.deleteQrScansByCodeId(id);
+      res.json({ message: `Deleted ${count} scan records`, count });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to purge scans" });
+    }
+  });
+
+  app.get("/api/admin/qr-codes/:id/image", requireAdminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const qrCode = await storage.getQrCodeById(id);
+      if (!qrCode) return res.status(404).json({ message: "QR code not found" });
+
+      const QRCode = (await import("qrcode")).default;
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : "https://greenelephant.org";
+      const qrUrl = `${baseUrl}/qr/${qrCode.slug}`;
+
+      const format = (req.query.format as string) || "png";
+      if (format === "svg") {
+        const svg = await QRCode.toString(qrUrl, {
+          type: "svg",
+          margin: 2,
+          color: { dark: "#009999", light: "#ffffff" },
+        });
+        res.setHeader("Content-Type", "image/svg+xml");
+        res.send(svg);
+      } else {
+        const size = Math.min(Number(req.query.size) || 512, 2048);
+        const pngBuffer = await QRCode.toBuffer(qrUrl, {
+          type: "png",
+          width: size,
+          margin: 2,
+          color: { dark: "#009999", light: "#ffffff" },
+        });
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader("Content-Disposition", `attachment; filename="greenelephant-qr-${qrCode.slug}.png"`);
+        res.send(pngBuffer);
+      }
+    } catch (error: any) {
+      console.error("QR image generation error:", error);
+      res.status(500).json({ message: error.message || "Failed to generate QR image" });
+    }
+  });
+
+  app.post("/api/admin/qr-codes/seed-master", requireAdminAuth, requireWriteAccess, async (_req, res) => {
+    try {
+      const existing = await storage.getQrCodeBySlug("main");
+      if (existing) return res.json({ message: "Master QR code already exists", qrCode: existing });
+      const master = await storage.createQrCode({
+        name: "GreenElephant Portal — Master QR",
+        slug: "main",
+        targetUrl: "/portal/login",
+        type: "master",
+        description: "The universal QR code that always redirects to the GreenElephant portal login. Print this everywhere.",
+        isActive: "true",
+      });
+      res.json({ message: "Master QR code created", qrCode: master });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to create master QR" });
+    }
+  });
+
+  app.get("/api/admin/debriefs", requireAdminAuth, async (_req, res) => {
+    try {
+      const debriefs = await storage.getAllCoachingDebriefs();
+      res.json(debriefs);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch debriefs" });
+    }
+  });
+
+  app.post("/api/admin/debriefs", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { clientName, sessionNumber, lens, keyInsights, actionItems, coachNotes, progress, status } = req.body;
+      if (!clientName || typeof clientName !== "string") return res.status(400).json({ message: "Client name is required" });
+      const progressVal = typeof progress === "number" ? Math.min(5, Math.max(1, progress)) : 3;
+      const validStatuses = ["draft", "reviewed", "shared"];
+      const debrief = await storage.createCoachingDebrief({
+        clientName: clientName.trim(),
+        sessionNumber: typeof sessionNumber === "number" ? Math.max(1, sessionNumber) : 1,
+        lens: typeof lens === "string" ? lens : null,
+        keyInsights: typeof keyInsights === "string" ? keyInsights : null,
+        actionItems: Array.isArray(actionItems) ? actionItems.filter((a: any) => typeof a === "string") : null,
+        coachNotes: typeof coachNotes === "string" ? coachNotes : null,
+        progress: progressVal,
+        status: validStatuses.includes(status) ? status : "draft",
+      });
+      res.json(debrief);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to create debrief" });
+    }
+  });
+
+  app.patch("/api/admin/debriefs/:id", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const allowedFields: Record<string, any> = {};
+      if (typeof req.body.clientName === "string") allowedFields.clientName = req.body.clientName.trim();
+      if (typeof req.body.sessionNumber === "number") allowedFields.sessionNumber = Math.max(1, req.body.sessionNumber);
+      if (typeof req.body.lens === "string") allowedFields.lens = req.body.lens;
+      if (typeof req.body.keyInsights === "string") allowedFields.keyInsights = req.body.keyInsights;
+      if (Array.isArray(req.body.actionItems)) allowedFields.actionItems = req.body.actionItems.filter((a: any) => typeof a === "string");
+      if (typeof req.body.coachNotes === "string") allowedFields.coachNotes = req.body.coachNotes;
+      if (typeof req.body.progress === "number") allowedFields.progress = Math.min(5, Math.max(1, req.body.progress));
+      const validStatuses = ["draft", "reviewed", "shared"];
+      if (validStatuses.includes(req.body.status)) allowedFields.status = req.body.status;
+      const updated = await storage.updateCoachingDebrief(id, allowedFields);
+      if (!updated) return res.status(404).json({ message: "Debrief not found" });
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to update debrief" });
+    }
+  });
+
+  app.delete("/api/admin/debriefs/:id", requireAdminAuth, requireWriteAccess, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteCoachingDebrief(id);
+      if (!deleted) return res.status(404).json({ message: "Debrief not found" });
+      res.json({ message: "Debrief deleted" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to delete debrief" });
     }
   });
 

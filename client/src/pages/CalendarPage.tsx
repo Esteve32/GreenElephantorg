@@ -15,8 +15,6 @@ import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { LENSES } from "@/constants/lenses";
 import celestialCalendarUrl from "@assets/Celestial_calendar🔥2022_extrenal_no_planets_with_legend_no_ik_1764793584893.png";
-
-
 const heroGradient = {
   background: `linear-gradient(180deg, 
     #000000 0%, 

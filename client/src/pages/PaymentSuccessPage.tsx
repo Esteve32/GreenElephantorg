@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, FileText, Mail, Gift } from "lucide-react";
 
 export default function PaymentSuccessPage() {
+  useEffect(() => { document.title = "Payment Successful | GreenElephant"; }, []);
   const [, setLocation] = useLocation();
   const searchString = useSearch();
   

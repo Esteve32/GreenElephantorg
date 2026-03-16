@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2, HelpCircle, Info, ShoppingCart, Trash2, ToggleLeft, Download, Send, Clock, Edit2, Save, X, Eye, RefreshCw, Database, Radio, Loader2, BarChart3, Settings, Linkedin, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, Zap, Atom, Shield, Share2, Globe, Star, Megaphone, UserCheck, KeyRound, RotateCw, Heart, Quote, Link2, Search, Lock, ClipboardCheck, CreditCard, Bot, MessageCircle } from "lucide-react";
+import { Calendar, Mail, MessageSquare, Sparkles, Users, FileText, LogOut, Ticket, Plus, CheckCircle2, HelpCircle, Info, ShoppingCart, Trash2, ToggleLeft, Download, Send, Clock, Edit2, Save, X, Eye, RefreshCw, Database, Radio, Loader2, BarChart3, Settings, Linkedin, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, Zap, Atom, Shield, Share2, Globe, Star, Megaphone, UserCheck, KeyRound, RotateCw, Heart, Quote, Link2, Search, Lock, ClipboardCheck, CreditCard, Bot, MessageCircle, Activity, QrCode } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
@@ -286,13 +286,23 @@ const SETTINGS_TOOLS = [
   { label: "GDPR Controls", icon: Shield, href: "/admin/gdpr-controls", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
   { label: "Connected Tools", icon: Settings, href: "/admin/integrations", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
   { label: "Access & Security", icon: Lock, href: "/admin/access-control", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "QR Command Center", icon: QrCode, href: "/admin/qr-command-center", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
 ];
 
 export default function AdminSubmissionsPage() {
+  useEffect(() => { document.title = "Admin Hub | GreenElephant OS"; }, []);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("contacts");
   const [funnelWindow, setFunnelWindow] = useState<"7d" | "30d" | "all">("all");
+  const [expandedStages, setExpandedStages] = useState<Set<string>>(new Set());
+  const toggleStage = (stage: string) => {
+    setExpandedStages(prev => {
+      const next = new Set(prev);
+      if (next.has(stage)) next.delete(stage); else next.add(stage);
+      return next;
+    });
+  };
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [aiDialogStage, setAiDialogStage] = useState("");
   const [aiQuestion, setAiQuestion] = useState("");
@@ -387,6 +397,13 @@ export default function AdminSubmissionsPage() {
   const { data: webinarSettingsData, isLoading: webinarSettingsLoading, refetch: refetchWebinarSettings } = useQuery<any>({
     queryKey: ['/api/admin/webinar-settings'],
     enabled: isAuthenticated,
+  });
+
+  const { data: fathomVisitors } = useQuery<{ total: number }>({
+    queryKey: ['/api/admin/fathom/current-visitors'],
+    enabled: isAuthenticated,
+    refetchInterval: 30000,
+    retry: false,
   });
 
   const { data: funnelData, isLoading: funnelLoading } = useQuery<{
@@ -1119,7 +1136,7 @@ export default function AdminSubmissionsPage() {
       {/* Hero Section */}
       <div className="relative z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-needs/10 via-transparent to-ego/10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10">
+        <div className="relative max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <img src={geLogo} alt="GreenElephant" className="w-14 h-14 rounded-full ring-2 ring-needs/30" />
@@ -1128,20 +1145,36 @@ export default function AdminSubmissionsPage() {
                 <p className="text-sm text-white/40">Admin Hub &middot; Customer Journey &middot; Operations</p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="border-white/20 text-white/60"
-              data-testid="button-admin-logout"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setLocation("/admin/access-control")}
+                    className="border-white/20 text-white/60"
+                    data-testid="button-admin-access-control"
+                  >
+                    <Lock className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Access & Security</TooltipContent>
+              </Tooltip>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="border-white/20 text-white/60"
+                data-testid="button-admin-logout"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
 
           {/* Quick stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
             {[
               { label: "Contacts", value: contactsData?.length || 0, color: "text-needs", tip: "Total contact form submissions received. Each contact is synced to Notion CRM." },
               { label: "Purchases", value: purchasesData?.length || 0, color: "text-attitude", tip: "Completed Stripe payments — includes Satellite Scans, coaching sessions, and journeys." },
@@ -1158,6 +1191,27 @@ export default function AdminSubmissionsPage() {
                 <TooltipContent side="bottom" className="max-w-xs">{stat.tip}</TooltipContent>
               </Tooltip>
             ))}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className="bg-white/5 rounded-md p-4 border border-white/10 cursor-help"
+                  data-testid="stat-fathom-live-visitors"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="text-2xl font-bold text-flow">
+                      {fathomVisitors?.total !== undefined ? fathomVisitors.total : "—"}
+                    </div>
+                    {fathomVisitors?.total !== undefined && (
+                      <Activity className="h-4 w-4 text-flow animate-pulse" />
+                    )}
+                  </div>
+                  <div className="text-xs text-white/40 mt-1">Live Visitors</div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs">
+                Current visitors on the site right now via Fathom Analytics. Refreshes every 30 seconds. Requires Fathom OAuth to be connected.
+              </TooltipContent>
+            </Tooltip>
           </div>
 
           {/* Customer Journey Funnel — data summary at the top */}
@@ -1396,78 +1450,123 @@ export default function AdminSubmissionsPage() {
             ) : null}
           </div>
 
-          {/* Quick-access tools — organized by Customer Journey */}
-          <div className="space-y-4">
-            {(JOURNEY_STAGES as JourneyStage[]).map(group => (
-              <div key={group.stage} className="rounded-md border border-white/10 bg-white/[0.02]">
-                <div className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className={`text-xs font-bold uppercase tracking-widest cursor-help ${group.color.split(' ')[0]}`}>{group.stage}</span>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-xs text-xs">{group.tip}</TooltipContent>
-                    </Tooltip>
-                    <span className="text-xs text-muted-foreground italic">{group.subtitle}</span>
-                    <div className={`flex-1 h-px ${group.stageBg} opacity-50`} />
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                    {group.tools.map(tool => (
-                      <button
-                        key={`${group.stage}-${tool.href}`}
-                        onClick={() => {
-                          if (tool.href.startsWith('#')) {
-                            const el = document.getElementById(tool.href.slice(1));
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                          } else {
-                            setLocation(tool.href);
-                          }
-                        }}
-                        className={`flex flex-col items-center gap-2 rounded-md border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
-                        data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        <tool.icon className="h-5 w-5" />
-                        <span className="text-xs font-medium leading-tight">{tool.label}</span>
-                      </button>
-                    ))}
-                  </div>
+          {/* Customer Journey — wide horizontal layout with toggleable stages */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 xl:grid-cols-8 gap-3">
+            {(JOURNEY_STAGES as JourneyStage[]).map(group => {
+              const isOpen = expandedStages.has(group.stage);
+              const stageColor = group.color.split(' ')[0];
+              const hexColor = group.stageBg.match(/bg-(\w+-\d+)/)?.[0] || '';
+              return (
+                <div key={group.stage} className={`rounded-md border transition-all ${isOpen ? 'col-span-2 sm:col-span-4 lg:col-span-7 xl:col-span-8 border-white/20' : 'border-white/10'} bg-white/[0.02]`}>
+                  <button
+                    onClick={() => toggleStage(group.stage)}
+                    className="w-full text-left p-3 hover-elevate rounded-md"
+                    data-testid={`button-toggle-stage-${group.stage.toLowerCase()}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {isOpen ? <ChevronDown className={`h-3.5 w-3.5 ${stageColor}`} /> : <ChevronRight className={`h-3.5 w-3.5 ${stageColor}`} />}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className={`text-xs font-bold uppercase tracking-widest cursor-help ${stageColor}`}>{group.stage}</span>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs text-xs">{group.tip}</TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <p className="text-[10px] text-white/30 mt-1 ml-5">{group.subtitle}</p>
+                    {!isOpen && (
+                      <div className="flex items-center gap-1.5 mt-2 ml-5">
+                        <Badge className={`text-[10px] px-1.5 py-0 ${group.stageBg} ${stageColor} border-0`}>{group.tools.length}</Badge>
+                        <span className="text-[10px] text-white/20">tools</span>
+                      </div>
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="px-3 pb-3 pt-0">
+                      <div className={`h-px ${group.stageBg} opacity-30 mb-3`} />
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        {group.tools.map(tool => (
+                          <button
+                            key={`${group.stage}-${tool.href}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (tool.href.startsWith('#')) {
+                                const el = document.getElementById(tool.href.slice(1));
+                                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                              } else {
+                                setLocation(tool.href);
+                              }
+                            }}
+                            className={`flex flex-col items-center gap-2 rounded-md border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
+                            data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <tool.icon className="h-5 w-5" />
+                            <span className="text-xs font-medium leading-tight">{tool.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
-            <div className="rounded-md border border-white/10 bg-white/[0.02]">
-              <div className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="text-xs font-bold uppercase tracking-widest cursor-help text-slate-400">Settings & Operations</span>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs text-xs">Configuration, integrations, pricing, access control, and compliance. These tools run across all journey stages.</TooltipContent>
-                  </Tooltip>
-                  <span className="text-xs text-muted-foreground italic">Cross-stage admin tools</span>
-                  <div className="flex-1 h-px bg-slate-400/10 opacity-50" />
+            {/* Settings & Operations — same pattern */}
+            {(() => {
+              const isOpen = expandedStages.has("settings");
+              return (
+                <div className={`rounded-md border transition-all ${isOpen ? 'border-slate-400/20 col-span-2 sm:col-span-4 lg:col-span-7 xl:col-span-8' : 'border-white/10'} bg-white/[0.02]`}>
+                  <button
+                    onClick={() => toggleStage("settings")}
+                    className="w-full text-left p-3 hover-elevate rounded-md"
+                    data-testid="button-toggle-stage-settings"
+                  >
+                    <div className="flex items-center gap-2">
+                      {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-slate-400" /> : <ChevronRight className="h-3.5 w-3.5 text-slate-400" />}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="text-xs font-bold uppercase tracking-widest cursor-help text-slate-400">Settings</span>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs text-xs">Configuration, integrations, pricing, access control, and compliance. These tools run across all journey stages.</TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <p className="text-[10px] text-white/30 mt-1 ml-5">Cross-stage admin tools</p>
+                    {!isOpen && (
+                      <div className="flex items-center gap-1.5 mt-2 ml-5">
+                        <Badge className="text-[10px] px-1.5 py-0 bg-slate-400/10 text-slate-400 border-0">{SETTINGS_TOOLS.length}</Badge>
+                        <span className="text-[10px] text-white/20">tools</span>
+                      </div>
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="px-3 pb-3 pt-0">
+                      <div className="h-px bg-slate-400/10 opacity-30 mb-3" />
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        {SETTINGS_TOOLS.map(tool => (
+                          <button
+                            key={`settings-${tool.href}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLocation(tool.href);
+                            }}
+                            className={`flex flex-col items-center gap-2 rounded-md border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
+                            data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <tool.icon className="h-5 w-5" />
+                            <span className="text-xs font-medium leading-tight">{tool.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                  {SETTINGS_TOOLS.map(tool => (
-                    <button
-                      key={`settings-${tool.href}`}
-                      onClick={() => setLocation(tool.href)}
-                      className={`flex flex-col items-center gap-2 rounded-md border p-4 text-center hover-elevate active-elevate-2 ${tool.color}`}
-                      data-testid={`button-tool-${tool.label.toLowerCase().replace(/\s+/g, '-')}`}
-                    >
-                      <tool.icon className="h-5 w-5" />
-                      <span className="text-xs font-medium leading-tight">{tool.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
         </div>
       </div>
 
       {/* Audience & CRM — data tables for contacts, subscribers, waitlist, quiz results */}
-      <div id="audience-data" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div id="audience-data" className="relative z-10 max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center gap-3 mb-6">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-yellow-400/15 to-transparent" />
           <div className="flex items-center gap-2 px-5 py-2 rounded-md bg-yellow-400/[0.04] border border-yellow-400/20">

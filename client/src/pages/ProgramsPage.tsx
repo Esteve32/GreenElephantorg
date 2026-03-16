@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import archipelagoUrl from "@assets/finnish_archipelago_landscape_aerial_view_1764797904449.png";
 import Footer from "@/components/Footer";
-import { ArrowRight, Sparkles, Trophy, Compass, CheckCircle2, Calendar, Users, Target, Brain, Heart, MessageSquare, Zap } from "lucide-react";
+import { ArrowRight, Sparkles, Trophy, Compass, CheckCircle2, Calendar, Users, Target, Brain, Heart, MessageSquare, Zap, BarChart3, Shield, Lock } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import programPathsUrl from "@assets/generated_images/program_comparison_paths.png";
 
 const EA_BENEFITS = [
   "Master the art of managing up with confidence",
@@ -81,6 +83,177 @@ function HeroSection() {
           Whether you're leading teams, navigating interviews, or seeking clarity on your path—we have a program for you.
         </p>
       </motion.div>
+    </section>
+  );
+}
+
+function CompareAllSection() {
+  const programs = [
+    {
+      name: "Satellite Scan",
+      price: "€99.95",
+      priceNote: "one-time",
+      description: "Your communication baseline",
+      idealFor: "Anyone starting their journey",
+      includes: ["129-question self-assessment", "Personalized dashboard (48-72h)", "10+ AI coaching prompts", "Video coaching library", "Downloadable resources"],
+      cta: "Get Your Scan",
+      link: "/scan",
+      color: "#009999",
+      highlighted: false,
+    },
+    {
+      name: "Single Session",
+      price: "€295",
+      priceNote: "120 min",
+      description: "Deep-dive coaching session",
+      idealFor: "Specific challenge or decision",
+      includes: ["120-minute 1:1 session", "Personalized framework analysis", "3 micro-habits action plan", "Session recording & transcript"],
+      cta: "Book a Session",
+      link: "/coaching",
+      color: "#33a854",
+      highlighted: false,
+    },
+    {
+      name: "Interview Bundle",
+      price: "€845",
+      priceNote: "3 sessions",
+      description: "Data-driven interview mastery",
+      idealFor: "Professionals 40+ in career transition",
+      includes: ["Satellite Scan included", "3 coaching sessions (90-120 min)", "Mock interview practice", "Post-interview debrief", "Personalized language coaching"],
+      cta: "Get the Bundle",
+      link: "/interview-coaching",
+      color: "#9933cc",
+      highlighted: false,
+    },
+    {
+      name: "Coaching Journey",
+      price: "€2,980",
+      priceNote: "~6 months",
+      description: "Full transformation",
+      idealFor: "EAs, leaders, founders seeking deep change",
+      includes: ["Satellite Scan included", "Biweekly coaching sessions", "Unlimited check-in calls", "Ongoing messaging support", "Personalized micro-habit plan", "Lens video library access", "Support until goals reached"],
+      cta: "Start Your Journey",
+      link: "/coaching",
+      color: "#e8c840",
+      highlighted: true,
+    },
+  ];
+
+  return (
+    <section
+      id="compare"
+      className="relative py-24 md:py-32"
+      style={{
+        background: `linear-gradient(180deg, 
+          ${atmosphericPalette.upperAtmosphere} 0%, 
+          ${atmosphericPalette.midAtmosphere} 100%
+        )`
+      }}
+      data-testid="section-compare-all"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <Badge className="mb-6 bg-needs/20 text-needs border-needs/30">
+            <BarChart3 className="w-3 h-3 mr-1" />
+            Compare Programs
+          </Badge>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white" data-testid="text-compare-title">
+            Choose Your Path
+          </h2>
+          <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            Every journey starts with self-awareness. Pick the depth that matches your goal.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {programs.map((prog, i) => (
+            <motion.div
+              key={prog.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="flex"
+            >
+              <Card
+                className={`w-full flex flex-col bg-white/5 backdrop-blur-sm border-white/10 ${
+                  prog.highlighted ? 'ring-2' : ''
+                }`}
+                style={prog.highlighted ? { borderColor: `${prog.color}60`, boxShadow: `0 0 24px ${prog.color}15` } : {}}
+                data-testid={`card-program-${prog.name.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                {prog.highlighted && (
+                  <div className="text-center py-1.5 text-xs font-semibold tracking-wider uppercase" style={{ backgroundColor: `${prog.color}20`, color: prog.color }}>
+                    Most Popular
+                  </div>
+                )}
+                <CardContent className="p-6 flex flex-col flex-1">
+                  <div className="mb-4">
+                    <div className="w-3 h-3 rounded-full mb-3" style={{ backgroundColor: prog.color }} />
+                    <h3 className="text-xl font-bold text-white mb-1">{prog.name}</h3>
+                    <p className="text-sm text-white/50">{prog.description}</p>
+                  </div>
+
+                  <div className="mb-4">
+                    <span className="text-3xl font-bold text-white">{prog.price}</span>
+                    <span className="text-sm text-white/40 ml-2">{prog.priceNote}</span>
+                  </div>
+
+                  <p className="text-xs text-white/40 mb-4">
+                    <span className="font-medium text-white/60">Ideal for:</span> {prog.idealFor}
+                  </p>
+
+                  <ul className="space-y-2 mb-6 flex-1">
+                    {prog.includes.map((item, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm text-white/70">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prog.color }} />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link href={prog.link}>
+                    <Button
+                      className="w-full text-white"
+                      style={{ backgroundColor: prog.color }}
+                      data-testid={`button-program-${prog.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {prog.cta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <span className="flex items-center gap-2 text-sm text-white/50">
+              <Shield className="w-4 h-4" /> 14-day satisfaction guarantee
+            </span>
+            <span className="flex items-center gap-2 text-sm text-white/50">
+              <Calendar className="w-4 h-4" /> Flexible scheduling
+            </span>
+            <span className="flex items-center gap-2 text-sm text-white/50">
+              <Users className="w-4 h-4" /> Team workshops available
+            </span>
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }
@@ -224,7 +397,7 @@ function InterviewCoachingSection() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-3 mb-6">
-                  <span className="text-4xl font-bold text-white">€795</span>
+                  <span className="text-4xl font-bold text-white">€845</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-2 text-white/80">
@@ -490,6 +663,7 @@ export default function ProgramsPage() {
         ]}
       />
       <HeroSection />
+      <CompareAllSection />
       <EACoachingSection />
       <InterviewCoachingSection />
       <YourPathSection />
@@ -532,7 +706,51 @@ export default function ProgramsPage() {
       </div>
     </div>
 
+    <section className="relative py-16" data-testid="section-programs-trust">
+      <div className="max-w-4xl mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative overflow-hidden rounded-2xl border border-white/10 p-8 md:p-12"
+          style={{ background: "linear-gradient(135deg, rgba(0,153,153,0.08) 0%, rgba(232,200,64,0.08) 100%)" }}
+        >
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-needs/15 border border-needs/30 mb-6">
+              <Shield className="w-7 h-7 text-needs" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4" data-testid="text-programs-guarantee-title">
+              14-Day Satisfaction Guarantee
+            </h2>
+            <p className="text-white/60 max-w-xl mx-auto mb-6">
+              Every program comes with our 14-day money-back guarantee. If you don't find actionable value in your first 14 days, get a full refund. No questions asked.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+              <Link href="/checkout?product=satellitescan">
+                <Button size="lg" className="bg-needs text-white" data-testid="button-programs-guarantee-cta">
+                  Start Risk-Free — €99.95
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
+              <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
+              <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> All programs included</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+
     <Footer />
+
+    <StickyMobileCTA
+      price="From €99.95"
+      label="Compare Programs"
+      href="/programs#compare"
+      sublabel="Find your perfect starting point"
+    />
     </>
   );
 }

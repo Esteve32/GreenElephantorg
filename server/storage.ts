@@ -62,6 +62,12 @@ import {
   type InsertPortalTimelineEvent,
   type PortalUserContext,
   type InsertPortalUserContext,
+  type QrCode,
+  type InsertQrCode,
+  type QrScan,
+  type InsertQrScan,
+  type CoachingDebrief,
+  type InsertCoachingDebrief,
   users,
   recommendationSubmissions,
   contacts,
@@ -94,7 +100,10 @@ import {
   adminUsers,
   auditLogs,
   portalTimelineEvents,
-  portalUserContext
+  portalUserContext,
+  qrCodes,
+  qrScans,
+  coachingDebriefs
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -306,6 +315,24 @@ export interface IStorage {
   setPortalUserContext(userId: string, key: string, value: string): Promise<PortalUserContext>;
   getPortalUserContextByKey(userId: string, key: string): Promise<PortalUserContext | undefined>;
   deleteAllPortalUserContext(userId: string): Promise<number>;
+
+  createQrCode(qrCode: InsertQrCode): Promise<QrCode>;
+  getQrCodeById(id: string): Promise<QrCode | undefined>;
+  getQrCodeBySlug(slug: string): Promise<QrCode | undefined>;
+  getAllQrCodes(): Promise<QrCode[]>;
+  updateQrCode(id: string, updates: Partial<InsertQrCode>): Promise<QrCode | undefined>;
+  deleteQrCode(id: string): Promise<boolean>;
+
+  createQrScan(scan: InsertQrScan): Promise<QrScan>;
+  getQrScansByCodeId(qrCodeId: string): Promise<QrScan[]>;
+  getQrScanCount(qrCodeId: string): Promise<number>;
+  getAllQrScans(limit?: number): Promise<QrScan[]>;
+  deleteQrScansByCodeId(qrCodeId: string): Promise<number>;
+
+  createCoachingDebrief(debrief: InsertCoachingDebrief): Promise<CoachingDebrief>;
+  getAllCoachingDebriefs(): Promise<CoachingDebrief[]>;
+  updateCoachingDebrief(id: string, updates: Partial<InsertCoachingDebrief>): Promise<CoachingDebrief | undefined>;
+  deleteCoachingDebrief(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -910,6 +937,66 @@ export class MemStorage implements IStorage {
       }
     }
     return count;
+  }
+
+  private qrCodesMap: Map<string, QrCode> = new Map();
+  private qrScansMap: Map<string, QrScan> = new Map();
+  async createQrCode(qrCode: InsertQrCode): Promise<QrCode> {
+    const id = randomUUID();
+    const created: QrCode = { id, ...qrCode, description: qrCode.description ?? null, type: qrCode.type ?? "campaign", isActive: qrCode.isActive ?? "true", createdAt: new Date() };
+    this.qrCodesMap.set(id, created);
+    return created;
+  }
+  async getQrCodeById(id: string): Promise<QrCode | undefined> { return this.qrCodesMap.get(id); }
+  async getQrCodeBySlug(slug: string): Promise<QrCode | undefined> { return Array.from(this.qrCodesMap.values()).find(q => q.slug === slug); }
+  async getAllQrCodes(): Promise<QrCode[]> { return Array.from(this.qrCodesMap.values()); }
+  async updateQrCode(id: string, updates: Partial<InsertQrCode>): Promise<QrCode | undefined> {
+    const existing = this.qrCodesMap.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...updates } as QrCode;
+    this.qrCodesMap.set(id, updated);
+    return updated;
+  }
+  async deleteQrCode(id: string): Promise<boolean> { return this.qrCodesMap.delete(id); }
+  async createQrScan(scan: InsertQrScan): Promise<QrScan> {
+    const id = randomUUID();
+    const created: QrScan = { id, ...scan, ipAddress: scan.ipAddress ?? null, userAgent: scan.userAgent ?? null, referer: scan.referer ?? null, country: scan.country ?? null, city: scan.city ?? null, region: scan.region ?? null, latitude: scan.latitude ?? null, longitude: scan.longitude ?? null, isp: scan.isp ?? null, deviceType: scan.deviceType ?? null, consentAcknowledged: scan.consentAcknowledged ?? "false", scannedAt: new Date() };
+    this.qrScansMap.set(id, created);
+    return created;
+  }
+  async getQrScansByCodeId(qrCodeId: string): Promise<QrScan[]> { return Array.from(this.qrScansMap.values()).filter(s => s.qrCodeId === qrCodeId); }
+  async getQrScanCount(qrCodeId: string): Promise<number> { return Array.from(this.qrScansMap.values()).filter(s => s.qrCodeId === qrCodeId).length; }
+  async getAllQrScans(limit?: number): Promise<QrScan[]> {
+    const all = Array.from(this.qrScansMap.values()).sort((a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime());
+    return limit ? all.slice(0, limit) : all;
+  }
+  async deleteQrScansByCodeId(qrCodeId: string): Promise<number> {
+    let count = 0;
+    for (const [id, scan] of this.qrScansMap.entries()) {
+      if (scan.qrCodeId === qrCodeId) { this.qrScansMap.delete(id); count++; }
+    }
+    return count;
+  }
+
+  private coachingDebriefsMap: Map<string, CoachingDebrief> = new Map();
+  async createCoachingDebrief(debrief: InsertCoachingDebrief): Promise<CoachingDebrief> {
+    const id = randomUUID();
+    const created: CoachingDebrief = { id, clientName: debrief.clientName, sessionNumber: debrief.sessionNumber ?? 1, lens: debrief.lens ?? null, keyInsights: debrief.keyInsights ?? null, actionItems: debrief.actionItems ?? null, coachNotes: debrief.coachNotes ?? null, progress: debrief.progress ?? 3, status: debrief.status ?? "draft", createdAt: new Date(), updatedAt: new Date() };
+    this.coachingDebriefsMap.set(id, created);
+    return created;
+  }
+  async getAllCoachingDebriefs(): Promise<CoachingDebrief[]> {
+    return Array.from(this.coachingDebriefsMap.values()).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  async updateCoachingDebrief(id: string, updates: Partial<InsertCoachingDebrief>): Promise<CoachingDebrief | undefined> {
+    const existing = this.coachingDebriefsMap.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...updates, updatedAt: new Date() };
+    this.coachingDebriefsMap.set(id, updated);
+    return updated;
+  }
+  async deleteCoachingDebrief(id: string): Promise<boolean> {
+    return this.coachingDebriefsMap.delete(id);
   }
 }
 
@@ -1925,6 +2012,66 @@ export class DatabaseStorage implements IStorage {
       .where(eq(portalUserContext.userId, userId))
       .returning();
     return result.length;
+  }
+
+  async createQrCode(qrCode: InsertQrCode): Promise<QrCode> {
+    const [created] = await db.insert(qrCodes).values(qrCode).returning();
+    return created;
+  }
+  async getQrCodeById(id: string): Promise<QrCode | undefined> {
+    const [qr] = await db.select().from(qrCodes).where(eq(qrCodes.id, id)).limit(1);
+    return qr;
+  }
+  async getQrCodeBySlug(slug: string): Promise<QrCode | undefined> {
+    const [qr] = await db.select().from(qrCodes).where(eq(qrCodes.slug, slug)).limit(1);
+    return qr;
+  }
+  async getAllQrCodes(): Promise<QrCode[]> {
+    return db.select().from(qrCodes).orderBy(desc(qrCodes.createdAt));
+  }
+  async updateQrCode(id: string, updates: Partial<InsertQrCode>): Promise<QrCode | undefined> {
+    const [updated] = await db.update(qrCodes).set(updates).where(eq(qrCodes.id, id)).returning();
+    return updated;
+  }
+  async deleteQrCode(id: string): Promise<boolean> {
+    const result = await db.delete(qrCodes).where(eq(qrCodes.id, id)).returning();
+    return result.length > 0;
+  }
+  async createQrScan(scan: InsertQrScan): Promise<QrScan> {
+    const [created] = await db.insert(qrScans).values(scan).returning();
+    return created;
+  }
+  async getQrScansByCodeId(qrCodeId: string): Promise<QrScan[]> {
+    return db.select().from(qrScans).where(eq(qrScans.qrCodeId, qrCodeId)).orderBy(desc(qrScans.scannedAt));
+  }
+  async getQrScanCount(qrCodeId: string): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` }).from(qrScans).where(eq(qrScans.qrCodeId, qrCodeId));
+    return Number(result[0]?.count || 0);
+  }
+  async getAllQrScans(limit?: number): Promise<QrScan[]> {
+    const q = db.select().from(qrScans).orderBy(desc(qrScans.scannedAt));
+    if (limit) return q.limit(limit);
+    return q;
+  }
+  async deleteQrScansByCodeId(qrCodeId: string): Promise<number> {
+    const result = await db.delete(qrScans).where(eq(qrScans.qrCodeId, qrCodeId)).returning();
+    return result.length;
+  }
+
+  async createCoachingDebrief(debrief: InsertCoachingDebrief): Promise<CoachingDebrief> {
+    const [created] = await db.insert(coachingDebriefs).values(debrief).returning();
+    return created;
+  }
+  async getAllCoachingDebriefs(): Promise<CoachingDebrief[]> {
+    return db.select().from(coachingDebriefs).orderBy(desc(coachingDebriefs.createdAt));
+  }
+  async updateCoachingDebrief(id: string, updates: Partial<InsertCoachingDebrief>): Promise<CoachingDebrief | undefined> {
+    const [updated] = await db.update(coachingDebriefs).set({ ...updates, updatedAt: new Date() }).where(eq(coachingDebriefs.id, id)).returning();
+    return updated;
+  }
+  async deleteCoachingDebrief(id: string): Promise<boolean> {
+    const result = await db.delete(coachingDebriefs).where(eq(coachingDebriefs.id, id)).returning();
+    return result.length > 0;
   }
 }
 

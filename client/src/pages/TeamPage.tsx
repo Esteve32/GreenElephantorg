@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
@@ -96,6 +97,7 @@ const ctaSectionGradient = `linear-gradient(180deg,
 )`;
 
 export default function TeamPage() {
+  useEffect(() => { document.title = "Our Team | GreenElephant"; }, []);
   return (
     <div className="min-h-screen">
       <SEO

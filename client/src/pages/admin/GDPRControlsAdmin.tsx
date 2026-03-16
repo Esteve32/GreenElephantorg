@@ -35,7 +35,7 @@ export default function GDPRControlsAdmin() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-[#0a0a0a]">
-      <SEO title="GDPR & Data Controls | Admin" canonicalPath="/admin/gdpr-controls" />
+      <SEO title="GDPR & Data Controls | Admin" description="Manage data privacy settings, consent logs, and GDPR compliance for GreenElephant." canonicalPath="/admin/gdpr-controls" />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 mb-8 flex-wrap">
           <Tooltip><TooltipTrigger asChild><a href="/admin/submissions" data-testid="link-admin-back">
@@ -271,16 +271,16 @@ export default function GDPRControlsAdmin() {
                 </div>
                 <div className="flex gap-3 flex-wrap">
                   <a href="https://arbora.partners" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="gap-2" data-testid="button-acx100-framework">
+                    <Tooltip><TooltipTrigger asChild><Button variant="outline" size="sm" className="gap-2" data-testid="button-acx100-framework">
                       <ExternalLink className="h-3.5 w-3.5" />
                       Full ACX100 Framework
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Open the ACX100 AI-Human Experience audit framework</TooltipContent></Tooltip>
                   </a>
                   <a href="/ai-policy">
-                    <Button variant="outline" size="sm" className="gap-2" data-testid="button-ai-policy">
+                    <Tooltip><TooltipTrigger asChild><Button variant="outline" size="sm" className="gap-2" data-testid="button-ai-policy">
                       <Eye className="h-3.5 w-3.5" />
                       View AI Policy
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>View GreenElephant's public AI policy page</TooltipContent></Tooltip>
                   </a>
                 </div>
               </CardContent>
@@ -326,7 +326,7 @@ function ToggleRow({ label, description, enabled, onToggle, isPending }: {
         <p className="font-medium text-sm" data-testid={`text-toggle-${label.toLowerCase().replace(/\s+/g, '-')}`}>{label}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
-      <Button
+      <Tooltip><TooltipTrigger asChild><Button
         variant={enabled ? "default" : "outline"}
         size="sm"
         onClick={onToggle}
@@ -334,7 +334,7 @@ function ToggleRow({ label, description, enabled, onToggle, isPending }: {
         data-testid={`button-toggle-${label.toLowerCase().replace(/\s+/g, '-')}`}
       >
         {enabled ? "On" : "Off"}
-      </Button>
+      </Button></TooltipTrigger><TooltipContent>{enabled ? "Click to disable" : "Click to enable"} {label.toLowerCase()}</TooltipContent></Tooltip>
     </div>
   );
 }

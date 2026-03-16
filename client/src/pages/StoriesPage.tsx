@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ const stories = [
 ];
 
 export default function StoriesPage() {
+  useEffect(() => { document.title = "Stories — Real Communication Journeys | GreenElephant"; }, []);
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO

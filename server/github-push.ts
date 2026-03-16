@@ -151,7 +151,8 @@ export async function pushToGitHub(commitMessage: string) {
     owner: OWNER,
     repo: REPO,
     ref: `heads/${BRANCH}`,
-    sha: commit.data.sha
+    sha: commit.data.sha,
+    force: true
   });
 
   console.log(`Push complete! Commit: ${commit.data.sha}`);

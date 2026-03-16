@@ -1,10 +1,11 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Activity, RotateCcw, Save, Mic, MicOff, Loader2, Brain } from "lucide-react";
+import { Activity, RotateCcw, Save, Mic, MicOff, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { AILoadingOverlay } from "@/components/portal/AILoadingOverlay";
 
 interface FlowCheckToolProps {
   onSaveToTimeline?: (event: { type: string; title: string; description: string; details?: string; lens?: string; toolId?: string }) => void;
@@ -207,7 +208,9 @@ export function FlowCheckTool({ onSaveToTimeline }: FlowCheckToolProps) {
           <p className="text-sm text-white/60">{cfg.tip}</p>
         </div>
 
-        {!aiRecommendation && (
+        {aiLoading && <AILoadingOverlay toolId="flowcheck" />}
+
+        {!aiRecommendation && !aiLoading && (
           <Button
             variant="ghost"
             onClick={fetchAiRecommendation}
@@ -215,17 +218,8 @@ export function FlowCheckTool({ onSaveToTimeline }: FlowCheckToolProps) {
             className="w-full text-white/50 border border-white/10"
             data-testid="button-flow-ai"
           >
-            {aiLoading ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                Analysing...
-              </>
-            ) : (
-              <>
-                <Brain className="w-3.5 h-3.5 mr-1.5" />
-                Get AI Recommendation
-              </>
-            )}
+            <Brain className="w-3.5 h-3.5 mr-1.5" />
+            Get AI Recommendation
           </Button>
         )}
 

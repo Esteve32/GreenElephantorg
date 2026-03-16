@@ -35,6 +35,7 @@ const footerColumns = [
       { label: "Periodic Table", href: "/periodic-table" },
       { label: "Speech Lab", href: "/decode" },
       { label: "Prompt Library", href: "/resources#prompts" },
+      { label: "YouTube Channel", href: "https://www.youtube.com/@greenelephantorg", external: true },
     ],
   },
   {
@@ -153,11 +154,19 @@ export default function Footer() {
                 <ul className="space-y-2">
                   {col.links.map((link) => (
                     <li key={link.href}>
-                      <Link href={link.href} onClick={(e) => handleAnchorClick(e, link.href)}>
-                        <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
-                          {link.label}
-                        </span>
-                      </Link>
+                      {"external" in link && link.external ? (
+                        <a href={link.href} target="_blank" rel="noopener noreferrer">
+                          <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                            {link.label}
+                          </span>
+                        </a>
+                      ) : (
+                        <Link href={link.href} onClick={(e) => handleAnchorClick(e, link.href)}>
+                          <span className="text-white/70 hover:text-white text-sm transition-colors duration-300 cursor-pointer">
+                            {link.label}
+                          </span>
+                        </Link>
+                      )}
                     </li>
                   ))}
                   {col.title === "Legal" && (

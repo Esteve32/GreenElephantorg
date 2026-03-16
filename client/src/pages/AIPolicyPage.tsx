@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Bot, ExternalLink, Shield, Scale, Users, Brain } from "lucide-react";
@@ -16,6 +17,7 @@ const invertedEarthToSpaceGradient = {
 };
 
 export default function AIPolicyPage() {
+  useEffect(() => { document.title = "AI Policy | GreenElephant"; }, []);
   return (
     <div className="min-h-screen relative">
       <SEO

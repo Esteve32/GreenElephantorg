@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AdminTooltip } from "@/components/AdminTooltip";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   ArrowLeft,
   Loader2,
@@ -100,9 +101,9 @@ export default function WebinarSettingsAdmin() {
     <div className="min-h-screen bg-[#0A0C14] text-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => setLocation("/admin/submissions")} data-testid="button-back">
+          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => setLocation("/admin/submissions")} data-testid="button-back">
             <ArrowLeft className="h-5 w-5" />
-          </Button>
+          </Button></TooltipTrigger><TooltipContent>Back to Admin Hub</TooltipContent></Tooltip>
           <div className="flex-1">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Radio className="h-6 w-6 text-chaordic" />
@@ -246,7 +247,7 @@ export default function WebinarSettingsAdmin() {
             </Card>
 
             <div className="flex items-center gap-4">
-              <Button onClick={handleSave} disabled={saving} data-testid="button-webinar-save">
+              <Tooltip><TooltipTrigger asChild><Button onClick={handleSave} disabled={saving} data-testid="button-webinar-save">
                 {saving ? (
                   <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
                 ) : saved ? (
@@ -254,12 +255,12 @@ export default function WebinarSettingsAdmin() {
                 ) : (
                   <><Save className="h-4 w-4 mr-2" />Save Changes</>
                 )}
-              </Button>
+              </Button></TooltipTrigger><TooltipContent>Save all webinar settings — changes go live immediately</TooltipContent></Tooltip>
               <a href="/webinar" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" data-testid="button-webinar-preview">
+                <Tooltip><TooltipTrigger asChild><Button variant="outline" data-testid="button-webinar-preview">
                   <Eye className="h-4 w-4 mr-2" />
                   Preview Page
-                </Button>
+                </Button></TooltipTrigger><TooltipContent>Open the public /webinar page in a new tab</TooltipContent></Tooltip>
               </a>
             </div>
           </div>

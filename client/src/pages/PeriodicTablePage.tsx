@@ -234,6 +234,7 @@ function SemanticConnectionsViewer({ onClose }: { onClose: () => void }) {
 }
 
 export default function PeriodicTablePage() {
+  useEffect(() => { document.title = "Periodic Table of Conscious Communication | GreenElephant"; }, []);
   const [selectedLens, setSelectedLens] = useState<string>("all");
   const [showSemanticViewer, setShowSemanticViewer] = useState(false);
 

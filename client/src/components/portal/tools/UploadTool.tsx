@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from "react";
-import { Upload, FileText, Image, Mic, Link2, X, CheckCircle2 } from "lucide-react";
+import { useState, useRef, useCallback, useMemo } from "react";
+import { Upload, FileText, Image, Mic, Link2, X, CheckCircle2, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,18 @@ interface UploadToolProps {
 }
 
 type InputMode = "file" | "text" | "url";
+
+function extractYouTubeId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
 
 const FILE_ICONS: Record<string, React.ElementType> = {
   pdf: FileText,
@@ -59,7 +71,7 @@ export function UploadTool({ onSaveToTimeline }: UploadToolProps) {
 
   const getFileExt = (name: string) => name.split(".").pop()?.toLowerCase() || "";
 
-  const handleUpload = useCallback(() => {
+  const handleUpload = useCallback(async () => {
     const hasContent = files.length > 0 || textContent.trim() || urlContent.trim();
     if (!hasContent) {
       toast({ title: "Nothing to upload", description: "Add files, paste text, or enter a URL first.", variant: "destructive" });
@@ -68,25 +80,49 @@ export function UploadTool({ onSaveToTimeline }: UploadToolProps) {
 
     let title = "Data Upload";
     let description = "";
+    let details = "";
 
     if (files.length > 0) {
       title = files.length === 1 ? files[0].name : `${files.length} files uploaded`;
-      description = files.map((f) => f.name).join(", ");
+      const fileNames = files.map((f) => `${f.name} (${(f.size / 1024).toFixed(0)}KB)`);
+      description = fileNames.join(", ");
+
+      const textContents: string[] = [];
+      for (const file of files) {
+        if (file.type.startsWith("text/") || file.name.endsWith(".txt") || file.name.endsWith(".csv")) {
+          try {
+            const content = await file.text();
+            textContents.push(`--- ${file.name} ---\n${content.slice(0, 2000)}`);
+          } catch {}
+        }
+      }
+      if (textContents.length > 0) {
+        details = textContents.join("\n\n");
+      } else {
+        details = `Uploaded: ${fileNames.join(", ")}`;
+      }
     } else if (textContent.trim()) {
       title = "Text Note";
       description = textContent.trim().slice(0, 120);
+      details = textContent.trim();
     } else if (urlContent.trim()) {
-      title = "Link Added";
-      description = urlContent.trim();
+      const ytId = extractYouTubeId(urlContent.trim());
+      if (ytId) {
+        title = "YouTube Video Added";
+        description = urlContent.trim();
+        details = JSON.stringify({ source: "youtube", videoId: ytId, url: urlContent.trim() });
+      } else {
+        title = "Link Added";
+        description = urlContent.trim();
+        details = urlContent.trim();
+      }
     }
-
-    setUploaded(true);
-    toast({ title: "Saved to timeline", description: title });
 
     if (onSaveToTimeline) {
-      const details = textContent.trim() || urlContent.trim() || undefined;
-      onSaveToTimeline({ type: "upload", title, description, details, toolId: "upload" });
+      onSaveToTimeline({ type: "upload", title, description, details: details || undefined, toolId: "upload" });
     }
+    setUploaded(true);
+    toast({ title: "Saved to timeline", description: title });
   }, [files, textContent, urlContent, toast, onSaveToTimeline]);
 
   if (uploaded) {
@@ -203,7 +239,29 @@ export function UploadTool({ onSaveToTimeline }: UploadToolProps) {
             className="w-full px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-white/80 text-sm placeholder:text-white/20 outline-none focus:border-[#009999]/30"
             data-testid="input-url"
           />
-          <p className="text-xs text-white/20">Link to a document, recording, or resource</p>
+          {(() => {
+            const ytId = urlContent.trim() ? extractYouTubeId(urlContent.trim()) : null;
+            if (ytId) {
+              return (
+                <div className="rounded-lg overflow-hidden border border-white/10" data-testid="youtube-url-preview">
+                  <div className="relative aspect-video bg-black">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${ytId}`}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title="YouTube preview"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 p-2 bg-white/[0.03]">
+                    <Play className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                    <span className="text-xs text-white/50 truncate">YouTube video detected — will show with progress tracking on timeline</span>
+                  </div>
+                </div>
+              );
+            }
+            return <p className="text-xs text-white/20">Link to a document, recording, YouTube video, or resource</p>;
+          })()}
         </div>
       )}
 

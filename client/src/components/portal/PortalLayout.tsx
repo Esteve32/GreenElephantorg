@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { PortalHUD } from "./PortalHUD";
+import { PortalFeedbackWidget } from "./PortalFeedbackWidget";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
 
 type StarStyle = React.CSSProperties & { "--ps-opacity": number };
@@ -128,7 +129,12 @@ export function PortalLayout({ children, showHUD = true }: PortalLayoutProps) {
         </footer>
       </div>
 
-      {showHUD && me?.authenticated && <PortalHUD />}
+      {showHUD && me?.authenticated && (
+        <>
+          <PortalHUD />
+          <PortalFeedbackWidget />
+        </>
+      )}
     </div>
   );
 }

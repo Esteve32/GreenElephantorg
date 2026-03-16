@@ -18,6 +18,8 @@ import {
   Link2,
   Eye,
   Pencil,
+  Fingerprint,
+  ExternalLink,
 } from "lucide-react";
 import { SiNotion, SiLinkedin, SiGmail, SiGoogledocs } from "react-icons/si";
 import { apiRequest } from "@/lib/queryClient";
@@ -253,7 +255,7 @@ function GuidedTourStep() {
   );
 }
 
-const STEP_IDS = ["welcome", "consent", "tools", "integrations", "tour", "ready"] as const;
+const STEP_IDS = ["welcome", "consent", "sovereignty", "tools", "integrations", "tour", "ready"] as const;
 
 export function PortalOnboarding({ userName, onComplete }: PortalOnboardingProps) {
   const [step, setStep] = useState(0);
@@ -371,6 +373,106 @@ export function PortalOnboarding({ userName, onComplete }: PortalOnboardingProps
                 I accept the Terms of Service and Privacy Policy. I understand my data is processed under GDPR and I can withdraw consent at any time.
               </span>
             </label>
+          </div>
+        );
+
+      case "sovereignty":
+        return (
+          <div className="space-y-5">
+            <div className="text-center mb-2">
+              <div
+                className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center"
+                style={{
+                  backgroundColor: "#00999912",
+                  border: "2px solid #00999935",
+                  boxShadow: "0 0 30px #00999918",
+                }}
+              >
+                <Fingerprint className="w-7 h-7 text-[#009999]" />
+              </div>
+              <h2 className="text-lg font-bold text-white mb-2" style={{ fontFamily: "Poppins, sans-serif" }} data-testid="text-onboarding-title">
+                Your Data, Your Rules
+              </h2>
+              <p className="text-xs text-white/40">
+                A quick look at how you stay in control here
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-[#009999]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-xs font-bold text-[#009999]">1</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white/90">You write the prompts, not us</p>
+                    <p className="text-xs text-white/40 leading-relaxed mt-0.5">
+                      Every AI tool in your portal has a prompting window that YOU control. You decide what question to ask, what data to include, and what lens to explore. The AI works for your personal mirroring and coaching — never the other way round.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-[#33a854]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-xs font-bold text-[#33a854]">2</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white/90">Your data stays yours</p>
+                    <p className="text-xs text-white/40 leading-relaxed mt-0.5">
+                      Nothing you type, upload, or reflect on is used to train AI models or shared with external organisations. Your coaching journey is private — always.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-[#e8c840]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-xs font-bold text-[#e8c840]">3</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white/90">Query your way</p>
+                    <p className="text-xs text-white/40 leading-relaxed mt-0.5">
+                      Use the Playground to explore prompts, build your own queries, and visualise your communication patterns. Think of it as a mirror you hold up — shaped by your curiosity, not by algorithms.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl border border-[#009999]/20 bg-[#009999]/5">
+              <div className="flex items-start gap-3">
+                <Shield className="w-5 h-5 text-[#009999] shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-medium text-white/80 mb-1">
+                    Built on ACX100 Principles
+                  </p>
+                  <p className="text-xs text-white/40 leading-relaxed">
+                    Green Elephant is a proud partner and promoter of the{" "}
+                    <span className="text-[#009999] font-medium">ACX100 framework</span>{" "}
+                    for ethical, safe, and human-centred AI design — GDPR compliant by design.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <a
+                      href="https://arbora.partners/research"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-[#009999] hover:text-[#00cccc] transition-colors"
+                      data-testid="link-acx100-research"
+                    >
+                      ACX100 Research <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                    <a
+                      href="https://www.arbora.partners/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-white/30 hover:text-white/50 transition-colors"
+                      data-testid="link-arbora-partners"
+                    >
+                      Arbora Partners <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         );
 
@@ -522,8 +624,25 @@ export function PortalOnboarding({ userName, onComplete }: PortalOnboardingProps
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4" data-testid="portal-onboarding">
-      <div className="max-w-md w-full">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" data-testid="portal-onboarding">
+      <div className="absolute inset-0 overflow-hidden">
+        <iframe
+          src="https://www.youtube.com/embed/HBjH3MCw06A?autoplay=1&mute=1&loop=1&playlist=HBjH3MCw06A&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&playsinline=1"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{
+            width: "177.78vh",
+            height: "100vh",
+            minWidth: "100vw",
+            minHeight: "56.25vw",
+          }}
+          allow="autoplay; encrypted-media"
+          title="Onboarding background"
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      </div>
+      <div className="max-w-md w-full relative z-10">
         <div className="flex justify-end mb-4">
           <button
             onClick={handleSkip}

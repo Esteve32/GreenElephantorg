@@ -1,43 +1,46 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { Card, CardContent } from "@/components/ui/card";
-import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { Link } from "wouter";
-import { ArrowRight, CheckCircle2, Users, MessageSquare, Shield, Sparkles, Brain, Target, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle2, Users, MessageSquare, Shield, Sparkles, Brain, Target, Zap, Lock } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { ScanVideoDemo } from "@/components/ScanVideoDemo";
+import { DashboardPreview } from "@/components/DashboardPreview";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
+import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 const EA_CHALLENGES = [
   {
-    title: "Managing Up with Confidence",
-    description: "Navigate conversations with executives without second-guessing yourself. Learn to communicate your needs while supporting theirs.",
+    title: "Your Executive Changes the Plan — Again",
+    description: "It's 4pm and the schedule just flipped. Your Needs score reveals whether you absorb the chaos silently or push back — and why you default to one over the other every time.",
     icon: Users
   },
   {
-    title: "Complex Stakeholder Dynamics",
-    description: "Balance competing priorities from multiple executives. Understand the unwritten rules of organizational communication.",
+    title: "Two Executives Want Opposite Things",
+    description: "The CEO wants you to prioritize the board deck. The CFO needs travel booked now. The Scan maps your Dynamics pattern — how you navigate competing authority without burning either relationship.",
     icon: MessageSquare
   },
   {
-    title: "Setting Boundaries Professionally",
-    description: "Say no without damaging relationships. Protect your time while maintaining your reputation as reliable and supportive.",
+    title: "You Said Yes When You Meant No",
+    description: "Another weekend commitment you didn't want. Your Alignment and Needs lenses show exactly where your boundary-setting breaks down — and it's not about willpower, it's about communication patterns.",
     icon: Shield
   },
   {
-    title: "Building Strategic Influence",
-    description: "Move from task-taker to trusted advisor. Develop the communication patterns that earn you a seat at the table.",
+    title: "You're Trusted — But Not Heard",
+    description: "You see the problem before anyone else does, but struggle to say it in a way that lands. Your Influence score reveals why your strategic thinking isn't translating into strategic authority.",
     icon: Target
   }
 ];
 
 const EA_BENEFITS = [
-  "Map your communication patterns across 8 lenses including Dynamics, Alignment, and Needs",
-  "Understand your default responses when executives make last-minute requests",
-  "Identify why certain stakeholders trigger your stress response",
-  "Discover your strengths in managing up and areas for growth",
-  "Get personalized prompts for preparing for difficult conversations",
-  "Track your growth over time with retake assessments"
+  "See your exact pattern when your executive makes a last-minute demand — do you absorb, push back, or freeze?",
+  "Know why that one VP always triggers your stress response — your Dynamics lens shows the power pattern at play",
+  "Understand why you're great at logistics but struggle to speak up in leadership meetings — your Influence gap is measurable",
+  "Get AI prompts to rehearse tomorrow's difficult conversation — not generic advice, but prompts based on your specific patterns",
+  "Discover whether you're a natural boundary-setter who over-compensates, or a people-pleaser who burns out — the Needs lens tells you",
+  "Retake in 6 months and see concrete growth in the areas that matter most to your career"
 ];
 
 const FAQ_ITEMS = [
@@ -76,15 +79,14 @@ export default function ForExecutiveAssistantsPage() {
       
       <section 
         className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
-        style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.space} 0%, ${atmosphericPalette.highAtmosphere} 50%, ${atmosphericPalette.upperAtmosphere} 100%)`
-        }}
+        style={{ background: "#0a0a0a" }}
         data-testid="section-ea-hero"
       >
         <motion.div 
-          className="absolute inset-0 bg-cover bg-center opacity-30"
+          className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${earthOrbitUrl})` }}
         />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(153,51,204,0.05) 50%, #0a0a0a 100%)" }} />
         
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24">
           <motion.div
@@ -96,11 +98,11 @@ export default function ForExecutiveAssistantsPage() {
               For Executive Assistants
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6" data-testid="text-ea-title">
-              Communication Training for<br />
-              <span className="text-dynamics">Executive Assistants</span>
+              Stop Being the One Who<br />
+              <span className="text-dynamics">Always Says Yes</span>
             </h1>
             <p className="text-xl text-white/70 max-w-3xl mx-auto mb-8">
-              You're the connective tissue of your organization. Master the communication patterns that transform you from task-taker to trusted strategic partner.
+              You keep the wheels turning for everyone else — but who's looking out for your communication patterns? The Satellite Scan shows you exactly where you lose your voice, your boundaries, and your strategic edge.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/scan">
@@ -119,10 +121,12 @@ export default function ForExecutiveAssistantsPage() {
         </div>
       </section>
 
+      <DashboardPreview accentColor="#9933cc" testIdPrefix="ea" />
+
       <section 
         className="py-24"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.upperAtmosphere} 0%, ${atmosphericPalette.midAtmosphere} 100%)`
+          background: "linear-gradient(180deg, #0a0a0a 0%, #0c0a0e 50%, #0a0a0a 100%)"
         }}
         data-testid="section-ea-challenges"
       >
@@ -134,10 +138,10 @@ export default function ForExecutiveAssistantsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              The EA Communication Challenges
+              This Happens Every Week
             </h2>
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Sound familiar? These are the patterns the Satellite Scan reveals.
+              You know these moments. The Scan shows you why they keep happening — and what to do differently.
             </p>
           </motion.div>
 
@@ -172,7 +176,7 @@ export default function ForExecutiveAssistantsPage() {
       <section 
         className="py-24"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.midAtmosphere} 0%, ${atmosphericPalette.lowerAtmosphere} 100%)`
+          background: "linear-gradient(180deg, #0a0a0a 0%, #0b0a0d 50%, #0a0a0a 100%)"
         }}
         data-testid="section-ea-benefits"
       >
@@ -188,10 +192,10 @@ export default function ForExecutiveAssistantsPage() {
                 What You'll Discover
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Map Your Communication Patterns
+                What Your Dashboard Reveals
               </h2>
               <p className="text-white/70 mb-8">
-                The Satellite Scan reveals the unconscious patterns that shape every interaction with executives, colleagues, and stakeholders.
+                In 48-72 hours, you get a personalized map of your communication patterns — not theory, but specific insights you can use in your next executive conversation.
               </p>
               <ul className="space-y-4">
                 {EA_BENEFITS.map((benefit, index) => (
@@ -212,19 +216,19 @@ export default function ForExecutiveAssistantsPage() {
               <Card className="bg-gradient-to-br from-dynamics/20 to-needs/20 border-white/10">
                 <CardContent className="p-8">
                   <div className="text-6xl font-bold text-white mb-2">€99.95</div>
-                  <p className="text-white/70 mb-6">Early Adopter Price</p>
+                  <p className="text-white/70 mb-6">Your Communication Map</p>
                   <ul className="text-left space-y-3 mb-8">
                     <li className="flex items-center gap-2 text-white/80">
                       <Brain className="w-4 h-4 text-dynamics" />
-                      129 questions, 8 communication lenses
+                      129 questions across Dynamics, Needs, Alignment + 5 more
                     </li>
                     <li className="flex items-center gap-2 text-white/80">
                       <Target className="w-4 h-4 text-dynamics" />
-                      Personalized dashboard in 48-72 hours
+                      Visual dashboard delivered in 48-72 hours
                     </li>
                     <li className="flex items-center gap-2 text-white/80">
                       <Zap className="w-4 h-4 text-dynamics" />
-                      Access to prompt library
+                      AI prompts for managing up and setting boundaries
                     </li>
                   </ul>
                   <Link href="/scan">
@@ -240,10 +244,106 @@ export default function ForExecutiveAssistantsPage() {
         </div>
       </section>
 
+      <ScanVideoDemo
+        accentColor="#9933cc"
+        badgeText="See It In Action"
+        headline="Watch the Full Scan Experience"
+        subheadline="A 5-minute silent walkthrough — see how the Satellite Scan maps your communication patterns and what your personalized dashboard looks like."
+        ctaLink="/checkout?product=satellitescan"
+        ctaText="Start Your Scan — €99.95"
+        testIdPrefix="ea"
+        videoSrc={scanWalkthroughUrl}
+        gradientFrom="#0a0a0a"
+        gradientTo="#0a0a0a"
+      />
+
+      <section
+        className="py-20"
+        style={{
+          background: "#0a0a0a"
+        }}
+        data-testid="section-ea-value-ladder"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Badge className="mb-4 bg-dynamics/20 text-dynamics border-dynamics/30">Your Path</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4" data-testid="text-ea-value-ladder-title">
+              Start Here, Grow from Here
+            </h2>
+            <p className="text-white/70 max-w-2xl mx-auto">
+              Every EA's journey is different. Choose the depth that matches where you are right now.
+            </p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {[
+              {
+                step: "1",
+                title: "Free 2-Min Quick Check",
+                desc: "See if communication patterns resonate with your experience. No sign-up needed.",
+                price: "Free",
+                link: "/signals",
+                color: "#8899aa",
+              },
+              {
+                step: "2",
+                title: "Satellite Scan",
+                desc: "Full 129-question assessment with personalized dashboard. Your communication map across 8 lenses.",
+                price: "€99.95",
+                link: "/checkout?product=satellitescan",
+                color: "#009999",
+              },
+              {
+                step: "3",
+                title: "Coaching Journey",
+                desc: "Biweekly sessions, ongoing messaging support, and micro-habit coaching. Includes Satellite Scan.",
+                price: "€2,980",
+                link: "/coaching",
+                color: "#e8c840",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Link href={item.link}>
+                  <Card className="bg-white/5 border-white/10 hover-elevate cursor-pointer" data-testid={`card-ea-step-${item.step}`}>
+                    <CardContent className="p-5 flex items-center gap-4">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold"
+                        style={{ backgroundColor: `${item.color}30`, border: `1px solid ${item.color}50` }}
+                      >
+                        {item.step}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-white">{item.title}</p>
+                        <p className="text-sm text-white/60">{item.desc}</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="font-bold text-white">{item.price}</span>
+                        <ArrowRight className="w-4 h-4 text-white/40" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section 
         className="py-24"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.lowerAtmosphere} 0%, #000000 100%)`
+          background: "linear-gradient(180deg, #0a0a0a 0%, #000000 100%)"
         }}
         data-testid="section-ea-faq"
       >
@@ -307,6 +407,50 @@ export default function ForExecutiveAssistantsPage() {
           </motion.div>
         </div>
       </section>
+
+      <section className="relative py-16" data-testid="section-ea-trust">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-2xl border border-white/10 p-8 md:p-12"
+            style={{ background: "linear-gradient(135deg, rgba(0,153,153,0.08) 0%, rgba(51,168,84,0.08) 100%)" }}
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-needs/15 border border-needs/30 mb-6">
+                <Shield className="w-7 h-7 text-needs" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4" data-testid="text-ea-guarantee-title">
+                14-Day Satisfaction Guarantee
+              </h2>
+              <p className="text-white/60 max-w-xl mx-auto mb-6">
+                If the Satellite Scan doesn't reveal actionable communication insights for your EA role, get a full refund within 14 days. Your investment is protected.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+                <Link href="/checkout?product=satellitescan">
+                  <Button size="lg" className="bg-needs text-white" data-testid="button-ea-guarantee-cta">
+                    Start Risk-Free — €99.95
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
+                <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
+                <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+                <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Role-specific insights</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <StickyMobileCTA
+        price="€99.95"
+        label="Start with a Scan"
+        href="/checkout?product=satellitescan"
+        sublabel="Communication diagnostic for EAs"
+      />
     </div>
   );
 }

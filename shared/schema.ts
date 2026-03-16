@@ -710,6 +710,15 @@ export const clientUsers = pgTable("client_users", {
   linkedinSub: text("linkedin_sub").unique(),
   linkedinAccessToken: text("linkedin_access_token"),
   linkedinTokenExpiry: timestamp("linkedin_token_expiry"),
+  spotifyId: text("spotify_id"),
+  spotifyAccessToken: text("spotify_access_token"),
+  spotifyRefreshToken: text("spotify_refresh_token"),
+  spotifyTokenExpiry: timestamp("spotify_token_expiry"),
+  ouraId: text("oura_id"),
+  ouraAccessToken: text("oura_access_token"),
+  ouraRefreshToken: text("oura_refresh_token"),
+  ouraTokenExpiry: timestamp("oura_token_expiry"),
+  ouraConsentGrantedAt: timestamp("oura_consent_granted_at"),
 });
 
 export const insertClientUserSchema = createInsertSchema(clientUsers).pick({
@@ -861,3 +870,70 @@ export const insertPortalUserContextSchema = createInsertSchema(portalUserContex
 
 export type InsertPortalUserContext = z.infer<typeof insertPortalUserContextSchema>;
 export type PortalUserContext = typeof portalUserContext.$inferSelect;
+
+export const qrCodes = pgTable("qr_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  targetUrl: text("target_url").notNull(),
+  type: text("type").notNull().default("campaign"),
+  description: text("description"),
+  isActive: text("is_active").notNull().default("true"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertQrCodeSchema = createInsertSchema(qrCodes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertQrCode = z.infer<typeof insertQrCodeSchema>;
+export type QrCode = typeof qrCodes.$inferSelect;
+
+export const qrScans = pgTable("qr_scans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  qrCodeId: varchar("qr_code_id").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referer: text("referer"),
+  country: text("country"),
+  city: text("city"),
+  region: text("region"),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+  isp: text("isp"),
+  deviceType: text("device_type"),
+  consentAcknowledged: text("consent_acknowledged").default("false"),
+  scannedAt: timestamp("scanned_at").defaultNow().notNull(),
+});
+
+export const insertQrScanSchema = createInsertSchema(qrScans).omit({
+  id: true,
+  scannedAt: true,
+});
+
+export type InsertQrScan = z.infer<typeof insertQrScanSchema>;
+export type QrScan = typeof qrScans.$inferSelect;
+
+export const coachingDebriefs = pgTable("coaching_debriefs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientName: text("client_name").notNull(),
+  sessionNumber: integer("session_number").notNull().default(1),
+  lens: text("lens"),
+  keyInsights: text("key_insights"),
+  actionItems: text("action_items").array(),
+  coachNotes: text("coach_notes"),
+  progress: integer("progress").default(3),
+  status: text("status").default("draft"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCoachingDebriefSchema = createInsertSchema(coachingDebriefs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCoachingDebrief = z.infer<typeof insertCoachingDebriefSchema>;
+export type CoachingDebrief = typeof coachingDebriefs.$inferSelect;

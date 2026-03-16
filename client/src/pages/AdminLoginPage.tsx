@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import earthImageUrl from "@assets/generated_images/earth_from_space_without_aurora.png";
 
 export default function AdminLoginPage() {
+  useEffect(() => { document.title = "Admin Login | GreenElephant OS"; }, []);
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswordFallback, setShowPasswordFallback] = useState(false);
@@ -80,6 +81,7 @@ export default function AdminLoginPage() {
     session_failed: "Session error. Please try again.",
     callback_failed: "Login error. Please try again.",
     no_email: "Could not retrieve your email from Google.",
+    dev_google: "Google login only works on the published site. Use password login in dev mode.",
   };
 
   return (

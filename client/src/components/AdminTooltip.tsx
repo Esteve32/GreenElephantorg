@@ -7,15 +7,20 @@ interface AdminTooltipProps {
   debug?: { label: string; href: string }[];
   side?: "top" | "bottom" | "left" | "right";
   iconSize?: string;
+  children?: React.ReactNode;
 }
 
-export function AdminTooltip({ what, how, debug, side = "top", iconSize = "h-3.5 w-3.5" }: AdminTooltipProps) {
+export function AdminTooltip({ what, how, debug, side = "top", iconSize = "h-3.5 w-3.5", children }: AdminTooltipProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button type="button" className="inline-flex items-center text-white/30 hover:text-white/60 transition-colors ml-1.5 align-middle" data-testid="button-admin-tooltip">
-          <HelpCircle className={iconSize} />
-        </button>
+        {children ? (
+          <div className="cursor-help">{children}</div>
+        ) : (
+          <button type="button" className="inline-flex items-center text-white/30 hover:text-white/60 transition-colors ml-1.5 align-middle" data-testid="button-admin-tooltip">
+            <HelpCircle className={iconSize} />
+          </button>
+        )}
       </TooltipTrigger>
       <TooltipContent side={side} className="max-w-sm text-xs space-y-2 p-3">
         <p className="text-foreground font-medium">{what}</p>

@@ -15,9 +15,10 @@ import {
   Euro,
   ArrowUpDown,
   Search,
-  ExternalLink,
+  ArrowLeft,
   RefreshCw,
 } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type Purchase = {
   id: string;
@@ -113,10 +114,10 @@ export default function ScanResultsDashboard() {
   }
 
   const stats = [
-    { label: "Total Scans Sold", value: succeeded.length, icon: Users, color: "text-needs" },
-    { label: "Typeform Completion", value: `${completionRate}%`, icon: TrendingUp, color: "text-flow" },
-    { label: "Total Revenue", value: `€${totalRevenue.toFixed(2)}`, icon: Euro, color: "text-attitude" },
-    { label: "Avg Days to Complete", value: avgDays, icon: Clock, color: "text-ego" },
+    { label: "Total Scans Sold", value: succeeded.length, icon: Users, color: "text-needs", tip: "Number of Satellite Scan purchases with successful payment" },
+    { label: "Typeform Completion", value: `${completionRate}%`, icon: TrendingUp, color: "text-flow", tip: "Percentage of paid scans where the customer completed the Typeform questionnaire" },
+    { label: "Total Revenue", value: `€${totalRevenue.toFixed(2)}`, icon: Euro, color: "text-attitude", tip: "Sum of all successful Satellite Scan payments (€99.95 each)" },
+    { label: "Avg Days to Complete", value: avgDays, icon: Clock, color: "text-ego", tip: "Average time from purchase to Typeform completion" },
   ];
 
   return (
@@ -130,21 +131,32 @@ export default function ScanResultsDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
           <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
-            <div>
-              <h1 className="text-3xl font-bold mb-1">Scan Results Dashboard</h1>
-              <p className="text-muted-foreground text-sm">Satellite Scan purchase & completion tracking</p>
+            <div className="flex items-center gap-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href="/admin/submissions">
+                    <Button size="icon" variant="ghost" data-testid="button-back-admin">
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Back to Admin Hub</TooltipContent>
+              </Tooltip>
+              <div>
+                <h1 className="text-3xl font-bold mb-1">Scan Results Dashboard</h1>
+                <p className="text-muted-foreground text-sm">Satellite Scan purchase & completion tracking</p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button size="sm" variant="outline" onClick={() => refetch()} className="gap-2">
-                <RefreshCw className="h-4 w-4" />
-                Refresh
-              </Button>
-              <Link href="/admin/submissions">
-                <Button size="sm" variant="outline" className="gap-2">
-                  <ExternalLink className="h-4 w-4" />
-                  All Submissions
-                </Button>
-              </Link>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant="outline" onClick={() => refetch()} className="gap-2" data-testid="button-refresh-scans">
+                    <RefreshCw className="h-4 w-4" />
+                    Refresh
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reload scan data from database</TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
@@ -152,15 +164,20 @@ export default function ScanResultsDashboard() {
             {stats.map(s => {
               const Icon = s.icon;
               return (
-                <Card key={s.label} className="bg-white/5 border-white/10">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <Icon className={`h-5 w-5 ${s.color}`} />
-                    </div>
-                    <p className={`text-2xl font-bold ${s.color} mb-1`}>{s.value}</p>
-                    <p className="text-xs text-muted-foreground">{s.label}</p>
-                  </CardContent>
-                </Card>
+                <Tooltip key={s.label}>
+                  <TooltipTrigger asChild>
+                    <Card className="bg-white/5 border-white/10 cursor-help" data-testid={`stat-card-${s.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between mb-3">
+                          <Icon className={`h-5 w-5 ${s.color}`} />
+                        </div>
+                        <p className={`text-2xl font-bold ${s.color} mb-1`}>{s.value}</p>
+                        <p className="text-xs text-muted-foreground">{s.label}</p>
+                      </CardContent>
+                    </Card>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">{s.tip}</TooltipContent>
+                </Tooltip>
               );
             })}
           </div>

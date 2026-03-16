@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,59 +28,22 @@ import {
   Clock,
   Star,
   Info,
+  Loader2,
 } from "lucide-react";
 
 interface DebriefEntry {
   id: string;
   clientName: string;
-  date: string;
   sessionNumber: number;
-  lens: string;
-  keyInsight: string;
-  actionItems: string[];
-  progressRating: number;
-  notes: string;
-  status: 'draft' | 'reviewed' | 'shared';
+  lens: string | null;
+  keyInsights: string | null;
+  actionItems: string[] | null;
+  coachNotes: string | null;
+  progress: number | null;
+  status: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
-
-const DEMO_DEBRIEFS: DebriefEntry[] = [
-  {
-    id: "1",
-    clientName: "Sarah M. (TechCorp)",
-    date: "2026-03-05",
-    sessionNumber: 3,
-    lens: "Flow",
-    keyInsight: "Discovered pattern of interrupting during team stand-ups. Root cause: anxiety about being perceived as uninformed.",
-    actionItems: ["Practice 3-second pause before responding", "Use Green statements to acknowledge before redirecting", "Journal one daily meeting reflection"],
-    progressRating: 4,
-    notes: "Sarah showed significant improvement in active listening. Team feedback scores up 15% since session 1.",
-    status: 'reviewed',
-  },
-  {
-    id: "2",
-    clientName: "Marcus L. (StartupOS)",
-    date: "2026-03-10",
-    sessionNumber: 1,
-    lens: "Influence",
-    keyInsight: "Over-reliance on Blue (informing) style in investor calls. Missing Red (influencing) and Green (empathy) entirely.",
-    actionItems: ["Rewrite pitch opening with Green-first approach", "Record next investor call for GBR analysis", "Read Periodic Table Influence cluster before next session"],
-    progressRating: 2,
-    notes: "First session — baseline established. Satellite Scan showed 72% Blue dominance. Strong self-awareness, open to change.",
-    status: 'shared',
-  },
-  {
-    id: "3",
-    clientName: "Elena R. (DesignStudio)",
-    date: "2026-03-12",
-    sessionNumber: 6,
-    lens: "Alignment",
-    keyInsight: "Final session: Elena now naturally code-switches between GBR depending on stakeholder. Alignment lens integration complete.",
-    actionItems: ["Schedule 30-day follow-up check-in", "Request LinkedIn testimonial", "Offer alumni community access"],
-    progressRating: 5,
-    notes: "Journey complete. Elena reports 40% reduction in meeting conflicts and promotion to Director of Design Operations.",
-    status: 'draft',
-  },
-];
 
 const LENS_COLORS: Record<string, string> = {
   Influence: "text-influence bg-influence/10 border-influence/30",
@@ -98,17 +64,64 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function DebriefingToolAdmin() {
   const [, setLocation] = useLocation();
-  const [debriefs, setDebriefs] = useState<DebriefEntry[]>(DEMO_DEBRIEFS);
+  const { toast } = useToast();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [newEntry, setNewEntry] = useState({
     clientName: "",
     sessionNumber: 1,
     lens: "Flow",
-    keyInsight: "",
+    keyInsights: "",
     actionItems: [""],
-    progressRating: 3,
-    notes: "",
+    progress: 3,
+    coachNotes: "",
+  });
+
+  const { data: debriefs = [], isLoading } = useQuery<DebriefEntry[]>({
+    queryKey: ["/api/admin/debriefs"],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/admin/debriefs", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/debriefs"] });
+      setShowNewForm(false);
+      setNewEntry({ clientName: "", sessionNumber: 1, lens: "Flow", keyInsights: "", actionItems: [""], progress: 3, coachNotes: "" });
+      toast({ title: "Debrief saved", description: "Session debrief has been recorded." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to save debrief", description: error.message || "Please try again.", variant: "destructive" });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const res = await apiRequest("PATCH", `/api/admin/debriefs/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/debriefs"] });
+      toast({ title: "Debrief updated" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to update debrief", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/debriefs/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/debriefs"] });
+      toast({ title: "Debrief deleted" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to delete debrief", description: error.message, variant: "destructive" });
+    },
   });
 
   const handleAddActionItem = () => {
@@ -130,35 +143,22 @@ export default function DebriefingToolAdmin() {
   };
 
   const handleSubmitDebrief = () => {
-    if (!newEntry.clientName || !newEntry.keyInsight) return;
-    const entry: DebriefEntry = {
-      id: Date.now().toString(),
+    if (!newEntry.clientName || !newEntry.keyInsights) return;
+    createMutation.mutate({
       clientName: newEntry.clientName,
-      date: new Date().toISOString().split("T")[0],
       sessionNumber: newEntry.sessionNumber,
       lens: newEntry.lens,
-      keyInsight: newEntry.keyInsight,
+      keyInsights: newEntry.keyInsights,
       actionItems: newEntry.actionItems.filter(a => a.trim()),
-      progressRating: newEntry.progressRating,
-      notes: newEntry.notes,
-      status: 'draft',
-    };
-    setDebriefs(prev => [entry, ...prev]);
-    setShowNewForm(false);
-    setNewEntry({
-      clientName: "",
-      sessionNumber: 1,
-      lens: "Flow",
-      keyInsight: "",
-      actionItems: [""],
-      progressRating: 3,
-      notes: "",
+      coachNotes: newEntry.coachNotes,
+      progress: newEntry.progress,
+      status: "draft",
     });
   };
 
-  const totalSessions = debriefs.reduce((sum, d) => sum + 1, 0);
+  const totalSessions = debriefs.length;
   const avgProgress = debriefs.length > 0
-    ? (debriefs.reduce((sum, d) => sum + d.progressRating, 0) / debriefs.length).toFixed(1)
+    ? (debriefs.reduce((sum, d) => sum + (d.progress || 3), 0) / debriefs.length).toFixed(1)
     : "0";
   const uniqueClients = new Set(debriefs.map(d => d.clientName)).size;
 
@@ -285,7 +285,7 @@ export default function DebriefingToolAdmin() {
                   </div>
                   <Input
                     value={newEntry.clientName}
-                    onChange={e => setNewEntry(prev => ({ ...prev, clientName: e.target.value }))}
+                    onChange={(e: any) => setNewEntry(prev => ({ ...prev, clientName: e.target.value }))}
                     placeholder="e.g. Sarah M. (TechCorp)"
                     data-testid="input-client-name"
                   />
@@ -344,8 +344,8 @@ export default function DebriefingToolAdmin() {
                   />
                 </div>
                 <Textarea
-                  value={newEntry.keyInsight}
-                  onChange={e => setNewEntry(prev => ({ ...prev, keyInsight: e.target.value }))}
+                  value={newEntry.keyInsights}
+                  onChange={(e: any) => setNewEntry(prev => ({ ...prev, keyInsights: e.target.value }))}
                   placeholder="What was the main breakthrough or discovery this session?"
                   data-testid="input-key-insight"
                 />
@@ -408,11 +408,11 @@ export default function DebriefingToolAdmin() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setNewEntry(prev => ({ ...prev, progressRating: rating }))}
+                          onClick={() => setNewEntry(prev => ({ ...prev, progress: rating }))}
                           data-testid={`button-rating-${rating}`}
                         >
                           <Star
-                            className={`h-5 w-5 ${rating <= newEntry.progressRating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30'}`}
+                            className={`h-5 w-5 ${rating <= newEntry.progress ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30'}`}
                           />
                         </Button>
                       </TooltipTrigger>
@@ -425,7 +425,7 @@ export default function DebriefingToolAdmin() {
                       </TooltipContent>
                     </Tooltip>
                   ))}
-                  <span className="text-sm text-muted-foreground ml-2">{newEntry.progressRating}/5</span>
+                  <span className="text-sm text-muted-foreground ml-2">{newEntry.progress}/5</span>
                 </div>
               </div>
 
@@ -440,8 +440,8 @@ export default function DebriefingToolAdmin() {
                   />
                 </div>
                 <Textarea
-                  value={newEntry.notes}
-                  onChange={e => setNewEntry(prev => ({ ...prev, notes: e.target.value }))}
+                  value={newEntry.coachNotes}
+                  onChange={(e: any) => setNewEntry(prev => ({ ...prev, coachNotes: e.target.value }))}
                   placeholder="Additional observations, patterns, or follow-up items..."
                   data-testid="input-notes"
                 />
@@ -450,8 +450,9 @@ export default function DebriefingToolAdmin() {
               <div className="flex items-center gap-3 pt-2 flex-wrap">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button onClick={handleSubmitDebrief} data-testid="button-save-debrief">
-                      <ClipboardCheck className="h-4 w-4 mr-2" /> Save Debrief
+                    <Button onClick={handleSubmitDebrief} disabled={createMutation.isPending} data-testid="button-save-debrief">
+                      {createMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ClipboardCheck className="h-4 w-4 mr-2" />}
+                      {createMutation.isPending ? "Saving..." : "Save Debrief"}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Save this debrief as a draft. You can review and share it later.</TooltipContent>
@@ -469,11 +470,19 @@ export default function DebriefingToolAdmin() {
           </Card>
         )}
 
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        )}
+
         <div className="space-y-3">
           {debriefs.map(debrief => {
             const isExpanded = expandedId === debrief.id;
-            const lensColor = LENS_COLORS[debrief.lens] || LENS_COLORS.Flow;
-            const statusStyle = STATUS_STYLES[debrief.status] || STATUS_STYLES.draft;
+            const lensColor = LENS_COLORS[debrief.lens || "Flow"] || LENS_COLORS.Flow;
+            const statusStyle = STATUS_STYLES[debrief.status || "draft"] || STATUS_STYLES.draft;
+            const progressVal = debrief.progress || 3;
+            const dateStr = debrief.createdAt ? new Date(debrief.createdAt).toISOString().slice(0, 10) : "";
 
             return (
               <Card
@@ -496,7 +505,7 @@ export default function DebriefingToolAdmin() {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span><Badge variant="outline" className={lensColor} data-testid={`badge-lens-${debrief.id}`}>
-                            {debrief.lens}
+                            {debrief.lens || "Flow"}
                           </Badge></span>
                         </TooltipTrigger>
                         <TooltipContent>Communication lens focus for this session</TooltipContent>
@@ -517,19 +526,19 @@ export default function DebriefingToolAdmin() {
                         <Clock className="h-3 w-3" />
                         Session {debrief.sessionNumber}
                       </span>
-                      <span className="text-xs text-muted-foreground">{debrief.date}</span>
+                      <span className="text-xs text-muted-foreground">{dateStr}</span>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="flex items-center gap-0.5 cursor-help">
                             {[1, 2, 3, 4, 5].map(s => (
                               <Star
                                 key={s}
-                                className={`h-3 w-3 ${s <= debrief.progressRating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/20'}`}
+                                className={`h-3 w-3 ${s <= progressVal ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/20'}`}
                               />
                             ))}
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent>Progress rating: {debrief.progressRating}/5</TooltipContent>
+                        <TooltipContent>Progress rating: {progressVal}/5</TooltipContent>
                       </Tooltip>
                     </div>
                   </div>
@@ -540,29 +549,31 @@ export default function DebriefingToolAdmin() {
                         <p className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
                           <Target className="h-3 w-3" /> Key Insight
                         </p>
-                        <p className="text-sm leading-relaxed">{debrief.keyInsight}</p>
+                        <p className="text-sm leading-relaxed">{debrief.keyInsights}</p>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
-                          <ClipboardCheck className="h-3 w-3" /> Action Items
-                        </p>
-                        <ul className="space-y-1">
-                          {debrief.actionItems.map((item, i) => (
-                            <li key={i} className="flex items-start gap-2 text-sm">
-                              <div className="w-1.5 h-1.5 rounded-full bg-needs mt-1.5 flex-shrink-0" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      {debrief.actionItems && debrief.actionItems.length > 0 && (
+                        <div className="space-y-1.5">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                            <ClipboardCheck className="h-3 w-3" /> Action Items
+                          </p>
+                          <ul className="space-y-1">
+                            {debrief.actionItems.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm">
+                                <div className="w-1.5 h-1.5 rounded-full bg-needs mt-1.5 flex-shrink-0" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
-                      {debrief.notes && (
+                      {debrief.coachNotes && (
                         <div className="space-y-1.5">
                           <p className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
                             <MessageSquare className="h-3 w-3" /> Coach Notes
                           </p>
-                          <p className="text-sm leading-relaxed text-muted-foreground">{debrief.notes}</p>
+                          <p className="text-sm leading-relaxed text-muted-foreground">{debrief.coachNotes}</p>
                         </div>
                       )}
 
@@ -573,9 +584,8 @@ export default function DebriefingToolAdmin() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                setDebriefs(prev => prev.map(d =>
-                                  d.id === debrief.id ? { ...d, status: d.status === 'draft' ? 'reviewed' : d.status === 'reviewed' ? 'shared' : 'draft' } : d
-                                ));
+                                const nextStatus = debrief.status === 'draft' ? 'reviewed' : debrief.status === 'reviewed' ? 'shared' : 'draft';
+                                updateMutation.mutate({ id: debrief.id, status: nextStatus });
                               }}
                               data-testid={`button-status-${debrief.id}`}
                             >
@@ -603,6 +613,24 @@ export default function DebriefingToolAdmin() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Send a formatted summary email to the client with key insight and action items</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              onClick={() => {
+                                if (confirm("Delete this debrief? This cannot be undone.")) {
+                                  deleteMutation.mutate(debrief.id);
+                                }
+                              }}
+                              data-testid={`button-delete-${debrief.id}`}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Permanently delete this debrief record</TooltipContent>
                         </Tooltip>
                       </div>
                     </div>

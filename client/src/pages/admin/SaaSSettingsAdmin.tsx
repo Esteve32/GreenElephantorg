@@ -146,6 +146,8 @@ export default function SaaSSettingsAdmin() {
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showSaasToggleConfirm, setShowSaasToggleConfirm] = useState(false);
+  const [pendingSaasState, setPendingSaasState] = useState<boolean | null>(null);
 
   const { data: settings, isLoading } = useQuery<SaaSSettings>({
     queryKey: ['/api/admin/saas-settings'],
@@ -338,7 +340,10 @@ export default function SaaSSettingsAdmin() {
                 </div>
                 <Switch
                   checked={localSettings.saasEnabled}
-                  onCheckedChange={(checked) => updateSetting("saasEnabled", checked)}
+                  onCheckedChange={(checked) => {
+                    setPendingSaasState(checked);
+                    setShowSaasToggleConfirm(true);
+                  }}
                   className="data-[state=checked]:!bg-flow scale-110"
                   data-testid="switch-saas-enabled"
                 />
@@ -769,6 +774,111 @@ export default function SaaSSettingsAdmin() {
                     )}
                   </Button>
                   <Button variant="ghost" onClick={() => setShowConfirm(false)} data-testid="button-cancel-confirm">
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {showSaasToggleConfirm && pendingSaasState !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" data-testid="modal-saas-toggle-confirm">
+            <Card className="max-w-lg w-full bg-card border-white/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  {pendingSaasState ? (
+                    <><Rocket className="h-5 w-5 text-flow" /> Activate SaaS Subscription Mode</>
+                  ) : (
+                    <><AlertTriangle className="h-5 w-5 text-yellow-400" /> Deactivate SaaS Subscription Mode</>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {pendingSaasState ? (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      You are about to enable the subscription model. This changes how the site works for all visitors.
+                    </p>
+                    <div className="space-y-2">
+                      <div className="p-3 rounded-md bg-flow/5 border border-flow/20">
+                        <p className="text-xs font-semibold text-flow mb-1.5">What turns ON:</p>
+                        <ul className="text-xs text-muted-foreground space-y-1">
+                          <li className="flex items-start gap-1.5"><CheckCircle2 className="h-3 w-3 text-flow shrink-0 mt-0.5" /> Monthly subscription option (€{localSettings.subscriptionPriceMonthly}/mo) appears on checkout</li>
+                          <li className="flex items-start gap-1.5"><CheckCircle2 className="h-3 w-3 text-flow shrink-0 mt-0.5" /> Portal access unlocks for subscribers (Playground, Dashboard, unlimited scans)</li>
+                          <li className="flex items-start gap-1.5"><CheckCircle2 className="h-3 w-3 text-flow shrink-0 mt-0.5" /> Header CTA changes: logged-in users see "Take the Scan", others see "Log in"</li>
+                          <li className="flex items-start gap-1.5"><CheckCircle2 className="h-3 w-3 text-flow shrink-0 mt-0.5" /> Coaching Journey tier (€{localSettings.coachingJourneyPrice}) becomes visible</li>
+                        </ul>
+                      </div>
+                      <div className="p-3 rounded-md bg-white/[0.02] border border-white/10">
+                        <p className="text-xs font-semibold text-white/70 mb-1.5">Still available:</p>
+                        <p className="text-xs text-muted-foreground">One-time Satellite Scan (€{localSettings.scanOneTimePrice}) remains as an option alongside subscriptions.</p>
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-md bg-blue-500/5 border border-blue-500/20">
+                      <p className="text-xs text-blue-400">
+                        <strong>Note:</strong> Changes take effect after you click "Save & Apply" on the main settings. This toggle stages the change — it does not go live until saved.
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      You are about to disable the subscription model and revert to one-time purchase only.
+                    </p>
+                    <div className="space-y-2">
+                      <div className="p-3 rounded-md bg-red-500/5 border border-red-500/20">
+                        <p className="text-xs font-semibold text-red-400 mb-1.5">Impact on existing subscribers:</p>
+                        <ul className="text-xs text-muted-foreground space-y-1">
+                          <li className="flex items-start gap-1.5"><AlertTriangle className="h-3 w-3 text-yellow-400 shrink-0 mt-0.5" /> Active Stripe subscriptions will NOT be automatically cancelled — manage them in Stripe Dashboard</li>
+                          <li className="flex items-start gap-1.5"><AlertTriangle className="h-3 w-3 text-yellow-400 shrink-0 mt-0.5" /> Portal access for existing subscribers continues until their subscription expires or is manually cancelled</li>
+                          <li className="flex items-start gap-1.5"><XCircle className="h-3 w-3 text-red-400 shrink-0 mt-0.5" /> New visitors will only see the one-time scan option (€{localSettings.scanOneTimePrice})</li>
+                        </ul>
+                      </div>
+                      <div className="p-3 rounded-md bg-white/[0.02] border border-white/10">
+                        <p className="text-xs font-semibold text-white/70 mb-1.5">What changes:</p>
+                        <ul className="text-xs text-muted-foreground space-y-1">
+                          <li className="flex items-start gap-1.5"><XCircle className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" /> Subscription option removed from checkout</li>
+                          <li className="flex items-start gap-1.5"><XCircle className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" /> Coaching Journey tier hidden from new visitors</li>
+                          <li className="flex items-start gap-1.5"><XCircle className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" /> Header CTA reverts to "Take the Scan — €{localSettings.scanOneTimePrice}"</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-md bg-yellow-500/5 border border-yellow-500/20">
+                      <p className="text-xs text-yellow-400">
+                        <strong>Recommended:</strong> Before turning OFF, review active subscriptions in Stripe and communicate changes to affected customers.
+                      </p>
+                    </div>
+                  </>
+                )}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button
+                    onClick={() => {
+                      updateSetting("saasEnabled", pendingSaasState);
+                      setShowSaasToggleConfirm(false);
+                      setPendingSaasState(null);
+                      toast({
+                        title: pendingSaasState ? "SaaS mode staged ON" : "SaaS mode staged OFF",
+                        description: "Click 'Save & Apply' to make this change live.",
+                      });
+                    }}
+                    className={`gap-1.5 ${pendingSaasState ? "bg-flow" : "bg-red-600"}`}
+                    data-testid="button-confirm-saas-toggle"
+                  >
+                    {pendingSaasState ? (
+                      <><Rocket className="h-4 w-4" /> Yes, Enable SaaS Mode</>
+                    ) : (
+                      <><AlertTriangle className="h-4 w-4" /> Yes, Disable SaaS Mode</>
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setShowSaasToggleConfirm(false);
+                      setPendingSaasState(null);
+                    }}
+                    data-testid="button-cancel-saas-toggle"
+                  >
                     Cancel
                   </Button>
                 </div>

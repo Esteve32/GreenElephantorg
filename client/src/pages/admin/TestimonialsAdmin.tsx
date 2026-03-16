@@ -68,7 +68,7 @@ export default function TestimonialsAdmin() {
 
   return (
     <>
-      <SEO title="Testimonials Admin | GreenElephant" />
+      <SEO title="Testimonials Admin | GreenElephant" description="Manage customer testimonials, consent status, and public visibility settings." />
       <div className="min-h-screen bg-background p-6 max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => setLocation("/admin/submissions")} data-testid="button-back-admin">
@@ -121,14 +121,14 @@ export default function TestimonialsAdmin() {
               className="min-h-[80px]"
               data-testid="input-testimonial-quote"
             />
-            <Button
+            <Tooltip><TooltipTrigger asChild><Button
               onClick={() => createMutation.mutate(newForm)}
               disabled={!newForm.name || !newForm.quote || createMutation.isPending}
               data-testid="button-add-testimonial"
             >
               {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
               Add
-            </Button>
+            </Button></TooltipTrigger><TooltipContent>Add this testimonial (it will be hidden until you toggle Consent and Visible)</TooltipContent></Tooltip>
           </CardContent>
         </Card>
 
@@ -180,17 +180,17 @@ export default function TestimonialsAdmin() {
                           data-testid={`input-edit-quote-${t.id}`}
                         />
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Button
+                          <Tooltip><TooltipTrigger asChild><Button
                             onClick={() => updateMutation.mutate({ id: t.id, data: editForm })}
                             disabled={updateMutation.isPending}
                             data-testid={`button-save-${t.id}`}
                           >
                             <Save className="h-4 w-4 mr-2" />
                             Save
-                          </Button>
-                          <Button variant="ghost" onClick={() => setEditId(null)} data-testid={`button-cancel-${t.id}`}>
+                          </Button></TooltipTrigger><TooltipContent>Save changes to this testimonial</TooltipContent></Tooltip>
+                          <Tooltip><TooltipTrigger asChild><Button variant="ghost" onClick={() => setEditId(null)} data-testid={`button-cancel-${t.id}`}>
                             Cancel
-                          </Button>
+                          </Button></TooltipTrigger><TooltipContent>Discard changes and stop editing</TooltipContent></Tooltip>
                         </div>
                       </div>
                     ) : (
@@ -225,14 +225,14 @@ export default function TestimonialsAdmin() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Button
+                          <Tooltip><TooltipTrigger asChild><Button
                             variant="ghost"
                             onClick={() => { setEditId(t.id); setEditForm({ name: t.name, role: t.role || "", company: t.company || "", quote: t.quote }); }}
                             data-testid={`button-edit-${t.id}`}
                           >
                             Edit
-                          </Button>
-                          <Button
+                          </Button></TooltipTrigger><TooltipContent>Edit this testimonial's details</TooltipContent></Tooltip>
+                          <Tooltip><TooltipTrigger asChild><Button
                             variant="ghost"
                             className="text-destructive"
                             onClick={() => { if (confirm("Delete this testimonial?")) deleteMutation.mutate(t.id); }}
@@ -240,7 +240,7 @@ export default function TestimonialsAdmin() {
                           >
                             <Trash2 className="h-4 w-4 mr-1" />
                             Delete
-                          </Button>
+                          </Button></TooltipTrigger><TooltipContent>Permanently delete this testimonial</TooltipContent></Tooltip>
                         </div>
                       </>
                     )}

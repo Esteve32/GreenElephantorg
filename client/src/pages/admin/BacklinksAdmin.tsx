@@ -54,7 +54,7 @@ export default function BacklinksAdmin() {
 
   return (
     <>
-      <SEO title="Backlinks Tracker | GreenElephant Admin" />
+      <SEO title="Backlinks Tracker | GreenElephant Admin" description="Track and manage external backlinks pointing to GreenElephant.org to boost SEO authority." />
       <div className="min-h-screen bg-background p-6 max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => setLocation("/admin/submissions")} data-testid="button-back-admin">
@@ -83,10 +83,10 @@ export default function BacklinksAdmin() {
                 className="flex-1 min-w-[250px]"
                 data-testid="input-backlink-url"
               />
-              <Button onClick={addLink} disabled={!newUrl} data-testid="button-add-backlink">
+              <Tooltip><TooltipTrigger asChild><Button onClick={addLink} disabled={!newUrl} data-testid="button-add-backlink">
                 <Plus className="h-4 w-4 mr-2" />
                 Add
-              </Button>
+              </Button></TooltipTrigger><TooltipContent>Add this URL to your tracked backlinks</TooltipContent></Tooltip>
             </div>
           </CardContent>
         </Card>
@@ -121,12 +121,12 @@ export default function BacklinksAdmin() {
                         {link.status}
                       </Badge>
                       <span className="text-xs text-muted-foreground">{link.addedAt}</span>
-                      <Button variant="ghost" size="icon" onClick={() => window.open(link.url, "_blank")} data-testid={`button-open-${link.id}`}>
+                      <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => window.open(link.url, "_blank")} data-testid={`button-open-${link.id}`}>
                         <ExternalLink className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="text-destructive" onClick={() => removeLink(link.id)} data-testid={`button-delete-${link.id}`}>
+                      </Button></TooltipTrigger><TooltipContent>Open backlink URL to verify it is live</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="text-destructive" onClick={() => removeLink(link.id)} data-testid={`button-delete-${link.id}`}>
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </Button></TooltipTrigger><TooltipContent>Remove this backlink from tracking</TooltipContent></Tooltip>
                     </div>
                   </div>
                 ))}

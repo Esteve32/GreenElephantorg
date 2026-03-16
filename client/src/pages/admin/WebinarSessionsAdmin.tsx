@@ -260,10 +260,10 @@ export default function WebinarSessionsAdmin() {
         </div>
       </div>
       <div className="flex gap-3 justify-end pt-2">
-        <Button variant="ghost" size="sm" onClick={onCancel} data-testid="button-cancel">
+        <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="sm" onClick={onCancel} data-testid="button-cancel">
           <X className="h-4 w-4 mr-1" /> Cancel
-        </Button>
-        <Button
+        </Button></TooltipTrigger><TooltipContent>Discard changes</TooltipContent></Tooltip>
+        <Tooltip><TooltipTrigger asChild><Button
           size="sm"
           className="bg-needs text-white"
           onClick={onSave}
@@ -272,7 +272,7 @@ export default function WebinarSessionsAdmin() {
         >
           <Check className="h-4 w-4 mr-1" />
           {saving ? "Saving…" : "Save session"}
-        </Button>
+        </Button></TooltipTrigger><TooltipContent>Save webinar session details</TooltipContent></Tooltip>
       </div>
     </div>
   );
@@ -396,15 +396,15 @@ export default function WebinarSessionsAdmin() {
                         </div>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
-                        <Button
+                        <Tooltip><TooltipTrigger asChild><Button
                           size="icon"
                           variant="ghost"
                           onClick={() => startEdit(session)}
                           data-testid={`button-edit-${session.id}`}
                         >
                           <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
+                        </Button></TooltipTrigger><TooltipContent>Edit this session</TooltipContent></Tooltip>
+                        <Tooltip><TooltipTrigger asChild><Button
                           size="icon"
                           variant="ghost"
                           onClick={() => deleteMutation.mutate(session.id)}
@@ -412,7 +412,7 @@ export default function WebinarSessionsAdmin() {
                           data-testid={`button-delete-${session.id}`}
                         >
                           <Trash2 className="h-4 w-4 text-red-400" />
-                        </Button>
+                        </Button></TooltipTrigger><TooltipContent>Delete this session</TooltipContent></Tooltip>
                       </div>
                     </div>
                   )}
@@ -450,7 +450,7 @@ export default function WebinarSessionsAdmin() {
                 />
               </div>
 
-              <Button
+              <Tooltip><TooltipTrigger asChild><Button
                 onClick={() => pollMutation.mutate(pollContext || 'current news and geopolitical trends relevant to conscious communication')}
                 disabled={pollMutation.isPending}
                 className="bg-needs text-white gap-2"
@@ -461,7 +461,7 @@ export default function WebinarSessionsAdmin() {
                 ) : (
                   <><Zap className="h-4 w-4" /> Generate LinkedIn Poll</>
                 )}
-              </Button>
+              </Button></TooltipTrigger><TooltipContent>Use AI to generate a LinkedIn poll based on current trends and lens theme</TooltipContent></Tooltip>
 
               {pollMutation.isPending && (
                 <div className="rounded-md bg-white/5 p-4 space-y-3">
@@ -514,7 +514,7 @@ export default function WebinarSessionsAdmin() {
                   </div>
 
                   <div className="flex gap-2 flex-wrap">
-                    <Button
+                    <Tooltip><TooltipTrigger asChild><Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
@@ -525,8 +525,8 @@ export default function WebinarSessionsAdmin() {
                     >
                       {pollCopied === 'all' ? <Check className="h-3.5 w-3.5 mr-1.5 text-green-500" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
                       Copy all
-                    </Button>
-                    <Button
+                    </Button></TooltipTrigger><TooltipContent>Copy full poll text, question and options to clipboard</TooltipContent></Tooltip>
+                    <Tooltip><TooltipTrigger asChild><Button
                       size="sm"
                       variant="ghost"
                       onClick={() => copyPoll(pollResult.question, 'question')}
@@ -534,11 +534,11 @@ export default function WebinarSessionsAdmin() {
                     >
                       {pollCopied === 'question' ? <Check className="h-3.5 w-3.5 mr-1.5 text-green-500" /> : <Copy className="h-3.5 w-3.5 mr-1.5" />}
                       Question only
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Copy only the poll question to clipboard</TooltipContent></Tooltip>
                     <a href="https://www.linkedin.com/company/greenelephant" target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" variant="ghost" data-testid="link-linkedin-poll">
+                      <Tooltip><TooltipTrigger asChild><Button size="sm" variant="ghost" data-testid="link-linkedin-poll">
                         <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Open LinkedIn
-                      </Button>
+                      </Button></TooltipTrigger><TooltipContent>Open GreenElephant LinkedIn page to post the poll</TooltipContent></Tooltip>
                     </a>
                   </div>
                 </div>

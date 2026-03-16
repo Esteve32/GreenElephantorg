@@ -39,8 +39,8 @@ import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1764343412596.
 import circularCalendarUrl from "@assets/Celestial_calendar🔥2022_extrenal_no_planets_with_legend_no_ik_1764793584893.png";
 import periodicTableImageUrl from "@assets/The-Periodic-Table-of-Conscious-Communication@2x_1764712887674.png";
 const influenceStrategiesPdfUrl = "";
-const greenBlueRedPdfUrl = "";
-const microHabitPdfUrl = "";
+import greenBlueRedPdfUrl from "@assets/1103_1105GBR_BASICS_Roasberg_vers11_Colour_Decoded_Examples_of_1772233445546.png";
+import microHabitPdfUrl from "@assets/2103_Micro-Habit_1772233445546.png";
 const chaordicRolesPdfUrl = "";
 const nvcGreenBlueRedPdfUrl = "";
 const fiveStagesTeamPdfUrl = "";

@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Quote } from "lucide-react";
 import { motion } from "framer-motion";
@@ -151,6 +152,12 @@ const testimonials = [
 export default function ReferencesPage() {
   return (
     <div className="min-h-screen relative">
+      <SEO
+        title="References & Partners"
+        description="Trusted by leaders across tech, finance, healthcare, and government. See GreenElephant's references, client testimonials, and partnership network."
+        keywords="GreenElephant references, communication coaching partners, executive coaching testimonials, leadership development clients"
+        canonicalPath="/references"
+      />
       <style>{`
         @keyframes marquee-scroll {
           from { transform: translateX(0); }

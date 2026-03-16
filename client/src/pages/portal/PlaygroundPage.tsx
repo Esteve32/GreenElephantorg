@@ -41,8 +41,8 @@ const LENSES = [
   { key: "chaordic", label: "Chaordic", color: "#cc9933", icon: Zap },
   { key: "flow", label: "Flow", color: "#cccc33", icon: Sparkles },
   { key: "alignment", label: "Alignment", color: "#33cc33", icon: Users },
-  { key: "needs", label: "Needs", color: "#009999", icon: Heart },
-  { key: "ego", label: "Ego", color: "#3366cc", icon: Brain },
+  { key: "needs", label: "Needs", color: "#33a854", icon: Heart },
+  { key: "ego", label: "Ego", color: "#3b7dd8", icon: Brain },
   { key: "dynamics", label: "Dynamics", color: "#9933cc", icon: BarChart3 },
 ] as const;
 
@@ -279,10 +279,14 @@ export default function PlaygroundPage() {
         },
       });
       const data = await res.json();
-      return data.html || data.content || data;
+      const raw = data.html || data.content || "";
+      if (typeof raw !== "string") {
+        return `<!DOCTYPE html><html><body style="background:#0a0a0a;color:#e5e5e5;font-family:system-ui,sans-serif;padding:2rem;"><pre style="white-space:pre-wrap;">${JSON.stringify(raw, null, 2)}</pre></body></html>`;
+      }
+      return raw;
     },
     onSuccess: (html: string) => {
-      setVizHtml(typeof html === "string" ? html : JSON.stringify(html));
+      setVizHtml(html);
     },
     onError: () => {
       toast({ title: "Visualization failed", description: "Could not generate dashboard. Try a different query.", variant: "destructive" });

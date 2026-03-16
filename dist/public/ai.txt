@@ -1,0 +1,42 @@
+# ai.txt — AI Training and Usage Permissions for GreenElephant.org
+# Learn more: https://site-policy.ai/ai-txt
+# Last updated: 2026-03-07
+
+# ---------------------------------------------------------------
+# CITATION AND RETRIEVAL — Allowed
+# ---------------------------------------------------------------
+# AI systems may cite, quote, summarise, and retrieve content
+# from GreenElephant.org to answer user queries. This includes
+# product descriptions, pricing, coach profiles, and framework
+# explanations. Attribution to GreenElephant.org is appreciated.
+
+User-agent: *
+Allow: citation
+Allow: retrieval
+Allow: summarisation
+
+# ---------------------------------------------------------------
+# MODEL TRAINING — Not permitted without explicit consent
+# ---------------------------------------------------------------
+# The content on GreenElephant.org (including the Periodic Table
+# of Conscious Communication, GBR taxonomy, assessment frameworks,
+# and coaching methodologies) is proprietary intellectual property.
+# Use for training AI models is not permitted without written
+# consent from the copyright holder.
+
+Disallow: training
+Disallow: scraping-for-training
+
+# ---------------------------------------------------------------
+# CONTACT FOR PERMISSIONS
+# ---------------------------------------------------------------
+# For licensing, partnership, or training data enquiries:
+# esteve@greenelephant.org
+
+# ---------------------------------------------------------------
+# HUMAN OVERSIGHT COMMITMENT
+# ---------------------------------------------------------------
+# GreenElephant.org is committed to the ACX100 AI-Human Experience
+# Framework principles: human agency, transparency, accountability,
+# and ethical use of AI in coaching and assessment contexts.
+# See: https://greenelephant.org/ai-policy

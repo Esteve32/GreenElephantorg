@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Scan, Loader2, RotateCcw, Save } from "lucide-react";
+import { Scan, RotateCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import { AILoadingOverlay } from "@/components/portal/AILoadingOverlay";
 
 interface ReflectionToolProps {
   onSaveToTimeline?: (event: { type: string; title: string; description: string; details?: string; lens?: string; toolId?: string }) => void;
@@ -23,12 +24,12 @@ interface TimelineEvent {
 const LENSES = [
   { id: "influence", name: "Influence", color: "#cc3333", desc: "How you exert influence with integrity" },
   { id: "attitude", name: "Attitude", color: "#ff9933", desc: "Your stance toward change and growth" },
-  { id: "chaordic", name: "Chaordic", color: "#ffcc00", desc: "Order in creative chaos" },
+  { id: "chaordic", name: "Chaordic", color: "#ffcc00", desc: "Order in creative chaos — including Human-to-AI dialogue" },
   { id: "flow", name: "Flow", color: "#cccc33", desc: "Sensing flow in conversations" },
   { id: "alignment", name: "Alignment", color: "#669966", desc: "Building empathy and shared understanding" },
-  { id: "needs", name: "Needs", color: "#009999", desc: "Honoring your energy and core needs" },
-  { id: "ego", name: "Ego", color: "#3399cc", desc: "Recognizing and loosening ego patterns" },
-  { id: "dynamics", name: "Dynamics", color: "#663399", desc: "Understanding relationship dynamics" },
+  { id: "needs", name: "Needs", color: "#33a854", desc: "Honoring your energy and core needs" },
+  { id: "ego", name: "Ego", color: "#3b7dd8", desc: "Recognizing and loosening ego patterns" },
+  { id: "dynamics", name: "Dynamics", color: "#9933cc", desc: "Understanding relationship dynamics" },
 ];
 
 export function ReflectionTool({ onSaveToTimeline }: ReflectionToolProps) {
@@ -117,6 +118,10 @@ export function ReflectionTool({ onSaveToTimeline }: ReflectionToolProps) {
     setResult("");
     setAutoSaved(false);
   };
+
+  if (loading) {
+    return <AILoadingOverlay toolId="reflection" />;
+  }
 
   if (result) {
     const lens = LENSES.find((l) => l.id === selectedLens);
@@ -244,14 +249,7 @@ export function ReflectionTool({ onSaveToTimeline }: ReflectionToolProps) {
             className="w-full bg-[#009999] text-white border-[#009999]/30"
             data-testid="button-reflect"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Reflecting...
-              </>
-            ) : (
-              "Get Reflection"
-            )}
+            Get Reflection
           </Button>
         </>
       )}

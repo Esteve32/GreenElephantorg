@@ -1,7 +1,7 @@
 import { SEO } from "@/components/SEO";
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -162,6 +162,7 @@ const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
 };
 
 export default function CheckoutPage() {
+  useEffect(() => { document.title = "Checkout | GreenElephant"; }, []);
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('details');
   const [clientSecret, setClientSecret] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import PromptCard from "@/components/PromptCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +74,12 @@ export default function PromptsPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Prompt Library — AI Communication Tools"
+        description="Explore ready-to-use AI prompts for conscious communication. Filter by lens, role, and scenario — empathetic listening, trust building, boundary setting, and more."
+        keywords="AI communication prompts, conscious communication tools, empathetic listening, trust building, conflict resolution prompts, executive assistant communication, team meeting prompts"
+        canonicalPath="/prompts"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-alignment text-white">Practical Tools</Badge>

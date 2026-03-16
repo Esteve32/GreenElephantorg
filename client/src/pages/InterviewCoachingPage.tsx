@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { 
   CheckCircle2, 
   Target, 
@@ -13,7 +14,9 @@ import {
   BarChart3,
   Sparkles,
   Brain,
-  Handshake
+  Handshake,
+  Shield,
+  Lock
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
@@ -126,6 +129,53 @@ export default function InterviewCoachingPage() {
                 </a>
               </Button>
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section
+        className="py-12"
+        style={{ background: sectionGradientMid }}
+        data-testid="section-interview-social-proof"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {[
+              { stat: "€845", label: "Scan + 3 sessions (save €49.95)", color: "#9933cc" },
+              { stat: "48-72h", label: "Dashboard delivered", color: "#009999" },
+              { stat: "5h+", label: "Total coaching time", color: "#e8c840" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="bg-white/5 border-white/10 text-center" data-testid={`card-interview-stat-${i}`}>
+                  <CardContent className="p-5">
+                    <p className="text-3xl font-bold" style={{ color: item.color }}>{item.stat}</p>
+                    <p className="text-xs text-white/50 mt-1">{item.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <Card className="bg-ego/5 border-ego/20 inline-block">
+              <CardContent className="p-4 flex items-center gap-3">
+                <Shield className="w-5 h-5 text-ego flex-shrink-0" />
+                <p className="text-sm text-white/70">
+                  <strong className="text-white">14-day satisfaction guarantee.</strong> If the program doesn't deliver value, get a full refund.
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>
@@ -917,6 +967,50 @@ export default function InterviewCoachingPage() {
           </div>
         </div>
       </section>
+
+      <section className="relative py-16" data-testid="section-interview-trust">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-2xl border border-white/10 p-8 md:p-12"
+            style={{ background: "linear-gradient(135deg, rgba(59,125,216,0.08) 0%, rgba(153,51,204,0.08) 100%)" }}
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ego/15 border border-ego/30 mb-6">
+                <Shield className="w-7 h-7 text-ego" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4" data-testid="text-interview-guarantee-title">
+                14-Day Satisfaction Guarantee
+              </h2>
+              <p className="text-white/60 max-w-xl mx-auto mb-6">
+                If the Interview Mastery Bundle doesn't deliver value within your first session, receive a full refund within 14 days. Your career transition deserves confidence.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+                <Link href="/checkout?package=interview-mastery-bundle">
+                  <Button size="lg" className="bg-ego text-white" data-testid="button-interview-guarantee-cta">
+                    Start Risk-Free — €845
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
+                <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
+                <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+                <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Includes Satellite Scan</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <StickyMobileCTA
+        price="€845"
+        label="Get the Bundle"
+        href="/checkout?package=interview-mastery-bundle"
+        sublabel="Complete interview coaching package"
+      />
     </div>
   );
 }

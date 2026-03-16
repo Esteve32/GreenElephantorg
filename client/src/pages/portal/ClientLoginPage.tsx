@@ -33,6 +33,8 @@ export default function ClientLoginPage() {
       const errorMessages: Record<string, string> = {
         google_403: "Google login is temporarily unavailable. Please use email/password instead.",
         google_access_denied: "Google login was denied. Please use email/password instead.",
+        dev_google: "Google login only works on the published site (greenelephant.org). Please use email/password for now.",
+        dev_linkedin: "LinkedIn login only works on the published site. Please use email/password for now.",
         no_code: "Login was cancelled. Please try again.",
         invalid_state: "Session expired. Please try logging in again.",
         not_configured: "This login method is not configured yet.",
@@ -92,7 +94,7 @@ export default function ClientLoginPage() {
           description: "Launching your portal...",
         });
         setIsTakingOff(true);
-        setTimeout(() => setLocation("/portal"), 1800);
+        setTimeout(() => setLocation("/portal"), 2400);
       } else {
         toast({
           title: "Login failed",
@@ -126,7 +128,7 @@ export default function ClientLoginPage() {
           description: "Launching your portal...",
         });
         setIsTakingOff(true);
-        setTimeout(() => setLocation("/portal"), 1800);
+        setTimeout(() => setLocation("/portal"), 2400);
       } else {
         toast({
           title: "Registration failed",
@@ -158,12 +160,20 @@ export default function ClientLoginPage() {
     <style>{`
       @keyframes takeoffSlide {
         0% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
-        40% { transform: translateY(-5vh) scale(1.02); opacity: 1; filter: blur(0px); }
-        100% { transform: translateY(-100vh) scale(1.08); opacity: 0; filter: blur(6px); }
+        15% { transform: translateY(-2vh) scale(1.005); opacity: 1; filter: blur(0px); }
+        35% { transform: translateY(-8vh) scale(1.02); opacity: 1; filter: blur(0.5px); }
+        60% { transform: translateY(-30vh) scale(1.04); opacity: 0.9; filter: blur(2px); }
+        100% { transform: translateY(-120vh) scale(1.1); opacity: 0; filter: blur(8px); }
       }
       @keyframes takeoffStars {
         0% { transform: translateY(0); }
-        100% { transform: translateY(80vh); }
+        30% { transform: translateY(10vh); }
+        100% { transform: translateY(120vh); }
+      }
+      @keyframes takeoffGlow {
+        0% { box-shadow: none; }
+        30% { box-shadow: 0 0 40px rgba(0,153,153,0.2), 0 0 80px rgba(0,153,153,0.1); }
+        100% { box-shadow: 0 0 100px rgba(0,153,153,0.4), 0 0 200px rgba(0,153,153,0.2); }
       }
     `}</style>
     <div className="min-h-screen bg-transparent">
@@ -201,7 +211,7 @@ export default function ClientLoginPage() {
 
         <div
           className="absolute inset-0 overflow-hidden"
-          style={isTakingOff ? { animation: "takeoffStars 1.8s ease-in forwards" } : undefined}
+          style={isTakingOff ? { animation: "takeoffStars 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards" } : undefined}
         >
           {stars.map((star) => (
             <div
@@ -233,11 +243,11 @@ export default function ClientLoginPage() {
         <div
           className="relative z-10 min-h-screen flex flex-col items-center px-4"
           style={{
-            paddingTop: '10vh',
-            ...(isTakingOff ? { animation: "takeoffSlide 1.8s ease-in forwards" } : {}),
+            paddingTop: '6vh',
+            ...(isTakingOff ? { animation: "takeoffSlide 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards" } : {}),
           }}
         >
-          <div className="w-full flex items-center justify-between mb-12 max-w-md mx-auto">
+          <div className="w-full flex items-center justify-between mb-6 max-w-md mx-auto">
             <Button
               variant="ghost"
               size="sm"
@@ -254,11 +264,11 @@ export default function ClientLoginPage() {
             </Badge>
           </div>
 
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="text-center mb-10">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 text-white leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Your Communication Hub
             </h1>
-            <p className="text-base text-white/60 max-w-md mx-auto">
+            <p className="text-lg text-white/60 max-w-md mx-auto leading-relaxed">
               Access your Satellite Scan results, coaching resources, and subscription tools
             </p>
             {publicSettings?.subscriptionFeatures && publicSettings.subscriptionFeatures.length > 0 && (
@@ -273,7 +283,10 @@ export default function ClientLoginPage() {
             )}
           </div>
 
-          <Card className="w-full max-w-md backdrop-blur-md bg-black/40 border-white/10">
+          <Card
+            className="w-full max-w-md backdrop-blur-md bg-black/40 border-white/10"
+            style={isTakingOff ? { animation: "takeoffGlow 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards" } : undefined}
+          >
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-white">
                 <User className="h-5 w-5 text-[#009999]" />
@@ -345,7 +358,7 @@ export default function ClientLoginPage() {
                         <button
                           type="button"
                           className="text-xs text-[#009999] hover:underline"
-                          onClick={() => toast({ title: "Coming soon", description: "Password reset will be available shortly." })}
+                          onClick={() => setLocation("/portal/forgot-password")}
                           data-testid="link-forgot-password"
                         >
                           Forgot password?

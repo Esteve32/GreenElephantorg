@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { AdminTooltip } from "@/components/AdminTooltip";
+import { AIContextSelector } from "@/components/AIContextSelector";
+import { OutputFormatToggle, formatContent, useOutputFormat } from "@/components/OutputFormatToggle";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Select,
@@ -216,6 +218,7 @@ export default function ResearchFlywheelLab() {
 
   const [calibration, setCalibration] = useState({ why: '', what: '', how: '' });
   const [leadFilters, setLeadFilters] = useState<Record<string, string>>({});
+  const { outputFormat, setOutputFormat } = useOutputFormat("rich");
   const [leadResult, setLeadResult] = useState<LeadResult | null>(null);
 
   const [gmailQuery, setGmailQuery] = useState("from:esteve@greenelephant.org OR to:esteve@greenelephant.org");
@@ -378,8 +381,7 @@ export default function ResearchFlywheelLab() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <Button
-                key={tab.id}
+              <Tooltip key={tab.id}><TooltipTrigger asChild><Button
                 variant={isActive ? "default" : "outline"}
                 size="sm"
                 onClick={() => setActiveTab(tab.id)}
@@ -387,10 +389,12 @@ export default function ResearchFlywheelLab() {
               >
                 <Icon className="h-4 w-4 mr-1.5" />
                 {tab.label}
-              </Button>
+              </Button></TooltipTrigger><TooltipContent>Switch to {tab.label} tab</TooltipContent></Tooltip>
             );
           })}
         </div>
+
+        <AIContextSelector compact />
 
         {activeTab === "pmf" && (
           <div className="space-y-6">
@@ -452,7 +456,7 @@ export default function ResearchFlywheelLab() {
                   />
                 </div>
 
-                <Button
+                <Tooltip><TooltipTrigger asChild><Button
                   onClick={() => pmfMutation.mutate()}
                   disabled={pmfMutation.isPending}
                   className="w-full"
@@ -463,7 +467,7 @@ export default function ResearchFlywheelLab() {
                   ) : (
                     <><Zap className="h-4 w-4 mr-2" /> Generate PMF Assumptions</>
                   )}
-                </Button>
+                </Button></TooltipTrigger><TooltipContent>Use AI to generate Product-Market Fit hypotheses from your filters</TooltipContent></Tooltip>
               </CardContent>
             </Card>
 
@@ -476,7 +480,7 @@ export default function ResearchFlywheelLab() {
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <h2 className="text-lg font-semibold font-['Poppins']">Generated Assumptions</h2>
                   <div className="flex gap-2 flex-wrap">
-                    <Button
+                    <Tooltip><TooltipTrigger asChild><Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
@@ -494,8 +498,8 @@ export default function ResearchFlywheelLab() {
                       data-testid="button-export-pmf-xls"
                     >
                       <Download className="h-3.5 w-3.5 mr-1.5" /> Export XLS
-                    </Button>
-                    <Button
+                    </Button></TooltipTrigger><TooltipContent>Download all assumptions as an XLS spreadsheet</TooltipContent></Tooltip>
+                    <Tooltip><TooltipTrigger asChild><Button
                       size="sm"
                       variant="outline"
                       onClick={() => notionSyncMutation.mutate(pmfResult.assumptions.map(a => ({ ...a, createdAt: new Date().toISOString() })))}
@@ -504,10 +508,24 @@ export default function ResearchFlywheelLab() {
                     >
                       {notionSyncMutation.isPending ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" />}
                       Sync to Notion
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Push all generated assumptions to your Notion database</TooltipContent></Tooltip>
                   </div>
                 </div>
 
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-xs text-muted-foreground">Output format:</span>
+                  <OutputFormatToggle value={outputFormat} onChange={setOutputFormat} />
+                </div>
+
+                {outputFormat === 'machine' ? (
+                  <Card>
+                    <CardContent className="pt-5">
+                      <pre className="text-xs font-mono whitespace-pre-wrap bg-muted/30 rounded-md p-4 max-h-[500px] overflow-y-auto" data-testid="text-pmf-machine">
+                        {JSON.stringify({ type: 'pmf_assumptions', assumptions: pmfResult.assumptions, pmfIndicators: pmfResult.pmfIndicators, generatedAt: new Date().toISOString() }, null, 2)}
+                      </pre>
+                    </CardContent>
+                  </Card>
+                ) : (
                 <div className="grid gap-4 md:grid-cols-2">
                   {pmfResult.assumptions.map((assumption, idx) => (
                     <Card key={idx}>
@@ -539,15 +557,15 @@ export default function ResearchFlywheelLab() {
                           </div>
                         )}
                         <div className="flex gap-2 flex-wrap">
-                          <Button
+                          <Tooltip><TooltipTrigger asChild><Button
                             size="sm"
                             variant="ghost"
                             onClick={() => saveAssumption(assumption)}
                             data-testid={`button-save-assumption-${idx}`}
                           >
                             <Check className="h-3.5 w-3.5 mr-1" /> Save
-                          </Button>
-                          <Button
+                          </Button></TooltipTrigger><TooltipContent>Save this assumption to your local list</TooltipContent></Tooltip>
+                          <Tooltip><TooltipTrigger asChild><Button
                             size="sm"
                             variant="ghost"
                             onClick={() => copyToClipboard(assumption.hypothesis, `hyp-${idx}`)}
@@ -555,12 +573,14 @@ export default function ResearchFlywheelLab() {
                           >
                             {copiedField === `hyp-${idx}` ? <Check className="h-3.5 w-3.5 mr-1 text-green-500" /> : <Copy className="h-3.5 w-3.5 mr-1" />}
                             Copy
-                          </Button>
+                          </Button></TooltipTrigger><TooltipContent>Copy hypothesis text to clipboard</TooltipContent></Tooltip>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
+
+                )}
 
                 {pmfResult.pmfIndicators && (
                   <Card>
@@ -618,7 +638,7 @@ export default function ResearchFlywheelLab() {
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <CardTitle className="text-base">Saved Assumptions ({savedAssumptions.length})</CardTitle>
                     <div className="flex gap-2 flex-wrap">
-                      <Button
+                      <Tooltip><TooltipTrigger asChild><Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
@@ -636,15 +656,15 @@ export default function ResearchFlywheelLab() {
                         data-testid="button-export-saved-xls"
                       >
                         <Download className="h-3.5 w-3.5 mr-1.5" /> Export Saved XLS
-                      </Button>
-                      <Button
+                      </Button></TooltipTrigger><TooltipContent>Download saved assumptions as an XLS spreadsheet</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button
                         size="sm"
                         variant="ghost"
                         onClick={() => { setSavedAssumptions([]); toast({ title: "Cleared", description: "Saved assumptions cleared." }); }}
                         data-testid="button-clear-saved"
                       >
                         Clear All
-                      </Button>
+                      </Button></TooltipTrigger><TooltipContent>Remove all saved assumptions from local storage</TooltipContent></Tooltip>
                     </div>
                   </div>
                 </CardHeader>
@@ -743,7 +763,7 @@ export default function ResearchFlywheelLab() {
                   </div>
                 </div>
 
-                <Button
+                <Tooltip><TooltipTrigger asChild><Button
                   onClick={() => leadMutation.mutate()}
                   disabled={leadMutation.isPending}
                   className="w-full"
@@ -754,7 +774,7 @@ export default function ResearchFlywheelLab() {
                   ) : (
                     <><Zap className="h-4 w-4 mr-2" /> Generate Lead List</>
                   )}
-                </Button>
+                </Button></TooltipTrigger><TooltipContent>Use AI to generate qualified leads from your calibration and filters</TooltipContent></Tooltip>
               </CardContent>
             </Card>
 
@@ -767,7 +787,7 @@ export default function ResearchFlywheelLab() {
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <h2 className="text-lg font-semibold font-['Poppins']">Lead List ({leadResult.leads.length} contacts)</h2>
                   <div className="flex gap-2 flex-wrap">
-                    <Button
+                    <Tooltip><TooltipTrigger asChild><Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
@@ -785,8 +805,8 @@ export default function ResearchFlywheelLab() {
                       data-testid="button-export-leads-xls"
                     >
                       <Download className="h-3.5 w-3.5 mr-1.5" /> XLS Download
-                    </Button>
-                    <Button
+                    </Button></TooltipTrigger><TooltipContent>Download the lead list as an XLS file</TooltipContent></Tooltip>
+                    <Tooltip><TooltipTrigger asChild><Button
                       size="sm"
                       variant="outline"
                       onClick={() => sheetsExportMutation.mutate(leadResult.leads)}
@@ -795,7 +815,7 @@ export default function ResearchFlywheelLab() {
                     >
                       {sheetsExportMutation.isPending ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" />}
                       Google Sheets
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Export leads directly to a Google Sheets spreadsheet</TooltipContent></Tooltip>
                   </div>
                 </div>
 
@@ -909,7 +929,7 @@ export default function ResearchFlywheelLab() {
                       className="flex-1 min-w-[200px]"
                       data-testid="input-gmail-query"
                     />
-                    <Button
+                    <Tooltip><TooltipTrigger asChild><Button
                       onClick={() => gmailMutation.mutate()}
                       disabled={gmailMutation.isPending}
                       data-testid="button-harvest-gmail"
@@ -919,7 +939,7 @@ export default function ResearchFlywheelLab() {
                       ) : (
                         <><Search className="h-4 w-4 mr-2" /> Harvest</>
                       )}
-                    </Button>
+                    </Button></TooltipTrigger><TooltipContent>Search Gmail for email threads matching your query</TooltipContent></Tooltip>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     Uses Gmail API search syntax. Examples: "from:name@company.com", "subject:satellite scan", "after:2026/01/01 label:inbox"
@@ -932,7 +952,7 @@ export default function ResearchFlywheelLab() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <h2 className="text-lg font-semibold font-['Poppins']">Email Threads ({gmailThreads.length})</h2>
-                  <Button
+                  <Tooltip><TooltipTrigger asChild><Button
                     size="sm"
                     variant="outline"
                     onClick={() => gmailNotionSyncMutation.mutate(gmailThreads)}
@@ -941,7 +961,7 @@ export default function ResearchFlywheelLab() {
                   >
                     {gmailNotionSyncMutation.isPending ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" />}
                     Sync All to Notion
-                  </Button>
+                  </Button></TooltipTrigger><TooltipContent>Push all harvested email threads to your Notion CRM</TooltipContent></Tooltip>
                 </div>
                 {gmailThreads.map((thread, i) => (
                   <Card key={thread.threadId}>
@@ -977,7 +997,7 @@ export default function ResearchFlywheelLab() {
                             </div>
                           ))}
                           <div className="flex gap-2 pt-2 flex-wrap">
-                            <Button
+                            <Tooltip><TooltipTrigger asChild><Button
                               size="sm"
                               variant="ghost"
                               onClick={() => {
@@ -988,7 +1008,7 @@ export default function ResearchFlywheelLab() {
                             >
                               {copiedField === `thread-${thread.threadId}` ? <Check className="h-3.5 w-3.5 mr-1 text-green-500" /> : <Copy className="h-3.5 w-3.5 mr-1" />}
                               Copy Thread
-                            </Button>
+                            </Button></TooltipTrigger><TooltipContent>Copy the full thread text to clipboard</TooltipContent></Tooltip>
                           </div>
                         </div>
                       )}

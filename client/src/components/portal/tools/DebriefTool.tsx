@@ -1,9 +1,10 @@
 import { useState, useRef, useCallback } from "react";
-import { MessageSquare, Loader2, RotateCcw, Save, Mic, MicOff } from "lucide-react";
+import { MessageSquare, RotateCcw, Save, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { AILoadingOverlay } from "@/components/portal/AILoadingOverlay";
 
 interface DebriefToolProps {
   onSaveToTimeline?: (event: { type: string; title: string; description: string; details?: string; toolId?: string }) => void;
@@ -107,6 +108,10 @@ export function DebriefTool({ onSaveToTimeline }: DebriefToolProps) {
     setResult("");
   };
 
+  if (loading) {
+    return <AILoadingOverlay toolId="debrief" />;
+  }
+
   if (result) {
     return (
       <div className="space-y-4">
@@ -182,14 +187,7 @@ export function DebriefTool({ onSaveToTimeline }: DebriefToolProps) {
         className="w-full bg-[#009999] text-white border-[#009999]/30"
         data-testid="button-debrief-analyse"
       >
-        {loading ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Analysing...
-          </>
-        ) : (
-          "Analyse with GBR Framework"
-        )}
+        Analyse with GBR Framework
       </Button>
     </div>
   );

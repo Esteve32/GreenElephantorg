@@ -9,22 +9,33 @@ const thesysClient = new OpenAI({
 export async function generateDashboardUI(prompt: string, data?: any) {
   if (!(await isConnectorEnabled("thesys"))) {
     console.log('⏸️ Thesys connector disabled — skipping dashboard UI generation');
-    return 'Thesys connector is currently disabled. Enable it in Admin > Connected Tools.';
+    return '<div style="padding:2rem;text-align:center;color:#666;">Thesys connector is currently disabled. Enable it in Admin &gt; Connected Tools.</div>';
   }
-  const systemPrompt = `You are a UI generator for GreenElephant's Conscious Communication dashboard. 
-Generate clean, modern UI components that display communication lens data.
-Use soft, muted colors appropriate for the communication lenses:
-- Influence: #cc3333 (red)
-- Attitude: #ff9933 (orange)  
-- Chaordic: #ffcc00 (yellow)
-- Flow: #cccc33 (green-yellow)
-- Alignment: #669966 (sage green)
-- Needs: #009999 (teal)
-- Ego: #3399cc (blue)
-- Wisdom: #663399 (purple)
+  const systemPrompt = `You are a UI generator for GreenElephant's Conscious Communication dashboard.
+You MUST return a COMPLETE, SELF-CONTAINED HTML document that can be rendered inside an iframe srcDoc.
+Include all CSS inline or in a <style> tag. Include any JavaScript for charts inline in a <script> tag.
+Do NOT return JSON, component trees, or React/JSX — return ONLY valid HTML.
 
-When showing data, use cards, charts, or tables as appropriate.
-Keep the design clean and professional with good spacing.`;
+For charts, use inline SVG or a CDN-loaded library like Chart.js via <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>.
+
+Use these lens colors:
+- Influence: #cc3333 (red)
+- Attitude: #e8833a (orange)
+- Chaordic: #e8c840 (yellow)
+- Flow: #33a854 (green)
+- Alignment: #009999 (teal)
+- Needs: #33a854 (green)
+- Ego: #3b7dd8 (blue)
+- Dynamics: #9933cc (purple)
+
+Style guidelines:
+- Dark background (#0a0a0a or #111) with light text (#e5e5e5)
+- Use cards with bg: rgba(255,255,255,0.05), border: 1px solid rgba(255,255,255,0.1), border-radius: 12px
+- Font: system-ui, -apple-system, sans-serif
+- Professional, clean layout with good spacing
+- Responsive — works at any width
+
+Your response must start with <!DOCTYPE html> or <html> and be valid HTML.`;
 
   const userMessage = data 
     ? `${prompt}\n\nHere is the data to visualize:\n${JSON.stringify(data, null, 2)}`
@@ -39,11 +50,162 @@ Keep the design clean and professional with good spacing.`;
       ]
     });
 
-    return response.choices[0]?.message?.content || '';
+    let rawContent = response.choices[0]?.message?.content || '';
+    console.log('[Dashboard UI] Raw response type:', typeof rawContent, 'value preview:', typeof rawContent === 'string' ? rawContent.substring(0, 120) : JSON.stringify(rawContent).substring(0, 120));
+
+    if (typeof rawContent === 'object' && rawContent !== null) {
+      console.log('[Dashboard UI] Content is an object, converting to HTML via component tree');
+      return convertComponentTreeToHtml(rawContent);
+    }
+
+    let content = String(rawContent);
+
+    const decodeEntities = (s: string) =>
+      s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
+    if (content.includes('<content thesys=')) {
+      content = content.replace(/<content thesys="true">/g, '').replace(/<\/content>/g, '');
+      content = decodeEntities(content);
+      console.log('[Dashboard UI] After thesys unwrap, starts with:', content.trim().substring(0, 80));
+    }
+
+    const trimmed = content.trim();
+    const looksLikeJson = trimmed.startsWith('{') || trimmed.startsWith('[') || trimmed.includes('"component"');
+    const looksLikeHtml = trimmed.startsWith('<!') || trimmed.startsWith('<html') || (trimmed.startsWith('<') && !looksLikeJson);
+
+    if (looksLikeJson && !looksLikeHtml) {
+      console.log('[Dashboard UI] Detected JSON component tree, converting to HTML');
+      try {
+        const parsed = JSON.parse(trimmed);
+        content = convertComponentTreeToHtml(parsed);
+      } catch {
+        const jsonMatch = trimmed.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            const parsed = JSON.parse(jsonMatch[0]);
+            content = convertComponentTreeToHtml(parsed);
+          } catch {
+            content = convertComponentTreeToHtml(JSON.parse('{' + trimmed.split('{').slice(1).join('{').split('}').slice(0, -1).join('}') + '}') || trimmed);
+          }
+        }
+        if (content === trimmed || !content.includes('<html')) {
+          content = `<!DOCTYPE html><html><body style="background:#0a0a0a;color:#e5e5e5;font-family:system-ui,sans-serif;padding:2rem;"><pre style="white-space:pre-wrap;word-break:break-word;">${trimmed.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre></body></html>`;
+        }
+      }
+    }
+
+    if (!content.includes('<') || (!content.includes('<html') && !content.includes('<div') && !content.includes('<svg') && !content.includes('<table') && !content.includes('<canvas'))) {
+      content = `<!DOCTYPE html><html><body style="background:#0a0a0a;color:#e5e5e5;font-family:system-ui,sans-serif;padding:2rem;"><div>${content}</div></body></html>`;
+    }
+
+    if (!content.includes('<html')) {
+      content = `<!DOCTYPE html><html><head><style>body{background:#0a0a0a;color:#e5e5e5;font-family:system-ui,-apple-system,sans-serif;margin:0;padding:2rem;}</style></head><body>${content}</body></html>`;
+    }
+
+    console.log('[Dashboard UI] Final output starts with:', content.substring(0, 100));
+    return content;
   } catch (error) {
     console.error('Thesys API error:', error);
     throw error;
   }
+}
+
+function convertComponentTreeToHtml(tree: any): string {
+  if (!tree || typeof tree !== 'object') return String(tree || '');
+
+  if (tree.component && typeof tree.component === 'object') {
+    return convertComponentTreeToHtml(tree.component);
+  }
+
+  const lensColors: Record<string, string> = {
+    influence: '#cc3333', attitude: '#e8833a', chaordic: '#e8c840', flow: '#33a854',
+    alignment: '#009999', needs: '#33a854', ego: '#3b7dd8', dynamics: '#9933cc',
+  };
+
+  const renderNode = (node: any): string => {
+    if (!node) return '';
+    if (typeof node === 'string') return node;
+    if (typeof node === 'number') return String(node);
+    if (Array.isArray(node)) return node.map(renderNode).join('');
+
+    if (node.component && typeof node.component === 'object') {
+      return renderNode(node.component);
+    }
+
+    const comp = String(node.component || node.type || '');
+    const props = node.props || {};
+    const children = props.children || node.children || [];
+
+    const childHtml = Array.isArray(children) ? children.map(renderNode).join('') : renderNode(children);
+
+    switch (comp.toLowerCase()) {
+      case 'card':
+        return `<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;margin-bottom:1rem;">${childHtml}</div>`;
+      case 'header':
+      case 'inlineheader':
+        return `<div style="margin-bottom:1rem;"><h2 style="margin:0;font-size:1.25rem;color:#e5e5e5;">${props.title || props.heading || ''}</h2>${props.subtitle || props.description ? `<p style="margin:0.25rem 0 0;font-size:0.875rem;color:rgba(255,255,255,0.5);">${props.subtitle || props.description}</p>` : ''}</div>`;
+      case 'textcontent':
+      case 'text':
+        return `<p style="color:rgba(255,255,255,0.7);line-height:1.6;font-size:0.9rem;">${props.textMarkdown || props.text || childHtml}</p>`;
+      case 'minicardblock':
+        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1rem 0;">${childHtml}</div>`;
+      case 'minicard':
+        return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:1rem;">${childHtml}</div>`;
+      case 'datatile':
+        return `<div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#009999;">${props.amount || ''}</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem;">${props.description || ''}</div></div>`;
+      case 'barchartv2':
+      case 'barchart': {
+        const chartData = props.chartData || {};
+        const innerData = chartData.data || chartData;
+        const labels = innerData.labels || chartData.labels || [];
+        const series = innerData.series || chartData.series || innerData.datasets || [];
+        const maxVal = Math.max(...(series[0]?.values || [1]), 1);
+        let bars = '';
+        labels.forEach((label: string, i: number) => {
+          const val = series[0]?.values?.[i] || 0;
+          const pct = (val / maxVal) * 100;
+          const color = lensColors[label.toLowerCase()] || '#009999';
+          bars += `<div style="display:flex;align-items:center;gap:0.75rem;margin:0.5rem 0;">
+            <div style="width:80px;font-size:0.75rem;color:rgba(255,255,255,0.6);text-align:right;">${label}</div>
+            <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:28px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;display:flex;align-items:center;padding:0 8px;">
+                <span style="font-size:0.7rem;color:#fff;font-weight:600;">${val}%</span>
+              </div>
+            </div>
+          </div>`;
+        });
+        return `<div style="margin:1rem 0;">${props.title ? `<h3 style="font-size:1rem;margin-bottom:0.75rem;color:#e5e5e5;">${props.title}</h3>` : ''}${bars}</div>`;
+      }
+      case 'sectionblock': {
+        const sections = props.sections || [];
+        let html = '';
+        sections.forEach((s: any) => {
+          html += `<details style="margin:0.5rem 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:1rem;" ${s.isFoldable === false ? 'open' : ''}>
+            <summary style="cursor:pointer;font-weight:600;color:#e5e5e5;font-size:0.9rem;">${s.title || ''}</summary>
+            <p style="margin-top:0.5rem;color:rgba(255,255,255,0.5);font-size:0.85rem;">${s.subtitle || ''}</p>
+          </details>`;
+        });
+        return html;
+      }
+      case 'list': {
+        const items = props.items || [];
+        let html = '<ul style="list-style:none;padding:0;margin:0.5rem 0;">';
+        items.forEach((item: any) => {
+          html += `<li style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:flex-start;gap:0.5rem;">
+            <span style="color:rgba(255,255,255,0.3);">&#8226;</span>
+            <div><strong style="color:#e5e5e5;">${item.title || ''}</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:0.85rem;">${item.subtitle || ''}</span></div>
+          </li>`;
+        });
+        html += '</ul>';
+        return html;
+      }
+      default:
+        return childHtml || JSON.stringify(node).substring(0, 200);
+    }
+  };
+
+  const bodyHtml = renderNode(tree);
+  return `<!DOCTYPE html><html><head><style>body{background:#0a0a0a;color:#e5e5e5;font-family:system-ui,-apple-system,sans-serif;margin:0;padding:2rem;line-height:1.5;}</style></head><body>${bodyHtml}</body></html>`;
 }
 
 export async function generateSocialCopy(): Promise<string> {

@@ -678,7 +678,7 @@ export async function sendOnboardingEmail(data: OnboardingEmailData): Promise<bo
   }
 }
 
-function brandedEmailWrapper(title: string, subtitle: string, bodyHtml: string, footerText: string): string {
+export function brandedEmailWrapper(title: string, subtitle: string, bodyHtml: string, footerText: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1821,6 +1821,91 @@ export async function sendPortalDataExportEmail(email: string, name: string | nu
     return true;
   } catch (error) {
     console.error("❌ Failed to send portal data export email:", error);
+    return false;
+  }
+}
+
+export async function sendNudgeDevNotification(userId: string, context: string): Promise<boolean> {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log("⏸️ Resend disabled — skipping nudge dev notification");
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+    const adminEmail = 'esteve@greenelephant.org';
+    const timestamp = new Date().toLocaleString('en-GB', { timeZone: 'Europe/Amsterdam', dateStyle: 'medium', timeStyle: 'short' });
+
+    await client.emails.send({
+      from: fromEmail,
+      to: adminEmail,
+      subject: `Portal Nudge: User ${userId} needs attention`,
+      html: brandedEmailWrapper(
+        "Portal Nudge",
+        "A portal user is requesting help",
+        `
+        ${darkCard(`
+          <p style="color:#009999;font-size:13px;font-weight:600;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.5px;">User Details</p>
+          <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0;">
+            <strong style="color:#e5e5e5;">User ID:</strong> ${userId}<br/>
+            <strong style="color:#e5e5e5;">Time:</strong> ${timestamp}
+          </p>
+        `, '#009999')}
+        ${darkCard(`
+          <p style="color:#009999;font-size:13px;font-weight:600;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.5px;">Context</p>
+          <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0;">${context}</p>
+        `, '#e8833a')}
+        <p style="color:#888888;font-size:13px;line-height:1.6;margin:24px 0 0 0;">
+          This nudge was sent from the GreenElephant portal dashboard. Check in with this user to see how you can help.
+        </p>
+        `,
+        "This is an internal admin notification from GreenElephant.org portal. You received this because a portal user used the 'Nudge Dev Team' feature."
+      ),
+    });
+
+    console.log(`✅ Nudge dev notification sent for user: ${userId}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Failed to send nudge dev notification:", error);
+    return false;
+  }
+}
+
+export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<boolean> {
+  try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log("⏸️ Resend disabled — skipping password reset email");
+      return false;
+    }
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    await client.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: "Reset your GreenElephant password",
+      html: brandedEmailWrapper(
+        "Password reset",
+        "You requested a password reset",
+        `
+        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 20px 0;">
+          Click the button below to set a new password. This link expires in 1 hour.
+        </p>
+        <div style="text-align:center;margin:32px 0;">
+          <a href="${resetUrl}" style="display:inline-block;padding:14px 36px;background:#009999;color:#ffffff;text-decoration:none;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;">
+            Reset password
+          </a>
+        </div>
+        <p style="color:#888888;font-size:13px;line-height:1.6;margin:24px 0 0 0;">
+          If you didn't request this, you can safely ignore this email. Your password won't change.
+        </p>
+        `,
+        "You received this email because a password reset was requested for your GreenElephant portal account. If you did not make this request, no action is needed."
+      ),
+    });
+
+    console.log(`✅ Password reset email sent to: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Failed to send password reset email:", error);
     return false;
   }
 }

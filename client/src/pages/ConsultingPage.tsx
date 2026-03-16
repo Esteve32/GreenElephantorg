@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +27,7 @@ const contentGradient = {
 };
 
 export default function ConsultingPage() {
+  useEffect(() => { document.title = "Consulting — Strategic Communication | GreenElephant"; }, []);
   const services = [
     {
       title: "Executive Leadership Intensive",

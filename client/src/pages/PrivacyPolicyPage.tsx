@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Shield, Eye, Users, Scale, Cpu, AlertTriangle, RefreshCw } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
 export default function PrivacyPolicyPage() {
+  useEffect(() => { document.title = "Privacy Policy | GreenElephant"; }, []);
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO

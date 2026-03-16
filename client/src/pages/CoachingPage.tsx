@@ -1,13 +1,17 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import CoachingPackage from "@/components/CoachingPackage";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { fadeInUp, fadeIn, staggerContainer } from "@/lib/motion";
 import zurichUrl from "@assets/stock_images/zurich_switzerland_l_1db6a83f.jpg";
 import { SEO, PRODUCT_STRUCTURED_DATA } from "@/components/SEO";
+import { Shield, CheckCircle2, ArrowRight, Award, Lock } from "lucide-react";
+import { Link } from "wouter";
 
 const COACHING_FAQ_ITEMS = [
   {
@@ -356,6 +360,61 @@ export default function CoachingPage() {
       <section
         className="relative py-16"
         style={{
+          background: `linear-gradient(180deg, ${atmosphericPalette.lowerAtmosphere} 0%, ${atmosphericPalette.lowerAtmosphere} 100%)`
+        }}
+        data-testid="section-coaching-guarantee"
+      >
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <Card className="bg-needs/5 border-needs/20 text-center">
+              <CardContent className="p-8 md:p-12">
+                <div className="w-16 h-16 rounded-full bg-needs/20 border-2 border-needs/40 flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-needs" />
+                </div>
+                <h2 className="text-3xl font-bold text-white mb-4" data-testid="text-coaching-guarantee-title">
+                  Our Commitment to You
+                </h2>
+                <p className="text-lg text-white/70 mb-6 max-w-xl mx-auto">
+                  We don't coach to a fixed duration — we coach until you reach your goal. If after your first session you feel the approach isn't right for you, we'll refund the session fee. No questions asked.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
+                  <span className="flex items-center gap-2 text-sm text-white/50">
+                    <CheckCircle2 className="w-4 h-4 text-needs" /> Goal-based, not time-based
+                  </span>
+                  <span className="flex items-center gap-2 text-sm text-white/50">
+                    <Lock className="w-4 h-4" /> Secure payment via Stripe
+                  </span>
+                  <span className="flex items-center gap-2 text-sm text-white/50">
+                    <Award className="w-4 h-4" /> 27 years of practice
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Link href="/checkout?product=satellitescan">
+                    <Button size="lg" className="bg-needs text-white min-w-[240px]" data-testid="button-coaching-guarantee-scan">
+                      Start with a Scan — €99.95
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                  <Link href="/contact">
+                    <Button size="lg" variant="outline" className="border-white/30 text-white" data-testid="button-coaching-guarantee-contact">
+                      Book a Free Discovery Call
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      <section
+        className="relative py-16"
+        style={{
           background: `linear-gradient(180deg, ${atmosphericPalette.lowerAtmosphere} 0%, ${atmosphericPalette.skyHorizon} 100%)`
         }}
         data-testid="section-disclaimer"
@@ -536,6 +595,13 @@ export default function CoachingPage() {
           </div>
         </div>
       </section>
+
+      <StickyMobileCTA
+        price="From €295"
+        label="Book a Session"
+        href="/checkout?product=coaching_session"
+        sublabel="1-on-1 coaching with Esteve"
+      />
     </div>
   );
 }

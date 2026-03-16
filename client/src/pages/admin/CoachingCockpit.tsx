@@ -330,7 +330,7 @@ function ActionCard({ action, onRun }: { action: MenuAction; onRun: (id: string)
                 })}
               </div>
               {DELIVER_ACTION_IDS.includes(action.id) ? (
-                <Button
+                <Tooltip><TooltipTrigger asChild><Button
                   size="sm"
                   variant="outline"
                   className="ml-auto text-xs border-[#EA4335]/30 text-[#EA4335]/80"
@@ -339,9 +339,9 @@ function ActionCard({ action, onRun }: { action: MenuAction; onRun: (id: string)
                 >
                   <SiGmail className="w-3 h-3 mr-1" />
                   Send Email
-                </Button>
+                </Button></TooltipTrigger><TooltipContent>Open email dialog for this action</TooltipContent></Tooltip>
               ) : (
-                <Button
+                <Tooltip><TooltipTrigger asChild><Button
                   size="sm"
                   variant="outline"
                   className="ml-auto text-xs border-white/10 text-white/50"
@@ -350,7 +350,7 @@ function ActionCard({ action, onRun }: { action: MenuAction; onRun: (id: string)
                 >
                   <Sparkles className="w-3 h-3 mr-1" />
                   Run in Sheet
-                </Button>
+                </Button></TooltipTrigger><TooltipContent>Open Google Sheets to run this action</TooltipContent></Tooltip>
               )}
             </div>
           </div>
@@ -635,10 +635,10 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
           )}
         </div>
         <DialogFooter>
-          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} className="border-white/10 text-white/50" data-testid="button-cancel-deliver">
+          <Tooltip><TooltipTrigger asChild><Button variant="outline" size="sm" onClick={() => onOpenChange(false)} className="border-white/10 text-white/50" data-testid="button-cancel-deliver">
             Cancel
-          </Button>
-          <Button
+          </Button></TooltipTrigger><TooltipContent>Close without sending</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild><Button
             size="sm"
             disabled={!canSend || sendMutation.isPending}
             onClick={() => sendMutation.mutate()}
@@ -648,7 +648,7 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
             {sendMutation.isPending && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
             <SiGmail className="w-3 h-3 mr-1" />
             Send Email
-          </Button>
+          </Button></TooltipTrigger><TooltipContent>Send this coaching email via Gmail</TooltipContent></Tooltip>
         </DialogFooter>
       </DialogContent>
     </Dialog>

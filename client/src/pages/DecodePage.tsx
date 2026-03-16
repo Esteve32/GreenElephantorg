@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -242,7 +242,74 @@ const OBAMA_2008: Speech = {
   ]
 };
 
-const ALL_SPEECHES: Speech[] = [MANDELA_1994, JFK_1963, OBAMA_2008];
+const MLK_1963: Speech = {
+  id: "mlk-washington-1963",
+  speaker: "Martin Luther King Jr.",
+  title: "\"I Have a Dream\"",
+  date: "28 August 1963",
+  location: "Washington, D.C., USA",
+  context: "MLK's most iconic speech is a masterclass in GBR escalation. He begins in Blue (historical context, constitutional promises), moves through sustained Green (naming the suffering and lived experience of Black Americans), then launches into the legendary Red refrain — 'I have a dream' — which is pure collective vision. The structural architecture is deliberate: you must earn the right to propose a dream by first naming the reality.",
+  paragraphs: [
+    [{ text: "I am happy to join with you today in what will go down in history as the greatest demonstration for freedom in the history of our nation.", behavior: "red", tooltip: "Red: Opens with collective framing — 'join with you' creates shared ownership. He doesn't say 'my march', he says 'greatest demonstration' — uniting the crowd around a shared historical moment." }],
+    [
+      { text: "Five score years ago, a great American, in whose symbolic shadow we stand today, signed the Emancipation Proclamation. ", behavior: "blue", tooltip: "Blue: Historical reference — he informs the audience about context, connecting Lincoln's act to the present moment. Blue provides the intellectual foundation." },
+      { text: "This momentous decree came as a great beacon light of hope to millions of Negro slaves who had been seared in the flames of withering injustice. It came as a joyous daybreak to end the long night of their captivity.", behavior: "green", tooltip: "Green: Shifts to the experience of others — naming the hope and relief that enslaved people felt. Empathic, other-focused language that makes the audience feel the emotional weight." }
+    ],
+    [{ text: "But one hundred years later, the Negro still is not free. One hundred years later, the life of the Negro is still sadly crippled by the manacles of segregation and the chains of discrimination. One hundred years later, the Negro lives on a lonely island of poverty in the midst of a vast ocean of material prosperity.", behavior: "green", tooltip: "Green: Sustained empathic naming of suffering. MLK speaks to the lived experience of Black Americans — their pain, isolation, and exclusion. This Green passage earns the moral authority for the Red vision that follows." }],
+    [
+      { text: "In a sense we've come to our nation's capital to cash a check. ", behavior: "blue", tooltip: "Blue: MLK introduces his own metaphor — a Blue move that frames the argument in his own terms, informing the audience of how he sees the situation." },
+      { text: "When the architects of our republic wrote the magnificent words of the Constitution and the Declaration of Independence, they were signing a promissory note to which every American was to fall heir.", behavior: "blue", tooltip: "Blue: Continues the intellectual framing — historical context about the constitutional promise. He is building a logical case before making his emotional and collective appeal." },
+      { text: "This note was a promise that all men — yes, Black men as well as white men — would be guaranteed the unalienable rights of life, liberty, and the pursuit of happiness.", behavior: "blue", tooltip: "Blue: Completing the metaphor with factual/intellectual precision. This sustained Blue passage gives the speech its intellectual backbone." }
+    ],
+    [{ text: "It is obvious today that America has defaulted on this promissory note insofar as her citizens of colour are concerned. Instead of honouring this sacred obligation, America has given the Negro people a bad check, a check which has come back marked 'insufficient funds.'", behavior: "blue", tooltip: "Blue: Still in Blue — stating his analysis clearly. The 'bad check' metaphor is powerful because it frames injustice in language everyone understands. This is MLK the intellectual preparing the ground for MLK the prophet." }],
+    [{ text: "But we refuse to believe that the bank of justice is bankrupt. We refuse to believe that there are insufficient funds in the great vaults of opportunity of this nation. And so we've come to cash this check, a check that will give us upon demand the riches of freedom and the security of justice.", behavior: "red", tooltip: "Red: The pivot to Red — 'we refuse' and 'we've come to cash this check' are collective declarations. He moves from analysis to action, from Blue understanding to Red commitment." }],
+    [
+      { text: "I have a dream that one day this nation will rise up and live out the true meaning of its creed: 'We hold these truths to be self-evident, that all men are created equal.'", behavior: "red", tooltip: "Red: The iconic refrain begins. 'I have a dream' is paradoxically Red despite starting with 'I' — because the dream is collective. He is proposing a shared vision, inviting everyone to inhabit it." },
+    ],
+    [{ text: "I have a dream that one day on the red hills of Georgia, the sons of former slaves and the sons of former slave owners will be able to sit down together at the table of brotherhood.", behavior: "red", tooltip: "Red: Each 'I have a dream' statement paints a specific image of collective transformation — former enemies united. This is Red at its most visionary." }],
+    [{ text: "I have a dream that one day even the state of Mississippi, a state sweltering with the heat of injustice, sweltering with the heat of oppression, will be transformed into an oasis of freedom and justice.", behavior: "red", tooltip: "Red: Continues the collective vision — transformation from oppression to freedom. Each repetition deepens the shared commitment of the crowd." }],
+    [{ text: "I have a dream that my four little children will one day live in a nation where they will not be judged by the colour of their skin but by the content of their character. I have a dream today.", behavior: "green", tooltip: "Green: This is the emotional centre — MLK makes it personal by naming his own children. A Green moment within the Red refrain, making the collective dream intimate and human." }],
+    [
+      { text: "With this faith, we will be able to hew out of the mountain of despair a stone of hope. With this faith, we will be able to transform the jangling discords of our nation into a beautiful symphony of brotherhood.", behavior: "red", tooltip: "Red: Returns to collective Red — 'we will be able to' is a shared commitment to future action. The metaphors (mountain/stone, discord/symphony) create shared images." },
+      { text: "With this faith, we will be able to work together, to pray together, to struggle together, to go to jail together, to stand up for freedom together, knowing that we will be free one day.", behavior: "red", tooltip: "Red: The culminating Red cascade — 'together' repeated five times. This is collective Red at its most powerful, building irresistible shared momentum." }
+    ],
+    [{ text: "And when this happens, when we allow freedom to ring, when we let it ring from every village and every hamlet, from every state and every city, we will be able to speed up that day when all of God's children — Black men and white men, Jews and Gentiles, Protestants and Catholics — will be able to join hands and sing in the words of the old Negro spiritual: 'Free at last. Free at last. Thank God Almighty, we are free at last.'", behavior: "red", tooltip: "Red: The final crescendo — an exhaustive enumeration of groups joining together. MLK ends with the most collective Red statement possible: every group named, every hand joined. The speech concludes in the same Red it opened with, completing the architecture." }]
+  ]
+};
+
+const JOBS_2005: Speech = {
+  id: "jobs-stanford-2005",
+  speaker: "Steve Jobs",
+  title: "Stanford Commencement Address",
+  date: "12 June 2005",
+  location: "Stanford University, California, USA",
+  context: "Jobs' famous 'three stories' speech is the most Blue-dominant major address in the Decode Hub — and that's what makes it so instructive. Unlike political leaders who build toward collective Red, Jobs uses sustained Blue (personal narrative, self-expression) interspersed with Green moments of vulnerability, arriving at Red only in his closing 'Stay hungry, stay foolish.' This is the GBR pattern of a storyteller, not a politician.",
+  paragraphs: [
+    [
+      { text: "I am honoured to be with you today at your commencement from one of the finest universities in the world. ", behavior: "green", tooltip: "Green: Opens with acknowledgment of the audience — their achievement, their institution. A Green move that builds rapport before turning inward." },
+      { text: "I never graduated from college. Truth be told, this is the closest I've ever gotten to a college graduation.", behavior: "blue", tooltip: "Blue: Immediately shifts to self-expression — sharing his own experience and perspective. This vulnerability is Blue, not Green, because it's about his story, not theirs." }
+    ],
+    [{ text: "Today I want to tell you three stories from my life. That's it. No big deal. Just three stories.", behavior: "blue", tooltip: "Blue: Classic Blue framing — 'I want to tell you' signals self-expression. He is setting up the speech as his own narrative, informing through personal experience." }],
+    [
+      { text: "My biological mother was a young, unwed college graduate student, and she decided to put me up for adoption. ", behavior: "blue", tooltip: "Blue: Personal narrative — sharing his origin story. Blue because it's his own experience being expressed, not focused on the audience's needs." },
+      { text: "She felt very strongly that I should be adopted by college graduates, so everything was all set for me to be adopted at birth by a lawyer and his wife. Except that when I popped out they decided at the last minute that they really wanted a girl.", behavior: "blue", tooltip: "Blue: Continues the personal story with factual detail. The humour ('popped out') is still Blue — it's his voice, his way of telling his own story." }
+    ],
+    [{ text: "And 17 years later I did go to college. But I naively chose a college that was almost as expensive as Stanford, and all of my working-class parents' savings were being spent on my college tuition. After six months, I couldn't see the value in it.", behavior: "blue", tooltip: "Blue: Self-reflection — sharing his reasoning, his values, his decision-making process. Deeply personal and self-expressive." }],
+    [{ text: "I didn't see it then, but it turned out that getting fired from Apple was the best thing that could have ever happened to me. The heaviness of being successful was replaced by the lightness of being a beginner again, less sure about everything. It freed me to enter one of the most creative periods of my life.", behavior: "blue", tooltip: "Blue: Reflective self-expression — Jobs shares a personal insight about failure and creativity. This is Blue at its most vulnerable: naming his own internal transformation." }],
+    [{ text: "I'm pretty sure none of this would have happened if I hadn't been fired from Apple. It was awful-tasting medicine, but I guess the patient needed it.", behavior: "blue", tooltip: "Blue: Continues the personal reflection. The metaphor ('awful-tasting medicine') is his own framing of his experience — pure self-expression." }],
+    [{ text: "About a year ago I was diagnosed with cancer. I had a scan at 7:30 in the morning, and it clearly showed a tumour on my pancreas. I didn't even know what a pancreas was.", behavior: "blue", tooltip: "Blue: The most vulnerable Blue passage — sharing his cancer diagnosis. This is self-expression at its rawest. The humour ('I didn't even know what a pancreas was') is characteristically Jobs — making the unbearable bearable through Blue voice." }],
+    [{ text: "My doctor advised me to go home and get my affairs in order, which is doctor's code for prepare to die. It means to try to tell your kids everything you thought you'd have the next 10 years to tell them in just a few months. It means to make sure everything is buttoned up so that it will be as easy as possible for your family.", behavior: "green", tooltip: "Green: A rare shift to Green — Jobs focuses on others (his children, his family) and what dying would mean for them. The empathy here is palpable: he is naming the impact on the people he loves." }],
+    [
+      { text: "No one wants to die. Even people who want to go to heaven don't want to die to get there. ", behavior: "blue", tooltip: "Blue: Returns to Blue — a universal observation delivered in his distinctive voice. He is sharing his own perspective on mortality." },
+      { text: "And yet death is the destination we all share. No one has ever escaped it. And that is as it should be, because Death is very likely the single best invention of Life.", behavior: "blue", tooltip: "Blue: A deeply philosophical Blue statement — Jobs sharing his worldview. This is not Green (he's not focused on the audience's feelings) or Red (he's not proposing action). He is expressing his understanding of life and death." }
+    ],
+    [{ text: "Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma — which is living with the results of other people's thinking. Don't let the noise of others' opinions drown out your own inner voice.", behavior: "red", tooltip: "Red: The shift to Red — Jobs moves from Blue self-expression to direct proposals for the audience. 'Don't waste it', 'don't be trapped', 'don't let' — these are Red directives, inviting collective commitment to authenticity." }],
+    [{ text: "And most importantly, have the courage to follow your heart and intuition. They somehow already know what you truly want to become. Everything else is secondary.", behavior: "red", tooltip: "Red: Continues the Red call to action — 'have the courage' is a proposal, an invitation to shared commitment. Jobs is now speaking to every graduate, uniting them around a principle." }],
+    [{ text: "Stay hungry. Stay foolish.", behavior: "red", tooltip: "Red: The iconic closing — two words each, maximally compressed Red. A collective mantra that invites everyone to adopt the same stance. The most quoted Red sentence from a speech that was 80% Blue — proving that Red doesn't need volume, it needs precision." }]
+  ]
+};
+
+const ALL_SPEECHES: Speech[] = [MANDELA_1994, JFK_1963, OBAMA_2008, MLK_1963, JOBS_2005];
 
 function countBehaviors(speech: Speech) {
   let green = 0, blue = 0, red = 0, total = 0;
@@ -396,6 +463,7 @@ function ComparisonBar() {
 }
 
 export default function DecodePage() {
+  useEffect(() => { document.title = "Decode — Communication Pattern Analysis | GreenElephant"; }, []);
   const [activeSpeechId, setActiveSpeechId] = useState<string>(MANDELA_1994.id);
   const activeSpeech = ALL_SPEECHES.find(s => s.id === activeSpeechId) || MANDELA_1994;
 
@@ -561,10 +629,10 @@ export default function DecodePage() {
           variants={fadeInUp}
           data-testid="section-more-speeches"
         >
-          <Badge className="mb-4 bg-white/10 border-white/20 text-white/70 text-xs">Coming soon</Badge>
-          <h3 className="text-2xl font-bold text-white mb-3">More speeches in the lab</h3>
+          <Badge className="mb-4 bg-[#009999]/15 border-[#009999]/30 text-[#009999] text-xs">Expanding</Badge>
+          <h3 className="text-2xl font-bold text-white mb-3">More speeches coming to the lab</h3>
           <p className="text-white/50 max-w-xl mx-auto text-sm leading-relaxed">
-            MLK — "I Have a Dream" (1963) · Brené Brown TED talk · Steve Jobs Stanford commencement · Greta Thunberg at the UN.
+            Next up: Brené Brown TED talk on vulnerability · Greta Thunberg at the UN · Jacinda Ardern's Christchurch response.
             Each reveals a different GBR signature — and why that signature worked in that context.
           </p>
         </motion.div>

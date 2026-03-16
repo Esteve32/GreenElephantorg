@@ -2,42 +2,45 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { atmosphericPalette } from "@/constants/atmosphericGradient";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { Link } from "wouter";
-import { ArrowRight, CheckCircle2, Users, TrendingUp, Target, Sparkles, Brain, Zap, Crown, BarChart3 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Users, TrendingUp, Target, Sparkles, Brain, Zap, Crown, BarChart3, Shield, Lock } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { ScanVideoDemo } from "@/components/ScanVideoDemo";
+import { DashboardPreview } from "@/components/DashboardPreview";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
+import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 const CEO_CHALLENGES = [
   {
-    title: "Team Alignment at Scale",
-    description: "Ensure your vision translates clearly across every level of the organization. Communication gaps compound as you scale.",
+    title: "Your Team Agrees — Then Nothing Changes",
+    description: "Everyone nods in the meeting, but execution stalls. The Scan reveals whether your Alignment score drops under pressure — the gap between what you think you communicated and what actually landed.",
     icon: Users
   },
   {
-    title: "Executive Presence Under Pressure",
-    description: "Maintain clarity and composure when stakes are highest. Your communication sets the emotional tone for the entire organization.",
+    title: "High-Stakes Moments Flip Your Style",
+    description: "A board member challenges your forecast. Do you dominate, deflect, or shut down? The Scan measures how stress shifts your Influence and Ego patterns — so you can lead the room instead of reacting to it.",
     icon: Crown
   },
   {
-    title: "Board & Investor Relations",
-    description: "Navigate the delicate balance of transparency and confidence. Communicate progress and challenges with strategic precision.",
+    title: "Investor Conversations Feel Like Tightropes",
+    description: "Too transparent and you spook them. Too confident and you lose credibility. The Scan maps your balance between Chaordic flexibility and structured Influence — the exact skill that separates good CEOs from great ones.",
     icon: TrendingUp
   },
   {
-    title: "Leadership Communication Blind Spots",
-    description: "The higher you rise, the less honest feedback you receive. Discover the patterns others see but won't tell you about.",
+    title: "Nobody Tells You the Truth Anymore",
+    description: "Your COO won't say your town halls feel scripted. Your VP won't mention you talk over people. The Scan is the honest mirror your position makes impossible to find — 129 questions that surface what others won't.",
     icon: Target
   }
 ];
 
 const CEO_BENEFITS = [
-  "Map your leadership communication patterns across 8 lenses including Influence, Alignment, and Ego",
-  "Identify how stress affects your communication with direct reports",
-  "Understand your default conflict resolution patterns",
-  "Discover blind spots in how you communicate vision and strategy",
-  "Get data-driven insights for executive coaching conversations",
-  "Track leadership communication growth over time"
+  "See why your direct reports agree in meetings but don't follow through — your Alignment score reveals the gap",
+  "Know exactly which patterns fire when a board member challenges you — Influence, Ego, or withdrawal",
+  "Understand why some 1:1s energize your team and others drain them — your Flow pattern holds the answer",
+  "Spot the moment your communication shifts from inspiring to controlling — it happens under stress, and now you'll see it",
+  "Walk into your next executive coaching session with a clear map, not vague feelings about 'needing to improve'",
+  "Retake in 6 months and see exactly where your leadership communication has shifted"
 ];
 
 const FAQ_ITEMS = [
@@ -76,15 +79,14 @@ export default function ForCEOsPage() {
       
       <section 
         className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
-        style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.space} 0%, ${atmosphericPalette.highAtmosphere} 50%, ${atmosphericPalette.upperAtmosphere} 100%)`
-        }}
+        style={{ background: "#0a0a0a" }}
         data-testid="section-ceo-hero"
       >
         <motion.div 
-          className="absolute inset-0 bg-cover bg-center opacity-30"
+          className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${earthOrbitUrl})` }}
         />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(204,51,51,0.06) 50%, #0a0a0a 100%)" }} />
         
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24">
           <motion.div
@@ -96,11 +98,11 @@ export default function ForCEOsPage() {
               For CEOs & Executives
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6" data-testid="text-ceo-title">
-              Leadership Communication<br />
-              <span className="text-influence">for CEOs</span>
+              Know Why Your Message<br />
+              <span className="text-influence">Isn't Landing</span>
             </h1>
             <p className="text-xl text-white/70 max-w-3xl mx-auto mb-8">
-              Your communication shapes company culture. Get data-driven insights into your leadership patterns and blind spots.
+              Your team says yes but nothing changes. Your board pushes back and you're not sure why. The Satellite Scan shows you exactly which communication patterns fire under pressure — and what to do about them.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signals">
@@ -125,10 +127,12 @@ export default function ForCEOsPage() {
         </div>
       </section>
 
+      <DashboardPreview accentColor="#cc3333" testIdPrefix="ceo" />
+
       <section 
         className="py-24"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.upperAtmosphere} 0%, ${atmosphericPalette.midAtmosphere} 100%)`
+          background: "linear-gradient(180deg, #0a0a0a 0%, #0d0b0b 50%, #0a0a0a 100%)"
         }}
         data-testid="section-ceo-challenges"
       >
@@ -140,10 +144,10 @@ export default function ForCEOsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              The CEO Communication Challenge
+              Sound Familiar?
             </h2>
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              The higher you climb, the harder it is to get honest feedback. The Satellite Scan reveals what others won't tell you.
+              These are the moments where communication patterns quietly cost you trust, alignment, and execution speed.
             </p>
           </motion.div>
 
@@ -178,7 +182,7 @@ export default function ForCEOsPage() {
       <section 
         className="py-24"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.midAtmosphere} 0%, ${atmosphericPalette.lowerAtmosphere} 100%)`
+          background: "linear-gradient(180deg, #0a0a0a 0%, #0c0909 50%, #0a0a0a 100%)"
         }}
         data-testid="section-ceo-benefits"
       >
@@ -194,10 +198,10 @@ export default function ForCEOsPage() {
                 What You'll Discover
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Data-Driven Leadership Insights
+                What Your Dashboard Reveals
               </h2>
               <p className="text-white/70 mb-8">
-                The Satellite Scan provides the honest mirror that leadership isolation makes difficult to find elsewhere.
+                In 48-72 hours, you'll have a personalized leadership communication map. Not abstract theory — concrete patterns you can act on Monday morning.
               </p>
               <ul className="space-y-4">
                 {CEO_BENEFITS.map((benefit, index) => (
@@ -218,19 +222,19 @@ export default function ForCEOsPage() {
               <Card className="bg-gradient-to-br from-influence/20 to-alignment/20 border-white/10">
                 <CardContent className="p-8">
                   <div className="text-6xl font-bold text-white mb-2">€99.95</div>
-                  <p className="text-white/70 mb-6">Satellite Scan Assessment</p>
+                  <p className="text-white/70 mb-6">Your Leadership Communication Map</p>
                   <ul className="text-left space-y-3 mb-8">
                     <li className="flex items-center gap-2 text-white/80">
                       <Brain className="w-4 h-4 text-influence" />
-                      129 questions, 8 leadership lenses
+                      129 questions across Influence, Ego, Alignment + 5 more
                     </li>
                     <li className="flex items-center gap-2 text-white/80">
                       <BarChart3 className="w-4 h-4 text-influence" />
-                      Personalized leadership dashboard
+                      Visual dashboard delivered in 48-72 hours
                     </li>
                     <li className="flex items-center gap-2 text-white/80">
                       <Zap className="w-4 h-4 text-influence" />
-                      Executive prompt library access
+                      AI prompts to prepare for specific tough conversations
                     </li>
                   </ul>
                   <Link href="/signals">
@@ -246,10 +250,106 @@ export default function ForCEOsPage() {
         </div>
       </section>
 
+      <ScanVideoDemo
+        accentColor="#cc3333"
+        badgeText="See It In Action"
+        headline="Watch the Full Scan Experience"
+        subheadline="A 5-minute silent walkthrough — see exactly how the Satellite Scan works and what your leadership dashboard looks like."
+        ctaLink="/checkout?product=satellitescan"
+        ctaText="Start Your Scan — €99.95"
+        testIdPrefix="ceo"
+        videoSrc={scanWalkthroughUrl}
+        gradientFrom="#0a0a0a"
+        gradientTo="#0a0a0a"
+      />
+
+      <section
+        className="py-20"
+        style={{
+          background: "#0a0a0a"
+        }}
+        data-testid="section-ceo-value-ladder"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Badge className="mb-4 bg-influence/20 text-influence border-influence/30">Your Path</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4" data-testid="text-ceo-value-ladder-title">
+              Start Here, Lead from Here
+            </h2>
+            <p className="text-white/70 max-w-2xl mx-auto">
+              Choose the depth that matches your leadership development goal.
+            </p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {[
+              {
+                step: "1",
+                title: "Free Leadership Quick Check",
+                desc: "2 minutes. See which communication patterns shape your leadership style.",
+                price: "Free",
+                link: "/signals",
+                color: "#8899aa",
+              },
+              {
+                step: "2",
+                title: "Satellite Scan",
+                desc: "Full 129-question assessment. The honest mirror that leadership isolation makes difficult to find elsewhere.",
+                price: "€99.95",
+                link: "/checkout?product=satellitescan",
+                color: "#009999",
+              },
+              {
+                step: "3",
+                title: "Executive Coaching Journey",
+                desc: "Biweekly sessions. Ongoing support. Includes Satellite Scan. Coaching until your leadership goals are met.",
+                price: "€2,980",
+                link: "/coaching",
+                color: "#e8c840",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Link href={item.link}>
+                  <Card className="bg-white/5 border-white/10 hover-elevate cursor-pointer" data-testid={`card-ceo-step-${item.step}`}>
+                    <CardContent className="p-5 flex items-center gap-4">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold"
+                        style={{ backgroundColor: `${item.color}30`, border: `1px solid ${item.color}50` }}
+                      >
+                        {item.step}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-white">{item.title}</p>
+                        <p className="text-sm text-white/60">{item.desc}</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="font-bold text-white">{item.price}</span>
+                        <ArrowRight className="w-4 h-4 text-white/40" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section 
         className="py-24"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.lowerAtmosphere} 0%, #000000 100%)`
+          background: "linear-gradient(180deg, #0a0a0a 0%, #000000 100%)"
         }}
         data-testid="section-ceo-faq"
       >
@@ -288,7 +388,7 @@ export default function ForCEOsPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mt-12 flex flex-col items-center gap-4"
+            className="text-center mt-12"
           >
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signals">
@@ -298,29 +398,59 @@ export default function ForCEOsPage() {
                 </Button>
               </Link>
               <Link href="/checkout?product=satellitescan">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" data-testid="button-ceo-full-scan">
+                <Button size="lg" variant="outline" className="border-white/30 text-white" data-testid="button-ceo-full-scan-bottom">
                   Full Satellite Scan (€99.95)
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
-              <Link href="/signals">
-                <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-ceo-quiz">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Free 2-Min Quick Check
-                </Button>
-              </Link>
-              <Link href="/webinar">
-                <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-ceo-webinar">
-                  <Zap className="mr-2 h-4 w-4" />
-                  Join Free Monthly Webinar
                 </Button>
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
+
+      <section className="relative py-16" data-testid="section-ceo-trust">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-2xl border border-white/10 p-8 md:p-12"
+            style={{ background: "linear-gradient(135deg, rgba(204,51,51,0.08) 0%, rgba(0,153,153,0.08) 100%)" }}
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-needs/15 border border-needs/30 mb-6">
+                <Shield className="w-7 h-7 text-needs" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4" data-testid="text-ceo-guarantee-title">
+                14-Day Satisfaction Guarantee
+              </h2>
+              <p className="text-white/60 max-w-xl mx-auto mb-6">
+                If the Satellite Scan doesn't deliver actionable insight for your leadership communication, receive a full refund within 14 days. No questions asked.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+                <Link href="/checkout?product=satellitescan">
+                  <Button size="lg" className="bg-needs text-white" data-testid="button-ceo-guarantee-cta">
+                    Start Risk-Free — €99.95
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
+                <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
+                <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+                <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Executive-level privacy</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <StickyMobileCTA
+        price="€99.95"
+        label="Start with a Scan"
+        href="/checkout?product=satellitescan"
+        sublabel="Leadership communication diagnostic"
+      />
     </div>
   );
 }

@@ -127,6 +127,18 @@
 
   /* Lens icon color for contrast on colored backgrounds - dark icons for light mode */
   --lens-icon: 0 0% 10%;
+
+  /* Portal brand skinning — Green Elephant (default) */
+  --hud-bg: #050505;
+  --hud-glass: rgba(255, 255, 255, 0.03);
+  --hud-glass-hover: rgba(255, 255, 255, 0.06);
+  --hud-border: rgba(255, 255, 255, 0.08);
+  --hud-border-hover: rgba(255, 255, 255, 0.16);
+  --hud-accent: #009999;
+  --hud-accent-glow: rgba(0, 153, 153, 0.3);
+  --hud-text: rgba(255, 255, 255, 0.85);
+  --hud-text-secondary: rgba(255, 255, 255, 0.5);
+  --hud-text-tertiary: rgba(255, 255, 255, 0.25);
 }
 
 .dark {

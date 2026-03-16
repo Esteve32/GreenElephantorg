@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -98,6 +99,12 @@ export default function SignalsPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Communication Signals — Spot Disconnection Early"
+        description="Learn to recognize the subtle signals when communication creates distance. Ego patterns, avoidance, power dynamics, and emotional triggers decoded through 8 lenses."
+        keywords="communication signals, ego patterns, communication breakdown, trust erosion, emotional triggers, avoidance patterns, power dynamics, conscious communication"
+        canonicalPath="/signals"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-destructive text-white">Early Warning System</Badge>

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -18,7 +19,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 const logoUrl = "/ge-logo-512.png";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
+import dashboardMockupUrl from "@assets/generated_images/multi_device_dashboard_mockup.png";
+import beforeAfterUrl from "@assets/generated_images/before_after_coaching_journey.png";
 import { SEO, PRODUCT_STRUCTURED_DATA } from "@/components/SEO";
+import { ScanVideoDemo } from "@/components/ScanVideoDemo";
+import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 interface Persona {
   id: string;
@@ -534,6 +539,381 @@ function TestimonialMarquee() {
             </div>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+function WhatYouReceiveSection() {
+  const saasEnabled = useSaasEnabled();
+  const deliverables = [
+    {
+      icon: BarChart3,
+      title: "Personalized Dashboard",
+      description: "Your communication patterns visualized across all 8 lenses. Coach-reviewed, delivered within 48-72 hours.",
+      color: "#009999"
+    },
+    {
+      icon: Bot,
+      title: "10+ AI Coaching Prompts",
+      description: "Query your results with our Conscious Communicator GPT. Prepare for conversations, explore blind spots, build micro-habits.",
+      color: "#e8c840"
+    },
+    {
+      icon: Video,
+      title: "Video Coaching Library",
+      description: "YouTube playlist organized by your 4-digit lens codes. Watch, learn, practice at your own pace.",
+      color: "#cc3333"
+    },
+    {
+      icon: FileText,
+      title: "Downloadable Resources",
+      description: "High-res Periodic Table poster, micro-habit templates, and worksheets for ongoing development.",
+      color: "#3b7dd8"
+    }
+  ];
+
+  return (
+    <section className="relative py-24 md:py-32" data-testid="section-what-you-receive">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <Badge className="mb-6 bg-needs/20 text-needs border-needs/30">What You Get</Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white" data-testid="text-what-you-receive-title">
+              Your Dashboard in 72 Hours
+            </h2>
+            <p className="text-lg text-white/70 mb-8">
+              No vague reports. No generic advice. You get a personalized communication map built from your real patterns — with AI tools to keep extracting value for months.
+            </p>
+
+            <div className="space-y-5">
+              {deliverables.map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    className="flex items-start gap-4"
+                    data-testid={`deliverable-${i}`}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${item.color}20` }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: item.color }} />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">{item.title}</p>
+                      <p className="text-sm text-white/60">{item.description}</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-start gap-4">
+              <Link href="/checkout?product=satellitescan">
+                <Button size="lg" className="bg-needs text-white" data-testid="button-get-scan-deliverables">
+                  Get Your Dashboard — €99.95
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              {saasEnabled && (
+                <Link href="/checkout?product=subscription">
+                  <Button size="lg" variant="outline" className="border-white/30 text-white backdrop-blur-sm gap-2" data-testid="button-subscribe-deliverables">
+                    <Repeat className="h-4 w-4" />
+                    Subscribe — €9.95/mo
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="relative"
+          >
+            <div className="relative rounded-xl overflow-hidden border border-white/10">
+              <img
+                src={dashboardMockupUrl}
+                alt="Satellite Scan dashboard showing communication patterns across multiple devices"
+                className="w-full h-auto"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {[
+            { stat: "48-72h", label: "Dashboard delivery" },
+            { stat: "129", label: "Communication elements" },
+            { stat: "8", label: "Behavioral lenses" },
+            { stat: "10+", label: "AI coaching prompts" },
+          ].map((item) => (
+            <Card key={item.label} className="bg-white/5 border-white/10 text-center">
+              <CardContent className="p-5">
+                <p className="text-2xl font-bold text-needs" data-testid={`stat-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>{item.stat}</p>
+                <p className="text-xs text-white/50 mt-1">{item.label}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function ComparisonSection() {
+  const comparisons = [
+    { feature: "Measures communication behavior", scan: true, mbti: false, disc: false },
+    { feature: "Context-dependent (not fixed labels)", scan: true, mbti: false, disc: false },
+    { feature: "Re-scannable to track growth", scan: true, mbti: false, disc: true },
+    { feature: "AI-powered prompt library included", scan: true, mbti: false, disc: false },
+    { feature: "Coach-reviewed personalized dashboard", scan: true, mbti: false, disc: false },
+    { feature: "Covers 8 behavioral dimensions", scan: true, mbti: false, disc: false },
+    { feature: "Designed for personal development only", scan: true, mbti: false, disc: false },
+    { feature: "Works with any AI tool (ChatGPT, Claude)", scan: true, mbti: false, disc: false },
+  ];
+
+  return (
+    <section className="relative py-24 md:py-32" data-testid="section-comparison">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-12"
+        >
+          <Badge className="mb-6 bg-ego/20 text-ego border-ego/30">How We Compare</Badge>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white" data-testid="text-comparison-title">
+            Not Another Personality Test
+          </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            The Satellite Scan measures your communication behavior in context — not a fixed personality type. Here's how it compares.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Card className="bg-white/5 border-white/10 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left p-4 text-white/70 text-sm font-medium">Feature</th>
+                      <th className="p-4 text-center text-needs font-semibold text-sm">Satellite Scan</th>
+                      <th className="p-4 text-center text-white/40 text-sm">MBTI</th>
+                      <th className="p-4 text-center text-white/40 text-sm">DiSC</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comparisons.map((row, i) => (
+                      <tr key={i} className="border-b border-white/5" data-testid={`comparison-row-${i}`}>
+                        <td className="p-4 text-sm text-white/80">{row.feature}</td>
+                        <td className="p-4 text-center">
+                          {row.scan ? (
+                            <CheckCircle2 className="w-5 h-5 text-needs mx-auto" />
+                          ) : (
+                            <span className="text-white/20">-</span>
+                          )}
+                        </td>
+                        <td className="p-4 text-center">
+                          {row.mbti ? (
+                            <CheckCircle2 className="w-5 h-5 text-white/40 mx-auto" />
+                          ) : (
+                            <span className="text-white/20">-</span>
+                          )}
+                        </td>
+                        <td className="p-4 text-center">
+                          {row.disc ? (
+                            <CheckCircle2 className="w-5 h-5 text-white/40 mx-auto" />
+                          ) : (
+                            <span className="text-white/20">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function GuaranteeSection() {
+  const saasEnabled = useSaasEnabled();
+  return (
+    <section className="relative py-20 md:py-24" data-testid="section-guarantee">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <Card className="bg-needs/5 border-needs/20 text-center">
+            <CardContent className="p-8 md:p-12">
+              <div className="w-16 h-16 rounded-full bg-needs/20 border-2 border-needs/40 flex items-center justify-center mx-auto mb-6">
+                <Shield className="w-8 h-8 text-needs" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-4" data-testid="text-guarantee-title">
+                14-Day Satisfaction Guarantee
+              </h2>
+              <p className="text-lg text-white/70 mb-6 max-w-xl mx-auto">
+                If after receiving your personalized dashboard you feel the Satellite Scan didn't provide valuable insight, contact us within 14 days for a full refund. No questions asked.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link href="/checkout?product=satellitescan">
+                  <Button size="lg" className="bg-needs text-white min-w-[260px]" data-testid="button-get-scan-guarantee">
+                    Get Your Scan — €99.95
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                {saasEnabled && (
+                  <Link href="/checkout?product=subscription">
+                    <Button size="lg" variant="outline" className="border-needs/30 text-needs gap-2" data-testid="button-subscribe-guarantee">
+                      <Repeat className="h-4 w-4" />
+                      Subscribe — €9.95/mo
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
+                <span className="flex items-center gap-2 text-sm text-white/50">
+                  <Lock className="w-4 h-4" /> Secure payment
+                </span>
+                <span className="flex items-center gap-2 text-sm text-white/50">
+                  <Shield className="w-4 h-4" /> GDPR compliant
+                </span>
+                <span className="flex items-center gap-2 text-sm text-white/50">
+                  <Award className="w-4 h-4" /> 27 years of practice
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function BeforeAfterSection() {
+  return (
+    <section className="relative py-20 md:py-24" data-testid="section-before-after">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white" data-testid="text-before-after-title">
+            From Confusion to Clarity
+          </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            Most professionals can feel something is off in their communication — but can't name it. The Satellite Scan gives you the map.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="bg-white/5 border-white/10 h-full">
+              <CardContent className="p-6">
+                <Badge className="mb-4 bg-red-500/20 text-red-400 border-red-500/30">Before the Scan</Badge>
+                <ul className="space-y-3">
+                  {[
+                    "Same conflicts keep repeating",
+                    "Guessing why conversations go wrong",
+                    "Generic advice that doesn't fit",
+                    "Coaching without a baseline",
+                    "Reacting instead of responding",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-white/60">
+                      <AlertTriangle className="w-4 h-4 text-red-400/60 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <Card className="bg-needs/5 border-needs/20 h-full">
+              <CardContent className="p-6">
+                <Badge className="mb-4 bg-needs/20 text-needs border-needs/30">After the Scan</Badge>
+                <ul className="space-y-3">
+                  {[
+                    "Name the pattern behind the conflict",
+                    "See exactly which lens is triggered",
+                    "Personalized prompts for your real situations",
+                    "Data-driven coaching from day one",
+                    "Conscious choice in every conversation",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-white/80">
+                      <CheckCircle2 className="w-4 h-4 text-needs flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="relative rounded-xl overflow-hidden border border-white/10"
+        >
+          <img
+            src={beforeAfterUrl}
+            alt="Communication transformation journey — from disconnected patterns to harmonious clarity"
+            className="w-full h-auto"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-transparent" />
+        </motion.div>
       </div>
     </section>
   );
@@ -2106,18 +2486,40 @@ export default function ScanPage() {
             aria-hidden="true"
           />
           
-          <BenefitsSection />
+          <WhatYouReceiveSection />
+          <ScanVideoDemo
+            accentColor="#009999"
+            badgeText="See It In Action"
+            headline="Watch the Full Scan Experience"
+            subheadline="A 5-minute silent walkthrough — see exactly how the assessment works and what your personalized dashboard looks like."
+            ctaLink="/checkout?product=satellitescan"
+            ctaText="Start Your Scan — €99.95"
+            testIdPrefix="scan"
+            videoSrc={scanWalkthroughUrl}
+            gradientFrom="#0a0a0a"
+            gradientTo="#0a0a0a"
+          />
+          <BeforeAfterSection />
           <SignalsSection />
           <WhatIsItSection />
           <SocialProofSection />
-          <RepeatableMeasurementSection />
+          <ComparisonSection />
+          <BenefitsSection />
           <LensesSection />
+          <GuaranteeSection />
+          <RepeatableMeasurementSection />
           <FAQSection />
           <LeadMagnetSection />
           <HowItWorksSection />
         </div>
       </div>
       
+      <StickyMobileCTA
+        price="€99.95"
+        label="Get Your Scan"
+        href="/checkout?product=satellitescan"
+        sublabel="Personal dashboard in 48–72h"
+      />
     </div>
   );
 }

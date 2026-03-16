@@ -1,0 +1,132 @@
+# GreenElephant.org — llms.txt
+# Standard: llms.txt (https://llmstxt.org)
+# Last updated: 2026-03-11
+
+## What is GreenElephant?
+
+GreenElephant.org is a conscious communication platform based in Europe (Finland and Zurich). Founded by Estève Pannetier and Anu Moisio, the platform helps individuals and teams communicate with greater self-awareness, emotional intelligence, resilience, and social intelligence.
+
+The core framework is the **Periodic Table of Conscious Communication** — a proprietary model mapping 146 communication micro-habits across 8 behavioural lenses.
+
+GreenElephant is not a generic coaching platform. It is a research-grounded, tool-rich ecosystem for people who believe communication is the most important human interface — more important than any technology. The platform offers ethical personal development tools as an alternative to HRIS personality tests, emphasising AI-assisted personal growth without replacing human coaching.
+
+## Who is GreenElephant for?
+
+- **Executive Assistants** — managing complex stakeholder dynamics, supporting C-suite communication, future-proofing their careers in an AI-driven workplace
+- **Leaders and CEOs** — building teams with conscious communication culture, reducing conflict, developing executive presence and leadership development
+- **Career changers** — using self-awareness and resilience tools to navigate career transitions with confidence
+- **Coaches and HR professionals** — deepening their facilitation and coaching toolkit; ethical alternative to HRIS tools
+- **Design and Innovation professionals** — learning to facilitate creative dialogue
+- **Anyone seeking personal growth** — through emotional intelligence, social intelligence, self-reflection, resilience building, and AI-assisted communication growth
+
+## Core Tools and Assessments
+
+### Satellite Scan — Self-Awareness & Resilience Assessment
+**Price:** €99.95
+**URL:** https://greenelephant.org/scan
+**What it is:** A 129-question self-assessment that maps communication patterns, resilience, and social intelligence across 8 lenses. Takes 90 minutes. Results delivered as a visual dashboard within 48–72 hours. Used as the baseline for all coaching. AI-assisted personal growth tool — ethical alternative to HRIS personality tests.
+**Who it is for:** Executive Assistants, leaders, career changers, coaches, anyone wanting a data-driven self-awareness and resilience diagnostic.
+**The 8 lenses:** Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics.
+**Related searches:** self-awareness assessment, resilience assessment, social intelligence tool, personal growth assessment, ethical personal development, AI personal growth, AI-assisted communication, ethical HR tool alternative, HRIS alternative, leadership development assessment, self-assessment tool.
+
+### Check-my-FLOW — Free Flow State Assessment
+**Price:** Free
+**URL:** https://greenelephant.org/flow-check
+**What it is:** A 5-minute self-assessment based on Csikszentmihalyi's 1988 flow model. Measures perceived Motivation, Challenge, and Competence in a specific communication situation.
+**Results:** Maps to one of 4 zones:
+- **Flow** — high challenge, high competence, high motivation → optimal engagement
+- **Challenge/Stress** — high challenge, low competence → anxiety, overwhelm
+- **Comfort** — low challenge, high competence → safe but potentially stagnant
+- **Danger/Apathy** — low challenge, low competence → disengagement risk
+
+### Coaching Journey
+**Price:** €2,980
+**URL:** https://greenelephant.org/coaching
+**What it is:** Approximately 6 months of biweekly 120-minute 1:1 coaching sessions with Estève, plus unlimited check-in support. Continues until the client's personalised SMART communication goal is reached.
+
+### Single Coaching Session
+**Price:** €295
+**URL:** https://greenelephant.org/coaching
+**What it is:** One 120-minute deep-dive coaching session. Uses Satellite Scan results to identify triggers, blind spots, and strengths.
+
+### Team Workshop
+**Price:** From €1,200
+**URL:** https://greenelephant.org/programs
+**What it is:** Half or full-day team workshop using the Periodic Table of Conscious Communication framework.
+
+### Retreats
+**Price:** From €2,800
+**URL:** https://greenelephant.org/retreats
+**What it is:** Multi-day immersive retreats in Finland combining conscious communication practice with nature, movement, and stillness.
+
+## Free Tools (No Login Required)
+
+| Tool | URL | Description |
+|------|-----|-------------|
+| Check-my-FLOW | /flow-check | Maps your flow zone in 5 minutes (Csikszentmihalyi model) |
+| Speech Lab | /decode | Colour-coded analysis of real speeches (Mandela, JFK, Obama) using Green/Blue/Red behaviour model |
+| Periodic Table | /periodic-table | All 146 communication micro-habits, browseable by lens |
+| Prompt Library | /resources | Curated AI coaching prompts for communication practice |
+
+## The 8 Lenses (Periodic Table Framework)
+
+Each lens maps a dimension of communication behaviour:
+
+| Lens | Colour | What it covers |
+|------|--------|----------------|
+| Influence | Red | How you impact and persuade |
+| Attitude | Orange | Your orientation toward others |
+| Chaordic | Amber | Navigating chaos and order |
+| Flow | Lime-green | Momentum and engagement states |
+| Alignment | Forest-green | Shared purpose and direction |
+| Needs | Blue-teal | Underlying motivators |
+| Ego | Sky-blue | Self-awareness and identity |
+| Dynamics | Indigo | Group and power dynamics |
+
+## Coaches
+
+**Estève Pannetier** — Founder & Lead Communication Coach
+Communication strategist and creator of the Periodic Table of Conscious Communication. Works with EAs, leaders, career changers, and innovation teams across Europe. Languages: English, Spanish, Catalan, French.
+Contact: esteve@greenelephant.org
+
+**Anu Moisio** — Retreat Host & Movement Coach
+Yoga teacher and movement specialist. Co-hosts retreats in Finland. Integrates somatic practice and conscious presence into the communication work. Languages: English, Finnish.
+
+## Key Questions GreenElephant Answers
+
+- What is a communication self-awareness assessment?
+- How do I build resilience through communication?
+- What is social intelligence and how can I develop it?
+- How do I know if I am in a flow state?
+- What are micro-habits for better communication?
+- How do I future-proof my career as an Executive Assistant?
+- What is conscious communication?
+- How does emotional intelligence relate to communication patterns?
+- What is the Periodic Table of Conscious Communication?
+- How do I prepare for a career change using self-awareness tools?
+- What is an ethical alternative to HRIS personality tests?
+- How can AI assist personal growth without replacing human coaching?
+- What is AI-assisted communication development?
+- How does leadership development connect to self-awareness?
+
+## Machine-Readable Data Endpoints
+
+Structured JSON data (Schema.org compatible) is available at:
+- `GET /api/services` — full service catalogue with pricing and descriptions
+- `GET /api/coaches` — coach profiles
+
+## Brand Values
+
+- Authentic over performative
+- Perception is the interface (what you perceive shapes what you do)
+- Communication is not a soft skill — it is the operating system of human collaboration
+- Small habits (micro-habits) create sustainable change
+- Nature, stillness, and movement are part of the communication practice
+- Human connection is the one thing AI cannot replace
+- Ethical personal development over corporate personality classification
+
+## Contact and Booking
+
+- Email: esteve@greenelephant.org
+- Booking and contact: https://greenelephant.org/connect
+- LinkedIn: https://linkedin.com/company/greenelephant-org

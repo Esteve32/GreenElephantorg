@@ -1,0 +1,1 @@
+const e={space:"#0a1628",highAtmosphere:"#0a2a48",upperAtmosphere:"#0e3d5c",midAtmosphere:"#1a6180",lowerAtmosphere:"#2784a8",skyHorizon:"#3ba4c0",horizonWater:"#3d9eb8",deepWater:"#2a7a9a",abyss:"#000000"};export{e as a};

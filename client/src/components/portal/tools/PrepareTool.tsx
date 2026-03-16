@@ -1,9 +1,83 @@
-import { useState } from "react";
-import { BookOpen, Loader2, RotateCcw, Save } from "lucide-react";
+import { useState, useMemo } from "react";
+import { BookOpen, RotateCcw, Save, AlertTriangle, Target, RotateCw, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { AILoadingOverlay } from "@/components/portal/AILoadingOverlay";
+
+const MARKUP_TAGS = /^(Card|Header|MiniCardBlock|MiniCard|DataTile|Icon|SectionBlock|TextContent|CalloutV2|ButtonGroup|Button|List|number)$/;
+
+function cleanAIMarkup(text: string): string {
+  return text
+    .split("\n")
+    .filter((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return true;
+      if (MARKUP_TAGS.test(trimmed)) return false;
+      if (/^[a-z_-]+$/.test(trimmed) && trimmed.length < 30) return false;
+      return true;
+    })
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+interface PrepSection {
+  heading: string;
+  content: string;
+}
+
+function parseIntoSections(text: string): PrepSection[] {
+  const cleaned = cleanAIMarkup(text);
+  const sectionPattern = /^([A-Z][A-Z\s/&]+(?:\([^)]+\))?)\s*:?\s*$/m;
+  const lines = cleaned.split("\n");
+  const sections: PrepSection[] = [];
+  let currentHeading = "";
+  let currentLines: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    const upperMatch = trimmed.match(/^([A-Z][A-Z\s/'&()-]+):(.*)$/);
+    if (upperMatch && upperMatch[1].length >= 4) {
+      if (currentHeading || currentLines.length > 0) {
+        sections.push({ heading: currentHeading, content: currentLines.join("\n").trim() });
+      }
+      currentHeading = upperMatch[1].trim();
+      currentLines = upperMatch[2].trim() ? [upperMatch[2].trim()] : [];
+    } else if (sectionPattern.test(trimmed) && trimmed.length >= 4) {
+      if (currentHeading || currentLines.length > 0) {
+        sections.push({ heading: currentHeading, content: currentLines.join("\n").trim() });
+      }
+      currentHeading = trimmed.replace(/:$/, "").trim();
+      currentLines = [];
+    } else {
+      currentLines.push(line);
+    }
+  }
+  if (currentHeading || currentLines.length > 0) {
+    sections.push({ heading: currentHeading, content: currentLines.join("\n").trim() });
+  }
+  return sections;
+}
+
+function getSectionIcon(heading: string) {
+  const h = heading.toLowerCase();
+  if (h.includes("situation") || h.includes("current")) return RotateCw;
+  if (h.includes("goal") || h.includes("target") || h.includes("success")) return Target;
+  if (h.includes("watch") || h.includes("trigger") || h.includes("ego")) return AlertTriangle;
+  if (h.includes("phrase") || h.includes("opening") || h.includes("sideways") || h.includes("line")) return MessageCircle;
+  return null;
+}
+
+function getSectionColor(heading: string) {
+  const h = heading.toLowerCase();
+  if (h.includes("green")) return "#33a854";
+  if (h.includes("red") || h.includes("watch") || h.includes("trigger")) return "#cc3333";
+  if (h.includes("blue")) return "#3b7dd8";
+  if (h.includes("gbr") || h.includes("strategy")) return "#e8c840";
+  return "#9933cc";
+}
 
 interface PrepareToolProps {
   onSaveToTimeline?: (event: { type: string; title: string; description: string; details?: string; toolId?: string }) => void;
@@ -67,6 +141,12 @@ export function PrepareTool({ onSaveToTimeline }: PrepareToolProps) {
     setResult("");
   };
 
+  const sections = useMemo(() => result ? parseIntoSections(result) : [], [result]);
+
+  if (loading) {
+    return <AILoadingOverlay toolId="prepare" />;
+  }
+
   if (result) {
     return (
       <div className="space-y-4">
@@ -80,8 +160,31 @@ export function PrepareTool({ onSaveToTimeline }: PrepareToolProps) {
             <BookOpen className="w-4 h-4 text-[#9933cc]" />
             <p className="text-xs font-medium text-[#9933cc]">Preparation Notes</p>
           </div>
-          <div className="text-sm text-white/70 whitespace-pre-wrap leading-relaxed" data-testid="text-prepare-result">
-            {result}
+          <div className="space-y-4" data-testid="text-prepare-result">
+            {sections.length > 1 ? sections.map((sec, i) => {
+              const SIcon = getSectionIcon(sec.heading);
+              const color = getSectionColor(sec.heading);
+              const isWarning = sec.heading.toLowerCase().includes("watch") || sec.heading.toLowerCase().includes("trigger") || sec.heading.toLowerCase().includes("ego");
+              return (
+                <div key={i} className={`rounded-lg ${isWarning ? "bg-[#cc3333]/8 border border-[#cc3333]/15" : "bg-white/[0.02]"} p-3`}>
+                  {sec.heading && (
+                    <div className="flex items-center gap-2 mb-2">
+                      {SIcon && <SIcon className="w-3.5 h-3.5" style={{ color }} />}
+                      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color }}>
+                        {sec.heading}
+                      </p>
+                    </div>
+                  )}
+                  <div className="text-sm text-white/70 whitespace-pre-wrap leading-relaxed">
+                    {sec.content}
+                  </div>
+                </div>
+              );
+            }) : (
+              <div className="text-sm text-white/70 whitespace-pre-wrap leading-relaxed">
+                {cleanAIMarkup(result)}
+              </div>
+            )}
           </div>
         </div>
 
@@ -138,14 +241,7 @@ export function PrepareTool({ onSaveToTimeline }: PrepareToolProps) {
             className="w-full bg-[#009999] text-white border-[#009999]/30"
             data-testid="button-prepare-go"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Preparing...
-              </>
-            ) : (
-              "Get Communication Prep"
-            )}
+            Get Communication Prep
           </Button>
         </>
       )}

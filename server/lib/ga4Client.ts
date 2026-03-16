@@ -17,6 +17,10 @@ const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID;
 const GOOGLE_SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
 
 function isGA4Configured(): boolean {
+  return !!(GA4_PROPERTY_ID);
+}
+
+function isGA4DataApiConfigured(): boolean {
   return !!(GA4_PROPERTY_ID && GOOGLE_SERVICE_ACCOUNT_KEY);
 }
 
@@ -257,4 +261,4 @@ export async function fetchGA4Metrics(window: string): Promise<GA4Metrics> {
   return result;
 }
 
-export { isGA4Configured };
+export { isGA4Configured, isGA4DataApiConfigured };

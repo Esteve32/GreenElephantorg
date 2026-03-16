@@ -14,14 +14,14 @@ function CopyBlock({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center gap-2 bg-muted/30 rounded-md p-3">
       <code className="text-xs text-needs flex-1 break-all" data-testid={`text-copy-${label.toLowerCase().replace(/\s+/g, '-')}`}>{value}</code>
-      <Button
+      <Tooltip><TooltipTrigger asChild><Button
         size="icon"
         variant="ghost"
         onClick={() => { navigator.clipboard.writeText(value); toast({ title: "Copied!", description: label }); }}
         data-testid={`button-copy-${label.toLowerCase().replace(/\s+/g, '-')}`}
       >
         <Copy className="h-4 w-4" />
-      </Button>
+      </Button></TooltipTrigger><TooltipContent>Copy {label} to clipboard</TooltipContent></Tooltip>
     </div>
   );
 }
@@ -56,15 +56,15 @@ export default function LinkedInSetupAdmin() {
     },
   });
 
-  const linkedinEnabled = settings?.linkedin_oauth_enabled === "true";
+  const linkedinEnabled = settings?.linkedin_oauth_enabled !== "false";
   const isConfigured = testResult?.configured ?? false;
 
-  const devRedirectUri = `https://8c4dd19f-df5b-42bf-ae51-5b08619e34c5-00-2un8xb7bffmqa.spock.replit.dev/api/portal/auth/linkedin/callback`;
+  const devRedirectUri = testResult?.redirectUri || "Loading...";
   const prodRedirectUri = `https://greenelephant.org/api/portal/auth/linkedin/callback`;
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-[#0a0a0a]">
-      <SEO title="LinkedIn OAuth Setup | Admin" canonicalPath="/admin/linkedin-setup" />
+      <SEO title="LinkedIn OAuth Setup | Admin" description="Configure LinkedIn OAuth integration and OIDC login for the GreenElephant portal." canonicalPath="/admin/linkedin-setup" />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 mb-8 flex-wrap">
           <Tooltip><TooltipTrigger asChild><a href="/admin/submissions" data-testid="link-admin-back">
@@ -99,7 +99,7 @@ export default function LinkedInSetupAdmin() {
                 </CardTitle>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground">LinkedIn Login</span>
-                  <Button
+                  <Tooltip><TooltipTrigger asChild><Button
                     variant={linkedinEnabled ? "default" : "outline"}
                     size="sm"
                     onClick={() => toggleMutation.mutate(!linkedinEnabled)}
@@ -107,7 +107,7 @@ export default function LinkedInSetupAdmin() {
                     data-testid="button-toggle-linkedin"
                   >
                     {linkedinEnabled ? "Enabled" : "Disabled"}
-                  </Button>
+                  </Button></TooltipTrigger><TooltipContent>{linkedinEnabled ? "Disable" : "Enable"} LinkedIn OAuth login for the portal</TooltipContent></Tooltip>
                 </div>
               </div>
             </CardHeader>
@@ -187,10 +187,10 @@ export default function LinkedInSetupAdmin() {
                 rel="noopener noreferrer"
                 data-testid="link-linkedin-developers"
               >
-                <Button variant="outline" className="gap-2">
+                <Tooltip><TooltipTrigger asChild><Button variant="outline" className="gap-2">
                   <ExternalLink className="h-4 w-4" />
                   Open LinkedIn Developer Portal
-                </Button>
+                </Button></TooltipTrigger><TooltipContent>Open LinkedIn Developer Portal to create or manage your app</TooltipContent></Tooltip>
               </a>
             </CardContent>
           </Card>

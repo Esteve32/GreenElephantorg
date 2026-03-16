@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AdminTooltip } from "@/components/AdminTooltip";
+import { AIContextSelector } from "@/components/AIContextSelector";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -330,6 +331,8 @@ export default function AIToolsDashboard() {
           />
         </div>
       </div>
+
+      <AIContextSelector compact />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>

@@ -41,14 +41,16 @@ The project is configured for PostgreSQL using Neon serverless and Drizzle ORM. 
 ### Key Features
 - **Notion CRM Integration**: Two-way sync for contacts and user data.
 - **Email Systems**: Fibonacci-timed onboarding, GDPR-compliant transactional emails, admin notifications.
-- **Content & Assessments**: Prompt Library, GBR Taxonomy, "Check-my-FLOW" assessment, "Decoding Hub".
+- **Content & Assessments**: Prompt Library, GBR Taxonomy, "Check-my-FLOW" assessment, "Decoding Hub" (5 GBR-annotated speeches: Mandela, JFK, Obama, MLK, Steve Jobs).
 - **Admin Dashboards**: Comprehensive dashboards for customer journeys, email control, webinar management, external service integrations.
-- **AI-Powered Tools**: Prompt Generator, Content Flywheel Lab (LinkedIn content engine with 4 generators), AI Tools Dashboard, Research Flywheel (PMF testing, lead generation).
-- **Client Portal**: Dashboard (Space Elevator Timeline), Settings, Playground (Prompt Library, Explore & Build, Visualize), HUD Tools (7 AI-powered tools: Upload, Debrief, Flow Check, Reflection, Export, Micro Habits, Prepare).
+- **AI-Powered Tools**: Prompt Generator, Content Flywheel Lab (LinkedIn content engine with 4 generators), AI Tools Dashboard, Research Flywheel (PMF testing, lead generation). All admin AI pages include an **AI Context Selector** — a HITL control showing connected data sources (Notion, Google Sheets, Stripe, Fathom, Typeform, Local CRM) with toggles to scope which context feeds into AI queries. Preferences persist in `admin_settings`.
+- **Client Portal**: Dashboard (Space Elevator Timeline with view modes: All/Milestones/Learning + search), Settings (with profile photo upload), Playground (Prompt Library, Explore & Build, Visualize), HUD Tools organized into 3 groups: Main tools (AI Agent/yellow, Flow Check/green, Reflection/teal, Micro Habits/orange, Learning/blue, Prepare/red), Extras (Milestone, Presencing/Wisdom Council, Scans, Emotional Landscape), Utility (Upload/white, Export/white — in settings area alongside Settings & Logout). Portal uses brand-skinnable CSS variables (--hud-bg, --hud-glass, --hud-border, --hud-accent, etc.) for GreenElephant/Arbora switching.
+- **Emotional Landscape**: Spotify-powered coaching mirror HUD tool. Shows valence/energy scatter plot, mood quadrant analysis (Activated & Upbeat / Intense & Driven / Calm & Content / Contemplative & Deep), coaching insights, recent tracks with audio features. Saves snapshots to timeline under "alignment" lens.
 - **SaaS Settings**: Admin page for managing Scan-as-a-Service with pricing tiers, subscription pathways, revenue projections, and a Value Prop Editor. Supports subscription coupons.
 - **Coaching Cockpit**: Admin page for visualizing the Satellite Scan coaching workflow.
-- **Debriefing Tool**: Admin page for tracking coaching session debriefs.
+- **Debriefing Tool**: Admin page for tracking coaching session debriefs, persisted to PostgreSQL (`coaching_debriefs` table). CRUD via `/api/admin/debriefs`.
 - **Access & Security**: Admin page for team member management, role assignment, and audit log viewing.
+- **QR Command Center**: Admin page for generating/managing QR codes. Master QR (permanent, always points to portal login) + campaign QR codes. GDPR-compliant scan tracking with IP geolocation (country, city, ISP, device type). QR images in PNG/SVG with teal branding. Routes: `/qr/:slug` (public redirect+track), `/api/admin/qr-codes/*`.
 - **Privacy Policy**: Comprehensive GDPR-compliant policy.
 
 ## External Dependencies
@@ -61,9 +63,12 @@ The project is configured for PostgreSQL using Neon serverless and Drizzle ORM. 
 
 ### Third-Party Services
 - **Stripe**: Payment processing
-- **Calendly**: Booking integration
+- **Calendly**: Live API integration (CALENDLY_API_TOKEN) — event types, scheduled events, user profile. Admin page shows live data.
 - **YouTube**: Playlist integration
 - **LinkedIn**: Company page + OpenID Connect login (OIDC)
 - **Resend**: Email notifications
 - **Thesys.dev API**: AI-powered communication lens visualization
 - **Notion CRM**: Two-way contact synchronization + Pipeline OS to-do board
+- **Fathom Analytics**: Privacy-first website analytics via OAuth (sites, visitors, pageviews)
+- **Spotify**: Portal connector via OAuth — recently played tracks with audio features (valence, energy, danceability). Emotional Landscape coaching insight tool. Routes: `/api/portal/spotify/connect`, `/callback`, `/disconnect`, `/status`, `/recent-tracks`.
+- **Oura Ring**: Portal connector via OAuth — readiness, sleep, and activity scores for biometric-communication correlation. GDPR-consented with token refresh. Routes: `/api/portal/oura/connect`, `/callback`, `/disconnect`, `/status`, `/daily`.

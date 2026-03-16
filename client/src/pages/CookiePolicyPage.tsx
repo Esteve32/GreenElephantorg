@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Cookie } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
 export default function CookiePolicyPage() {
+  useEffect(() => { document.title = "Cookie Policy | GreenElephant"; }, []);
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO

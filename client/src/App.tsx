@@ -72,7 +72,10 @@ const AnalyticsAdmin = lazy(() => import("@/pages/admin/AnalyticsAdmin"));
 const SaaSSettingsAdmin = lazy(() => import("@/pages/admin/SaaSSettingsAdmin"));
 const AIToolsDashboard = lazy(() => import("@/pages/admin/AIToolsDashboard"));
 const ResearchFlywheelLab = lazy(() => import("@/pages/admin/ResearchFlywheelLab"));
+const QRCommandCenter = lazy(() => import("@/pages/admin/QRCommandCenter"));
 const ClientLoginPage = lazy(() => import("@/pages/portal/ClientLoginPage"));
+const ForgotPasswordPage = lazy(() => import("@/pages/portal/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("@/pages/portal/ResetPasswordPage"));
 const PortalSettingsPage = lazy(() => import("@/pages/portal/PortalSettingsPage"));
 const PlaygroundPage = lazy(() => import("@/pages/portal/PlaygroundPage"));
 const PortalDashboard = lazy(() => import("@/pages/portal/PortalDashboard"));
@@ -176,7 +179,10 @@ function Router() {
         <Route path="/admin/saas-settings" component={SaaSSettingsAdmin} />
         <Route path="/admin/ai-tools" component={AIToolsDashboard} />
         <Route path="/admin/research-flywheel" component={ResearchFlywheelLab} />
+        <Route path="/admin/qr-command-center" component={QRCommandCenter} />
         <Route path="/portal/login" component={ClientLoginPage} />
+        <Route path="/portal/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/portal/reset-password" component={ResetPasswordPage} />
         <Route path="/portal/settings" component={PortalSettingsPage} />
         <Route path="/portal/playground" component={PlaygroundPage} />
         <Route path="/portal" component={PortalDashboard} />

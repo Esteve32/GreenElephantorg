@@ -55,25 +55,25 @@ const testimonials = [
     quote: "Before Equinoxe, I'd tense up whenever my CEO was frustrated. I'd either shut down or become defensive. The microhabit framework taught me to pause, acknowledge my needs, and respond from clarity instead of fear. Our relationship has completely transformed.",
     name: "Sarah K.",
     role: "Executive Assistant, Tech Startup",
-    country: "",
+    country: "Netherlands",
   },
   {
     quote: "I thought I was building a TEAL company, but I was still micromanaging every decision. The Provence retreat helped me see how my communication patterns were blocking self-organization. Now I ask questions instead of giving answers.",
     name: "Marcus T.",
     role: "TEAL Organization Founder",
-    country: "",
+    country: "Germany",
   },
   {
     quote: "I used to agree with everyone to keep the peace, then resent them later. The Lapland retreat taught me that honoring my truth is an act of love, not selfishness. My design critiques are now honest AND compassionate.",
     name: "Elisa R.",
     role: "Design Innovation Student",
-    country: "",
+    country: "Spain",
   },
   {
     quote: "We'd built a successful consulting firm but our marriage was fracturing. Every disagreement became a power struggle. Equinoxe showed us how to hold conflict as sacred — a chance to deepen understanding, not win arguments.",
     name: "David & Ana L.",
     role: "Partners in Business & Life",
-    country: "",
+    country: "Portugal",
   },
 ];
 

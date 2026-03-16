@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { AdminTooltip } from "@/components/AdminTooltip";
+import { AIContextSelector } from "@/components/AIContextSelector";
+import { OutputFormatToggle, formatContent, useOutputFormat, type OutputFormat } from "@/components/OutputFormatToggle";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   ArrowLeft,
@@ -382,6 +384,7 @@ export default function ContentFlywheelLab() {
   const [activeGenerator, setActiveGenerator] = useState<string | null>(null);
   const [result, setResult] = useState<ContentResult | null>(null);
   const [seoOpen, setSeoOpen] = useState(false);
+  const { outputFormat, setOutputFormat } = useOutputFormat("rich");
   const [sendTo, setSendTo] = useState<'both' | 'esteve' | 'anu'>('both');
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -720,6 +723,8 @@ export default function ContentFlywheelLab() {
           </CardContent>
         </Card>
 
+        <AIContextSelector compact />
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {GENERATORS.map(gen => {
             const Icon = gen.icon;
@@ -834,6 +839,11 @@ export default function ContentFlywheelLab() {
               />
             </div>
 
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-xs text-muted-foreground">Output format:</span>
+              <OutputFormatToggle value={outputFormat} onChange={setOutputFormat} />
+            </div>
+
             <div className="grid gap-6 lg:grid-cols-2">
               <Card className={reviewStatus === 'approved' ? 'border-green-500/20' : reviewStatus === 'rejected' ? 'border-destructive/20' : ''}>
                 <CardHeader className="pb-3">
@@ -850,8 +860,8 @@ export default function ContentFlywheelLab() {
                   <p className="text-xs text-muted-foreground">For {voice === 'I' ? "Esteve or Anu's personal" : "GreenElephant company"} LinkedIn profile</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto pr-2" data-testid="text-article-preview">
-                    {result.article}
+                  <div className={`text-sm whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto pr-2 ${outputFormat === 'machine' ? 'font-mono text-xs bg-muted/30 rounded-md p-3' : ''}`} data-testid="text-article-preview">
+                    {formatContent(result.article, outputFormat, outputFormat === 'machine' ? { type: 'linkedin_article', content: result.article, lens: result.lens.name, voice, generatedAt: new Date().toISOString() } : undefined)}
                   </div>
                 </CardContent>
               </Card>
@@ -885,7 +895,9 @@ export default function ContentFlywheelLab() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-sm whitespace-pre-wrap leading-relaxed" data-testid="text-art-preview">{result.artDirection}</div>
+                <div className={`text-sm whitespace-pre-wrap leading-relaxed ${outputFormat === 'machine' ? 'font-mono text-xs bg-muted/30 rounded-md p-3' : ''}`} data-testid="text-art-preview">
+                  {formatContent(result.artDirection, outputFormat, outputFormat === 'machine' ? { type: 'art_direction', content: result.artDirection, lens: result.lens.name, generatedAt: new Date().toISOString() } : undefined)}
+                </div>
               </CardContent>
             </Card>
 

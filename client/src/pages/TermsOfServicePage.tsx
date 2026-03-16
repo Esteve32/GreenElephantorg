@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scale } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
 export default function TermsOfServicePage() {
+  useEffect(() => { document.title = "Terms of Service | GreenElephant"; }, []);
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO
@@ -71,7 +73,7 @@ export default function TermsOfServicePage() {
                     <li>Single sessions (€295)</li>
                     <li>Coaching Journey packages (~6 months, €2,980)</li>
                     <li>Team workshops (€1,200 for up to 10 people)</li>
-                    <li>Interview coaching (€795 for 3-session bundle)</li>
+                    <li>Interview coaching (€845 for 3-session bundle)</li>
                   </ul>
                 </div>
                 <div>

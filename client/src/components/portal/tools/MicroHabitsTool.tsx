@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Zap, Loader2, RotateCcw, Save, Calendar, Heart } from "lucide-react";
+import { Zap, RotateCcw, Save, Calendar, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import { AILoadingOverlay } from "@/components/portal/AILoadingOverlay";
 
 interface MicroHabitsToolProps {
   onSaveToTimeline?: (event: { type: string; title: string; description: string; details?: string; lens?: string; toolId?: string }) => void;
@@ -13,12 +14,12 @@ interface MicroHabitsToolProps {
 const LENSES = [
   { id: "influence", name: "Influence", color: "#cc3333", desc: "Exert influence with integrity" },
   { id: "attitude", name: "Attitude", color: "#ff9933", desc: "Stance toward change and growth" },
-  { id: "chaordic", name: "Chaordic", color: "#ffcc00", desc: "Order in creative chaos" },
+  { id: "chaordic", name: "Chaordic", color: "#ffcc00", desc: "Order in creative chaos — including Human-to-AI dialogue" },
   { id: "flow", name: "Flow", color: "#cccc33", desc: "Sensing flow in conversations" },
   { id: "alignment", name: "Alignment", color: "#669966", desc: "Building shared understanding" },
-  { id: "needs", name: "Needs", color: "#009999", desc: "Honoring energy and core needs" },
-  { id: "ego", name: "Ego", color: "#3399cc", desc: "Recognizing ego patterns" },
-  { id: "dynamics", name: "Dynamics", color: "#663399", desc: "Understanding relationship dynamics" },
+  { id: "needs", name: "Needs", color: "#33a854", desc: "Honoring energy and core needs" },
+  { id: "ego", name: "Ego", color: "#3b7dd8", desc: "Recognizing ego patterns" },
+  { id: "dynamics", name: "Dynamics", color: "#9933cc", desc: "Understanding relationship dynamics" },
 ];
 
 const CORE_VALUES = [
@@ -148,6 +149,10 @@ export function MicroHabitsTool({ onSaveToTimeline }: MicroHabitsToolProps) {
     setCustomValue("");
   };
 
+  if (loading) {
+    return <AILoadingOverlay toolId="microhabits" />;
+  }
+
   if (result) {
     const lens = LENSES.find((l) => l.id === selectedLens);
     return (
@@ -263,14 +268,7 @@ export function MicroHabitsTool({ onSaveToTimeline }: MicroHabitsToolProps) {
           className="w-full bg-[#009999] text-white border-[#009999]/30"
           data-testid="button-generate-habit"
         >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            `Generate Micro Habit${activeValue ? ` for ${activeValue}` : ""}`
-          )}
+          {`Generate Micro Habit${activeValue ? ` for ${activeValue}` : ""}`}
         </Button>
       )}
     </div>

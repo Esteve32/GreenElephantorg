@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
@@ -55,6 +55,7 @@ const FAQ_ITEMS = [
 ];
 
 export default function WebinarsPage() {
+  useEffect(() => { document.title = "Webinars — Upcoming Sessions | GreenElephant"; }, []);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);

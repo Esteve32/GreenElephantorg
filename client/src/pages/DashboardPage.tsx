@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -163,6 +163,7 @@ function parseData(rawData: string[][]): AggregatedInsights {
 }
 
 export default function DashboardPage() {
+  useEffect(() => { document.title = "Dashboard | GreenElephant"; }, []);
   const [prompt, setPrompt] = useState("Analyze these communication patterns and provide strategic recommendations");
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const { toast } = useToast();
@@ -614,11 +615,24 @@ export default function DashboardPage() {
                       <Sparkles className="h-4 w-4 text-needs" />
                       AI Analysis
                     </h4>
-                    <div className="prose prose-invert prose-sm max-w-none">
-                      <pre className="whitespace-pre-wrap text-white/50 text-sm">
-                        {aiResponse}
-                      </pre>
-                    </div>
+                    {aiResponse.includes('<html') || aiResponse.includes('<div') || aiResponse.includes('<svg') ? (
+                      <div className="rounded-lg overflow-hidden border border-white/10 bg-white">
+                        <iframe
+                          srcDoc={aiResponse}
+                          className="w-full border-0"
+                          style={{ minHeight: "400px" }}
+                          title="AI Analysis"
+                          sandbox="allow-scripts"
+                          data-testid="iframe-ai-analysis"
+                        />
+                      </div>
+                    ) : (
+                      <div className="prose prose-invert prose-sm max-w-none">
+                        <pre className="whitespace-pre-wrap text-white/50 text-sm">
+                          {aiResponse}
+                        </pre>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

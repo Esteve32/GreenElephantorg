@@ -12,5 +12,8 @@ declare module "express-session" {
     adminOAuthState?: string;
     notionOAuthState?: string;
     googleOAuthState?: string;
+    fathomOAuthState?: string;
+    spotifyOAuthState?: string;
+    ouraOAuthState?: string;
   }
 }

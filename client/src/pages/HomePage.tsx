@@ -11,6 +11,9 @@ import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png"
 import logoUrl from "@assets/GE logo 512x512 transparent BG 2023 _1764350733090.png";
 import { atmosphericPalette, footerFadeGradient } from "@/constants/atmosphericGradient";
 import { SEO } from "@/components/SEO";
+import { ScanVideoDemo } from "@/components/ScanVideoDemo";
+import { DashboardPreview } from "@/components/DashboardPreview";
+import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 function ScrollProgressLine() {
   const { scrollYProgress } = useScroll();
@@ -740,13 +743,62 @@ function FrameworkSection() {
           </p>
         </motion.div>
 
-        {/* Circular lens wheel */}
+        {/* Lens wheel — grid on mobile, circular on sm+ */}
         <div className="relative flex items-center justify-center" style={{ zIndex: 1 }}>
-          {/* Circle container */}
-          <div className="relative w-[360px] h-[360px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
+          {/* Mobile 2x4 grid (below sm breakpoint) */}
+          <div className="grid grid-cols-4 gap-4 sm:hidden w-full max-w-sm mx-auto">
+            {LENS_ORDER.map((lensKey, index) => {
+              const lens = LENSES[lensKey];
+              const Icon = lens.icon;
+              const isOpen = openLens === lensKey;
+              const details = LENS_DETAILS[lensKey];
+              return (
+                <div key={lens.value} className="relative flex flex-col items-center" data-testid={`lens-mobile-${lens.value}`}>
+                  <Collapsible open={isOpen} onOpenChange={(open) => setOpenLens(open ? lensKey : null)}>
+                    <CollapsibleTrigger asChild>
+                      <button className="group flex flex-col items-center focus:outline-none" data-testid={`button-lens-mobile-${lens.value}`}>
+                        <div className={`${lens.color} w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg ${isOpen ? 'ring-2 ring-white/40 scale-110' : ''}`}>
+                          <Icon className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="text-xs font-medium text-foreground mt-1.5 whitespace-nowrap">{lens.name}</span>
+                        <span className="text-[10px] text-muted-foreground">{lens.code}</span>
+                      </button>
+                    </CollapsibleTrigger>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <CollapsibleContent forceMount>
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.2 }}
+                            className="fixed left-1/2 -translate-x-1/2 p-3 rounded-xl bg-background/95 border border-white/20 backdrop-blur-md w-[220px] text-left shadow-xl"
+                            style={{ zIndex: 200, bottom: "auto", top: "50%", transform: "translate(-50%, -50%)" }}
+                          >
+                            <p className="text-xs text-white/90 mb-3 italic leading-relaxed">{lens.description}</p>
+                            <div className="mb-2">
+                              <p className="text-xs text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{details.painSignal}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{details.benefit}</p>
+                            </div>
+                          </motion.div>
+                        </CollapsibleContent>
+                      )}
+                    </AnimatePresence>
+                  </Collapsible>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Circle container — hidden on mobile, shown sm+ */}
+          <div className="relative hidden sm:block sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
             {/* Decorative ring */}
-            <div className="absolute inset-4 sm:inset-6 md:inset-8 rounded-full border border-white/10" />
-            <div className="absolute inset-8 sm:inset-12 md:inset-16 rounded-full border border-white/5" />
+            <div className="absolute inset-6 md:inset-8 rounded-full border border-white/10" />
+            <div className="absolute inset-12 md:inset-16 rounded-full border border-white/5" />
 
             {/* Animated SVG spokes + traveling dot */}
             <svg
@@ -807,18 +859,16 @@ function FrameworkSection() {
               </div>
             </div>
             
-            {/* Lens items positioned in a circle */}
+            {/* Lens items positioned in a circle — sm+ only */}
             {LENS_ORDER.map((lensKey, index) => {
               const lens = LENSES[lensKey];
               const Icon = lens.icon;
               const isOpen = openLens === lensKey;
               const details = LENS_DETAILS[lensKey];
               
-              const mobileRadius = 120;
               const smRadius = 160;
               const mdRadius = 190;
               
-              const mobilePos = getCirclePosition(index, 8, mobileRadius);
               const smPos = getCirclePosition(index, 8, smRadius);
               const mdPos = getCirclePosition(index, 8, mdRadius);
               
@@ -831,18 +881,13 @@ function FrameworkSection() {
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   className="absolute left-1/2 top-1/2"
                   style={{
-                    transform: `translate(calc(-50% + ${mobilePos.x}px), calc(-50% + ${mobilePos.y}px))`,
+                    transform: `translate(calc(-50% + ${smPos.x}px), calc(-50% + ${smPos.y}px))`,
                     zIndex: isOpen ? 100 : 10,
                   }}
                   data-testid={`lens-station-${lens.value}`}
                 >
                   <style>
                     {`
-                      @media (min-width: 640px) {
-                        [data-testid="lens-station-${lens.value}"] {
-                          transform: translate(calc(-50% + ${smPos.x}px), calc(-50% + ${smPos.y}px)) !important;
-                        }
-                      }
                       @media (min-width: 768px) {
                         [data-testid="lens-station-${lens.value}"] {
                           transform: translate(calc(-50% + ${mdPos.x}px), calc(-50% + ${mdPos.y}px)) !important;
@@ -857,11 +902,11 @@ function FrameworkSection() {
                         className="group flex flex-col items-center focus:outline-none"
                         data-testid={`button-lens-${lens.value}`}
                       >
-                        <div className={`${lens.color} w-8 h-8 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg ${isOpen ? 'ring-2 ring-white/40 scale-110' : ''}`}>
-                          <Icon className="h-3.5 w-3.5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
+                        <div className={`${lens.color} w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg ${isOpen ? 'ring-2 ring-white/40 scale-110' : ''}`}>
+                          <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
                         </div>
-                        <span className="text-xs sm:text-sm md:text-base font-medium text-foreground mt-0.5 whitespace-nowrap">{lens.name}</span>
-                        <span className="hidden sm:block text-xs md:text-sm text-muted-foreground">{lens.code}</span>
+                        <span className="text-sm md:text-base font-medium text-foreground mt-0.5 whitespace-nowrap">{lens.name}</span>
+                        <span className="text-xs md:text-sm text-muted-foreground">{lens.code}</span>
                       </button>
                     </CollapsibleTrigger>
                     
@@ -873,17 +918,17 @@ function FrameworkSection() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute left-1/2 -translate-x-1/2 mt-2 p-3 sm:p-4 rounded-xl bg-background/95 border border-white/20 backdrop-blur-md w-[200px] sm:w-[240px] md:w-[280px] text-left shadow-xl"
+                            className="absolute left-1/2 -translate-x-1/2 mt-2 p-4 rounded-xl bg-background/95 border border-white/20 backdrop-blur-md w-[240px] md:w-[280px] text-left shadow-xl"
                             style={{ zIndex: 200 }}
                           >
-                            <p className="text-xs sm:text-sm text-white/90 mb-3 italic leading-relaxed">{lens.description}</p>
+                            <p className="text-sm text-white/90 mb-3 italic leading-relaxed">{lens.description}</p>
                             <div className="mb-2">
-                              <p className="text-xs sm:text-sm text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
-                              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{details.painSignal}</p>
+                              <p className="text-sm text-destructive font-semibold mb-1 uppercase tracking-wider">Pain Signal</p>
+                              <p className="text-sm text-muted-foreground leading-relaxed">{details.painSignal}</p>
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
-                              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{details.benefit}</p>
+                              <p className="text-sm text-needs font-semibold mb-1 uppercase tracking-wider">Benefit</p>
+                              <p className="text-sm text-muted-foreground leading-relaxed">{details.benefit}</p>
                             </div>
                           </motion.div>
                         </CollapsibleContent>
@@ -1501,6 +1546,19 @@ export default function HomePage() {
       />
       <ScrollProgressLine />
       <HeroSection />
+      <DashboardPreview accentColor="#009999" testIdPrefix="home" />
+      <ScanVideoDemo
+        accentColor="#009999"
+        badgeText="See It In Action"
+        headline="Watch the Satellite Scan in 5 Minutes"
+        subheadline="See exactly what happens — the assessment, your personalized dashboard, and the AI coaching prompts you'll use."
+        ctaLink="/checkout?product=satellitescan"
+        ctaText="Start Your Scan — €99.95"
+        testIdPrefix="home"
+        videoSrc={scanWalkthroughUrl}
+        gradientFrom="#0a0a0a"
+        gradientTo="#0a0a0a"
+      />
       <ProblemSection />
       <FrameworkSection />
       <PeriodicPreviewSection />

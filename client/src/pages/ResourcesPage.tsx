@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import ResourceCard from "@/components/ResourceCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,12 @@ const learningPaths = [
 export default function ResourcesPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <SEO
+        title="Resources — Articles, Tools & Insights"
+        description="Explore GreenElephant's resources: communication handbooks, TEAL team templates, Compassionate Dialogue GPT, and tools for transforming conflict into trust."
+        keywords="conscious communication resources, communication handbook, TEAL team template, compassionate dialogue, communication exercises, personal development tools"
+        canonicalPath="/resources"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-chaordic text-black">Learning Resources</Badge>
