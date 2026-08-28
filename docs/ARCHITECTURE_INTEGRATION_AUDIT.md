@@ -749,3 +749,427 @@ Record these in a restricted operational inventory. Do not commit secret values,
 - **MCP:** Model Context Protocol, a structured protocol for exposing tools/resources to AI clients. No runtime MCP implementation was found.
 - **Agent skill:** repository-local instructions for an AI coding/operations agent. A skill is not itself an MCP server.
 - **System of record:** the authoritative place where a class of data is owned and reconciled.
+
+
+---
+
+## 15. Project-management infrastructure catalog
+
+This section converts the architectural assessment into a tool-by-tool inventory suitable for a project management system. **Current** means implemented in the repository; it does not guarantee that credentials, subscriptions, callbacks or production connections are currently healthy.
+
+### 15.1 Databases and data storage
+
+| Tool or component | Status | Purpose | Main consumers | Recommended ownership |
+|---|---|---|---|---|
+| PostgreSQL | Current | Primary relational system for identity, operational, product and automation data | Public API, portal, admin, jobs | Platform/data owner |
+| Neon | Current | Managed PostgreSQL hosting and connection endpoint | Express server and session store | Platform owner |
+| Drizzle ORM | Current | Type-safe TypeScript database access and schema definitions | Server services and repositories | Engineering |
+| Drizzle Kit | Current | Applies schema changes through `db:push` | Development/deployment workflow | Engineering/platform |
+| `shared/schema.ts` | Current | Central table, validation and TypeScript model definition | Nearly every feature | Split among feature owners |
+| `server/storage.ts` | Current | Shared persistence facade containing most data operations | Routes, schedulers, sync and portal | Split among feature owners |
+| PostgreSQL session store | Current | Persists browser authentication sessions through `connect-pg-simple` | Admin and portal authentication | Identity/platform |
+| Notion CRM | Current integration | Operational view of contacts, customer state, reach channels and campaigns | Marketing, sales, admin and automation | Operations/CRM owner |
+| Google Sheets | Current integration | Scan/source-data import and research-data export | Coaching portal and research tools | Coaching/data owner |
+| Browser/TanStack Query cache | Current | Holds fetched client state temporarily | Public, portal and admin browser applications | Frontend engineering |
+| In-memory server caches/maps | Current, limited | Holds token connection settings and activity throttling state | Integration clients and admin auth | Replace or constrain |
+
+#### Data domains currently represented in PostgreSQL
+
+The database contains or is designed to contain the following classes of information:
+
+- named administrator accounts, roles, status and login activity;
+- shared administrative settings and the legacy admin password hash;
+- administrative audit events and source IP addresses;
+- portal users, profiles, password hashes and password-reset fields;
+- client subscriptions, plans, Stripe customer/subscription references and periods;
+- operational contacts and their activity;
+- newsletter subscriptions, campaigns, recipients, exclusions and open events;
+- recommendation, contact, waitlist and webinar submissions;
+- Signals Quiz, FLOW Check and Satellite Scan results;
+- purchases, payment-intent references, fulfillment state and reminders;
+- prompt resources, prompt votes and AI-related preferences;
+- webinar settings, sessions and calendar events;
+- onboarding email templates and send logs;
+- portal timeline events and user context;
+- testimonials and consent/visibility state;
+- coupons and pricing configuration;
+- connector enablement, kill-switch state and toggle logs;
+- SEO suggestions and AI-tool settings/usage;
+- QR-code definitions and QR scan telemetry;
+- coaching debrief records;
+- OAuth access and refresh tokens for user-connected services.
+
+#### Database update backlog
+
+1. Replace schema push in production with reviewed, versioned migrations.
+2. Split `shared/schema.ts` into feature-owned modules.
+3. Split `server/storage.ts` into feature repositories with narrow interfaces.
+4. Create a data dictionary with classification, controller, retention and deletion rules.
+5. Add or verify foreign keys, unique constraints, indexes and cascade behavior.
+6. Replace text-encoded booleans, counters and states with native types or enums.
+7. Isolate OAuth credentials from client profiles and encrypt them at application level.
+8. Add database roles with least-privilege access for web, worker, migrations and support.
+9. Create separate databases or Neon branches for local, preview, staging and production.
+10. Test backup restoration, point-in-time recovery and migration rollback.
+11. Add automated detection of orphaned records and synchronization discrepancies.
+12. Decide which domains use Neon as the system of record and treat Notion/Sheets as projections or imports.
+
+### 15.2 Email delivery and automation
+
+| Tool or component | Status | Purpose | Trigger/input | Output |
+|---|---|---|---|---|
+| Resend | Current | Transactional and campaign delivery | Application workflow | Customer/admin email |
+| `server/resend-client.ts` | Current | Creates a Resend client from a direct key or Replit connector | Environment or connector broker | Authenticated Resend SDK |
+| `server/email-notifications.ts` | Current | Branded templates, content assembly and send functions | Product workflows | Resend requests |
+| Onboarding scheduler | Current | Finds and sends pending sequence messages | Frequent in-process schedule | Onboarding email and log updates |
+| Satellite Scan reminder scheduler | Current | Finds overdue scan completions | 24-hour in-process interval | Reminder email and reminder counters |
+| Daily pulse scheduler | Current | Builds an operational digest | Daily in-process schedule | Admin digest |
+| Newsletter campaign engine | Current | Populates recipients, previews, sends and records campaigns | Admin action | Batch email |
+| Email open tracker | Current | Records tracking-pixel requests | Recipient email client | Open timestamp/count and CRM update |
+| Gmail client | Current | Reads selected mailbox threads for research | Admin query | Thread metadata/snippets |
+| Notion synchronization | Current | Records email/contact/campaign activity in CRM | Email and campaign events | Updated CRM contact/page |
+
+#### Implemented or represented email workflows
+
+| Workflow | Recipient | Principal dependencies |
+|---|---|---|
+| Contact-form acknowledgement | Submitter | PostgreSQL, Notion, Resend |
+| Contact-form notification | Administrator | PostgreSQL, Resend |
+| Newsletter welcome | Subscriber | PostgreSQL, Notion, Resend |
+| Retreat waitlist confirmation | Applicant | PostgreSQL, Notion, Resend |
+| Webinar waitlist confirmation | Applicant | PostgreSQL, Notion, Resend |
+| FLOW Check results | Participant | PostgreSQL, Notion, Resend |
+| FLOW Check notification | Administrator | PostgreSQL, Resend |
+| Signals Quiz results | Participant | PostgreSQL, Notion, Resend |
+| Purchase confirmation | Customer | Stripe, PostgreSQL, Notion, Resend |
+| Satellite Scan instructions | Customer | Stripe/Typeform, PostgreSQL, Resend |
+| Satellite Scan completion | Customer/coach | Typeform, PostgreSQL, Resend |
+| Satellite Scan overdue reminder | Customer | PostgreSQL, scheduler, Resend |
+| Fibonacci onboarding sequence | Customer | PostgreSQL, scheduler, Resend |
+| Coaching raw-data delivery | Coach/customer as configured | PostgreSQL, Resend |
+| Coaching document-link delivery | Coach/customer as configured | PostgreSQL, Resend |
+| Coach-only message | Coach | PostgreSQL, Resend |
+| Email verification | User | PostgreSQL, Resend |
+| Password reset | Portal user | PostgreSQL, Resend |
+| Portal data export | Portal user | PostgreSQL, Resend |
+| Newsletter campaign | Selected contacts | PostgreSQL, Resend, tracking, Notion |
+| Test email operations | Administrator-selected target | Admin API, Resend |
+| Daily pulse | Administrator | PostgreSQL, scheduler, Resend |
+
+#### Current automation topology
+
+```text
+User or administrator action
+        |
+        v
+Express route and validation
+        |
+        +--> PostgreSQL record/state
+        |
+        +--> optional Notion CRM synchronization
+        |
+        +--> Resend delivery
+        |
+        +--> send log / delivery state
+        |
+        +--> optional open-tracking callback
+```
+
+#### Email automation update backlog
+
+1. Move reminders, onboarding and daily pulse out of the Express process.
+2. Introduce a durable job queue, scheduler and dedicated worker.
+3. Use idempotency keys per recipient, template, campaign and scheduled occurrence.
+4. Add bounded retries, exponential backoff, dead letters and safe replay tooling.
+5. Separate email template rendering, workflow orchestration and provider delivery.
+6. Add a centralized suppression, unsubscribe and consent service.
+7. Ingest and reconcile delivery, bounce, complaint and unsubscribe events.
+8. Add per-domain/provider throttling and rate-limit handling.
+9. Remove customer email addresses and email bodies from ordinary application logs.
+10. Create staging sender domains and an explicit test-recipient allowlist.
+11. Version templates and retain the rendered/template version used for each send.
+12. Add accessibility, plain-text and link validation to template tests.
+13. Record why each message was sent, its lawful/consent basis and retention period.
+14. Add campaign approval and preview gates before bulk sends.
+15. Add an operational dashboard for queued, sent, failed, suppressed and retried messages.
+
+### 15.3 Hosting, runtime and deployment
+
+| Tool or component | Status | Purpose |
+|---|---|---|
+| Replit workspace | Current | Interactive development and connected-service environment |
+| Replit deployment | Current/documented | Runs the production-style Node server |
+| Replit connector broker | Current | Supplies provider credentials to an authenticated Replit runtime |
+| Node.js | Current | Server, scheduler and build runtime |
+| Express | Current | HTTP API, sessions, webhooks, static application serving and job startup |
+| Vite | Current | React development environment and browser build |
+| esbuild | Current | Production server bundling |
+| TypeScript | Current | Shared typing across browser, API and database |
+| npm/package lock | Current | Dependency installation and version resolution |
+| GitHub | Current | Public repository, collaboration surface and continuity layer |
+| Custom GitHub push utility | Current; retire | Creates blobs/tree/commit from Replit workspace and force-updates `main` |
+| GreenElephant domains | Current/documented | Customer entry points and OAuth/webhook callback origins |
+| Static files in Express | Current | Serves the built SPA from `dist/public` |
+
+#### Deployment capabilities not established in the repository
+
+- a dedicated staging deployment;
+- pull-request preview environments;
+- GitHub Actions or equivalent CI/CD;
+- automated database migration gates;
+- a dedicated background worker;
+- infrastructure-as-code;
+- formal blue/green or canary deployment;
+- automated rollback;
+- dependency and secret security gates;
+- environment promotion records.
+
+### 15.4 Browser application and UI
+
+| Tool or component | Purpose |
+|---|---|
+| React 18 | Public website, portal and admin rendering |
+| Wouter | Browser-side route matching and redirects |
+| TanStack Query | API requests, caching and mutations |
+| React Hook Form | Form state and submission handling |
+| Zod | Form/API validation and shared schemas |
+| Tailwind CSS | Styling, responsive layouts and design tokens |
+| Radix UI | Accessible interaction primitives |
+| shadcn-style UI components | Shared application component set |
+| Framer Motion | Scroll, entrance and interface animation |
+| Recharts | Portal and admin charts |
+| Lucide React / React Icons | Interface iconography |
+| Google Fonts | Poppins headings and Lato body text |
+| QRCode | QR image generation |
+| Stripe browser SDK | Secure payment collection |
+| Client SEO component | Route-specific browser metadata and structured data |
+| `llms.txt`, `ai.txt`, robots and sitemap | Search and agent-discovery metadata |
+
+The browser build currently includes route registrations for public, portal and admin surfaces. Route-level lazy loading reduces initial downloads, but it does not create a security boundary. All authorization must remain enforced by the API.
+
+### 15.5 Identity, access and security components
+
+| Component | Purpose | Current concern |
+|---|---|---|
+| `express-session` | Browser session management | Needs rotation and CSRF review |
+| `connect-pg-simple` | PostgreSQL session persistence | Shares primary database/pool |
+| scrypt password hashing | Protects database-stored passwords | Legacy environment password remains |
+| Admin roles | `super_admin`, `admin`, `viewer` | Requires route-by-route verification |
+| Admin middleware | Authentication, role and write checks | Large route file makes coverage hard to review |
+| Portal session identity | Restricts portal information | Needs comprehensive cross-user tests |
+| Google OAuth | User/admin sign-in | Scope/project/callback inventory required |
+| LinkedIn OAuth/OIDC | User identity and connection | Token encryption required |
+| Audit middleware | Records privileged operations | Redaction is exact-field based and incomplete |
+| Connector kill switches | Disables configured integrations | Credentials may still remain valid externally |
+| PostgreSQL audit logs | Stores admin action history | Immutability and retention need definition |
+
+#### Security infrastructure to add
+
+- centralized security headers;
+- global and endpoint-specific rate limits;
+- explicit CSRF control;
+- encrypted OAuth credential vault;
+- named admin identity with MFA;
+- automated secret scanning and historical scan;
+- dependency and container/runtime scanning;
+- structured PII-safe logs;
+- application error monitoring;
+- webhook signature and replay protection;
+- route authorization tests;
+- security event alerts;
+- edge/WAF protection where appropriate.
+
+### 15.6 Google tools
+
+Track each Google relationship independently.
+
+| Tool | Purpose | Connection |
+|---|---|---|
+| Google Analytics browser tag | Collects website events | Public measurement ID |
+| GA4 Data API | Provides aggregate analytics to admin tooling | Service-account key |
+| Google OAuth | Authenticates users/admins | Direct OAuth client credentials |
+| Google Sheets API | Reads scan/source data and writes research exports | Replit-connected user |
+| Gmail API | Reads selected research threads and message metadata | Replit-connected mailbox |
+| Google Slides | Source/template for Satellite Scan dashboard design | Documented resource; runtime usage not established |
+| Google Fonts | Delivers Poppins and Lato | Public browser resource |
+
+Project-management records should capture the Google Cloud project, OAuth client, service account, account owner, scopes, callback URLs, environments and data accessed for each row.
+
+### 15.7 Notion tools
+
+| Tool | Purpose | Connection |
+|---|---|---|
+| Notion CRM integration | Contact upsert, customer status, channels, campaigns and research synchronization | Replit connector |
+| Notion SDK client | Authenticated API wrapper for operational CRM | Replit-brokered token |
+| Notion sync service | Matching, pulling, pushing and reconciliation logic | Application service |
+| Portal-user Notion OAuth | Allows a client to connect their own workspace | Direct OAuth |
+| Portal Notion export | Pushes selected scan/user information to the client's workspace | Per-user token |
+
+Treat the operational CRM as `notion-crm` and the client connection as `notion-user-export`. They require separate owners, scopes, privacy notices and deletion behavior.
+
+### 15.8 Payments, booking, forms and marketing
+
+| Tool | Purpose | Data handled |
+|---|---|---|
+| Stripe | Payment Intents, subscriptions, purchase confirmation, coupon usage and webhooks | Customer identity, product, amount and payment state |
+| Calendly | Reads profile, event types and scheduled events; supplies booking destinations | Coach and attendee scheduling metadata |
+| Typeform | Hosts Satellite Scan collection and notifies the server of completion | Assessment responses and contact information |
+| Resend | Transactional and campaign delivery | Recipient identity and message content |
+| Fathom | Privacy-oriented site and visitor analytics | Site/visitor aggregate information |
+| GA4 | Traffic/acquisition/behavior analytics | Browser and aggregate analytics |
+| QR tracking | Redirects campaign codes and records scans | Time, user agent, referrer and IP-derived metadata |
+| ip-api.com | Converts an IP address into approximate location and ISP | Visitor IP and geolocation response |
+| YouTube | Hosts linked/embedded educational content | Browser viewing activity outside core server |
+| LinkedIn | Login/profile integration and content/research workflows | Identity, profile and OAuth credentials |
+
+### 15.9 Coaching and portal integrations
+
+| Tool | Purpose | Sensitivity |
+|---|---|---|
+| Google Sheets | Supplies Satellite Scan source data | Coaching/assessment data |
+| PostgreSQL/Neon | Stores portal identity, context, timeline and results | High |
+| Notion user export | Sends selected user information to a connected workspace | High |
+| Spotify | Reads identity, recently played tracks and audio characteristics | Behavioral |
+| Oura | Reads readiness, sleep and activity information | Biometric-adjacent/high |
+| Recharts | Displays assessment and coaching visualizations | Derived client data |
+| Thesys AI | Generates coaching-related content/interfaces | Depends on supplied context |
+| Portal data export | Produces an email-based user export | High |
+
+Spotify and Oura require connector-specific consent, purpose limitation, retention, deletion and inference policies.
+
+### 15.10 AI, ChatGPT, agent and MCP components
+
+| Component | Status | Purpose |
+|---|---|---|
+| OpenAI JavaScript SDK | Current dependency | Compatible client used by the AI integration layer |
+| Thesys API | Current | AI-generated dashboards, content and analysis through an OpenAI-compatible interface |
+| Custom GPT links | Current external experience | Opens GreenElephant experiences hosted by ChatGPT |
+| Admin AI tooling | Current | Content, prompt, poll, social, research and journey generation |
+| AI context preferences | Current | Controls contextual inputs/preferences used by administrative AI features |
+| `/api/services` | Current | Structured public information for agent service discovery |
+| `llms.txt` and `ai.txt` | Current | Machine-readable public website guidance |
+| `.agents/skills/` | Current | Repository-local instructions for coding/operations agents |
+| AgentOps documentation | Current | Describes named automated business pipelines |
+| Runtime MCP server | Not found | No MCP transport or tool server currently exists |
+| Runtime MCP client | Not found | No application-side MCP client currently exists |
+
+Definitions for project tracking:
+
+- A Replit connector is a credential broker, not an MCP.
+- An agent skill is an instruction package, not a runtime integration.
+- A custom GPT link is user navigation to ChatGPT, not server-to-server access.
+- The OpenAI SDK does not prove direct OpenAI API usage; the reviewed AI client targets Thesys.
+- Any future MCP work should begin with read-only public discovery, then scoped client tools, then approval-gated internal operations.
+
+### 15.11 Analytics, monitoring and operational controls
+
+| Tool or component | Status | Purpose |
+|---|---|---|
+| Google Analytics 4 | Current | Traffic and behavior analytics |
+| Fathom | Current | Privacy-oriented analytics and current-visitor information |
+| Admin analytics views | Current | Combines operational and external analytics |
+| Audit logs | Current | Records administrative activity |
+| Connector states | Current | Enables/disables individual integrations |
+| Global connector kill switch | Current | Pauses managed outbound integrations |
+| Connector toggle logs | Current | Records state changes |
+| Console logging | Current | Primary runtime diagnostics |
+| Daily pulse | Current | Operational digest |
+| Request/API logging | Current | Logs method, path, status and truncated JSON response |
+
+Operational tooling still required:
+
+- centralized log storage and search;
+- error/exception monitoring;
+- application performance monitoring;
+- uptime and synthetic customer-flow checks;
+- job/queue monitoring;
+- webhook receipt and processing ledger;
+- alert policies and incident routing;
+- database observability;
+- service-level objectives;
+- provider health and credential-expiry monitoring.
+
+### 15.12 Development and repository tooling
+
+| Tool or component | Status | Purpose |
+|---|---|---|
+| GitHub repository | Current | Source storage and collaboration |
+| npm and lock file | Current | Dependency management |
+| TypeScript compiler | Current | Static type checks through `npm run check` |
+| Vite Replit plugins | Current in development | Error overlay, development banner and cartography |
+| Drizzle Kit | Current | Schema deployment |
+| Repository agent skills | Current | AI-assisted implementation guidance |
+| Repository documentation | Current | Architecture, AgentOps, design and future plans |
+| Committed `dist/` | Current; reconsider | Stores generated browser output |
+| Root screenshots/assets | Current; reconsider | Stores visual review artifacts and large images |
+
+Quality tooling to establish:
+
+- unit test framework;
+- API integration tests;
+- browser E2E tests;
+- automated accessibility tests;
+- linting and formatting checks;
+- bundle-size budgets;
+- migration verification;
+- pull-request checks and required reviews;
+- automated dependency updates;
+- license and software-bill-of-materials reporting.
+
+### 15.13 Recommended project-management epics
+
+| Epic | Objective | Typical deliverables |
+|---|---|---|
+| Environment separation | Prevent development from affecting production | Local/preview/staging/production matrix, isolated DBs and provider sandboxes |
+| Database integrity and migrations | Make schema change safe and reviewable | Versioned migrations, constraints, indexes, restore test |
+| Email automation and durable jobs | Make communication workflows observable and retryable | Queue, worker, scheduler, suppression and delivery events |
+| Identity and access hardening | Replace shared access and verify least privilege | Named admins, MFA path, authorization matrix and tests |
+| OAuth credential protection | Protect connected-user accounts | Encrypted vault, rotation, revocation and scope inventory |
+| Integration adapter refactor | Remove provider code from route handlers | One typed adapter per provider and contract tests |
+| Google rationalization | Clarify projects, identities and scopes | Google account/service inventory and environment separation |
+| Notion separation | Separate CRM from user exports | Two adapters, two policies and reconciliation ownership |
+| GitHub source-of-truth migration | Establish safe collaboration and delivery | Protected `main`, PR workflow and removal of force-push |
+| Observability and incident response | Detect and diagnose failures safely | Logs, errors, alerts, runbooks and SLOs |
+| Application-surface separation | Reduce public/portal/admin blast radius | Separate route registries/builds and trust boundaries |
+| Testing and CI/CD | Prevent regressions and unsafe promotion | CI checks, E2E tests, preview/staging and deployment gates |
+| Privacy and lifecycle management | Make retention/consent/deletion enforceable | Data inventory, DPIA items, deletion workflows and evidence |
+| AI provider governance | Control what models receive and why | Provider gateway, model policy, PII minimization and audit |
+| Agent API and MCP strategy | Expose safe, scoped machine operations | Public read-only tools, client-scoped tools and approval gates |
+| SEO, accessibility and performance | Improve public experience and discoverability | Route audit, SSR/prerender decision, budgets and WCAG checks |
+| Repository cleanup | Reduce size and accidental publication | Remove generated output, reorganize assets and history review |
+
+### 15.14 Suggested fields for each tool record
+
+When transferring this catalog into a project-management or configuration-management tool, use:
+
+- tool/service name;
+- category;
+- business purpose;
+- technical purpose;
+- owner and backup owner;
+- environment;
+- account/workspace/project identity;
+- authentication method;
+- secret location;
+- OAuth scopes or API permissions;
+- data read;
+- data written;
+- personal/sensitive data classification;
+- system of record;
+- upstream dependencies;
+- downstream consumers;
+- callback/webhook URLs;
+- health-check method;
+- rate limits;
+- failure behavior;
+- retry/idempotency behavior;
+- retention/deletion policy;
+- DPA/vendor-review status;
+- monthly cost and renewal owner;
+- current status;
+- desired status;
+- migration/refactor epic;
+- last access review;
+- last recovery test;
+- operational runbook link.
+
