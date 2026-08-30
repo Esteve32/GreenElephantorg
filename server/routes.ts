@@ -26,6 +26,7 @@ import { fromError } from "zod-validation-error";
 import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail, sendWebinarWaitlistConfirmation, sendTypeformScanCompletionEmail, sendVerificationEmail, sendNewsletterConfirmationEmail, sendScanInterestConfirmationEmail, sendScanInterestAdminNotification, sendWaitlistConfirmationEmail, sendContactFormEmails, sendQuizResultsEmail, sendFlowCheckResultEmail, sendFlowCheckAdminNotification, sendCoachingRawDataEmail, sendCoachingDocLinkEmail, sendCoachOnlyEmail, sendPortalDataExportEmail } from "./email-notifications";
 import { getSheetData } from "./lib/googleSheets";
 import { generateDashboardUI } from "./lib/thesysApi";
+import { myfiveRouter } from "./routes/myfive";
 import { 
   syncContactWithNotion, 
   pushAllContactsToNotion, 
@@ -54,6 +55,9 @@ if (STRIPE_KEY) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/admin", auditMiddleware);
+
+  // Mount MyFive Extension API Router
+  app.use("/api/myfive", myfiveRouter);
 
   // Stripe payment route for coaching packages (one-time payments)
   // Server-side price validation to prevent client tampering

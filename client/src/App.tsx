@@ -12,13 +12,20 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { initGA } from "@/lib/analytics";
 import NotFound from "@/pages/not-found";
 
-const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table', '/portal', '/admin/login'];
+const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table', '/portal', '/admin/login', '/myfive'];
 
 function shouldHideGlobalFooter(location: string): boolean {
   return pagesWithCustomFooter.some(path => 
     location === path || location.startsWith(path + '/') || location.startsWith(path + '#') || location.startsWith(path + '?')
   );
 }
+
+// MyFive Extension Lazy Loaded Pages
+const MyFiveLandingPage = lazy(() => import("@/pages/myfive/LandingPage"));
+const MyFiveDashboardPage = lazy(() => import("@/pages/myfive/DashboardPage"));
+const MyFiveCheckInPage = lazy(() => import("@/pages/myfive/CheckInPage"));
+const MyFiveAgreementPage = lazy(() => import("@/pages/myfive/AgreementPage"));
+const MyFiveSettingsPage = lazy(() => import("@/pages/myfive/SettingsPage"));
 
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const SignalsQuizPage = lazy(() => import("@/pages/SignalsQuizPage"));
@@ -120,6 +127,13 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/scan" component={ScanPage} />
         <Route path="/programs" component={ProgramsPage} />
+
+        {/* MyFive Extension Routes */}
+        <Route path="/myfive" component={MyFiveLandingPage} />
+        <Route path="/myfive/dashboard" component={MyFiveDashboardPage} />
+        <Route path="/myfive/check-in" component={MyFiveCheckInPage} />
+        <Route path="/myfive/agreements" component={MyFiveAgreementPage} />
+        <Route path="/myfive/settings" component={MyFiveSettingsPage} />
         <Route path="/what-is-conscious-communication">{() => <Redirect to="/scan" />}</Route>
         <Route path="/signals" component={SignalsQuizPage} />
         <Route path="/choose-your-path">{() => <Redirect to="/scan" />}</Route>

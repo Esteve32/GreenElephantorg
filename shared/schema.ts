@@ -80,6 +80,58 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
 
+// ============================================================================
+// MYFIVE EXTENSION SCHEMAS (Brownfield Extension - Drizzle ORM)
+// ============================================================================
+
+// MyFive Connection Slots (Hard Dunbar Cap of 5 Seats + Philautia Vault)
+export const myfiveConnectionSlots = pgTable("myfive_connection_slots", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  slotIndex: integer("slot_index").notNull(), // 0 = Philautia, 1..5 = Partner Seats
+  partnerName: text("partner_name"),
+  relationType: text("relation_type"), // e.g. "Partner", "Friend", "Family"
+  status: text("status").notNull().default("empty"), // "active", "empty", "siloed"
+  isSelfVault: text("is_self_vault").notNull().default("false"), // "true" or "false"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Private Check-Ins Vault (100% blind to partners and admins)
+export const myfiveCheckIns = pgTable("myfive_check_ins", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  slotId: varchar("slot_id").notNull(),
+  flowOctant: text("flow_octant").notNull(), // "flow", "control", "relaxation", etc.
+  privateReflection: text("private_reflection"),
+  isVaultEncrypted: text("is_vault_encrypted").notNull().default("true"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Dyadic Relationship Agreements
+export const myfiveAgreements = pgTable("myfive_agreements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slotId: varchar("slot_id").notNull(),
+  creatorUserId: varchar("creator_user_id").notNull(),
+  partnerUserId: varchar("partner_user_id"),
+  agreementText: text("agreement_text").notNull(),
+  valueRulesConsented: text("value_rules_consented").notNull().default("true"),
+  version: integer("version").notNull().default(1),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// MyFive Stripe Sponsorship & Pay Gate Mapping
+export const myfiveSubscriptions = pgTable("myfive_subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique(),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  planStatus: text("plan_status").notNull().default("active"), // "active", "canceled", "sponsored"
+  sponsorUserId: text("sponsor_user_id"), // Null if primary subscriber; Populated if partner seat is sponsored
+  sponsoredSeatsAllocated: integer("sponsored_seats_allocated").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Webinar/Play Labs waitlist entries (Calendar page)
 export const webinarWaitlistEntries = pgTable("webinar_waitlist_entries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
