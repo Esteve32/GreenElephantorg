@@ -73,6 +73,44 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 
 ---
 
+## 🚦 Stage-Gated Implementation Checklist (Done vs. To-Do)
+
+### Stage 0: Repository & Scaffolding (COMPLETED)
+- [x] **0.1** Clone & set up `GreenElephantorg` workspace.
+- [x] **0.2** Establish `docs/PRD.md` (v1.4.0) and `docs/DECISION_LOG.md` (v11.1) in repository.
+- [x] **0.3** Scaffold `/myfive` extension pages in `client/src/pages/myfive/`.
+- [x] **0.4** Mount Express API router `/api/myfive` in `server/routes/myfive.ts`.
+- [x] **0.5** Add MyFive Drizzle schema tables in `shared/schema.ts`.
+- [x] **0.6** Replit server verification & Hello World route test.
+
+### Stage 1: Organic Holography Design System & Tokens (NEXT UP)
+- [ ] **1.1** Implement dark obsidian (`#0B0F19`) theme & glassmorphic HUD CSS variables (`backdrop-blur-md`, bioluminescent edge glows).
+- [ ] **1.2** Codify 8-Lens GBR synesthetic color tokens (Agape Crimson `#D6133A` through Philautia Deep Indigo `#3A175B`).
+- [ ] **1.3** Create overlapping fluid Venn aura-sphere components for partner connection matches.
+
+### Stage 2: Core Intimacy Features & Consent Gates
+- [ ] **2.1** Connect Csikszentmihalyi’s 8-Octant flow check-in interface to encrypted local vault storage.
+- [ ] **2.2** Implement unskippable 9 ValueRules™ Consent Gate overlay for dyadic shared views.
+- [ ] **2.3** Build living relationship agreement editor with versioning and timestamping.
+- [ ] **2.4** Hard-cap active partner connection seats to 5 (+1 Philautia self-vault).
+
+### Stage 3: Stripe Pay Gates & Sponsorship
+- [ ] **3.1** Integrate Stripe Checkout for €4.99/month primary subscription.
+- [ ] **3.2** Implement 5-seat partner invitation & free sponsorship mapping flow (`myfiveSubscriptions`).
+- [ ] **3.3** Add B2B EAP voucher redemption interface (with strict employee privacy isolation).
+
+### Stage 4: Data Sovereignty & GDPR Compliance
+- [ ] **4.1** Implement GDPR Article 17 hard cascade account wipe API & button.
+- [ ] **4.2** Implement GDPR Article 20 JSON/Markdown data export engine with privacy headers.
+- [ ] **4.3** Audit check-in queries to ensure 100% blind vault isolation from partner views & admins.
+
+### Stage 5: Production Polish & Deployment Verification
+- [ ] **5.1** WCAG AA contrast & accessibility audit on organic HUD.
+- [ ] **5.2** Performance check (latency under 50ms for HUD interactions).
+- [ ] **5.3** Final Replit production deployment and DNS verification.
+
+---
+
 ## ✅ Build-Start Checklist
 
 *   [x] Stripe pay gates integrated into existing `GreenElephantorg` checkout pipeline.
