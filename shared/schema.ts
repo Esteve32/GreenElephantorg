@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -118,6 +118,23 @@ export const myfiveAgreements = pgTable("myfive_agreements", {
   version: integer("version").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  versionIdentity: uniqueIndex("myfive_agreement_slot_creator_version_idx").on(
+    table.slotId,
+    table.creatorUserId,
+    table.version,
+  ),
+}));
+
+// Immutable authorization events. Rows are inserted, never updated in place.
+export const myfiveConsentLedger = pgTable("myfive_consent_ledger", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  actorUserId: varchar("actor_user_id").notNull(),
+  slotId: varchar("slot_id").notNull(),
+  consentType: text("consent_type").notNull(),
+  rulesVersion: text("rules_version").notNull(),
+  acceptedRuleIds: text("accepted_rule_ids").array().notNull(),
+  acceptedAt: timestamp("accepted_at").defaultNow().notNull(),
 });
 
 // MyFive Stripe Sponsorship & Pay Gate Mapping
