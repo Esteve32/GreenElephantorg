@@ -1,37 +1,159 @@
-# GreenElephantorg
+# GreenElephant.org — Platform & MyFive Extension Repository
 
-This repository is the main website codebase for **Green Elephant Oy**.
+Welcome to the primary repository for **Green Elephant Oy** (`greenelephant.org`) and the **MyFive** relational compass extension (`myfive.greenelephant.org`).
 
-It serves two roles:
+This repository is built as a production-grade full-stack web application (`React` + `Vite` + `Express` + `Neon PostgreSQL` + `Drizzle ORM` + `Stripe`), serving both the main organizational website and the modular **MyFive** relationship ecosystem.
 
-1. **Organization backup and continuity layer**  
-   A stable home for key website assets, structure, and implementation patterns connected to Green Elephant’s public-facing presence.
+---
 
-2. **Experimental UX/UI playground**  
-   A space to prototype and test **AI-native interaction patterns** for working with data in the **GreenElephant coaching portal**.
+## 🏛️ System Architecture Overview
 
-## Why this repo exists
+```mermaid
+graph TD
+    subgraph Client ["Client Tier (React 18 + Vite + Wouter)"]
+        Site["Main Website Routes<br/>(/, /scan, /coaching, etc.)"]
+        MyFive["MyFive Extension HUD<br/>(/myfive/*)"]
+    end
 
-Beyond maintaining the Green Elephant website, this repo is used to explore and demonstrate next-generation interface ideas, especially where AI can improve:
+    subgraph Server ["Server Tier (Express.js + Node.js)"]
+        MainAPI["Main Platform Router<br/>(/api/*)"]
+        MyFiveAPI["MyFive Extension Router<br/>(/api/myfive/*)"]
+        AuthMiddleware["Admin & OAuth Middleware"]
+    end
 
-- data navigation and sensemaking  
-- adaptive user flows  
-- conversational and agent-assisted interactions  
-- human-centered decision support in coaching contexts  
+    subgraph Storage ["Data Tier (Neon Serverless PostgreSQL)"]
+        Drizzle["Drizzle ORM Models (shared/schema.ts)"]
+        PlatformTables[("Platform Tables<br/>contacts, users, purchases")]
+        MyFiveTables[("MyFive Tables<br/>slots, check_ins, agreements")]
+    end
 
-## Shared context with Arbora
+    subgraph Services ["External Integrations"]
+        Stripe["Stripe Checkout & Pay Gates"]
+        Resend["Resend Transactional Email"]
+        Notion["Notion CRM Sync"]
+    end
 
-Parts of this repository are shared with selected **Arborians** to showcase practical UX/UI directions developed inside Green Elephant.  
-The goal is to identify concepts and components that can be adapted and translated into the **Arbora OS** experience.
+    Site --> MainAPI
+    MyFive --> MyFiveAPI
+    MainAPI --> AuthMiddleware
+    MyFiveAPI --> AuthMiddleware
+    AuthMiddleware --> Drizzle
+    Drizzle --> PlatformTables
+    Drizzle --> MyFiveTables
+    MainAPI --> Services
+    MyFiveAPI --> Services
+```
 
-## Working principles
+---
 
-- **Prototype with purpose**: Experiments should inform real product direction.
-- **Design for translation**: Patterns should be reusable across GreenElephant and Arbora contexts.
-- **Keep user value central**: Every interaction should reduce friction and increase clarity.
-- **Document learnings**: Successful (and failed) experiments should leave reusable insight.
+## 🧭 MyFive Extension Architecture & Data Boundaries
 
-## Scope note
+**MyFive** operates as a calm, intentional "compass" for up to 5 core relationships, incorporating strict data minimization and GDPR Article 6/17 compliance.
 
-This is not only an archival website repository.  
-It is also a live environment for iterating on AI-native UX/UI ideas with direct relevance to coaching workflows and future cross-platform design systems.
+```mermaid
+flowchart LR
+    subgraph UserHUD ["MyFive HUD (/myfive/dashboard)"]
+        Philautia["Philautia Vault<br/>(Slot 0: Self-Care)"]
+        Seat1["Partner Seat 1"]
+        Seat2["Partner Seat 2"]
+        Seat3["Partner Seat 3"]
+        Seat4["Partner Seat 4"]
+        Seat5["Partner Seat 5"]
+    end
+
+    subgraph Vault ["Confidential Private Vault"]
+        BlindCheckIn["Private Check-Ins<br/>(100% Blind to Partners & Admins)"]
+        Octants["Csikszentmihalyi 8-Octant Flow"]
+    end
+
+    subgraph DyadicSpace ["Dyadic Shared Space"]
+        ConsentGate{"9 ValueRules™<br/>Consent Gate"}
+        SharedAgreements["Living Dyadic Agreements<br/>(Versioned & Timestamped)"]
+    end
+
+    subgraph PayGate ["Stripe Pay Gate"]
+        B2CPlan["€4.99/mo Primary Plan<br/>(Includes 5 Sponsored Seats)"]
+    end
+
+    Philautia --> BlindCheckIn
+    UserHUD --> PayGate
+    Seat1 & Seat2 & Seat3 & Seat4 & Seat5 --> ConsentGate
+    ConsentGate -->|Explicit Both-Partner Consent| SharedAgreements
+```
+
+---
+
+## 📂 Repository Directory Structure
+
+```text
+GreenElephantorg/
+├── docs/
+│   ├── PRD.md                       <-- Canonical PRD Master (v1.4.0)
+│   └── DECISION_LOG.md              <-- Approved Decision Log (v11.1) & Stage Checklist
+├── client/
+│   └── src/
+│       ├── components/              <-- Shared UI components (Radix UI, Tailwind)
+│       ├── pages/
+│       │   ├── HomePage.tsx         <-- Existing greenelephant.org pages
+│       │   └── myfive/              <-- MyFive extension views & HUD
+│       │       ├── LandingPage.tsx   <-- Hero banner & value proposition
+│       │       ├── DashboardPage.tsx <-- 5-Dunbar seat HUD & Philautia vault
+│       │       ├── CheckInPage.tsx   <-- Private 8-Octant flow check-in
+│       │       ├── AgreementPage.tsx <-- Unskippable 9 ValueRules™ Consent Gate
+│       │       └── SettingsPage.tsx  <-- Stripe pay gates & GDPR cascade wipe
+│       └── App.tsx                  <-- Wouter client router configuration
+├── server/
+│   ├── index.ts                     <-- Express server entry point
+│   ├── routes.ts                    <-- Main platform Express routes
+│   └── routes/
+│       └── myfive.ts                <-- MyFive API router (/api/myfive/*)
+└── shared/
+    └── schema.ts                    <-- Unified Drizzle ORM PostgreSQL schema
+```
+
+---
+
+## 🚦 Stage-Gated Development Progress
+
+Development follows the stage gates outlined in `docs/DECISION_LOG.md`:
+
+| Stage | Status | Focus Area |
+| :--- | :--- | :--- |
+| **Stage 0** | **COMPLETED** | Repository scaffolding, PRD v1.4.0, MyFive routes, Express router, Drizzle schemas. |
+| **Stage 1** | **IN PROGRESS** | Organic Holography design system, glassmorphism, 8-Lens GBR synesthetic tokens. |
+| **Stage 2** | **IN PROGRESS** | Private flow check-ins, 9 ValueRules™ Consent Gate, dyadic living agreements. |
+| **Stage 3** | **PLANNED** | Stripe €4.99/mo checkout, 5-seat partner sponsorship flow, B2B EAP vouchers. |
+| **Stage 4** | **PLANNED** | GDPR Article 17 hard cascade wipe, Article 20 JSON/Markdown data exports. |
+| **Stage 5** | **PLANNED** | WCAG AA contrast audit, Replit production deployment & custom DNS. |
+
+---
+
+## 🛠️ Developer Quickstart
+
+### 1. Prerequisites & Environment Setup
+Ensure Node.js (v18+) is installed. Create a `.env` file in the root directory (or configure Secrets in Replit):
+```bash
+SESSION_SECRET="your-secure-session-secret"
+DATABASE_URL="postgres://user:password@endpoint.neon.tech/neondb?sslmode=require"
+STRIPE_SECRET_KEY="sk_test_..." # Optional for local test mode
+```
+
+### 2. Install Dependencies & Run Development Server
+```bash
+npm install
+npm run dev
+```
+The server will start on port `5000` (or Replit's assigned port).
+
+### 3. Verify Key Endpoint Routes
+* **Main Website**: `http://localhost:5000/`
+* **MyFive HUD Landing**: `http://localhost:5000/myfive`
+* **MyFive API Health Check**: `http://localhost:5000/api/myfive/health`
+
+---
+
+## 📄 Canonical Governance & Single Source of Truth
+
+For detailed feature specifications, clinical models, and human-approved governance decisions:
+* **Product Requirements**: Read [`docs/PRD.md`](docs/PRD.md)
+* **Decision Authority**: Read [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
