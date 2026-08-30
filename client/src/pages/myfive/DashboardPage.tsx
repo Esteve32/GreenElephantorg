@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "wouter";
 import { Compass, Users, UserCheck, Plus, Sparkles, Heart, FileText, Settings, Lock } from "lucide-react";
-import { AuraSphereMatch } from "@/components/myfive/AuraSphereMatch";
-import type { LensType } from "@/constants/lenses";
+import { GreekLoveFlowProfile } from "@/components/myfive/GreekLoveFlowProfile";
 
 interface ConnectionSlot {
   id: number;
@@ -11,15 +10,13 @@ interface ConnectionSlot {
   status: "active" | "empty" | "siloed";
   lastCheckIn?: string;
   isSelf?: boolean;
-  primaryLens?: LensType;
-  secondaryLens?: LensType;
 }
 
 export default function DashboardPage() {
   const [slots] = useState<ConnectionSlot[]>([
     { id: 0, name: "Self (Philautia)", relation: "Self-Reflection Slot", status: "active", lastCheckIn: "2 hours ago", isSelf: true },
-    { id: 1, name: "Alex", relation: "Partner", status: "active", lastCheckIn: "Yesterday", primaryLens: "influence", secondaryLens: "alignment" },
-    { id: 2, name: "Robin", relation: "Close Friend", status: "active", lastCheckIn: "3 days ago", primaryLens: "ego", secondaryLens: "needs" },
+    { id: 1, name: "Alex", relation: "Partner", status: "active", lastCheckIn: "Yesterday" },
+    { id: 2, name: "Robin", relation: "Close Friend", status: "active", lastCheckIn: "3 days ago" },
     { id: 3, name: "Empty Slot", relation: "Available Seat", status: "empty" },
     { id: 4, name: "Empty Slot", relation: "Available Seat", status: "empty" },
     { id: 5, name: "Empty Slot", relation: "Available Seat", status: "empty" },
@@ -127,14 +124,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {!slot.isSelf && slot.primaryLens && slot.secondaryLens && (
-                  <AuraSphereMatch
-                    connectionName={slot.name}
-                    primaryLens={slot.primaryLens}
-                    secondaryLens={slot.secondaryLens}
-                  />
-                )}
-
                 {slot.status === "active" ? (
                   <div className="space-y-2 text-xs text-slate-400 border-t border-slate-800/80 pt-3">
                     <div className="flex justify-between">
@@ -150,6 +139,14 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-500 italic py-2">
                     An open seat ready for a conscious relationship.
                   </p>
+                )}
+
+                {slot.status === "active" && (
+                  <GreekLoveFlowProfile
+                    slotId={slot.id}
+                    connectionName={slot.name}
+                    isSelf={slot.isSelf}
+                  />
                 )}
               </div>
 

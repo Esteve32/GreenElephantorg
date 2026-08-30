@@ -63,6 +63,16 @@ MyFive is built directly inside the `GreenElephantorg` repository:
 - **Anti-Metric Philosophy:** Success is measured in autonomous relationships created and graduation. Time spent in-app is minimized.
 - **Hard Dunbar Cap:** One account supports a maximum of five active connection seats with other people, plus a dedicated self-reflection slot (*Philautia*).
 
+### 2.1 Eight-Dimensional Greek-Love Flow Profiles
+
+- Every partner connection and the self-reflection connection supports all eight Greek-love dimensions: Agape, Mania, Eros, Ludus, Pragma, Storge, Philia, and Philautia. Love types are non-exclusive; a connection may express several simultaneously.
+- Each love dimension is calibrated through the eight-channel Flow model rather than a numeric intensity score. The current state is one of Arousal, Flow, Control, Relaxation, Boredom, Apathy, Worry, or Anxiety, derived from the relationship between perceived challenge/need and perceived skill/capacity.
+- `Not assessed` is a distinct state and must never be interpreted as Apathy or absence of love.
+- The primary visualization is a square skill–challenge field divided radially from its centre into eight triangular octants. Generic checkbox grids and isolated score cards are not the canonical profile interface.
+- Flow-proximity values may be used internally for ordering or visual emphasis, but must not be presented as a moral ranking of relationship quality.
+- Calibrations are private to the assessing user and stored as append-only, timestamped snapshots. A partner's independent calibration is never inferred or overwritten.
+- The fixed GBR lens-to-love token mapping remains a synesthetic storytelling and colour system; it does not restrict which love types can be present in a connection.
+
 ---
 
 ### 3. Value Proposition & Stripe Pay Gates Integration
@@ -139,7 +149,9 @@ GreenElephantorg/
 | **UX-001** | Dark Mode Organic Morphism HUD | M1 | Must | **Active** |
 | **UX-002** | Hard 5-Connection Dunbar Cap | M1 | Must | **Active** |
 | **UX-007** | Unskippable 9 ValueRules™ Consent Gate | M1 | Must | **Active** |
+| **UX-014** | Eight-Dimensional Greek-Love Flow Profile | M1 | Must | **Active** |
 | **UX-013** | Stripe Pay Gates & €4.99/mo Checkout | M1 | Must | **Active (v11.1)** |
 | **DAT-001** | Private Check-ins / Agreements Schema Separation | M2 | Must | **Active** |
 | **DAT-004** | Sponsorship Mapping Database Model | M2 | Must | **Active** |
+| **DAT-005** | Append-Only Private Love-Profile Snapshots | M2 | Must | **Active** |
 | **ADM-004** | SPF/DKIM/DMARC Resend Email Operations | M3 | Must | **Active** |

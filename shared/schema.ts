@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp, integer, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -136,6 +136,21 @@ export const myfiveConsentLedger = pgTable("myfive_consent_ledger", {
   acceptedRuleIds: text("accepted_rule_ids").array().notNull(),
   acceptedAt: timestamp("accepted_at").defaultNow().notNull(),
 });
+
+// Private, append-only snapshots of all eight Greek-love Flow calibrations.
+export const myfiveLoveProfileSnapshots = pgTable("myfive_love_profile_snapshots", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  actorUserId: varchar("actor_user_id").notNull(),
+  slotId: varchar("slot_id").notNull(),
+  profile: jsonb("profile").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  actorSlotCreated: index("myfive_love_profile_actor_slot_created_idx").on(
+    table.actorUserId,
+    table.slotId,
+    table.createdAt.desc(),
+  ),
+}));
 
 // MyFive Stripe Sponsorship & Pay Gate Mapping
 export const myfiveSubscriptions = pgTable("myfive_subscriptions", {

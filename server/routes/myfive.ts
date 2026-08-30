@@ -2,7 +2,8 @@ import { Router, Request, Response } from "express";
 import { randomUUID } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "../db";
-import { myfiveAgreements, myfiveConsentLedger } from "../../shared/schema";
+import { myfiveAgreements, myfiveConsentLedger, myfiveLoveProfileSnapshots } from "../../shared/schema";
+import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlowProfile";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 
 export const myfiveRouter = Router();
@@ -173,6 +174,57 @@ myfiveRouter.post("/agreements", async (req: Request, res: Response) => {
     }
     console.error("MyFive agreement persistence failed", error);
     res.status(500).json({ error: "Agreement could not be saved" });
+  }
+});
+
+// Read only the current actor's latest private eight-dimensional profile.
+myfiveRouter.get("/love-profiles/:slotId", async (req: Request, res: Response) => {
+  const slotId = readSlotId(req.params.slotId);
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+
+  try {
+    const [latest] = await db.select().from(myfiveLoveProfileSnapshots).where(and(
+      eq(myfiveLoveProfileSnapshots.actorUserId, getMyFiveActorId(req)),
+      eq(myfiveLoveProfileSnapshots.slotId, slotId),
+    )).orderBy(desc(myfiveLoveProfileSnapshots.createdAt)).limit(1);
+
+    res.json(latest ? {
+      id: latest.id,
+      profile: latest.profile,
+      calibratedAt: latest.createdAt.toISOString(),
+    } : {
+      profile: EMPTY_LOVE_FLOW_PROFILE,
+      calibratedAt: null,
+    });
+  } catch (error) {
+    console.error("MyFive love profile read failed", error);
+    res.status(500).json({ error: "Love profile could not be loaded" });
+  }
+});
+
+// Append a complete snapshot. Existing calibrations are never mutated.
+myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
+  const slotId = readSlotId(req.body?.slotId);
+  const profile = req.body?.profile;
+  if (!slotId || !isLoveFlowProfile(profile)) {
+    return res.status(400).json({ error: "A valid slot and all eight love dimensions are required" });
+  }
+
+  try {
+    const [snapshot] = await db.insert(myfiveLoveProfileSnapshots).values({
+      actorUserId: getMyFiveActorId(req),
+      slotId,
+      profile,
+    }).returning();
+
+    res.status(201).json({
+      id: snapshot.id,
+      profile: snapshot.profile,
+      calibratedAt: snapshot.createdAt.toISOString(),
+    });
+  } catch (error) {
+    console.error("MyFive love profile persistence failed", error);
+    res.status(500).json({ error: "Love profile could not be saved" });
   }
 });
 
