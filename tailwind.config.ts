@@ -90,6 +90,16 @@ export default {
         needs: "hsl(var(--needs) / <alpha-value>)",
         ego: "hsl(var(--ego) / <alpha-value>)",
         dynamics: "hsl(var(--dynamics) / <alpha-value>)",
+        "myfive-lens": {
+          influence: "var(--myfive-lens-influence)",
+          attitude: "var(--myfive-lens-attitude)",
+          chaordic: "var(--myfive-lens-chaordic)",
+          flow: "var(--myfive-lens-flow)",
+          alignment: "var(--myfive-lens-alignment)",
+          needs: "var(--myfive-lens-needs)",
+          ego: "var(--myfive-lens-ego)",
+          dynamics: "var(--myfive-lens-dynamics)",
+        },
       },
       fontSize: {
         xs: ["0.8125rem", { lineHeight: "1.25rem" }],
