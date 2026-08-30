@@ -57,6 +57,9 @@ export function GreekLoveFlowProfile({ slotId, connectionName, isSelf = false }:
   const [error, setError] = useState<string | null>(null);
   const selectedPresentation = useMemo(() => lovePresentation(selectedLove), [selectedLove]);
   const selectedState = profile[selectedLove];
+  const profileTitle = isSelf
+    ? "Your Self-Connection Profile"
+    : `Your Connection Profile with ${connectionName}`;
 
   useEffect(() => {
     let active = true;
@@ -100,14 +103,19 @@ export function GreekLoveFlowProfile({ slotId, connectionName, isSelf = false }:
   };
 
   return (
-    <section className="mt-4 border-t border-slate-700/60 pt-4" aria-labelledby={`love-profile-${normalizedSlotId}`}>
+    <section
+      className="relative mt-4 overflow-hidden rounded-[2rem_1.25rem_2.5rem_1.5rem] border border-cyan-400/10 bg-gradient-to-br from-cyan-400/[0.07] via-slate-950/35 to-indigo-400/[0.08] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+      aria-labelledby={`love-profile-${normalizedSlotId}`}
+    >
+      <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-cyan-300/10 blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-indigo-400/10 blur-3xl" aria-hidden="true" />
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <h4 id={`love-profile-${normalizedSlotId}`} className="flex items-center gap-1.5 text-sm font-semibold text-white">
-            <Sparkles className="h-3.5 w-3.5 text-cyan-300" /> Greek-Love Flow Profile
+            <Sparkles className="h-3.5 w-3.5 text-cyan-300" /> {profileTitle}
           </h4>
           <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
-            Your private calibration of need/challenge and capacity/skill with {connectionName}.
+            Explore eight forms of love through your private need/challenge and capacity/skill compass.
           </p>
         </div>
         <span className="shrink-0 text-[10px] text-slate-500">

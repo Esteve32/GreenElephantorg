@@ -69,6 +69,8 @@ MyFive is built directly inside the `GreenElephantorg` repository:
 - Each love dimension is calibrated through the eight-channel Flow model rather than a numeric intensity score. The current state is one of Arousal, Flow, Control, Relaxation, Boredom, Apathy, Worry, or Anxiety, derived from the relationship between perceived challenge/need and perceived skill/capacity.
 - `Not assessed` is a distinct state and must never be interpreted as Apathy or absence of love.
 - The primary visualization is a square skill–challenge field divided radially from its centre into eight triangular octants. Generic checkbox grids and isolated score cards are not the canonical profile interface.
+- The canonical user-facing name is **Connection Profile**: “Your Connection Profile with [person]” for a partner seat and “Your Self-Connection Profile” for the private self seat. “Greek-love Flow profile” is an internal methodology label, not the interface title.
+- The octant field may remain geometrically square, but its surrounding interface should use the Organic Holography system's fluid contours, atmospheric gradients, and connected spatial composition rather than a grid of rigid nested boxes.
 - Flow-proximity values may be used internally for ordering or visual emphasis, but must not be presented as a moral ranking of relationship quality.
 - Calibrations are private to the assessing user and stored as append-only, timestamped snapshots. A partner's independent calibration is never inferred or overwritten.
 - The fixed GBR lens-to-love token mapping remains a synesthetic storytelling and colour system; it does not restrict which love types can be present in a connection.
