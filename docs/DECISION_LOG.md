@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.1 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.1.2 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.1 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log]. 
 
@@ -9,9 +9,24 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
+*   **Document Version:** `11.1.2`
+*   **Last Updated:** `2026-08-31T01:36:03+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "React_Vite_Express_NeonPG_Drizzle_Stripe_ReplitVM"` [Approved Product Decision Log].
+
+### Canonical Versioning & Audit Protocol
+
+1. Human approval remains mandatory for product decisions. Automation may record an approved change, but must never infer approval or create scope.
+2. Every approved decision or implementation-status change must update the document version, the timezone-qualified ISO 8601 timestamp, and the append-only ledger below in the same commit.
+3. Use `npm run decision:record -- --summary "Approved change" --approved-by "Name"`. The command increments the patch revision and records the local timestamp automatically. Use `--level minor` for an approved scope delta and `--level major` for a new decision-log baseline.
+4. Git history is the immutable record of the exact content change; this ledger is its human-readable audit index. Never rewrite or delete ledger rows. Corrections require a new row.
+
+| Version | Recorded at | Approved by | Change summary |
+| :--- | :--- | :--- | :--- |
+<!-- DECISION_LEDGER_ROWS -->
+| 11.1.2 | 2026-08-31T01:36:03+03:00 | Estève | Approved canonical version and timestamp automation, Stage 1.1 completion, and progression to Stage 1.2 |
+| 11.1.1 | 2026-08-31T01:34:00+03:00 | Estève | Established canonical automated version/timestamp logging and recorded Stage 1.1 implementation status. |
 
 ---
 
@@ -84,7 +99,7 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 - [x] **0.6** Replit server verification & Hello World route test.
 
 ### Stage 1: Organic Holography Design System & Tokens (NEXT UP)
-- [ ] **1.1** Implement dark obsidian (`#0B0F19`) theme & glassmorphic HUD CSS variables (`backdrop-blur-md`, bioluminescent edge glows).
+- [x] **1.1** Implement dark obsidian (`#0B0F19`) theme & glassmorphic HUD CSS variables (`backdrop-blur-md`, bioluminescent edge glows).
 - [ ] **1.2** Codify 8-Lens GBR synesthetic color tokens (Agape Crimson `#D6133A` through Philautia Deep Indigo `#3A175B`).
 - [ ] **1.3** Create overlapping fluid Venn aura-sphere components for partner connection matches.
 

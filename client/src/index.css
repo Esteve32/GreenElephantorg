@@ -2,6 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * MyFive Organic Holography foundation.
+ * Scoped to .myfive-theme so the parent Green Elephant experience keeps its
+ * existing light/dark theme contract.
+ */
+.myfive-theme {
+  --myfive-obsidian: #0b0f19;
+  --myfive-obsidian-rgb: 11, 15, 25;
+  --myfive-hud-surface: rgba(21, 29, 44, 0.62);
+  --myfive-hud-surface-strong: rgba(21, 29, 44, 0.82);
+  --myfive-hud-highlight: rgba(255, 255, 255, 0.07);
+  --myfive-hud-border: rgba(148, 163, 184, 0.18);
+  --myfive-hud-border-hover: rgba(94, 234, 212, 0.42);
+  --myfive-hud-blur: 12px; /* Tailwind backdrop-blur-md equivalent */
+  --myfive-biolume: #5eead4;
+  --myfive-biolume-rgb: 94, 234, 212;
+  --myfive-biolume-soft: rgba(var(--myfive-biolume-rgb), 0.16);
+  --myfive-biolume-glow: 0 0 0 1px rgba(var(--myfive-biolume-rgb), 0.12),
+    0 0 24px rgba(var(--myfive-biolume-rgb), 0.12);
+  --myfive-biolume-glow-active: 0 0 0 1px rgba(var(--myfive-biolume-rgb), 0.24),
+    0 0 34px rgba(var(--myfive-biolume-rgb), 0.2);
+
+  min-height: 100vh;
+  color-scheme: dark;
+  background-color: var(--myfive-obsidian);
+  background-image:
+    radial-gradient(circle at 12% 0%, rgba(var(--myfive-biolume-rgb), 0.07), transparent 34rem),
+    radial-gradient(circle at 88% 24%, rgba(99, 102, 241, 0.06), transparent 30rem);
+}
+
+@layer components {
+  .myfive-glass {
+    background: linear-gradient(135deg, var(--myfive-hud-highlight), transparent 55%),
+      var(--myfive-hud-surface);
+    border-color: var(--myfive-hud-border);
+    box-shadow: var(--myfive-biolume-glow);
+    -webkit-backdrop-filter: blur(var(--myfive-hud-blur));
+    backdrop-filter: blur(var(--myfive-hud-blur));
+  }
+
+  .myfive-glass-strong {
+    background: linear-gradient(135deg, var(--myfive-hud-highlight), transparent 55%),
+      var(--myfive-hud-surface-strong);
+    border-color: var(--myfive-hud-border);
+    box-shadow: var(--myfive-biolume-glow);
+    -webkit-backdrop-filter: blur(var(--myfive-hud-blur));
+    backdrop-filter: blur(var(--myfive-hud-blur));
+  }
+
+  .myfive-biolume-edge {
+    border-color: var(--myfive-hud-border);
+    box-shadow: var(--myfive-biolume-glow);
+    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  }
+
+  .myfive-biolume-edge:hover,
+  .myfive-biolume-edge:focus-within {
+    border-color: var(--myfive-hud-border-hover);
+    box-shadow: var(--myfive-biolume-glow-active);
+  }
+}
+
 @layer base {
   /* All headings use Poppins with proper fallback stack */
   h1, h2, h3, h4, h5, h6 {

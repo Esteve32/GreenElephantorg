@@ -24,9 +24,9 @@ export default function DashboardPage() {
   const activeSeatsCount = slots.filter(s => !s.isSelf && s.status === "active").length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
       {/* HUD Header */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+      <header className="myfive-glass-strong border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href="/myfive">
@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
       {/* Main HUD Body */}
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
-        <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-950 border border-emerald-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="myfive-glass myfive-biolume-edge mb-8 p-4 rounded-2xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
               <Compass className="w-5 h-5 text-emerald-400" /> Relational Compass
@@ -84,11 +84,11 @@ export default function DashboardPage() {
           {slots.map((slot) => (
             <div
               key={slot.id}
-              className={`p-6 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between ${
+              className={`myfive-biolume-edge p-6 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between ${
                 slot.isSelf
                   ? "bg-gradient-to-b from-indigo-950/40 to-slate-900 border-indigo-500/30 hover:border-indigo-500/50"
                   : slot.status === "active"
-                  ? "bg-slate-900/80 border-slate-800 hover:border-emerald-500/40"
+                  ? "myfive-glass"
                   : "bg-slate-900/20 border-dashed border-slate-800/80 hover:border-slate-700"
               }`}
             >

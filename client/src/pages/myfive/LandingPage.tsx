@@ -4,9 +4,9 @@ import { Compass, ShieldCheck, Users, Sparkles, ArrowRight, HeartHandshake } fro
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
       {/* Hero Header */}
-      <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+      <header className="myfive-glass-strong border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-emerald-400">
@@ -65,7 +65,7 @@ export default function LandingPage() {
         {/* Feature Cards Grid */}
         <section className="py-16 bg-slate-900/40 border-y border-slate-800/80">
           <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-emerald-500/30 transition-all">
+            <div className="myfive-glass myfive-biolume-edge p-6 rounded-2xl border">
               <div className="p-3 bg-emerald-500/10 rounded-xl w-fit text-emerald-400 mb-4">
                 <Users className="w-6 h-6" />
               </div>
@@ -75,7 +75,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-teal-500/30 transition-all">
+            <div className="myfive-glass myfive-biolume-edge p-6 rounded-2xl border">
               <div className="p-3 bg-teal-500/10 rounded-xl w-fit text-teal-400 mb-4">
                 <HeartHandshake className="w-6 h-6" />
               </div>
@@ -85,7 +85,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/30 transition-all">
+            <div className="myfive-glass myfive-biolume-edge p-6 rounded-2xl border">
               <div className="p-3 bg-cyan-500/10 rounded-xl w-fit text-cyan-400 mb-4">
                 <ShieldCheck className="w-6 h-6" />
               </div>

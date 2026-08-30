@@ -8,8 +8,8 @@ export default function SettingsPage() {
   const [dataWiped, setDataWiped] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+    <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
+      <header className="myfive-glass-strong border-b sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href="/myfive/dashboard">
@@ -27,7 +27,7 @@ export default function SettingsPage() {
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 space-y-8">
         {/* Stripe SaaS Pay Gates Section */}
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+        <div className="myfive-glass myfive-biolume-edge p-6 rounded-2xl border space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
@@ -70,7 +70,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Data Vault & Privacy HUD */}
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+        <div className="myfive-glass myfive-biolume-edge p-6 rounded-2xl border space-y-4">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400">
               <Database className="w-5 h-5" />

@@ -22,8 +22,8 @@ export default function AgreementPage() {
   const [isSaved, setIsSubmittedSaved] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+    <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
+      <header className="myfive-glass-strong border-b sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href="/myfive/dashboard">
@@ -42,7 +42,7 @@ export default function AgreementPage() {
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8 space-y-8">
         {/* Unskippable Consent Gate Overlay */}
         {!consented ? (
-          <div className="p-6 sm:p-8 rounded-2xl bg-slate-900 border border-teal-500/30 space-y-6">
+          <div className="myfive-glass myfive-biolume-edge p-6 sm:p-8 rounded-2xl border space-y-6">
             <div className="flex items-center space-x-3 text-teal-400">
               <ShieldCheck className="w-7 h-7" />
               <h2 className="text-xl font-bold text-white">Unskippable 9 ValueRules™ Consent Gate</h2>

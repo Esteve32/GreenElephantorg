@@ -24,8 +24,8 @@ export default function CheckInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+    <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
+      <header className="myfive-glass-strong border-b sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link href="/myfive/dashboard">
@@ -62,10 +62,10 @@ export default function CheckInPage() {
                   type="button"
                   key={octant.id}
                   onClick={() => setSelectedOctant(octant.id)}
-                  className={`p-4 rounded-xl text-left border transition-all flex flex-col justify-between ${
+                  className={`myfive-biolume-edge p-4 rounded-xl text-left border transition-all flex flex-col justify-between ${
                     selectedOctant === octant.id
                       ? "bg-slate-900 border-emerald-500 ring-2 ring-emerald-500/20 shadow-lg"
-                      : "bg-slate-900/40 border-slate-800/80 hover:border-slate-700"
+                      : "myfive-glass"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -101,7 +101,7 @@ export default function CheckInPage() {
             </button>
           </form>
         ) : (
-          <div className="p-8 rounded-2xl bg-slate-900/90 border border-emerald-500/30 text-center space-y-6">
+          <div className="myfive-glass myfive-biolume-edge p-8 rounded-2xl border text-center space-y-6">
             <div className="p-4 bg-emerald-500/10 rounded-full w-fit mx-auto text-emerald-400 border border-emerald-500/20">
               <Sparkles className="w-8 h-8 animate-bounce" />
             </div>
