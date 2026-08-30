@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "wouter";
 import { Compass, Sparkles, Lock, ArrowLeft, Send } from "lucide-react";
+import { savePrivateCheckIn, type FlowOctant } from "@/lib/myfiveVault";
 
 const OCTANTS = [
   { id: "flow", name: "Flow", desc: "High Challenge, High Skill — Clear thinking, deep presence", color: "from-emerald-500 to-teal-500" },
@@ -11,16 +12,33 @@ const OCTANTS = [
   { id: "worry", name: "Worry", desc: "Medium Challenge, Low Skill — Concerned, difficult to settle", color: "from-amber-600 to-orange-600" },
   { id: "anxiety", name: "Anxiety", desc: "High Challenge, Low Skill — Overwhelmed, stressed", color: "from-rose-600 to-red-600" },
   { id: "arousal", name: "Arousal / Excitement", desc: "High Challenge, Medium Skill — Aliveness, eager anticipation", color: "from-purple-500 to-indigo-500" },
-];
+] satisfies ReadonlyArray<{ id: FlowOctant; name: string; desc: string; color: string }>;
 
 export default function CheckInPage() {
-  const [selectedOctant, setSelectedOctant] = useState<string>("flow");
+  const [selectedOctant, setSelectedOctant] = useState<FlowOctant>("flow");
   const [reflectionText, setReflectionText] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      await savePrivateCheckIn({
+        octant: selectedOctant,
+        reflection: reflectionText.trim(),
+      });
+      setReflectionText("");
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Private vault save failed", error);
+      setSaveError("Your check-in was not saved. Keep this page open and try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -95,10 +113,17 @@ export default function CheckInPage() {
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm transition-all shadow-lg flex items-center justify-center gap-2"
+              disabled={isSaving}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:cursor-wait disabled:opacity-60 text-white font-semibold text-sm transition-all shadow-lg flex items-center justify-center gap-2"
             >
-              <Send className="w-4 h-4" /> Complete Private Check-In & Generate Prompts
+              <Send className="w-4 h-4" /> {isSaving ? "Encrypting in Private Vault…" : "Complete Private Check-In & Generate Prompts"}
             </button>
+
+            {saveError && (
+              <p role="alert" className="text-sm text-rose-300 text-center">
+                {saveError}
+              </p>
+            )}
           </form>
         ) : (
           <div className="myfive-glass myfive-biolume-edge p-8 rounded-2xl border text-center space-y-6">

@@ -1,18 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "wouter";
-import { Compass, ShieldCheck, CheckCircle2, ArrowLeft, HeartHandshake } from "lucide-react";
-
-const VALUE_RULES = [
-  "Respect — Honoring boundaries and dignity",
-  "Kindness — Offering warmth in tone and action",
-  "Privacy — Protecting confidential dyadic discussions",
-  "Self-Awareness — Taking responsibility for own reactions",
-  "Curiosity — Asking open questions before making assumptions",
-  "Humility — Willingness to listen and adjust",
-  "Collective Intelligence — Co-creating solutions together",
-  "Social Learning — Growing through shared experience",
-  "Transparency — Expressing needs clearly without hidden agendas",
-];
+import { Compass, CheckCircle2, ArrowLeft } from "lucide-react";
+import { ValueRulesConsentGate } from "@/components/myfive/ValueRulesConsentGate";
+import { apiRequest } from "@/lib/queryClient";
+import { VALUE_RULES_VERSION, type ValueRuleId } from "@shared/valueRules";
 
 export default function AgreementPage() {
   const [consented, setConsented] = useState(false);
@@ -20,6 +11,15 @@ export default function AgreementPage() {
     "Agreement on Quiet Hours & Evening Energy:\n- We agree to keep 21:00 to 08:00 notification-free.\n- We review this living agreement every 30 days."
   );
   const [isSaved, setIsSubmittedSaved] = useState(false);
+
+  const recordConsent = async (acceptedRuleIds: readonly ValueRuleId[]) => {
+    await apiRequest("POST", "/api/myfive/consent", {
+      acceptedRuleIds,
+      rulesVersion: VALUE_RULES_VERSION,
+      consentType: "agreement-sharing",
+    });
+    setConsented(true);
+  };
 
   return (
     <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
@@ -39,40 +39,23 @@ export default function AgreementPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8 space-y-8">
-        {/* Unskippable Consent Gate Overlay */}
-        {!consented ? (
-          <div className="myfive-glass myfive-biolume-edge p-6 sm:p-8 rounded-2xl border space-y-6">
-            <div className="flex items-center space-x-3 text-teal-400">
-              <ShieldCheck className="w-7 h-7" />
-              <h2 className="text-xl font-bold text-white">Unskippable 9 ValueRules™ Consent Gate</h2>
-            </div>
+      {!consented && <ValueRulesConsentGate onAccept={recordConsent} />}
 
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Before viewing or co-creating shared relationship agreements, both partners must explicitly agree to uphold the 9 core ValueRules™:
-            </p>
-
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-              {VALUE_RULES.map((rule, idx) => (
-                <li key={idx} className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-400 shrink-0" />
-                  <span>{rule}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={() => setConsented(true)}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-semibold text-sm transition-all shadow-lg flex items-center justify-center gap-2"
-            >
-              <HeartHandshake className="w-4 h-4" /> I Accept the 9 ValueRules™ & Enter Shared Space
-            </button>
-          </div>
-        ) : (
+      <main
+        aria-hidden={!consented}
+        className={`flex-1 max-w-3xl mx-auto w-full px-4 py-8 space-y-8 ${!consented ? "pointer-events-none select-none blur-sm" : ""}`}
+      >
           <div className="space-y-6">
             <div className="p-4 rounded-xl bg-teal-950/40 border border-teal-500/30 text-teal-300 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-teal-400" />
-              <span>9 ValueRules™ Consent Active for this Dyad.</span>
+              <span>Your 9 ValueRules™ consent is active for this session. Partner consent is recorded separately.</span>
+              <button
+                type="button"
+                onClick={() => setConsented(false)}
+                className="ml-auto shrink-0 text-teal-200 underline underline-offset-2 hover:text-white"
+              >
+                Review / withdraw
+              </button>
             </div>
 
             <div className="space-y-4">
@@ -96,7 +79,6 @@ export default function AgreementPage() {
               </button>
             </div>
           </div>
-        )}
       </main>
     </div>
   );

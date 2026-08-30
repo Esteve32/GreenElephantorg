@@ -1,4 +1,6 @@
 import { Router, Request, Response } from "express";
+import { randomUUID } from "node:crypto";
+import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 
 export const myfiveRouter = Router();
 
@@ -39,11 +41,32 @@ myfiveRouter.post("/check-in", (req: Request, res: Response) => {
   });
 });
 
+// Validate the unskippable consent boundary before a shared view is unlocked.
+myfiveRouter.post("/consent", (req: Request, res: Response) => {
+  const { acceptedRuleIds, rulesVersion, consentType } = req.body ?? {};
+  if (rulesVersion !== VALUE_RULES_VERSION || !includesEveryValueRule(acceptedRuleIds)) {
+    return res.status(400).json({
+      error: "All nine current ValueRules™ must be accepted individually",
+    });
+  }
+  if (consentType !== "agreement-sharing") {
+    return res.status(400).json({ error: "Unsupported consent purpose" });
+  }
+
+  res.status(201).json({
+    success: true,
+    receiptId: randomUUID(),
+    rulesVersion: VALUE_RULES_VERSION,
+    acceptedAt: new Date().toISOString(),
+    note: "Partner consent is a separate required event",
+  });
+});
+
 // Save dyadic agreement
 myfiveRouter.post("/agreements", (req: Request, res: Response) => {
-  const { agreementText, consentGiven } = req.body;
-  if (!consentGiven) {
-    return res.status(400).json({ error: "Unskippable 9 ValueRules™ Consent required" });
+  const { agreementText, acceptedRuleIds, rulesVersion } = req.body ?? {};
+  if (rulesVersion !== VALUE_RULES_VERSION || !includesEveryValueRule(acceptedRuleIds)) {
+    return res.status(400).json({ error: "Unskippable individual consent to all 9 ValueRules™ is required" });
   }
   res.json({
     success: true,
