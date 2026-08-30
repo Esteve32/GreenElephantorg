@@ -46,6 +46,14 @@ function lovePresentation(love: GreekLoveType) {
   return { label: token.loveLabel, color: token.hex };
 }
 
+async function readMyFiveJson<T>(response: Response): Promise<T> {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    throw new Error("The MyFive API returned the app page instead of data. Restart the Replit workflow so the updated server routes are active.");
+  }
+  return response.json() as Promise<T>;
+}
+
 export function GreekLoveFlowProfile({ slotId, connectionName, isSelf = false }: GreekLoveFlowProfileProps) {
   const normalizedSlotId = String(slotId);
   const [selectedLove, setSelectedLove] = useState<GreekLoveType>(isSelf ? "philautia" : "philia");
@@ -66,7 +74,7 @@ export function GreekLoveFlowProfile({ slotId, connectionName, isSelf = false }:
     fetch(`/api/myfive/love-profiles/${encodeURIComponent(normalizedSlotId)}`, { credentials: "include" })
       .then(async (response) => {
         if (!response.ok) throw new Error("This private love profile could not be loaded.");
-        return response.json() as Promise<{ profile: LoveFlowProfile; calibratedAt: string | null }>;
+        return readMyFiveJson<{ profile: LoveFlowProfile; calibratedAt: string | null }>(response);
       })
       .then((result) => {
         if (!active) return;
@@ -92,7 +100,7 @@ export function GreekLoveFlowProfile({ slotId, connectionName, isSelf = false }:
         slotId: normalizedSlotId,
         profile,
       });
-      const result = await response.json() as { calibratedAt: string };
+      const result = await readMyFiveJson<{ calibratedAt: string }>(response);
       setCalibratedAt(result.calibratedAt);
       setDirty(false);
     } catch (saveError) {
