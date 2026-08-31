@@ -120,8 +120,8 @@ Development follows the stage gates outlined in `docs/DECISION_LOG.md`:
 | Stage | Status | Focus Area |
 | :--- | :--- | :--- |
 | **Stage 0** | **COMPLETED** | Repository scaffolding, PRD v1.4.0, MyFive routes, Express router, Drizzle schemas. |
-| **Stage 1** | **IN PROGRESS** | Organic Holography design system, glassmorphism, 8-Lens GBR synesthetic tokens. |
-| **Stage 2** | **IN PROGRESS** | Private flow check-ins, 9 ValueRules™ Consent Gate, dyadic living agreements. |
+| **Stage 1** | **COMPLETED** | Organic Holography design system, glassmorphism, 8-Lens GBR synesthetic tokens. |
+| **Stage 2** | **COMPLETED** | Private flow check-ins, 9 ValueRules™ Consent Gate, versioned dyadic agreements, and the enforced 5+1 connection-seat cap. |
 | **Stage 3** | **PLANNED** | Stripe €4.99/mo checkout, 5-seat partner sponsorship flow, B2B EAP vouchers. |
 | **Stage 4** | **PLANNED** | GDPR Article 17 hard cascade wipe, Article 20 JSON/Markdown data exports. |
 | **Stage 5** | **PLANNED** | WCAG AA contrast audit, Replit production deployment & custom DNS. |

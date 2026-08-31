@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import { randomUUID } from "node:crypto";
-import { and, desc, eq } from "drizzle-orm";
-import { db } from "../db";
-import { myfiveAgreements, myfiveConsentLedger, myfiveLoveProfileSnapshots } from "../../shared/schema";
+import { and, asc, desc, eq } from "drizzle-orm";
+import { db, pool } from "../db";
+import { myfiveAgreements, myfiveConnectionSlots, myfiveConsentLedger, myfiveLoveProfileSnapshots } from "../../shared/schema";
 import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlowProfile";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 
@@ -22,6 +22,25 @@ function readSlotId(value: unknown): string | null {
   return slotId && slotId.length <= 100 ? slotId : null;
 }
 
+async function findOwnedSlot(actorUserId: string, slotId: string, allowSelf = true) {
+  const [slot] = await db.select().from(myfiveConnectionSlots).where(and(
+    eq(myfiveConnectionSlots.id, slotId),
+    eq(myfiveConnectionSlots.userId, actorUserId),
+    eq(myfiveConnectionSlots.status, "active"),
+  )).limit(1);
+  return slot && (allowSelf || slot.isSelfVault !== "true") ? slot : null;
+}
+
+function serializeSlot(slot: typeof myfiveConnectionSlots.$inferSelect) {
+  const isSelf = slot.isSelfVault === "true";
+  return {
+    id: slot.id, slotIndex: slot.slotIndex,
+    name: isSelf ? "Self (Philautia)" : slot.partnerName,
+    relation: isSelf ? "Self-Reflection Slot" : slot.relationType,
+    status: slot.status, isSelf,
+  };
+}
+
 // Health check endpoint
 myfiveRouter.get("/health", (_req: Request, res: Response) => {
   res.json({
@@ -33,19 +52,63 @@ myfiveRouter.get("/health", (_req: Request, res: Response) => {
 });
 
 // Fetch active connection slots (Dunbar limit 5 + 1 Philautia)
-myfiveRouter.get("/slots", (_req: Request, res: Response) => {
-  res.json({
-    maxSeats: 5,
-    selfVaultActive: true,
-    slots: [
-      { id: 0, name: "Self (Philautia)", relation: "Self-Reflection Slot", status: "active", isSelf: true },
-      { id: 1, name: "Alex", relation: "Partner", status: "active", isSelf: false },
-      { id: 2, name: "Robin", relation: "Close Friend", status: "active", isSelf: false },
-      { id: 3, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false },
-      { id: 4, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false },
-      { id: 5, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false },
-    ]
-  });
+myfiveRouter.get("/slots", async (req: Request, res: Response) => {
+  const actorUserId = getMyFiveActorId(req);
+  try {
+    await db.insert(myfiveConnectionSlots).values({
+      userId: actorUserId, slotIndex: 0, status: "active", isSelfVault: "true",
+    }).onConflictDoNothing();
+    const stored = await db.select().from(myfiveConnectionSlots)
+      .where(eq(myfiveConnectionSlots.userId, actorUserId)).orderBy(asc(myfiveConnectionSlots.slotIndex));
+    const byIndex = new Map(stored.map((slot) => [slot.slotIndex, serializeSlot(slot)]));
+    res.json({ maxSeats: 5, selfVaultActive: true, slots: Array.from({ length: 6 }, (_, slotIndex) =>
+      byIndex.get(slotIndex) ?? { id: null, slotIndex, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false },
+    ) });
+  } catch (error) {
+    console.error("MyFive slot read failed", error);
+    res.status(500).json({ error: "Connection seats could not be loaded" });
+  }
+});
+
+myfiveRouter.post("/slots", async (req: Request, res: Response) => {
+  const actorUserId = getMyFiveActorId(req);
+  const partnerName = typeof req.body?.partnerName === "string" ? req.body.partnerName.trim() : "";
+  const relationType = typeof req.body?.relationType === "string" ? req.body.relationType.trim() : "";
+  if (!partnerName || partnerName.length > 100 || !relationType || relationType.length > 100) {
+    return res.status(400).json({ error: "Partner name and relationship type are required (maximum 100 characters each)" });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-slots:${actorUserId}`]);
+    const occupied = await client.query<{ slot_index: number }>(
+      "SELECT slot_index FROM myfive_connection_slots WHERE user_id = $1 AND slot_index BETWEEN 1 AND 5 AND status = 'active' ORDER BY slot_index", [actorUserId],
+    );
+    const used = new Set(occupied.rows.map((row) => row.slot_index));
+    const slotIndex = [1, 2, 3, 4, 5].find((candidate) => !used.has(candidate));
+    if (!slotIndex) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({ error: "All five active partner connection seats are occupied" });
+    }
+    const result = await client.query(
+      `INSERT INTO myfive_connection_slots (user_id, slot_index, partner_name, relation_type, status, is_self_vault)
+       VALUES ($1, $2, $3, $4, 'active', 'false')
+       ON CONFLICT (user_id, slot_index) DO UPDATE SET partner_name = EXCLUDED.partner_name, relation_type = EXCLUDED.relation_type, status = 'active'
+       RETURNING id, user_id, slot_index, partner_name, relation_type, status, is_self_vault, created_at`,
+      [actorUserId, slotIndex, partnerName, relationType],
+    );
+    await client.query("COMMIT");
+    const row = result.rows[0];
+    res.status(201).json({ slot: serializeSlot({ id: row.id, userId: row.user_id, slotIndex: row.slot_index,
+      partnerName: row.partner_name, relationType: row.relation_type, status: row.status,
+      isSelfVault: row.is_self_vault, createdAt: row.created_at }) });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive slot creation failed", error);
+    res.status(500).json({ error: "Connection seat could not be created" });
+  } finally {
+    client.release();
+  }
 });
 
 // Create/store private check-in
@@ -74,8 +137,10 @@ myfiveRouter.post("/consent", async (req: Request, res: Response) => {
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
+    const actorUserId = getMyFiveActorId(req);
+    if (!await findOwnedSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
     const [receipt] = await db.insert(myfiveConsentLedger).values({
-      actorUserId: getMyFiveActorId(req),
+      actorUserId,
       slotId,
       consentType,
       rulesVersion,
@@ -101,9 +166,11 @@ myfiveRouter.get("/agreements/:slotId", async (req: Request, res: Response) => {
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
+    const actorUserId = getMyFiveActorId(req);
+    if (!await findOwnedSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
     const [latest] = await db.select().from(myfiveAgreements).where(and(
       eq(myfiveAgreements.slotId, slotId),
-      eq(myfiveAgreements.creatorUserId, getMyFiveActorId(req)),
+      eq(myfiveAgreements.creatorUserId, actorUserId),
     )).orderBy(desc(myfiveAgreements.version)).limit(1);
 
     res.json(latest ? {
@@ -135,6 +202,7 @@ myfiveRouter.post("/agreements", async (req: Request, res: Response) => {
   }
 
   try {
+    if (!await findOwnedSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
     const [consent] = await db.select({ id: myfiveConsentLedger.id }).from(myfiveConsentLedger).where(and(
       eq(myfiveConsentLedger.id, consentReceiptId),
       eq(myfiveConsentLedger.actorUserId, actorUserId),
@@ -183,8 +251,10 @@ myfiveRouter.get("/love-profiles/:slotId", async (req: Request, res: Response) =
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
+    const actorUserId = getMyFiveActorId(req);
+    if (!await findOwnedSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
     const [latest] = await db.select().from(myfiveLoveProfileSnapshots).where(and(
-      eq(myfiveLoveProfileSnapshots.actorUserId, getMyFiveActorId(req)),
+      eq(myfiveLoveProfileSnapshots.actorUserId, actorUserId),
       eq(myfiveLoveProfileSnapshots.slotId, slotId),
     )).orderBy(desc(myfiveLoveProfileSnapshots.createdAt)).limit(1);
 
@@ -211,8 +281,10 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   }
 
   try {
+    const actorUserId = getMyFiveActorId(req);
+    if (!await findOwnedSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
     const [snapshot] = await db.insert(myfiveLoveProfileSnapshots).values({
-      actorUserId: getMyFiveActorId(req),
+      actorUserId,
       slotId,
       profile,
     }).returning();

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer, index, uniqueIndex, check } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -94,7 +94,14 @@ export const myfiveConnectionSlots = pgTable("myfive_connection_slots", {
   status: text("status").notNull().default("empty"), // "active", "empty", "siloed"
   isSelfVault: text("is_self_vault").notNull().default("false"), // "true" or "false"
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  userSlotIdentity: uniqueIndex("myfive_connection_slot_user_index_idx").on(table.userId, table.slotIndex),
+  validSlotIndex: check("myfive_connection_slot_index_check", sql`${table.slotIndex} BETWEEN 0 AND 5`),
+  selfSlotConsistency: check(
+    "myfive_connection_slot_self_check",
+    sql`(${table.slotIndex} = 0 AND ${table.isSelfVault} = 'true') OR (${table.slotIndex} BETWEEN 1 AND 5 AND ${table.isSelfVault} = 'false')`,
+  ),
+}));
 
 // Private Check-Ins Vault (100% blind to partners and admins)
 export const myfiveCheckIns = pgTable("myfive_check_ins", {
