@@ -13,7 +13,7 @@ export interface PrivateCheckInInput {
   reflection: string;
 }
 
-interface PrivateCheckInPayload extends PrivateCheckInInput {
+export interface PrivateCheckInPayload extends PrivateCheckInInput {
   id: string;
   createdAt: string;
   schemaVersion: 1;
@@ -34,6 +34,7 @@ const KEY_STORE = "keys";
 const CHECK_IN_STORE = "check-ins";
 const CHECK_IN_KEY_ID = "check-ins-aes-gcm-v1";
 const AUTHENTICATED_CONTEXT = new TextEncoder().encode("myfive-private-check-in:v1");
+const FLOW_OCTANTS = new Set<FlowOctant>(["flow", "control", "relaxation", "boredom", "apathy", "worry", "anxiety", "arousal"]);
 
 function requestResult<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -135,6 +136,54 @@ export async function savePrivateCheckIn(input: PrivateCheckInInput): Promise<st
     transaction.objectStore(CHECK_IN_STORE).add(record);
     await transactionComplete(transaction);
     return id;
+  } finally {
+    database.close();
+  }
+}
+
+/**
+ * Decrypts records from this browser only for an explicit user-requested export.
+ * The origin-bound key and plaintext never leave the client except in the file
+ * the user chooses to download.
+ */
+export async function exportPrivateVault(): Promise<PrivateCheckInPayload[]> {
+  const database = await openVault();
+
+  try {
+    const keyTransaction = database.transaction(KEY_STORE, "readonly");
+    const keyCompletion = transactionComplete(keyTransaction);
+    const key = await requestResult<CryptoKey | undefined>(keyTransaction.objectStore(KEY_STORE).get(CHECK_IN_KEY_ID));
+    await keyCompletion;
+
+    const recordTransaction = database.transaction(CHECK_IN_STORE, "readonly");
+    const recordCompletion = transactionComplete(recordTransaction);
+    const records = await requestResult<EncryptedCheckInRecord[]>(recordTransaction.objectStore(CHECK_IN_STORE).getAll());
+    await recordCompletion;
+
+    if (records.length === 0) return [];
+    if (!key) throw new Error("The private-vault key is unavailable in this browser");
+
+    const decoded = await Promise.all(records.map(async (record) => {
+      const plaintext = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: record.iv, additionalData: AUTHENTICATED_CONTEXT },
+        key,
+        record.ciphertext,
+      );
+      const payload = JSON.parse(new TextDecoder().decode(plaintext)) as Partial<PrivateCheckInPayload>;
+      if (
+        payload.id !== record.id
+        || payload.createdAt !== record.createdAt
+        || payload.schemaVersion !== 1
+        || typeof payload.octant !== "string"
+        || !FLOW_OCTANTS.has(payload.octant as FlowOctant)
+        || typeof payload.reflection !== "string"
+      ) {
+        throw new Error("A private-vault record failed integrity validation");
+      }
+      return payload as PrivateCheckInPayload;
+    }));
+
+    return decoded.sort((left, right) => left.createdAt.localeCompare(right.createdAt));
   } finally {
     database.close();
   }

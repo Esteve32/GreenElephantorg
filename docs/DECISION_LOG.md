@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.9 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.10 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.9`
-*   **Last Updated:** `2026-09-01T19:43:52+03:00`
+*   **Document Version:** `11.2.10`
+*   **Last Updated:** `2026-09-01T20:52:45+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "React_Vite_Express_NeonPG_Drizzle_Stripe_ReplitVM"` [Approved Product Decision Log].
@@ -27,6 +27,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.10 | 2026-09-01T20:52:45+03:00 | Estève | Completed Stage 4.2 GDPR Article 20 JSON/Markdown export with authenticated privacy boundaries |
 | 11.2.9 | 2026-09-01T19:43:52+03:00 | Estève | Completed Stage 4.1 GDPR Article 17 account and encrypted-vault cascade wipe |
 | 11.2.8 | 2026-09-01T19:41:12+03:00 | Estève | Approved reasoning-level guidance and mandatory Extra High prompt before Stage 4.3 |
 | 11.2.7 | 2026-09-01T18:35:31+03:00 | Estève | Approved one-numbered-step-per-commit-and-push delivery protocol |
@@ -143,7 +144,7 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 
 ### Stage 4: Data Sovereignty & GDPR Compliance
 - [x] **4.1** Implement GDPR Article 17 hard cascade account wipe API and explicit-confirmation button, including Stripe billing identity, MyFive server data, linked portal identity/context, and the encrypted browser vault.
-- [ ] **4.2** Implement GDPR Article 20 JSON/Markdown data export engine with privacy headers.
+- [x] **4.2** Implement GDPR Article 20 JSON/Markdown data export engine with privacy headers.
 - [ ] **4.3** Audit check-in queries to ensure 100% blind vault isolation from partner views & admins.
 
 ### Stage 5: Production Polish & Deployment Verification
@@ -170,6 +171,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 3.2 — sponsored partner invitation flow | 11.2.4 | `eca696f` | `20260901_myfive_sponsored_invitations.sql` |
 | Stage 3.3 — privacy-isolated B2B EAP voucher redemption | 11.2.6 | Commit containing this `11.2.6` ledger entry | `20260901_myfive_eap_vouchers.sql` |
 | Stage 4.1 — GDPR Article 17 account and vault cascade wipe | 11.2.9 | Commit containing this `11.2.9` ledger entry | No schema migration required |
+| Stage 4.2 — GDPR Article 20 JSON/Markdown account and current-browser vault export | 11.2.10 | Commit containing this `11.2.10` ledger entry | No schema migration required |
 
 ---
 

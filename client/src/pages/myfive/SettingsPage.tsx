@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Compass, CreditCard, Shield, Database, Trash2, ArrowLeft, Check, Sparkles } from "lucide-react";
+import { Compass, CreditCard, Shield, Database, Trash2, ArrowLeft, Check, Sparkles, FileJson, FileText } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { wipePrivateVault } from "@/lib/myfiveVault";
+import { exportPrivateVault, wipePrivateVault } from "@/lib/myfiveVault";
+import { renderMyFiveExportMarkdown } from "@shared/myfiveDataExport";
+import type { MyFiveDataExport } from "@shared/myfiveDataExport";
 
 export default function SettingsPage() {
   const [subscription, setSubscription] = useState<{ status: string; sponsoredSeatsAllocated: number; stripeConnected: boolean } | null>(null);
@@ -11,6 +13,10 @@ export default function SettingsPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [voucherCode, setVoucherCode] = useState("");
   const [voucherLoading, setVoucherLoading] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState<"json" | "markdown" | null>(null);
+  const [vaultOwnershipConfirmed, setVaultOwnershipConfirmed] = useState(false);
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [dataWiped, setDataWiped] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -59,6 +65,72 @@ export default function SettingsPage() {
     } catch (error) {
       setDeleteError(error instanceof Error ? error.message : "Account deletion could not be completed.");
     } finally { setDeleting(false); }
+  };
+
+  const downloadDataExport = async (format: "json" | "markdown") => {
+    if (!vaultOwnershipConfirmed) {
+      setExportError("Confirm that this browser profile's local MyFive vault belongs to you before exporting it.");
+      return;
+    }
+    setExportingFormat(format);
+    setExportError(null);
+    setExportNotice(null);
+    try {
+      const response = await apiRequest("GET", "/api/myfive/data-export?format=json");
+      const serverExport = await response.json() as MyFiveDataExport;
+      const combinedAt = new Date().toISOString();
+      let combinedExport: MyFiveDataExport;
+      try {
+        const localCheckIns = await exportPrivateVault();
+        combinedExport = {
+          ...serverExport,
+          metadata: {
+            ...serverExport.metadata,
+            provenance: {
+              ...serverExport.metadata.provenance,
+              localBrowserVault: "After explicit user confirmation that this browser profile's vault belongs to the signed-in data subject, records were decrypted and combined locally. Plaintext was not uploaded to the server.",
+            },
+          },
+          localBrowserVault: {
+            status: "included_by_browser",
+            description: "After your explicit ownership confirmation, records readable in this browser profile were decrypted locally and included in this download. Legacy local records have no server account identifier; the server did not receive their plaintext.",
+            combinedAt,
+            recordCount: localCheckIns.length,
+            checkIns: localCheckIns,
+          },
+        };
+        setExportNotice(`Export ready with ${localCheckIns.length} encrypted local-vault check-in${localCheckIns.length === 1 ? "" : "s"} combined on this device.`);
+      } catch (vaultError) {
+        combinedExport = {
+          ...serverExport,
+          localBrowserVault: {
+            status: "unavailable_in_browser",
+            description: "The server export succeeded, but this browser could not decrypt its local vault. No local-vault plaintext was uploaded or included. Retry from the browser profile where the records were created.",
+            combinedAt,
+          },
+        };
+        setExportNotice(vaultError instanceof Error
+          ? `Server data exported without the local vault: ${vaultError.message}`
+          : "Server data exported without the local vault because this browser could not read it.");
+      }
+
+      const contents = format === "json"
+        ? JSON.stringify(combinedExport, null, 2)
+        : renderMyFiveExportMarkdown(combinedExport);
+      const blob = new Blob([contents], { type: format === "json" ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `myfive-data-export-${combinedExport.metadata.exportedAt.slice(0, 10)}.${format === "json" ? "json" : "md"}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (error) {
+      setExportError(error instanceof Error ? error.message : "Your data export could not be created.");
+    } finally {
+      setExportingFormat(null);
+    }
   };
 
   return (
@@ -125,26 +197,38 @@ export default function SettingsPage() {
           {checkoutError && <p role="alert" className="text-xs text-rose-300">{checkoutError}</p>}
         </div>
 
-        {/* Data Vault & Privacy HUD */}
+        {/* GDPR Article 20 export and local-vault boundary */}
         <div className="myfive-glass myfive-biolume-edge p-6 rounded-2xl border space-y-4">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-white">Local Vault & On-Device Storage</h2>
-              <p className="text-xs text-slate-400">IndexedDB local-first cache footprint</p>
+              <h2 className="font-bold text-base text-white">GDPR Article 20 Data Export</h2>
+              <p className="text-xs text-slate-400">Portable account data plus this browser's encrypted local vault</p>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-slate-200">Local Cache Size: 1.4 MB</p>
-              <p className="text-slate-500">Private check-ins and agreement drafts stored locally</p>
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-4">
+            <div className="space-y-1">
+              <p className="font-semibold text-slate-200">Private data-subject copy</p>
+              <p className="text-slate-500 leading-relaxed">The server exports only records scoped to your signed-in account. This browser then decrypts and combines its origin-bound check-ins locally; vault plaintext is never uploaded. Repeat on other browsers or devices that contain vault records.</p>
+              <p className="text-amber-200/80 leading-relaxed">Downloaded files contain readable relationship and reflection data. Store them securely.</p>
             </div>
-            <button className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all">
-              Export Vault JSON
-            </button>
+            <label className="flex items-start gap-2 rounded-lg border border-indigo-800/60 bg-indigo-950/30 p-3 text-xs leading-relaxed text-indigo-100">
+              <input type="checkbox" checked={vaultOwnershipConfirmed} onChange={(event) => setVaultOwnershipConfirmed(event.target.checked)} className="mt-0.5" />
+              <span>I confirm this browser profile's local MyFive vault belongs to me and may be decrypted into this private download. Legacy local records are browser-profile scoped and are not linked to my server account.</span>
+            </label>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button disabled={exportingFormat !== null || !vaultOwnershipConfirmed} onClick={() => downloadDataExport("json")} className="flex-1 px-3 py-2 bg-indigo-900/70 hover:bg-indigo-800 disabled:opacity-40 text-indigo-100 rounded-lg transition-all flex items-center justify-center gap-2">
+                <FileJson className="w-4 h-4" /> {exportingFormat === "json" ? "Preparing JSON…" : "Download portable JSON"}
+              </button>
+              <button disabled={exportingFormat !== null || !vaultOwnershipConfirmed} onClick={() => downloadDataExport("markdown")} className="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 rounded-lg transition-all flex items-center justify-center gap-2">
+                <FileText className="w-4 h-4" /> {exportingFormat === "markdown" ? "Preparing Markdown…" : "Download readable Markdown"}
+              </button>
+            </div>
+            {exportNotice && <p role="status" className="text-xs text-emerald-300">{exportNotice}</p>}
+            {exportError && <p role="alert" className="text-xs text-rose-300">{exportError}</p>}
           </div>
         </div>
 

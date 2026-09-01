@@ -1,13 +1,29 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { and, asc, desc, eq, or } from "drizzle-orm";
 import Stripe from "stripe";
 import { db, pool } from "../db";
-import { myfiveAgreements, myfiveConnectionSlots, myfiveConsentLedger, myfiveEapVouchers, myfiveInvitations, myfiveLoveProfileSnapshots, myfiveSubscriptions } from "../../shared/schema";
+import {
+  clientSubscriptions,
+  clientUsers,
+  myfiveAgreements,
+  myfiveCheckIns,
+  myfiveConnectionSlots,
+  myfiveConsentLedger,
+  myfiveEapVouchers,
+  myfiveInvitations,
+  myfiveLoveProfileSnapshots,
+  myfiveSubscriptions,
+  portalTimelineEvents,
+  portalUserContext,
+} from "../../shared/schema";
 import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlowProfile";
+import { MYFIVE_EXPORT_SCHEMA_VERSION, renderMyFiveExportMarkdown } from "../../shared/myfiveDataExport";
+import type { MyFiveDataExport } from "../../shared/myfiveDataExport";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 import { isConnectorEnabled } from "../lib/connectorGuard";
 import { requireAdminAuth } from "../auth";
+import { requirePortalAuth } from "../portal-auth";
 
 export const myfiveRouter = Router();
 
@@ -61,6 +77,25 @@ function serializeSlot(slot: typeof myfiveConnectionSlots.$inferSelect) {
     relation: isSelf ? "Self-Reflection Slot" : slot.relationType,
     status: slot.status, isSelf, partnerConnected: Boolean(slot.partnerUserId),
   };
+}
+
+function isoString(value: Date | null): string | null {
+  return value?.toISOString() ?? null;
+}
+
+function setDataExportPrivacyHeaders(_req: Request, res: Response, next: NextFunction) {
+  res.set({
+    "Cache-Control": "private, no-store, max-age=0",
+    Pragma: "no-cache",
+    Expires: "0",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "X-Robots-Tag": "noindex, nofollow, noarchive",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Content-Security-Policy": "sandbox; default-src 'none'",
+    Vary: "Cookie",
+  });
+  next();
 }
 
 async function persistMyFiveSubscription(userId: string, customerId: string | null, subscriptionId: string, planStatus: string) {
@@ -435,6 +470,214 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("MyFive love profile persistence failed", error);
     res.status(500).json({ error: "Love profile could not be saved" });
+  }
+});
+
+myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth, async (req: Request, res: Response) => {
+  const format = req.query.format === undefined ? "json" : req.query.format;
+  if (format !== "json" && format !== "markdown") {
+    return res.status(400).json({ error: "Export format must be json or markdown" });
+  }
+
+  const userId = req.session.clientUserId!;
+  try {
+    const [
+      accountRows,
+      slots,
+      serverCheckIns,
+      profiles,
+      agreements,
+      consentReceipts,
+      myfiveMembershipRows,
+      portalMemberships,
+      context,
+      timeline,
+    ] = await Promise.all([
+      db.select({
+        id: clientUsers.id,
+        email: clientUsers.email,
+        name: clientUsers.name,
+        avatarUrl: clientUsers.avatarUrl,
+        createdAt: clientUsers.createdAt,
+      }).from(clientUsers).where(eq(clientUsers.id, userId)).limit(1),
+      db.select().from(myfiveConnectionSlots)
+        .where(eq(myfiveConnectionSlots.userId, userId))
+        .orderBy(asc(myfiveConnectionSlots.slotIndex)),
+      db.select().from(myfiveCheckIns)
+        .where(eq(myfiveCheckIns.userId, userId))
+        .orderBy(asc(myfiveCheckIns.createdAt)),
+      db.select().from(myfiveLoveProfileSnapshots)
+        .where(eq(myfiveLoveProfileSnapshots.actorUserId, userId))
+        .orderBy(asc(myfiveLoveProfileSnapshots.createdAt)),
+      db.select().from(myfiveAgreements)
+        .where(eq(myfiveAgreements.creatorUserId, userId))
+        .orderBy(asc(myfiveAgreements.createdAt)),
+      db.select().from(myfiveConsentLedger)
+        .where(eq(myfiveConsentLedger.actorUserId, userId))
+        .orderBy(asc(myfiveConsentLedger.acceptedAt)),
+      db.select().from(myfiveSubscriptions)
+        .where(eq(myfiveSubscriptions.userId, userId)).limit(1),
+      db.select().from(clientSubscriptions)
+        .where(eq(clientSubscriptions.userId, userId))
+        .orderBy(asc(clientSubscriptions.createdAt)),
+      db.select().from(portalUserContext)
+        .where(eq(portalUserContext.userId, userId))
+        .orderBy(asc(portalUserContext.key)),
+      db.select().from(portalTimelineEvents)
+        .where(eq(portalTimelineEvents.userId, userId))
+        .orderBy(asc(portalTimelineEvents.date)),
+    ]);
+
+    const account = accountRows[0];
+    if (!account) return res.status(404).json({ error: "Authenticated account was not found" });
+    const myfiveMembership = myfiveMembershipRows[0];
+    const exportedAt = new Date().toISOString();
+    const dataExport: MyFiveDataExport = {
+      metadata: {
+        schemaVersion: MYFIVE_EXPORT_SCHEMA_VERSION,
+        exportedAt,
+        dataSubject: { accountId: account.id, email: account.email, name: account.name },
+        scope: [
+          "MyFive account identity",
+          "subject-owned connection records",
+          "subject-authored agreements and consent receipts",
+          "subject-authored private profiles and check-ins",
+          "data-minimized membership status",
+          "linked portal context and timeline",
+          "current-browser encrypted vault when combined by the client",
+        ],
+        provenance: {
+          serverData: "Selected at export time from authenticated account-scoped GreenElephant/MyFive database queries.",
+          localBrowserVault: "The server cannot access IndexedDB or associate legacy local records with an account. The MyFive settings client combines records from the current browser only after an explicit browser-vault ownership confirmation and download request.",
+        },
+      },
+      privacy: {
+        classification: "PRIVATE - DATA SUBJECT COPY",
+        intendedRecipient: account.email,
+        handlingNotice: "This file can contain sensitive relationship and reflection data. Store it securely and share it only by deliberate choice.",
+      },
+      data: {
+        account: {
+          id: account.id,
+          email: account.email,
+          name: account.name,
+          avatarUrl: account.avatarUrl,
+          createdAt: account.createdAt.toISOString(),
+        },
+        connectionSlots: slots.map((slot) => ({
+          id: slot.id,
+          slotIndex: slot.slotIndex,
+          userProvidedPartnerName: slot.partnerName,
+          userProvidedRelationType: slot.relationType,
+          status: slot.status,
+          isSelfVault: slot.isSelfVault === "true",
+          partnerAccountLinked: Boolean(slot.partnerUserId),
+          createdAt: slot.createdAt.toISOString(),
+        })),
+        privateServerCheckIns: serverCheckIns.map((checkIn) => ({
+          id: checkIn.id,
+          slotId: checkIn.slotId,
+          flowOctant: checkIn.flowOctant,
+          privateReflection: checkIn.privateReflection,
+          vaultEncryptedAtRest: checkIn.isVaultEncrypted === "true",
+          createdAt: checkIn.createdAt.toISOString(),
+        })),
+        connectionProfiles: profiles.map((profile) => ({
+          id: profile.id,
+          slotId: profile.slotId,
+          profile: profile.profile,
+          createdAt: profile.createdAt.toISOString(),
+        })),
+        agreementVersions: agreements.map((agreement) => ({
+          id: agreement.id,
+          slotId: agreement.slotId,
+          agreementText: agreement.agreementText,
+          consentReceiptId: agreement.valueRulesConsented,
+          version: agreement.version,
+          createdAt: agreement.createdAt.toISOString(),
+          updatedAt: agreement.updatedAt.toISOString(),
+        })),
+        consentReceipts: consentReceipts.map((receipt) => ({
+          id: receipt.id,
+          slotId: receipt.slotId,
+          consentType: receipt.consentType,
+          rulesVersion: receipt.rulesVersion,
+          acceptedRuleIds: receipt.acceptedRuleIds,
+          acceptedAt: receipt.acceptedAt.toISOString(),
+        })),
+        membership: {
+          myfive: myfiveMembership ? {
+            planStatus: myfiveMembership.planStatus,
+            sponsoredSeatsAllocated: myfiveMembership.sponsoredSeatsAllocated,
+            createdAt: myfiveMembership.createdAt.toISOString(),
+          } : null,
+          linkedPortal: portalMemberships.map((membership) => ({
+            id: membership.id,
+            plan: membership.plan,
+            status: membership.status,
+            currentPeriodStart: isoString(membership.currentPeriodStart),
+            currentPeriodEnd: isoString(membership.currentPeriodEnd),
+            cancelledAt: isoString(membership.cancelledAt),
+            createdAt: membership.createdAt.toISOString(),
+          })),
+        },
+        linkedPortal: {
+          context: context.map((entry) => ({
+            id: entry.id,
+            key: entry.key,
+            value: entry.value,
+            updatedAt: entry.updatedAt.toISOString(),
+          })),
+          timeline: timeline.map((event) => ({
+            id: event.id,
+            type: event.type,
+            title: event.title,
+            description: event.description,
+            details: event.details,
+            lens: event.lens,
+            toolId: event.toolId,
+            date: event.date.toISOString(),
+            createdAt: event.createdAt.toISOString(),
+          })),
+        },
+      },
+      localBrowserVault: {
+        status: "not_accessible_to_server",
+        description: "Encrypted check-ins in browser IndexedDB are absent from this server response. Use MyFive Settings on each browser/device to create a combined download from that local vault.",
+      },
+      omissions: [
+        {
+          category: "Partner-private data",
+          reason: "Another person's profile snapshots, reflections, consent receipts, account data, and agreement versions they authored are never queried or exported.",
+        },
+        {
+          category: "Authentication and OAuth secrets",
+          reason: "Password hashes, reset and two-factor secrets, OAuth identifiers, access tokens, refresh tokens, and token-expiry security metadata are excluded.",
+        },
+        {
+          category: "Billing and invitation secrets",
+          reason: "Stripe customer/subscription identifiers, Stripe secrets, invitation token hashes, invitee email addresses, and sponsor account identifiers are excluded.",
+        },
+        {
+          category: "Employer and administration data",
+          reason: "EAP organization identifiers, voucher records or hashes, audit logs, admin accounts, settings, and aggregate employer information are outside the data-subject export and are excluded.",
+        },
+        {
+          category: "Other devices and browser profiles",
+          reason: "Origin-bound local-vault encryption keys are non-extractable and legacy records have no server account identifier. Inclusion relies on the signed-in user's explicit confirmation that the browser profile's vault is theirs. Repeat the export on other browsers/devices that hold your records.",
+        },
+      ],
+    };
+
+    const filenameDate = exportedAt.slice(0, 10);
+    res.set("Content-Disposition", `attachment; filename="myfive-data-export-${filenameDate}.${format === "json" ? "json" : "md"}"`);
+    if (format === "markdown") {
+      return res.type("text/markdown; charset=utf-8").send(renderMyFiveExportMarkdown(dataExport));
+    }
+    return res.type("application/json; charset=utf-8").send(JSON.stringify(dataExport, null, 2));
+  } catch (error) {
+    console.error("MyFive Article 20 data export failed", error);
+    return res.status(500).json({ error: "Your data export could not be created safely" });
   }
 });
 

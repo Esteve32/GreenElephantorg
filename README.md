@@ -123,7 +123,7 @@ Development follows the stage gates outlined in `docs/DECISION_LOG.md`:
 | **Stage 1** | **COMPLETED** | Organic Holography design system, glassmorphism, 8-Lens GBR synesthetic tokens. |
 | **Stage 2** | **COMPLETED** | Private flow check-ins, 9 ValueRules™ Consent Gate, versioned dyadic agreements, and the enforced 5+1 connection-seat cap. |
 | **Stage 3** | **COMPLETED** | Stripe €4.99/mo Checkout, five-seat partner sponsorship, and privacy-isolated B2B EAP vouchers. |
-| **Stage 4** | **IN PROGRESS** | GDPR Article 17 hard cascade wipe completed; Article 20 export and blind-vault isolation audit remain. |
+| **Stage 4** | **IN PROGRESS** | GDPR Article 17 cascade wipe and Article 20 JSON/Markdown account plus current-browser vault export completed; blind-vault isolation audit remains. |
 | **Stage 5** | **PLANNED** | WCAG AA contrast audit, Replit production deployment & custom DNS. |
 
 ---
