@@ -1,14 +1,23 @@
 import { Router, Request, Response } from "express";
 import { randomUUID } from "node:crypto";
 import { and, asc, desc, eq } from "drizzle-orm";
+import Stripe from "stripe";
 import { db, pool } from "../db";
-import { myfiveAgreements, myfiveConnectionSlots, myfiveConsentLedger, myfiveLoveProfileSnapshots } from "../../shared/schema";
+import { myfiveAgreements, myfiveConnectionSlots, myfiveConsentLedger, myfiveLoveProfileSnapshots, myfiveSubscriptions } from "../../shared/schema";
 import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlowProfile";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
+import { isConnectorEnabled } from "../lib/connectorGuard";
 
 export const myfiveRouter = Router();
 
 const DEFAULT_AGREEMENT = "Agreement on Quiet Hours & Evening Energy:\n- We agree to keep 21:00 to 08:00 notification-free.\n- We review this living agreement every 30 days.";
+const MYFIVE_MONTHLY_PRICE_CENTS = 499;
+
+function getStripe(): Stripe | null {
+  return process.env.STRIPE_SECRET_KEY
+    ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2023-10-16" as any })
+    : null;
+}
 
 function getMyFiveActorId(req: Request): string {
   if (req.session.clientUserId) return req.session.clientUserId;
@@ -39,6 +48,34 @@ function serializeSlot(slot: typeof myfiveConnectionSlots.$inferSelect) {
     relation: isSelf ? "Self-Reflection Slot" : slot.relationType,
     status: slot.status, isSelf,
   };
+}
+
+async function persistMyFiveSubscription(userId: string, customerId: string | null, subscriptionId: string, planStatus: string) {
+  await db.insert(myfiveSubscriptions).values({
+    userId, stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId,
+    planStatus, sponsoredSeatsAllocated: 0,
+  }).onConflictDoUpdate({ target: myfiveSubscriptions.userId, set: {
+    stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId, planStatus,
+  } });
+}
+
+export async function handleMyFiveStripeEvent(event: Stripe.Event): Promise<void> {
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    if (session.metadata?.product !== "myfive_primary") return;
+    const userId = session.metadata.actorUserId;
+    const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+    const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
+    if (userId && subscriptionId) await persistMyFiveSubscription(userId, customerId, subscriptionId, "active");
+  }
+  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object as Stripe.Subscription;
+    const planStatus = event.type === "customer.subscription.deleted"
+      ? "canceled"
+      : (["active", "trialing"].includes(subscription.status) ? "active" : subscription.status);
+    await db.update(myfiveSubscriptions).set({ planStatus })
+      .where(eq(myfiveSubscriptions.stripeSubscriptionId, subscription.id));
+  }
 }
 
 // Health check endpoint
@@ -300,13 +337,77 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   }
 });
 
-// Subscription pay gate verification
-myfiveRouter.get("/subscription", (_req: Request, res: Response) => {
-  res.json({
-    plan: "B2C Primary Subscription",
-    status: "active",
-    priceEur: 4.99,
-    sponsoredSeatsAllowed: 5,
-    stripeConnected: true
-  });
+myfiveRouter.post("/subscription/checkout", async (req: Request, res: Response) => {
+  const stripe = getStripe();
+  if (!stripe || !(await isConnectorEnabled("stripe"))) {
+    return res.status(503).json({ error: "Stripe checkout is currently unavailable" });
+  }
+  const actorUserId = getMyFiveActorId(req);
+  const customerEmail = typeof req.body?.customerEmail === "string" ? req.body.customerEmail.trim().toLowerCase() : "";
+  if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+    return res.status(400).json({ error: "A valid email address is required" });
+  }
+  try {
+    const origin = `${req.protocol}://${req.get("host")}`;
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer_email: customerEmail || req.session.clientEmail || undefined,
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: "eur",
+          unit_amount: MYFIVE_MONTHLY_PRICE_CENTS,
+          recurring: { interval: "month" },
+          product_data: { name: "MyFive Primary Membership", description: "Five partner connection seats plus one private Philautia self-vault" },
+        },
+      }],
+      metadata: { product: "myfive_primary", actorUserId },
+      subscription_data: { metadata: { product: "myfive_primary", actorUserId } },
+      success_url: `${origin}/myfive/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/myfive/settings?checkout=canceled`,
+      allow_promotion_codes: true,
+    });
+    if (!session.url) return res.status(502).json({ error: "Stripe did not return a checkout URL" });
+    res.status(201).json({ checkoutUrl: session.url });
+  } catch (error) {
+    console.error("MyFive Stripe Checkout creation failed", error);
+    res.status(500).json({ error: "Checkout could not be created" });
+  }
+});
+
+myfiveRouter.post("/subscription/confirm", async (req: Request, res: Response) => {
+  const stripe = getStripe();
+  const sessionId = typeof req.body?.sessionId === "string" ? req.body.sessionId : "";
+  if (!stripe || !sessionId.startsWith("cs_")) return res.status(400).json({ error: "A valid Checkout Session is required" });
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const actorUserId = getMyFiveActorId(req);
+    if (session.metadata?.product !== "myfive_primary" || session.metadata.actorUserId !== actorUserId || session.payment_status !== "paid") {
+      return res.status(403).json({ error: "This paid MyFive Checkout Session does not belong to the current account" });
+    }
+    const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+    const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
+    if (!subscriptionId) return res.status(409).json({ error: "Stripe subscription is not ready yet" });
+    await persistMyFiveSubscription(actorUserId, customerId, subscriptionId, "active");
+    res.json({ status: "active", plan: "primary", priceEur: 4.99 });
+  } catch (error) {
+    console.error("MyFive Stripe Checkout confirmation failed", error);
+    res.status(500).json({ error: "Subscription could not be confirmed" });
+  }
+});
+
+myfiveRouter.get("/subscription", async (req: Request, res: Response) => {
+  try {
+    const [subscription] = await db.select().from(myfiveSubscriptions)
+      .where(eq(myfiveSubscriptions.userId, getMyFiveActorId(req))).limit(1);
+    res.json({
+      plan: "B2C Primary Subscription", status: subscription?.planStatus ?? "inactive",
+      priceEur: 4.99, sponsoredSeatsAllowed: 5,
+      sponsoredSeatsAllocated: subscription?.sponsoredSeatsAllocated ?? 0,
+      stripeConnected: Boolean(process.env.STRIPE_SECRET_KEY),
+    });
+  } catch (error) {
+    console.error("MyFive subscription read failed", error);
+    res.status(500).json({ error: "Subscription status could not be loaded" });
+  }
 });

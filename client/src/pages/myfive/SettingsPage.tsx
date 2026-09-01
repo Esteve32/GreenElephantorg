@@ -1,11 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Compass, CreditCard, Shield, Database, Trash2, ArrowLeft, Check, Sparkles } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function SettingsPage() {
-  const [stripeActive, setStripeActive] = useState(true);
-  const [sponsoredSeats] = useState(2);
+  const [subscription, setSubscription] = useState<{ status: string; sponsoredSeatsAllocated: number; stripeConnected: boolean } | null>(null);
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [dataWiped, setDataWiped] = useState(false);
+
+  useEffect(() => {
+    apiRequest("GET", "/api/myfive/subscription")
+      .then((response) => response.json())
+      .then(setSubscription)
+      .catch((error: Error) => setCheckoutError(error.message));
+  }, []);
+
+  const startCheckout = async () => {
+    setCheckoutLoading(true); setCheckoutError(null);
+    try {
+      const response = await apiRequest("POST", "/api/myfive/subscription/checkout", { customerEmail });
+      const { checkoutUrl } = await response.json() as { checkoutUrl: string };
+      window.location.assign(checkoutUrl);
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "Checkout could not be started.");
+      setCheckoutLoading(false);
+    }
+  };
+
+  const isActive = subscription?.status === "active";
 
   return (
     <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
@@ -38,19 +62,19 @@ export default function SettingsPage() {
                 <p className="text-xs text-slate-400">€4.99/month Primary Subscription includes 5 Partner Seats</p>
               </div>
             </div>
-            <span className="px-2.5 py-1 text-xs font-mono font-semibold bg-emerald-950 text-emerald-300 border border-emerald-500/30 rounded-full flex items-center gap-1">
-              <Check className="w-3 h-3" /> Active Membership
+            <span className={`px-2.5 py-1 text-xs font-mono font-semibold border rounded-full flex items-center gap-1 ${isActive ? "bg-emerald-950 text-emerald-300 border-emerald-500/30" : "bg-slate-900 text-slate-400 border-slate-700"}`}>
+              <Check className="w-3 h-3" /> {isActive ? "Active Membership" : "Membership Inactive"}
             </span>
           </div>
 
           <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
             <div className="flex justify-between">
               <span>Primary Membership Plan:</span>
-              <span className="text-emerald-400 font-semibold">€4.99 / month (Active via Stripe)</span>
+              <span className="text-emerald-400 font-semibold">€4.99 / month {isActive ? "(Active via Stripe)" : ""}</span>
             </div>
             <div className="flex justify-between">
               <span>Partner Sponsored Seats Used:</span>
-              <span className="text-slate-200">{sponsoredSeats} of 5 Seats Allocated</span>
+              <span className="text-slate-200">{subscription?.sponsoredSeatsAllocated ?? 0} of 5 Seats Allocated</span>
             </div>
             <div className="flex justify-between">
               <span>Partner Cost:</span>
@@ -58,15 +82,13 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2">
-            <span className="text-xs text-slate-400">Manage payment method & invoices via Stripe Portal</span>
-            <button
-              onClick={() => setStripeActive(!stripeActive)}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-lg transition-all flex items-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Stripe Portal
+          {!isActive && <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <input type="email" value={customerEmail} onChange={(event) => setCustomerEmail(event.target.value)} placeholder="Email for Stripe receipt" className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
+            <button disabled={checkoutLoading || !subscription?.stripeConnected} onClick={startCheckout} className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-40 text-sm font-medium text-white rounded-lg flex items-center justify-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" /> {checkoutLoading ? "Opening Stripe…" : "Subscribe securely"}
             </button>
-          </div>
+          </div>}
+          {checkoutError && <p role="alert" className="text-xs text-rose-300">{checkoutError}</p>}
         </div>
 
         {/* Data Vault & Privacy HUD */}

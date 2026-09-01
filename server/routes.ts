@@ -26,7 +26,7 @@ import { fromError } from "zod-validation-error";
 import { sendPurchaseNotification, sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail, sendWebinarWaitlistConfirmation, sendTypeformScanCompletionEmail, sendVerificationEmail, sendNewsletterConfirmationEmail, sendScanInterestConfirmationEmail, sendScanInterestAdminNotification, sendWaitlistConfirmationEmail, sendContactFormEmails, sendQuizResultsEmail, sendFlowCheckResultEmail, sendFlowCheckAdminNotification, sendCoachingRawDataEmail, sendCoachingDocLinkEmail, sendCoachOnlyEmail, sendPortalDataExportEmail } from "./email-notifications";
 import { getSheetData } from "./lib/googleSheets";
 import { generateDashboardUI } from "./lib/thesysApi";
-import { myfiveRouter } from "./routes/myfive";
+import { handleMyFiveStripeEvent, myfiveRouter } from "./routes/myfive";
 import { 
   syncContactWithNotion, 
   pushAllContactsToNotion, 
@@ -239,6 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      await handleMyFiveStripeEvent(event);
       res.json({ received: true });
     } catch (error: any) {
       console.error("Webhook error:", error);
