@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.3 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.4 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.3`
-*   **Last Updated:** `2026-09-01T12:57:44+03:00`
+*   **Document Version:** `11.2.4`
+*   **Last Updated:** `2026-09-01T13:35:20+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "React_Vite_Express_NeonPG_Drizzle_Stripe_ReplitVM"` [Approved Product Decision Log].
@@ -25,6 +25,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.4 | 2026-09-01T13:35:20+03:00 | Estève | Completed Stage 3.2 with secure partner invitations and sponsored seat entitlements |
 | 11.2.3 | 2026-09-01T12:57:44+03:00 | Estève | Completed Stage 3.1 with recurring MyFive Stripe Checkout and durable entitlements |
 | 11.2.2 | 2026-08-31T17:55:07+03:00 | Estève | Completed Stage 2.4 five-seat cap and hardened Stage 2.3 slot authorization |
 | 11.2.1 | 2026-08-31T02:52:13+03:00 | Estève | Renamed the user-facing experience to Connection Profile and approved a more fluid Organic Holography presentation |
@@ -130,7 +131,7 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 
 ### Stage 3: Stripe Pay Gates & Sponsorship
 - [x] **3.1** Integrate Stripe Checkout for €4.99/month primary subscription, with webhook-backed entitlement persistence and account-bound return verification.
-- [ ] **3.2** Implement 5-seat partner invitation & free sponsorship mapping flow (`myfiveSubscriptions`).
+- [x] **3.2** Implement 5-seat partner invitation & free sponsorship mapping flow (`myfiveSubscriptions`) using expiring, hashed, single-use invitation links and authenticated email-bound acceptance.
 - [ ] **3.3** Add B2B EAP voucher redemption interface (with strict employee privacy isolation).
 
 ### Stage 4: Data Sovereignty & GDPR Compliance

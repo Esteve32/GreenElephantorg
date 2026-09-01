@@ -122,7 +122,7 @@ Development follows the stage gates outlined in `docs/DECISION_LOG.md`:
 | **Stage 0** | **COMPLETED** | Repository scaffolding, PRD v1.4.0, MyFive routes, Express router, Drizzle schemas. |
 | **Stage 1** | **COMPLETED** | Organic Holography design system, glassmorphism, 8-Lens GBR synesthetic tokens. |
 | **Stage 2** | **COMPLETED** | Private flow check-ins, 9 ValueRules™ Consent Gate, versioned dyadic agreements, and the enforced 5+1 connection-seat cap. |
-| **Stage 3** | **IN PROGRESS** | Stripe €4.99/mo recurring Checkout completed; 5-seat partner sponsorship flow and B2B EAP vouchers remain. |
+| **Stage 3** | **IN PROGRESS** | Stripe €4.99/mo Checkout and five-seat partner sponsorship completed; B2B EAP vouchers remain. |
 | **Stage 4** | **PLANNED** | GDPR Article 17 hard cascade wipe, Article 20 JSON/Markdown data exports. |
 | **Stage 5** | **PLANNED** | WCAG AA contrast audit, Replit production deployment & custom DNS. |
 

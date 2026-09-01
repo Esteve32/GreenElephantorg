@@ -12,6 +12,7 @@ interface ConnectionSlot {
   status: "active" | "empty" | "siloed";
   lastCheckIn?: string;
   isSelf?: boolean;
+  partnerConnected?: boolean;
 }
 
 export default function DashboardPage() {
@@ -20,6 +21,8 @@ export default function DashboardPage() {
   const [relationType, setRelationType] = useState("");
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [inviteEmails, setInviteEmails] = useState<Record<string, string>>({});
+  const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
 
   const loadSlots = async () => {
     const response = await apiRequest("GET", "/api/myfive/slots");
@@ -41,6 +44,19 @@ export default function DashboardPage() {
   };
 
   const activeSeatsCount = slots.filter(s => !s.isSelf && s.status === "active").length;
+
+  const createInvitation = async (slot: ConnectionSlot) => {
+    if (!slot.id) return;
+    setError(null);
+    try {
+      const response = await apiRequest("POST", `/api/myfive/slots/${encodeURIComponent(slot.id)}/invitations`, {
+        inviteeEmail: inviteEmails[slot.id] ?? "",
+      });
+      const result = await response.json() as { invitationUrl: string };
+      setInvitationUrl(result.invitationUrl);
+      await navigator.clipboard?.writeText(result.invitationUrl);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Invitation could not be created."); }
+  };
 
   return (
     <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
@@ -174,6 +190,13 @@ export default function DashboardPage() {
                     isSelf={slot.isSelf}
                   />
                 )}
+
+                {slot.status === "active" && !slot.isSelf && !slot.partnerConnected && slot.id && (
+                  <div className="mt-4 space-y-2 border-t border-slate-800/70 pt-3">
+                    <input type="email" aria-label={`Email invitation for ${slot.name}`} value={inviteEmails[slot.id] ?? ""} onChange={(event) => setInviteEmails((current) => ({ ...current, [slot.id!]: event.target.value }))} placeholder="Partner email" className="w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 py-2 text-xs" />
+                    <button onClick={() => createInvitation(slot)} className="w-full rounded-lg bg-cyan-900/60 px-3 py-2 text-xs font-medium text-cyan-200 hover:bg-cyan-900">Create secure invite link</button>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 pt-3 border-t border-slate-800/60 flex items-center justify-between">
@@ -198,6 +221,10 @@ export default function DashboardPage() {
           ))}
         </div>
         {error && <p role="alert" className="mt-4 text-sm text-rose-300">{error}</p>}
+        {invitationUrl && <div className="mt-4 rounded-xl border border-cyan-500/30 bg-cyan-950/30 p-4 text-sm text-cyan-100">
+          Invitation link created and copied when clipboard access is available. No email was sent.
+          <input readOnly value={invitationUrl} onFocus={(event) => event.currentTarget.select()} className="mt-2 w-full rounded-lg border border-cyan-800 bg-slate-950 px-3 py-2 text-xs" />
+        </div>}
       </main>
     </div>
   );

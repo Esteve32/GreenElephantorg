@@ -90,6 +90,7 @@ export const myfiveConnectionSlots = pgTable("myfive_connection_slots", {
   userId: varchar("user_id").notNull(),
   slotIndex: integer("slot_index").notNull(), // 0 = Philautia, 1..5 = Partner Seats
   partnerName: text("partner_name"),
+  partnerUserId: varchar("partner_user_id"),
   relationType: text("relation_type"), // e.g. "Partner", "Friend", "Family"
   status: text("status").notNull().default("empty"), // "active", "empty", "siloed"
   isSelfVault: text("is_self_vault").notNull().default("false"), // "true" or "false"
@@ -101,6 +102,22 @@ export const myfiveConnectionSlots = pgTable("myfive_connection_slots", {
     "myfive_connection_slot_self_check",
     sql`(${table.slotIndex} = 0 AND ${table.isSelfVault} = 'true') OR (${table.slotIndex} BETWEEN 1 AND 5 AND ${table.isSelfVault} = 'false')`,
   ),
+}));
+
+export const myfiveInvitations = pgTable("myfive_invitations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sponsorUserId: varchar("sponsor_user_id").notNull(),
+  slotId: varchar("slot_id").notNull(),
+  inviteeEmail: text("invitee_email").notNull(),
+  tokenHash: text("token_hash").notNull().unique(),
+  status: text("status").notNull().default("pending"),
+  acceptedByUserId: varchar("accepted_by_user_id"),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  acceptedAt: timestamp("accepted_at"),
+}, (table) => ({
+  sponsorStatus: index("myfive_invitation_sponsor_status_idx").on(table.sponsorUserId, table.status),
+  slotStatus: index("myfive_invitation_slot_status_idx").on(table.slotId, table.status),
 }));
 
 // Private Check-Ins Vault (100% blind to partners and admins)

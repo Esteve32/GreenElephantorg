@@ -27,6 +27,7 @@ const MyFiveCheckInPage = lazy(() => import("@/pages/myfive/CheckInPage"));
 const MyFiveAgreementPage = lazy(() => import("@/pages/myfive/AgreementPage"));
 const MyFiveSettingsPage = lazy(() => import("@/pages/myfive/SettingsPage"));
 const MyFiveSubscriptionSuccessPage = lazy(() => import("@/pages/myfive/SubscriptionSuccessPage"));
+const MyFiveInvitationPage = lazy(() => import("@/pages/myfive/InvitationPage"));
 
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const SignalsQuizPage = lazy(() => import("@/pages/SignalsQuizPage"));
@@ -136,6 +137,7 @@ function Router() {
         <Route path="/myfive/agreements" component={MyFiveAgreementPage} />
         <Route path="/myfive/settings" component={MyFiveSettingsPage} />
         <Route path="/myfive/subscription/success" component={MyFiveSubscriptionSuccessPage} />
+        <Route path="/myfive/invite/:token" component={MyFiveInvitationPage} />
         <Route path="/what-is-conscious-communication">{() => <Redirect to="/scan" />}</Route>
         <Route path="/signals" component={SignalsQuizPage} />
         <Route path="/choose-your-path">{() => <Redirect to="/scan" />}</Route>
