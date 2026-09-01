@@ -17,3 +17,9 @@
 - Recommend GPT-5.6 Sol with High reasoning for security-, payments-, privacy-, database-, migration-, and GDPR-sensitive implementation stages.
 - Medium reasoning is sufficient for routine UI, documentation, status, commit, and push work; reserve Extra High for final architecture or security audits.
 - Before starting checklist item 4.3, pause and explicitly prompt Estève to switch to GPT-5.6 Sol with Extra High reasoning for the privacy-isolation audit.
+
+## Email approval safety
+
+- Treat every email action as draft-only unless the user explicitly approves the exact final message for sending after reviewing it.
+- Never send an email immediately after drafting it, including during batch workflows. Present all drafts for review and obtain explicit approval before any send action.
+- If recipients, subject, body, attachments, or sender change after approval, require a new review and explicit approval before sending.

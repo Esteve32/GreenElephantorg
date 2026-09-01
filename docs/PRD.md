@@ -1,159 +1,367 @@
-# MyFive — Consolidated PRD — Master v1.4.0 — Codebase Extension & Refactoring
+# MyFive - Consolidated PRD - Master v1.6.0 - Execution and Traceability Upgrade
 
-## Document Authority & Repository Integration
+## 1. Authority and Scope
 
-This document serves as the canonical **Product Requirements Document (PRD v1.4.0)** for **MyFive** (`myfive.greenelephant.org`), developed as a modular extension and codebase upgrade of the primary **`GreenElephantorg`** repository. 
+This is the canonical Product Requirements Document for MyFive (`myfive.greenelephant.org`).
 
-* **Canonical Location:** `docs/PRD.md` inside the `GreenElephantorg` repository.
-* **Governing Decision Authority:** Governed by `docs/DECISION_LOG.md` (Decision Log v11.1).
-* **Architecture Strategy:** Brownfield extension and refactoring of the existing `GreenElephantorg` stack (`React` + `Vite` + `Express` + `Neon PostgreSQL` + `Drizzle ORM` + `Stripe`).
+- Canonical product spec: `docs/PRD.md`
+- Human-approved decisions and implementation ledger: `docs/DECISION_LOG.md`
+- Approved target stack: `SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM`
+- Legacy transition baseline: `React_Vite_Express` (refactor source, not destination)
 
----
+### In-scope and excluded scope
 
-## v1.4 Change Log (Codebase Extension & Refactoring Update)
-
-1. **Refactoring & Codebase Extension Strategy:** Re-anchored the architecture from a greenfield setup to a brownfield extension of the existing `GreenElephantorg` codebase, reusing its Express server, React/Vite frontend, Neon PostgreSQL database, and Tailwind/Radix UI design system.
-2. **Stripe Pay Gates Integration:** Updated Section 3 and Module 1/2 requirements following **Decision Log v11.1 (DEC-033 Δ)** to bring Stripe Pay Gates (€4.99/mo subscription tiers, 5-seat partner sponsorship, and B2B EAP voucher redemptions) into active MVP scope using existing `@stripe/stripe-js` and Express backend checkout routes.
-3. **Repository Path Standardization:** Standardized all documentation references to repository-relative paths (`docs/PRD.md` and `docs/DECISION_LOG.md`).
-4. **Unified Schema Extension:** Extended the existing Drizzle schema (`shared/schema.ts`) to incorporate MyFive relational tables (`users`, `check_ins`, `relationship_agreements`, `consent_ledger`) alongside existing platform tables.
-
----
-
-## Table of Contents
-
-* [Part 1 — Constitution, Socio-Clinical Foundations, & Experience Architecture](#part-1--constitution-socio-clinical-foundations--experience-architecture)
-  * [Module 0 — Constitution, Refactoring Strategy & Dependency Map](#module-0--constitution-refactoring-strategy--dependency-map)
-  * [Module 1 — Product, Experience, Pay Gates and Human Settings](#module-1--product-experience-pay-gates-and-human-settings)
-* [Part 2 — Data Model, Consent, and Admin Operations](#part-2--data-model-consent-and-admin-operations)
-  * [Module 2 — Extended Data Model, Data Flow, Consent, and GDPR by Design](#module-2--extended-data-model-data-flow-consent-and-gdpr-by-design)
-  * [Module 3 — Admin Control Plane & Operations](#module-3--admin-control-plane--operations)
-* [Part 3 — Connections, Notifications, and Technical Delivery](#part-3--connections-notifications-and-technical-delivery)
-  * [Module 4 — Connections, Notifications, and Celestial Rhythm](#module-4--connections-notifications-and-celestial-rhythm)
-  * [Module 5 — Codebase Architecture, Security, and Modular Delivery](#module-5--codebase-architecture-security-and-modular-delivery)
-* [Open Conflicts & Verification Register](#open-conflicts--verification-register)
-* [Unified Requirements Index](#unified-requirements-index)
+- Stripe pay gates: In scope
+- Notification pacing: In scope (must be user-controlled)
+- Biometrics / camera / rPPG: Excluded
+- User-facing AI mediation: Excluded
 
 ---
 
-# Part 1 — Constitution, Socio-Clinical Foundations, & Experience Architecture
+## 2. Product Summary
 
-## Module 0 — Constitution, Refactoring Strategy & Dependency Map
+MyFive is a calm relationship compass that helps users maintain up to five active human connection seats plus one separate self-connection slot.
 
-This document establishes the canonical constitution, architectural boundaries, and modular contracts for **MyFive** as an extension of **GreenElephantorg**. Operating as **PRD Module 0 (v1.4)**, this framework enforces strict governance over engineering phases, fully integrated with **`docs/DECISION_LOG.md` (v11.1 Update)**.
+Core principles:
 
----
-
-### 1. Constitutional Purpose & Codebase Extension Strategy
-
-#### 1.1 Constitutional Mandate
-The purpose of this PRD is to guide the refactoring of `GreenElephantorg` and the implementation of MyFive, maintaining strict adherence to human direction. Every technical deployment, schema migration, or interface component must trace back to `docs/DECISION_LOG.md`.
-
-#### 1.2 The Codebase Integration Model
-MyFive is built directly inside the `GreenElephantorg` repository:
-* **Frontend:** Modular routes under `client/src/pages/myfive/` sharing the existing Tailwind/Radix UI design system and React component library.
-* **Backend:** Express API router mounted at `/api/myfive/` inside `server/routes/myfive.ts`.
-* **Database:** Unified Drizzle ORM models in `shared/schema.ts` targeting the primary Neon PostgreSQL instance.
-* **Pay Gates & Subscriptions:** Integrated with existing Stripe JS and Express payment endpoints (`server/routes/stripe.ts`).
+- illumination, not judgment
+- privacy by design
+- low time-in-app
+- user control and reversibility
+- explicit consent boundaries
 
 ---
 
-### 2. Methodology & Core Philosophy
+## 3. Functional Modules
 
-- **The Compass Metaphor:** The application provides orientation (a compass) for up to five core relationships, shifting focus from screen retention to real-world relational depth.
-- **Anti-Metric Philosophy:** Success is measured in autonomous relationships created and graduation. Time spent in-app is minimized.
-- **Hard Dunbar Cap:** One account supports a maximum of five active connection seats with other people, plus a dedicated self-reflection slot (*Philautia*).
+### Module 1 - Product, Experience, and Human Settings
 
-### 2.1 Eight-Dimensional Greek-Love Flow Profiles
+- onboarding and account activation
+- connection seat management (5 partner seats + separate self slot)
+- Connection Profile entry and review
+- settings system for privacy, pacing, and notification controls
+- membership state and sponsorship views
 
-- Every partner connection and the self-reflection connection supports all eight Greek-love dimensions: Agape, Mania, Eros, Ludus, Pragma, Storge, Philia, and Philautia. Love types are non-exclusive; a connection may express several simultaneously.
-- Each love dimension is calibrated through the eight-channel Flow model rather than a numeric intensity score. The current state is one of Arousal, Flow, Control, Relaxation, Boredom, Apathy, Worry, or Anxiety, derived from the relationship between perceived challenge/need and perceived skill/capacity.
-- `Not assessed` is a distinct state and must never be interpreted as Apathy or absence of love.
-- The primary visualization is a square skill–challenge field divided radially from its centre into eight triangular octants. Generic checkbox grids and isolated score cards are not the canonical profile interface.
-- The canonical user-facing name is **Connection Profile**: “Your Connection Profile with [person]” for a partner seat and “Your Self-Connection Profile” for the private self seat. “Greek-love Flow profile” is an internal methodology label, not the interface title.
-- The octant field may remain geometrically square, but its surrounding interface should use the Organic Holography system's fluid contours, atmospheric gradients, and connected spatial composition rather than a grid of rigid nested boxes.
-- Flow-proximity values may be used internally for ordering or visual emphasis, but must not be presented as a moral ranking of relationship quality.
-- Calibrations are private to the assessing user and stored as append-only, timestamped snapshots. A partner's independent calibration is never inferred or overwritten.
-- The fixed GBR lens-to-love token mapping remains a synesthetic storytelling and colour system; it does not restrict which love types can be present in a connection.
+### Module 2 - Data Model, Consent, and GDPR
+
+Primary domains:
+
+- `users`
+- `check_ins`
+- `relationship_agreements`
+- `consent_ledger`
+- `myfive_subscriptions`
+- invitation and voucher entities
+
+Core rules:
+
+- private check-ins are structurally separated from partner-visible records
+- shared data requires explicit bilateral consent
+- consent records are append-only and timestamped
+- users can export and delete account data
+
+### Module 3 - Admin Control Plane and Operations
+
+Roles:
+
+- Steward
+- Host
+- Participant
+
+Operational requirements:
+
+- least-privilege role separation
+- break-glass support with expiration and audit trail
+- kill switch for outbound integrations
+- transactional communications controls
+
+### Module 4 - Connections, Notifications, and Pacing
+
+Required capabilities:
+
+- user-configurable pacing and quiet hours
+- optional Fibonacci pacing curves
+- reversible pause/mute controls
+- timezone-aware scheduling behavior
+
+Boundaries:
+
+- pacing must never become coercive
+- pacing defaults must be safe and opt-out available
+
+### Module 5 - Architecture, Security, and Delivery
+
+Target architecture:
+
+- SvelteKit + Svelte 5 UI/runtime
+- Zero local-first synchronization model
+- Neon PostgreSQL + Drizzle ORM
+- Stripe checkout and subscription events
+- Replit Reserved VM runtime
+
+Migration constraint:
+
+- legacy React/Vite/Express flows may run during transition
+- new net functionality should target the approved stack
 
 ---
 
-### 3. Value Proposition & Stripe Pay Gates Integration
+## 4. Requirement Registry (RTM Foundation)
 
-#### 3.1 Premium Infrastructure & Pay Gates (In Scope)
-MyFive operates as premium emotional infrastructure. In accordance with **Decision Log v11.1 (DEC-033 Δ)**, Stripe pay gates are **IN SCOPE** for the MVP launch, leveraging the existing Stripe integration in `GreenElephantorg`.
+Every requirement must map from user journey to implementation and verification.
 
-#### 3.2 B2C Subscription & The Sponsorship Model (€4.99/mo)
-- **Primary Subscription (€4.99/month):** Covers the primary account holder and includes 5 sponsored connection seats.
-- **Sponsorship Mechanics:** The subscriber gifts seats to partners or friends. Sponsored partners access the shared dyadic workspace for free without needing their own paid subscription.
-- **Payment Processing:** Managed via Stripe Checkout and Stripe Link using existing `@stripe/stripe-js` hooks in `client/src/` and Express backend webhooks.
-
-#### 3.3 B2B Employee Assistance Program (EAP) Vouchers
-- **Voucher Model:** HR departments purchase bulk voucher codes (e.g., 100 codes for €1,500).
-- **Private Redemption:** Employees redeem codes for isolated B2C accounts. Employer monitoring and aggregate dashboards remain permanently banned to ensure privacy compliance under Finnish labor laws.
-
----
-
-# Part 2 — Data Model, Consent, and Admin Operations
-
-## Module 2 — Extended Data Model, Data Flow, Consent, and GDPR by Design
-
-### 1. Database Integration (`shared/schema.ts`)
-
-MyFive extends the existing Drizzle ORM schema in `shared/schema.ts` with four isolated tables:
-
-1. **`users` / `myfive_profiles`**: Links primary Google OAuth identity with subscription and sponsorship seat status.
-2. **`check_ins`**: Private self-reflection vault for Needs, runic reflections, and flow state evaluations (strictly isolated from partner IDs).
-3. **`relationship_agreements`**: Collaborative contracts co-created by a connection dyad.
-4. **`consent_ledger`**: Immutable, append-only compliance log for user authorization handshakes and GDPR Article 6 records.
+| ID | Journey stage | Requirement | Module | Implementation surface | Verification |
+|---|---|---|---|---|---|
+| UX-001 | Onboarding | User can create/access account and start setup | M1 | auth routes + onboarding UI | e2e onboarding pass |
+| UX-002 | Activation | User sees seat counter and self-slot separation | M1 | profile/seat UI + seat APIs | unit + e2e seat cap test |
+| UX-003 | Core workflow | User can record Connection Profile state privately | M1/M2 | check-in UI + check-in APIs + DB | authz and privacy tests |
+| UX-004 | Retention | User can control notification pacing and quiet hours | M4 | settings UI + pacing engine | settings persistence tests |
+| UX-005 | Monetization | User can subscribe with Stripe and sponsor seats | M1/M5 | Stripe checkout/webhooks + sponsorship model | webhook and entitlement tests |
+| DAT-001 | Trust | Private and shared data are structurally isolated | M2 | schema boundaries + query guards | data-boundary test pack |
+| DAT-002 | Consent | Shared agreement requires bilateral explicit consent | M2 | consent gating + ledger | consent gate integration tests |
+| DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
+| DAT-004 | Sovereignty | User can delete account with cascade wipe | M2 | deletion pipeline | deletion integrity tests |
+| ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
+| ADM-002 | Operations | Kill switch pauses outbound integrations | M3 | control plane toggles | kill switch verification tests |
+| ARC-001 | Delivery | New features are implemented on SvelteKit target stack | M5 | repo architecture + CI checks | architecture gate checklist |
 
 ---
 
-## Module 3 — Admin Control Plane & Operations
+## 5. Acceptance Criteria Library (BDD)
 
-- **Separation of Duties:** Steward (System Admin), Host (Operational Support), and Participant (User).
-- **Resend Transactional Email Engine:** Data-minimized notification templates processed via `greenelephant.org` domain.
-- **Emergency Kill Switch:** Covered control plane toggle to immediately pause external API sync loops and outbound messaging.
+### AC-001 Seat cap and self slot
+
+Given a participant already has 5 active partner seats  
+When the participant attempts to add a 6th partner seat  
+Then the system shall reject the operation with a clear capacity message  
+And the self-slot shall remain unaffected and available.
+
+### AC-002 Private check-in isolation
+
+Given participant A submits a private check-in  
+When participant B accesses shared connection views  
+Then participant B shall not see participant A private check-in content  
+And admins shall not have a path to private check-in payloads.
+
+### AC-003 Bilateral consent for sharing
+
+Given one side has not completed ValueRules consent  
+When a shared agreement sync is requested  
+Then the system shall block sync  
+And append a consent event explaining unmet prerequisites.
+
+### AC-004 Stripe entitlement
+
+Given a Stripe checkout session is completed  
+When a valid webhook event is processed  
+Then the subscriber entitlement shall be activated  
+And sponsorship seat allocation shall become available.
+
+### AC-005 Pacing control and opt-out
+
+Given notification pacing is enabled  
+When a user disables pacing in settings  
+Then future pacing jobs shall stop  
+And the user shall retain access to manual reminders only.
+
+### AC-006 Account deletion
+
+Given a user confirms account deletion with required confirmation steps  
+When deletion is executed  
+Then user-linked records shall be removed according to policy  
+And subsequent authenticated fetches shall return no active account profile.
 
 ---
 
-# Part 3 — Connections, Notifications, and Technical Delivery
+## 6. Migration Plan - Legacy to SvelteKit Target
 
-## Module 5 — Codebase Architecture, Security, and Modular Delivery
+### Phase 0 - Guardrails and baseline
 
-### 1. File Structure in `GreenElephantorg`
+- freeze new net features on legacy React/Vite/Express surfaces
+- define migration inventory: routes, schemas, jobs, webhooks, settings controls
+- publish architecture gate checklist in delivery workflow
+
+Exit criteria:
+
+- all new work items tagged with target surface
+- no unscoped legacy expansion accepted
+
+### Phase 1 - Data and contract stabilization
+
+- lock API contracts for auth, check-ins, agreements, consent, subscriptions, pacing
+- ensure Drizzle schema compatibility and backward-safe migrations
+- define adapter layer if temporary compatibility is needed
+
+Exit criteria:
+
+- contract tests green for all public/internal interfaces
+
+### Phase 2 - Feature port
+
+- port onboarding, seat management, check-ins, consent gates, settings controls
+- port Stripe checkout initiation and webhook reconciliation
+- port pacing controls and quiet-hours behavior
+
+Exit criteria:
+
+- feature parity test matrix complete
+
+### Phase 3 - Cutover and rollback safety
+
+- staged traffic cutover to SvelteKit target paths
+- monitor errors, latency, and event integrity
+- maintain rollback switch during stabilization window
+
+Exit criteria:
+
+- SLOs met for 2 consecutive release windows
+- rollback not triggered in final window
+
+### Phase 4 - Legacy retirement
+
+- remove dead legacy routes/components/jobs
+- update runbooks and architecture diagrams
+- close migration ledger entry in decision log
+
+Exit criteria:
+
+- legacy surfaces removed from active runtime
+- docs and tests updated
+
+---
+
+## 7. NFR and Operations Controls
+
+### Performance and reliability
+
+- P95 app navigation response target: <= 200ms
+- P95 critical API target: <= 150ms (excluding third-party provider latency)
+- webhook processing reliability target: >= 99.5% successful reconciliation
+- export/deletion job success target: >= 99.0% over rolling 30 days
+
+### Availability and resilience
+
+- service availability target: >= 99.9% monthly
+- explicit rollback procedures for failed releases
+- incident severity model with response/runbook ownership
+
+### Security and privacy
+
+- no plaintext secrets in repo or logs
+- least-privilege access on admin endpoints
+- immutable consent and audit records for governed events
+- explicit prohibition of camera and user-facing AI mediation features
+
+### Observability
+
+- structured logs for auth, consent, subscription, pacing, and deletion flows
+- release health dashboard with error rate, latency, webhook backlog, and queue depth
+- audit event taxonomy for compliance-critical actions
+
+---
+
+## 8. Edge Cases and Failure States
+
+- payment success without webhook confirmation
+- webhook duplicates and out-of-order delivery
+- invitation expiry and reuse attempts
+- seat allocation race conditions
+- offline or intermittent sync
+- timezone drift and quiet-hour boundary crossing
+- consent revocation after prior sharing
+- export/deletion retries after partial failure
+
+Each edge case must have:
+
+- deterministic system behavior
+- user-facing message
+- retry/rollback policy
+- test coverage
+
+---
+
+## 9. Research Backlog and Deep-Search Prompt
+
+Use targeted research to close unresolved architecture and delivery risks; do not expand scope beyond approved decisions.
+
+### Priority research themes
+
+- Zero + Neon deployment patterns on always-on runtimes
+- Stripe entitlement reconciliation patterns and failure handling
+- notification pacing UX safety patterns (user control, anti-coercion)
+- data sovereignty implementation patterns for export/deletion
+- SvelteKit migration playbooks from React/Express legacy systems
+
+### Gemini deep-search prompt (copy/paste)
 
 ```text
-GreenElephantorg/
-├── docs/
-│   ├── PRD.md                       <-- Canonical PRD Master (This Document)
-│   └── DECISION_LOG.md              <-- Decision Log v11.1
-├── client/
-│   └── src/
-│       ├── components/              <-- Shared UI components
-│       └── pages/
-│           ├── home.tsx             <-- Existing main site routes
-│           └── myfive/              <-- MyFive extension views & HUD
-├── server/
-│   ├── index.ts                     <-- Express server entry point
-│   └── routes/
-│       ├── stripe.ts                <-- Stripe Checkout & Webhook handlers
-│       └── myfive.ts                <-- MyFive API endpoints
-├── shared/
-│   └── schema.ts                    <-- Extended Drizzle ORM schema
+You are a principal product and architecture research analyst. Produce a fact-grounded research brief for "MyFive" with strict scope constraints.
+
+Context and non-negotiable constraints:
+- Product: privacy-first relationship SaaS.
+- Stack target: SvelteKit + Svelte 5 + Zero + Neon PostgreSQL + Drizzle + Stripe + Replit Reserved VM.
+- Legacy baseline to refactor: React + Vite + Express.
+- In scope: Stripe pay gates, sponsorship seats, notification pacing with user controls.
+- Out of scope: biometrics/camera/rPPG, user-facing AI mediation.
+
+Deliverables:
+1) Evidence table with source URL, date, claim, confidence, and direct relevance to one of these categories:
+   A) Architecture and migration
+   B) Stripe reliability and reconciliation
+   C) Privacy and consent boundaries
+   D) Notification pacing safety UX
+   E) Operational readiness and observability
+2) "What this changes in PRD v1.6" section with concrete requirement deltas (shall statements).
+3) Risk register with severity, likelihood, mitigation, owner role, and validation test.
+4) Implementation checklist for next 2 sprints, each item mapped to IDs: UX-, DAT-, ADM-, ARC-.
+
+Quality bar:
+- No speculative claims without sources.
+- Prefer official docs, engineering handbooks, and production postmortems.
+- Mark unresolved or conflicting claims explicitly.
+- Keep recommendations within approved scope constraints.
 ```
 
 ---
 
-## Unified Requirements Index (Key Highlights)
+## 10. Notion Synchronization Guidance (Operational)
 
-| ID | Title | Module | MoSCoW | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| **UX-001** | Dark Mode Organic Morphism HUD | M1 | Must | **Active** |
-| **UX-002** | Hard 5-Connection Dunbar Cap | M1 | Must | **Active** |
-| **UX-007** | Unskippable 9 ValueRules™ Consent Gate | M1 | Must | **Active** |
-| **UX-014** | Eight-Dimensional Greek-Love Flow Profile | M1 | Must | **Active** |
-| **UX-013** | Stripe Pay Gates & €4.99/mo Checkout | M1 | Must | **Active (v11.1)** |
-| **DAT-001** | Private Check-ins / Agreements Schema Separation | M2 | Must | **Active** |
-| **DAT-004** | Sponsorship Mapping Database Model | M2 | Must | **Active** |
-| **DAT-005** | Append-Only Private Love-Profile Snapshots | M2 | Must | **Active** |
-| **ADM-004** | SPF/DKIM/DMARC Resend Email Operations | M3 | Must | **Active** |
+Recommended pattern: GitHub as source of truth, Notion as mirror.
+
+### Option A (manual but robust)
+
+1. Keep canonical PRD in `docs/PRD.md`.
+2. Create a Notion page "MyFive PRD (Mirror)".
+3. On each release, copy rendered Markdown into that page.
+4. Add top metadata block:
+   - PRD version
+   - commit SHA
+   - sync timestamp
+   - synced by
+
+### Option B (automated sync, preferred)
+
+1. Create a Notion integration and share the target page/database with it.
+2. Store `NOTION_TOKEN` and `NOTION_PAGE_ID` as GitHub Actions secrets.
+3. Add workflow trigger on changes to `docs/PRD.md`.
+4. Workflow steps:
+   - checkout repo
+   - convert Markdown to Notion block payload
+   - replace page content atomically
+   - append sync metadata (version, SHA, timestamp)
+5. Add failure alert in Actions if sync fails.
+
+Definition of done for sync:
+
+- Notion page content matches latest `docs/PRD.md`
+- page shows source commit SHA and sync timestamp
+- sync operation is reproducible from CI logs
+
+---
+
+## 11. Open Items
+
+- confirm whether any missing follow-on book section still needs inclusion
+- complete full RTM expansion for all active requirement IDs
+- attach automated tests to each acceptance criterion in the delivery backlog
+

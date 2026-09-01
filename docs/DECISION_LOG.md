@@ -1,19 +1,20 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.10 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.21 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
-All specifications are mapped against the canonical baseline of Decision Log v10.0 and v11.0, establishing clear scope boundaries and aligning feature extensions with the existing `GreenElephantorg` codebase architecture [Approved Product Decision Log].
+All specifications are mapped against the canonical baseline of Decision Log v10.0 and v11.0, establishing clear scope boundaries and aligning feature extensions with the approved MyFive target architecture and migration path [Approved Product Decision Log].
 
 ---
 
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.10`
-*   **Last Updated:** `2026-09-01T20:52:45+03:00`
+*   **Document Version:** `11.2.21`
+*   **Last Updated:** `2026-09-02T01:18:32+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
-    `approved_stack = "React_Vite_Express_NeonPG_Drizzle_Stripe_ReplitVM"` [Approved Product Decision Log].
+    `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
+*   **Legacy Stack Clarification:** `React_Vite_Express` is now treated as a legacy transition baseline to be refactored. New architecture decisions and PRD rebuilds must target the approved SvelteKit stack above.
 
 ### Canonical Versioning & Audit Protocol
 
@@ -24,9 +25,29 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 5. Each numbered implementation item (for example, 3.3, 4.1, or 4.2) is a separate delivery unit. Complete and verify the item, update this decision log and evidence index, commit the implementation and log together, then push that commit to GitHub before beginning the next numbered item.
 6. Use GPT-5.6 Sol with High reasoning for GDPR, privacy, security, payment, database, and migration work. Before Stage 4.3 begins, pause and prompt Estève to switch to GPT-5.6 Sol with Extra High reasoning for the privacy-isolation audit.
 
+### Historical Baseline Consolidation Policy — APPROVED
+
+*   **Approved approach:** Evidence-first consolidation.
+*   **Historical treatment:** Decision Log v10 is a historical baseline under revalidation, not a wholesale source of newly approved decisions.
+*   **Current authority:** Existing active deltas and exclusions in this canonical log remain in force while the historical baseline is reviewed.
+*   **Approval boundary:** The labels contained in historical source documents do not, by themselves, establish current approval. DEC-001 through DEC-031 must be revalidated in small thematic batches, and only Estève's explicit approval may activate or reaffirm them in this canonical log.
+*   **Conflict handling:** Preserve provenance and historical wording, but classify duplicates, superseded entries, exclusions, deferrals, proposals, research, and uncertain approval claims explicitly. Later approved deltas override conflicting historical wording.
+*   **Scope effect:** This policy governs consolidation only. It does not approve, reject, defer, or otherwise change the product scope of any individual historical decision.
+
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.21 | 2026-09-02T01:18:32+03:00 | Estève | Revalidated DEC-006 ban on coercive engagement while allowing neutral private history |
+| 11.2.20 | 2026-09-02T01:04:08+03:00 | Estève | Revalidated DEC-005 strict ban on partner-facing micro-surveillance signals |
+| 11.2.19 | 2026-09-02T00:59:30+03:00 | Estève | Revalidated DEC-004 private-by-default data and explicit separate consent boundary |
+| 11.2.18 | 2026-09-02T00:31:28+03:00 | Estève | Revalidated DEC-003 five partner seats plus a separate Philautia self-connection |
+| 11.2.17 | 2026-09-02T00:29:42+03:00 | Estève | Revalidated DEC-002 B2C-first self-service model, private EAP vouchers, and Arbora consulting routing |
+| 11.2.16 | 2026-09-02T00:27:18+03:00 | Estève | Revalidated DEC-001 MyFive by Green Elephant product identity and canonical hostname |
+| 11.2.15 | 2026-09-02T00:23:42+03:00 | Estève | Approved evidence-first historical baseline consolidation policy without activating DEC-001 through DEC-031 |
+| 11.2.14 | 2026-09-01T23:17:59+03:00 | Estève | Upgraded canonical PRD to v1.6.0 with RTM foundation, BDD acceptance library, phased SvelteKit migration plan, NFR/operations controls, edge-case register, and research/synchronization guidance |
+| 11.2.13 | 2026-09-01T21:55:34+03:00 | Estève | Rebuilt the canonical PRD from scratch around the approved SvelteKit target stack, preserved Stripe billing, excluded biometrics, and kept notification pacing in scope |
+| 11.2.12 | 2026-09-01T21:42:00+03:00 | Estève | Clarified architectural direction to SvelteKit as the approved target stack, marked React/Vite/Express as legacy-to-refactor, kept Stripe billing in scope, kept biometrics excluded, and moved notification pacing to approved in-scope behavior |
+| 11.2.11 | 2026-09-01T21:05:00+03:00 | Estève | Merged notebook-derived PRD content into the canonical `docs/PRD.md`, preserved the supporting `docs/DECISION_LOG.md`, and flagged the likely missing follow-on section / book material for confirmation before finalization |
 | 11.2.10 | 2026-09-01T20:52:45+03:00 | Estève | Completed Stage 4.2 GDPR Article 20 JSON/Markdown export with authenticated privacy boundaries |
 | 11.2.9 | 2026-09-01T19:43:52+03:00 | Estève | Completed Stage 4.1 GDPR Article 17 account and encrypted-vault cascade wipe |
 | 11.2.8 | 2026-09-01T19:41:12+03:00 | Estève | Approved reasoning-level guidance and mandatory Extra High prompt before Stage 4.3 |
@@ -49,6 +70,71 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 
 ---
 
+## ✅ Revalidated Historical Baseline Decisions
+
+### DEC-001 — MyFive Product Identity — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** The product is called **MyFive by Green Elephant** and lives at `myfive.greenelephant.org`.
+*   **🛠️ Canonical rule:** Adopt **MyFive by Green Elephant** as the canonical product identity, hosted at `myfive.greenelephant.org`.
+*   **Applies to:** User-facing product naming, metadata, documentation, authentication configuration, and deployment references.
+*   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. Historical v1, v2, v4, and v10 decision logs consistently use the same product identity and hostname.
+
+### DEC-002 — B2C-First Self-Service Model & Arbora Routing — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive is a self-service product for individuals. Companies may purchase privacy-preserving employee access vouchers, while team-level and organisational consulting enquiries go to Arbora.partners.
+*   **🛠️ Canonical rule:** Operate MyFive as a B2C-first, self-service SaaS product with privacy-preserving B2B EAP voucher distribution. Route team-level and organisational consulting enquiries to Arbora.partners.
+*   **Privacy boundary:** An employer or voucher purchaser must not receive personal, sensitive, relationship, or employee-level usage data. Any permitted reporting must remain aggregate-only and privacy-isolated.
+*   **Scope boundary:** High-touch organisational consulting is outside MyFive's product scope.
+*   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. Historical v1, v2, v4, and v10 decision logs consistently describe the B2C-first model and Arbora.partners routing; the current canonical delta and implementation ledger separately support private B2C membership and privacy-isolated EAP voucher access.
+
+### DEC-003 — Five Partner Connections Plus Separate Self-Connection — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** A user can nurture five active relationships with other people. Their private relationship with themself is always separate and does not use one of those five places.
+*   **🛠️ Canonical rule:** Each account supports a maximum of five active partner-connection seats, plus one separate Philautia self-connection. The self-connection does not consume a partner seat.
+*   **Capacity boundary:** A sixth active partner connection must be rejected unless an existing partner seat is first released or deactivated. The Philautia self-connection remains available regardless of partner-seat occupancy.
+*   **Data-model implication:** Partner connections and the self-connection must remain distinguishable so seat-cap enforcement cannot count the self-connection as a partner seat.
+*   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. This resolves ambiguity in early historical versions in favour of the later v10 clarification, DEC-037 self-connection model, and the implemented Stage 2.4 five-partner-seat cap.
+
+### DEC-004 — Private by Default & Separate Consent — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** A person's answers and reflections belong only to them. Joining a connection does not reveal private information; sharing always requires a separate, clear choice.
+*   **🛠️ Canonical rule:** All personal check-ins, reflections, Connection Profiles, and emotional-needs data are private by default. Joining a connection does not authorize sharing. Every transition into a shared state requires explicit, purpose-specific, voluntary, and revocable consent.
+*   **Consent boundary:** Consent for one purpose, data item, or shared feature must not be treated as blanket permission for another. Refusing or withdrawing consent must not remove access to unrelated private features.
+*   **Data boundary:** Private records and partner-visible shared records must remain structurally isolated. Private content must never become shared through inference, default settings, connection membership, or administrative access.
+*   **Audit implication:** Governed sharing and consent changes require durable, timestamped evidence without exposing the private content itself.
+*   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. Historical v1, v2, v4, and v10 decision logs consistently state this boundary; the current encrypted vault, bilateral consent gate, consent receipts, export, and deletion implementation evidence reinforces it.
+
+### DEC-005 — Strict Micro-Surveillance Ban — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive must not let people monitor one another. It shows no read receipts, online status, location, last-active time, or response-speed tracking.
+*   **🛠️ Canonical rule:** Prohibit partner-facing read receipts, presence indicators, activity status, location tracking, response-time monitoring, and behavioural surveillance. These signals must not be inferred or exposed, including through engagement, responsiveness, or relationship scores.
+*   **Collection boundary:** Do not collect surveillance data merely to hide it from the interface. Operational metadata may be processed only when necessary for security, delivery integrity, or legal compliance, with strict purpose limitation and no partner-facing exposure.
+*   **Consent boundary:** The prohibited partner-monitoring features must not be enabled through connection-level or bilateral consent; avoiding coercive interpersonal monitoring is a product safety boundary.
+*   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. Historical v1, v2, v4, and v10 decision logs consistently prohibit read receipts, location tracking, activity status, and response-cadence monitoring.
+
+### DEC-006 — Ban Coercive Engagement; Allow Neutral History — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive must not create guilt, punishment, streak loss, or pressure when someone takes a break. A user may still calmly review their own history without being scored.
+*   **🛠️ Canonical rule:** Prohibit coercive streaks and engagement mechanics that punish silence, missed check-ins, pauses, or ended connections. Neutral, non-scored personal history may be shown without urgency, loss framing, comparison, or rewards tied to continued use.
+*   **Prohibited mechanics:** Do not use streak resets, shame or urgency messages, punitive reminders, competitive leaderboards, engagement scores, artificial scarcity, or loss of product access as consequences of inactivity.
+*   **Permitted history:** Private chronological records, append-only Connection Profile snapshots, and calm reflection timelines are permitted when they do not rank the user, prescribe frequency, or frame inactivity as failure.
+*   **Pacing relationship:** Notification pacing under DEC-034 must respect this boundary and remain optional, reversible, non-coercive, and easy to pause or disable.
+*   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. Historical v1, v2, v4, and v10 decision logs consistently ban coercive streaks and punishment for silence; DEC-037 separately supports neutral private append-only history.
+
+---
+
 ## ✅ Approved Scope Deltas
 
 ### DEC-037 (Δ) — Eight-Dimensional Greek-Love Flow Profiles — APPROVED & IN SCOPE
@@ -66,9 +152,16 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Basis:** Human decision update for v11.1. Since the `GreenElephantorg` codebase already possesses active Stripe client integration (`@stripe/stripe-js`, `@stripe/react-stripe-js`) and payment infrastructure, integrating Stripe Pay Gates and B2C membership tiers is formally APPROVED for the MyFive extension.
 *   **Rule:** The MyFive extension shall utilize the existing Stripe payment infrastructure within `GreenElephantorg` to enforce subscription pay gates (€4.99/mo membership), partner sponsorship seat allocations, and B2B EAP voucher redemptions.
 *   **Implementation Guidelines:**
-    *   Integrate Stripe checkout routes into the Express server (`server/routes/stripe.ts` or `server/routes/myfive.ts`).
+    *   Integrate Stripe checkout and webhook routes in the active backend layer of the approved stack. Legacy Express routes may operate as transitional infrastructure during refactoring.
     *   Maintain sponsorship mapping in Drizzle schemas (`shared/schema.ts`) so primary subscribers can sponsor 5 connection seats for partners without partner checkout friction.
     *   Isolate payment metadata from private check-in reflections, strictly maintaining GDPR Article 6/13 data separation.
+
+### DEC-034 (Δ) — Fibonacci & Celestial Notification Pacing — APPROVED & IN SCOPE
+*   **Status:** **APPROVED & IN SCOPE**
+*   **Owner:** Estève
+*   **Basis:** Explicit human approval to include notification pacing in the active product scope.
+*   **Rule:** Notification pacing is permitted and in scope. It must remain user-controlled, non-coercive, and privacy-safe, with pacing controls exposed in client settings and clear opt-out behavior.
+*   **MVP impact:** Included in MVP, implemented with user-control-first defaults.
 
 ---
 
@@ -83,13 +176,6 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 *   **Rule:** The application codebase must contain zero camera access routes, browser `getUserMedia` calls, webcam frame captures, or WebAssembly biometrics pipelines during the MVP phase [Approved Product Decision Log].
 *   **MVP impact:** Excluded from MVP
 *   **Guardrail:** If a developer or automated agent attempts to compile camera permission handlers or face-scanning code, STOP development immediately and require Estève's explicit written approval.
-
-### DEC-034 (Δ) — Fibonacci & Celestial Notification Pacing Quarantine
-*   **Status:** DEFERRED
-*   **Owner:** Estève
-*   **Basis:** MVP scope boundary derived from DEC-014 (brutal constraint).
-*   **Rule:** Background schedulers, automated notification loops, expanding/contracting Fibonacci day/hour pacing loops, and external space weather API integrations are completely disabled in the MVP codebase [Approved Product Decision Log].
-*   **MVP impact:** Excluded from MVP
 
 ### DEC-035 (Δ) — User-Facing AI Mediation Quarantine
 *   **Status:** DEFERRED
@@ -109,10 +195,10 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 
 | Topic Area | Active Alignment & Scope Rule | Strategic Rationale |
 | :--- | :--- | :--- |
-| **SaaS Billing & Pay Gates** | **IN SCOPE**: Uses existing `GreenElephantorg` Stripe SDK and Express payment endpoints for €4.99/mo membership and pay gates. | Reuses existing production-tested Stripe setup on `greenelephant.org` to capture subscription value seamlessly. |
+| **SaaS Billing & Pay Gates** | **IN SCOPE**: Stripe billing and pay gates remain active scope and must be carried through stack refactoring. | Preserves validated monetization while migrating toward the approved SvelteKit target stack. |
 | **Biometric Webcam** | **EXCLUDED**: Camera access and biometrics are strictly disabled in MVP. No camera triggers compiled. | Eliminates GDPR Article 9 special-category data liabilities. |
 | **User-Facing AI** | **EXCLUDED**: AI interpersonal dialogue mediation is strictly banned (DEC-012). Backend developer tools allowed. | Preserves human emotional craftsmanship and authenticity. |
-| **Notification Pacing** | **OPTIONAL**: All notification pacing is a client-side settings toggle. | Enforces Nielsen Usability Heuristic #3 (User Control & Freedom). |
+| **Notification Pacing** | **IN SCOPE (USER-CONTROLLED)**: Notification pacing is approved and must remain optional/toggleable with clear opt-out. | Enforces Nielsen Usability Heuristic #3 (User Control & Freedom) while enabling approved pacing features. |
 
 ---
 
