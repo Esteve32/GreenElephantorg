@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.5 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.6 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.5`
-*   **Last Updated:** `2026-09-01T13:38:52+03:00`
+*   **Document Version:** `11.2.6`
+*   **Last Updated:** `2026-09-01T13:50:06+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "React_Vite_Express_NeonPG_Drizzle_Stripe_ReplitVM"` [Approved Product Decision Log].
@@ -25,6 +25,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.6 | 2026-09-01T13:50:06+03:00 | Estève | Completed Stage 3.3 with privacy-isolated aggregate EAP voucher redemption |
 | 11.2.5 | 2026-09-01T13:38:52+03:00 | Estève | Added implementation evidence index linking completed work to commits and migrations |
 | 11.2.4 | 2026-09-01T13:35:20+03:00 | Estève | Completed Stage 3.2 with secure partner invitations and sponsored seat entitlements |
 | 11.2.3 | 2026-09-01T12:57:44+03:00 | Estève | Completed Stage 3.1 with recurring MyFive Stripe Checkout and durable entitlements |
@@ -130,10 +131,10 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 - [x] **2.3** Build living relationship agreement editor with versioning and timestamping, backed by append-only agreement versions and consent receipts.
 - [x] **2.4** Hard-cap active partner connection seats to 5 (+1 Philautia self-vault), enforced by database constraints and serialized server-side allocation.
 
-### Stage 3: Stripe Pay Gates & Sponsorship
+### Stage 3: Stripe Pay Gates & Sponsorship (COMPLETED)
 - [x] **3.1** Integrate Stripe Checkout for €4.99/month primary subscription, with webhook-backed entitlement persistence and account-bound return verification.
 - [x] **3.2** Implement 5-seat partner invitation & free sponsorship mapping flow (`myfiveSubscriptions`) using expiring, hashed, single-use invitation links and authenticated email-bound acceptance.
-- [ ] **3.3** Add B2B EAP voucher redemption interface (with strict employee privacy isolation).
+- [x] **3.3** Add B2B EAP voucher redemption interface with hashed codes, aggregate-only employer reporting, and unlinkable employee entitlements.
 
 ### Stage 4: Data Sovereignty & GDPR Compliance
 - [ ] **4.1** Implement GDPR Article 17 hard cascade account wipe API & button.
@@ -162,6 +163,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 2.4 — enforced five partner seats plus self-vault | 11.2.2 | `6c3cc76` | `20260831_myfive_connection_seat_cap.sql` |
 | Stage 3.1 — recurring Stripe Checkout and entitlements | 11.2.3 | `ae0c0da` | Uses `myfive_subscriptions` from the brownfield migration |
 | Stage 3.2 — sponsored partner invitation flow | 11.2.4 | `eca696f` | `20260901_myfive_sponsored_invitations.sql` |
+| Stage 3.3 — privacy-isolated B2B EAP voucher redemption | 11.2.6 | Commit containing this `11.2.6` ledger entry | `20260901_myfive_eap_vouchers.sql` |
 
 ---
 

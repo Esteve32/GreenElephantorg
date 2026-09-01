@@ -8,6 +8,8 @@ export default function SettingsPage() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherLoading, setVoucherLoading] = useState(false);
   const [dataWiped, setDataWiped] = useState(false);
 
   useEffect(() => {
@@ -30,6 +32,18 @@ export default function SettingsPage() {
   };
 
   const isActive = subscription?.status === "active";
+  const isEntitled = ["active", "sponsored", "eap"].includes(subscription?.status ?? "");
+
+  const redeemVoucher = async () => {
+    setVoucherLoading(true); setCheckoutError(null);
+    try {
+      const response = await apiRequest("POST", "/api/myfive/eap-vouchers/redeem", { code: voucherCode });
+      const result = await response.json() as { status: string; message?: string };
+      setSubscription((current) => current ? { ...current, status: result.status } : { status: result.status, sponsoredSeatsAllocated: 0, stripeConnected: false });
+      setVoucherCode("");
+    } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Voucher could not be redeemed."); }
+    finally { setVoucherLoading(false); }
+  };
 
   return (
     <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
@@ -63,7 +77,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <span className={`px-2.5 py-1 text-xs font-mono font-semibold border rounded-full flex items-center gap-1 ${isActive ? "bg-emerald-950 text-emerald-300 border-emerald-500/30" : "bg-slate-900 text-slate-400 border-slate-700"}`}>
-              <Check className="w-3 h-3" /> {isActive ? "Active Membership" : "Membership Inactive"}
+              <Check className="w-3 h-3" /> {isEntitled ? `${subscription?.status === "eap" ? "Private EAP" : subscription?.status === "sponsored" ? "Sponsored" : "Active"} Access` : "Membership Inactive"}
             </span>
           </div>
 
@@ -82,11 +96,15 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {!isActive && <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+          {!isEntitled && <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <input type="email" value={customerEmail} onChange={(event) => setCustomerEmail(event.target.value)} placeholder="Email for Stripe receipt" className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
             <button disabled={checkoutLoading || !subscription?.stripeConnected} onClick={startCheckout} className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-40 text-sm font-medium text-white rounded-lg flex items-center justify-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> {checkoutLoading ? "Opening Stripe…" : "Subscribe securely"}
             </button>
+          </div>}
+          {!isEntitled && <div className="border-t border-slate-800 pt-4">
+            <p className="mb-2 text-xs text-slate-400">Employee Assistance Programme vouchers activate private access. Your employer receives aggregate usage only.</p>
+            <div className="flex flex-col gap-3 sm:flex-row"><input value={voucherCode} onChange={(event) => setVoucherCode(event.target.value)} placeholder="EAP voucher code" className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /><button disabled={voucherLoading || !voucherCode.trim()} onClick={redeemVoucher} className="rounded-lg bg-cyan-900 px-4 py-2 text-sm text-cyan-100 disabled:opacity-40">{voucherLoading ? "Redeeming…" : "Redeem privately"}</button></div>
           </div>}
           {checkoutError && <p role="alert" className="text-xs text-rose-300">{checkoutError}</p>}
         </div>

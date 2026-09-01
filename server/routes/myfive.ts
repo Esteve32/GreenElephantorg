@@ -3,10 +3,11 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { and, asc, desc, eq, or } from "drizzle-orm";
 import Stripe from "stripe";
 import { db, pool } from "../db";
-import { myfiveAgreements, myfiveConnectionSlots, myfiveConsentLedger, myfiveInvitations, myfiveLoveProfileSnapshots, myfiveSubscriptions } from "../../shared/schema";
+import { myfiveAgreements, myfiveConnectionSlots, myfiveConsentLedger, myfiveEapVouchers, myfiveInvitations, myfiveLoveProfileSnapshots, myfiveSubscriptions } from "../../shared/schema";
 import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlowProfile";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 import { isConnectorEnabled } from "../lib/connectorGuard";
+import { requireAdminAuth } from "../auth";
 
 export const myfiveRouter = Router();
 
@@ -17,6 +18,10 @@ function getStripe(): Stripe | null {
   return process.env.STRIPE_SECRET_KEY
     ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2023-10-16" as any })
     : null;
+}
+
+function hashVoucherCode(code: string): string {
+  return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
 }
 
 function getMyFiveActorId(req: Request): string {
@@ -431,6 +436,70 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
     console.error("MyFive love profile persistence failed", error);
     res.status(500).json({ error: "Love profile could not be saved" });
   }
+});
+
+myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, res: Response) => {
+  const organizationLabel = typeof req.body?.organizationLabel === "string" ? req.body.organizationLabel.trim() : "";
+  const maxRedemptions = Number(req.body?.maxRedemptions);
+  const expiresAt = req.body?.expiresAt ? new Date(req.body.expiresAt) : null;
+  if (!organizationLabel || organizationLabel.length > 150 || !Number.isInteger(maxRedemptions) || maxRedemptions < 1 || maxRedemptions > 100_000) {
+    return res.status(400).json({ error: "Organization and a redemption capacity between 1 and 100,000 are required" });
+  }
+  if (expiresAt && (Number.isNaN(expiresAt.getTime()) || expiresAt <= new Date())) {
+    return res.status(400).json({ error: "Voucher expiry must be a valid future date" });
+  }
+  try {
+    const code = `EAP-${randomBytes(9).toString("hex").toUpperCase()}`;
+    const [voucher] = await db.insert(myfiveEapVouchers).values({
+      organizationLabel, codeHash: hashVoucherCode(code), maxRedemptions, expiresAt,
+    }).returning({ id: myfiveEapVouchers.id, expiresAt: myfiveEapVouchers.expiresAt });
+    res.status(201).type("application/json").send(JSON.stringify({
+      id: voucher.id, code, expiresAt: voucher.expiresAt?.toISOString() ?? null,
+      warning: "Store this code securely; only its hash is retained and the code cannot be recovered.",
+    }));
+  } catch (error) {
+    console.error("MyFive EAP voucher creation failed", error);
+    res.status(500).json({ error: "EAP voucher could not be created" });
+  }
+});
+
+myfiveRouter.post("/eap-vouchers/redeem", async (req: Request, res: Response) => {
+  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before redeeming an EAP voucher" });
+  const code = typeof req.body?.code === "string" ? req.body.code.trim() : "";
+  if (code.length < 12 || code.length > 100) return res.status(400).json({ error: "Enter a valid EAP voucher code" });
+  const userId = req.session.clientUserId;
+  const codeHash = hashVoucherCode(code);
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const current = await client.query("SELECT plan_status FROM myfive_subscriptions WHERE user_id = $1 FOR UPDATE", [userId]);
+    if (["active", "eap"].includes(current.rows[0]?.plan_status)) {
+      await client.query("ROLLBACK");
+      return res.json({ status: current.rows[0].plan_status, alreadyEntitled: true });
+    }
+    const found = await client.query(
+      `SELECT id FROM myfive_eap_vouchers
+       WHERE code_hash = $1 AND status = 'active' AND redeemed_count < max_redemptions
+         AND (expires_at IS NULL OR expires_at > now()) FOR UPDATE`, [codeHash],
+    );
+    if (!found.rows[0]) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "This voucher is invalid, expired, or fully redeemed" });
+    }
+    await client.query("UPDATE myfive_eap_vouchers SET redeemed_count = redeemed_count + 1 WHERE id = $1", [found.rows[0].id]);
+    await client.query(
+      `INSERT INTO myfive_subscriptions (user_id, plan_status, sponsored_seats_allocated)
+       VALUES ($1, 'eap', 0)
+       ON CONFLICT (user_id) DO UPDATE SET plan_status = 'eap', sponsor_user_id = NULL
+       WHERE myfive_subscriptions.plan_status NOT IN ('active', 'eap')`, [userId],
+    );
+    await client.query("COMMIT");
+    res.json({ status: "eap", message: "EAP access activated. Your employer cannot see your identity or MyFive activity." });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive EAP voucher redemption failed", error);
+    res.status(500).json({ error: "EAP voucher could not be redeemed" });
+  } finally { client.release(); }
 });
 
 myfiveRouter.post("/subscription/checkout", async (req: Request, res: Response) => {

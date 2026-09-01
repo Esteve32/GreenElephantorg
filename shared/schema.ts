@@ -182,11 +182,27 @@ export const myfiveSubscriptions = pgTable("myfive_subscriptions", {
   userId: varchar("user_id").notNull().unique(),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
-  planStatus: text("plan_status").notNull().default("active"), // "active", "canceled", "sponsored"
+  planStatus: text("plan_status").notNull().default("active"), // "active", "canceled", "sponsored", "eap"
   sponsorUserId: text("sponsor_user_id"), // Null if primary subscriber; Populated if partner seat is sponsored
   sponsoredSeatsAllocated: integer("sponsored_seats_allocated").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// Employer-facing EAP capacity contains aggregate usage only—never employee identity.
+export const myfiveEapVouchers = pgTable("myfive_eap_vouchers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  organizationLabel: text("organization_label").notNull(),
+  codeHash: text("code_hash").notNull().unique(),
+  maxRedemptions: integer("max_redemptions").notNull(),
+  redeemedCount: integer("redeemed_count").notNull().default(0),
+  status: text("status").notNull().default("active"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  statusExpiry: index("myfive_eap_voucher_status_expiry_idx").on(table.status, table.expiresAt),
+  positiveCapacity: check("myfive_eap_voucher_capacity_check", sql`${table.maxRedemptions} > 0`),
+  validCount: check("myfive_eap_voucher_count_check", sql`${table.redeemedCount} BETWEEN 0 AND ${table.maxRedemptions}`),
+}));
 
 // Webinar/Play Labs waitlist entries (Calendar page)
 export const webinarWaitlistEntries = pgTable("webinar_waitlist_entries", {
