@@ -139,3 +139,13 @@ export async function savePrivateCheckIn(input: PrivateCheckInInput): Promise<st
     database.close();
   }
 }
+
+export async function wipePrivateVault(): Promise<void> {
+  if (!globalThis.indexedDB) return;
+  await new Promise<void>((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(DATABASE_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error ?? new Error("Private vault deletion failed"));
+    request.onblocked = () => reject(new Error("Close other MyFive tabs before deleting the private vault"));
+  });
+}

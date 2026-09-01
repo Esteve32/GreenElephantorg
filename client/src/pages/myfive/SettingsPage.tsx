@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Compass, CreditCard, Shield, Database, Trash2, ArrowLeft, Check, Sparkles } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { wipePrivateVault } from "@/lib/myfiveVault";
 
 export default function SettingsPage() {
   const [subscription, setSubscription] = useState<{ status: string; sponsoredSeatsAllocated: number; stripeConnected: boolean } | null>(null);
@@ -11,6 +12,9 @@ export default function SettingsPage() {
   const [voucherCode, setVoucherCode] = useState("");
   const [voucherLoading, setVoucherLoading] = useState(false);
   const [dataWiped, setDataWiped] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     apiRequest("GET", "/api/myfive/subscription")
@@ -43,6 +47,18 @@ export default function SettingsPage() {
       setVoucherCode("");
     } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Voucher could not be redeemed."); }
     finally { setVoucherLoading(false); }
+  };
+
+  const deleteAccount = async () => {
+    setDeleting(true); setDeleteError(null);
+    try {
+      await apiRequest("DELETE", "/api/myfive/account", { confirmation: deleteConfirmation });
+      await wipePrivateVault();
+      setDataWiped(true);
+      setDeleteConfirmation("");
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : "Account deletion could not be completed.");
+    } finally { setDeleting(false); }
   };
 
   return (
@@ -149,12 +165,20 @@ export default function SettingsPage() {
               ✓ Account and local cache cascade wipe completed.
             </div>
           ) : (
-            <button
-              onClick={() => setDataWiped(true)}
-              className="w-full py-3 bg-rose-600/80 hover:bg-rose-600 text-white font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2"
-            >
-              <Shield className="w-4 h-4" /> Trigger Immediate Cascade Account Wipe
-            </button>
+            <div className="space-y-3">
+              <p className="text-xs leading-relaxed text-rose-200/80">This permanently deletes your account, billing identity, private records, and every shared workspace you own. Other users’ accounts remain intact, but agreements in your owned connections are removed. This cannot be undone.</p>
+              <label className="block text-xs text-slate-300">Type <strong>DELETE MYFIVE</strong> to confirm
+                <input value={deleteConfirmation} onChange={(event) => setDeleteConfirmation(event.target.value)} autoComplete="off" className="mt-2 w-full rounded-lg border border-rose-700/60 bg-slate-950 px-3 py-2 font-mono text-sm" />
+              </label>
+              <button
+                disabled={deleting || deleteConfirmation !== "DELETE MYFIVE"}
+                onClick={deleteAccount}
+                className="w-full py-3 bg-rose-600/80 hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-40 text-white font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <Shield className="w-4 h-4" /> {deleting ? "Permanently deleting…" : "Permanently delete MyFive account"}
+              </button>
+              {deleteError && <p role="alert" className="text-xs text-rose-300">{deleteError}</p>}
+            </div>
           )}
         </div>
       </main>

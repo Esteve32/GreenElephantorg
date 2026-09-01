@@ -438,6 +438,61 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   }
 });
 
+myfiveRouter.delete("/account", async (req: Request, res: Response) => {
+  if (!req.session.clientUserId || !req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
+  if (req.body?.confirmation !== "DELETE MYFIVE") return res.status(400).json({ error: "Type DELETE MYFIVE to confirm permanent deletion" });
+  const userId = req.session.clientUserId;
+  const userEmail = req.session.clientEmail.toLowerCase();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-delete:${userId}`]);
+    const membership = await client.query(
+      "SELECT stripe_customer_id, stripe_subscription_id FROM myfive_subscriptions WHERE user_id = $1 FOR UPDATE", [userId],
+    );
+    const stripeCustomerId = membership.rows[0]?.stripe_customer_id as string | null | undefined;
+    const stripeSubscriptionId = membership.rows[0]?.stripe_subscription_id as string | null | undefined;
+    const stripe = getStripe();
+    if (stripeCustomerId) {
+      if (!stripe) throw new Error("Stripe must be available to remove the billing identity before account deletion");
+      await stripe.customers.del(stripeCustomerId);
+    } else if (stripeSubscriptionId?.startsWith("sub_")) {
+      if (!stripe) throw new Error("Stripe must be available to cancel billing before account deletion");
+      await stripe.subscriptions.cancel(stripeSubscriptionId);
+    }
+
+    const ownedSlotSubquery = "SELECT id FROM myfive_connection_slots WHERE user_id = $1";
+    await client.query(`DELETE FROM myfive_agreements WHERE creator_user_id = $1 OR partner_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_consent_ledger WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_love_profile_snapshots WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_check_ins WHERE user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_invitations WHERE sponsor_user_id = $1 OR accepted_by_user_id = $1 OR lower(invitee_email) = $2 OR slot_id IN (${ownedSlotSubquery})`, [userId, userEmail]);
+    await client.query("UPDATE myfive_connection_slots SET partner_user_id = NULL WHERE partner_user_id = $1", [userId]);
+    await client.query("DELETE FROM myfive_connection_slots WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM myfive_subscriptions WHERE user_id = $1 OR sponsor_user_id = $1", [userId]);
+    await client.query(`UPDATE myfive_subscriptions AS subscriptions SET sponsored_seats_allocated = (
+      SELECT count(*)::integer FROM myfive_invitations AS invitations
+      WHERE invitations.sponsor_user_id = subscriptions.user_id AND invitations.status = 'accepted'
+    ) WHERE subscriptions.plan_status = 'active'`);
+    await client.query("DELETE FROM portal_timeline_events WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM portal_user_context WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM client_subscriptions WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM audit_logs WHERE lower(user_email) = $1", [userEmail]);
+    await client.query("DELETE FROM client_users WHERE id = $1", [userId]);
+    await client.query("COMMIT");
+
+    await new Promise<void>((resolve) => req.session.destroy((sessionError) => {
+      if (sessionError) console.error("MyFive session destruction after committed account deletion failed", sessionError);
+      resolve();
+    }));
+    res.json({ deleted: true, message: "MyFive account and linked personal data were permanently deleted" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive Article 17 account deletion failed", error);
+    res.status(500).json({ error: "Account deletion could not be completed safely; no database deletion was committed" });
+  } finally { client.release(); }
+});
+
 myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, res: Response) => {
   const organizationLabel = typeof req.body?.organizationLabel === "string" ? req.body.organizationLabel.trim() : "";
   const maxRedemptions = Number(req.body?.maxRedemptions);
