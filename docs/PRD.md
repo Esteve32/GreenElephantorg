@@ -1,4 +1,4 @@
-# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.1 - Product Experience Baseline
+# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.2 - Operational Safety and User-Control Baseline
 
 ## 1. Authority and Scope
 
@@ -22,6 +22,8 @@ This is the canonical Product Requirements Document for MyFive (`myfive.greenele
 - Private user-selected eight-octant Flow calibration: In scope
 - MyFive membership at €4.99/month with sponsored partner connections: In scope
 - MyFive annual membership: Deferred pending separate approval
+- optional user-connected Google Calendar events and explicit Google Drive exports: In scope with granular consent and minimum scopes
+- behavioral response monitoring, NFI engagement scoring, and inferred relationship-health alerts: Excluded
 - Complete `greenelephant.org` refactor into the unified target stack: In scope after the MyFive proof gate
 - Existing Green Elephant Typeform, Google, Stripe, Satellite Scan, Resend, Neon, and operational Notion workflows: Must remain operational until verified replacement
 - Biometrics / camera / rPPG: Excluded
@@ -127,23 +129,29 @@ Roles:
 Operational requirements:
 
 - least-privilege role separation
-- break-glass support with expiration and audit trail
-- kill switch for outbound integrations
+- named, least-privilege break-glass support with a 24-hour maximum, automatic expiry, immediate revocation, and audit trail
+- provider- and workflow-specific kill switches plus a global emergency stop
 - transactional communications controls
+- owned incident playbooks and a human-triggered redacted diagnostic bundle
+- service-by-service recommissioning checks after an emergency stop
 
 ### Module 4 - Connections, Notifications, and Pacing
 
 Required capabilities:
 
 - user-configurable pacing and quiet hours
-- optional Fibonacci pacing curves
+- optional, explicitly selected Fibonacci pacing curves
 - reversible pause/mute controls
+- per-connection or per-reminder controls
 - timezone-aware scheduling behavior
+- optional user-connected Google Calendar events and explicit Drive exports
 
 Boundaries:
 
 - pacing must never become coercive
-- pacing defaults must be safe and opt-out available
+- pacing defaults must be safe, understandable, and easy to disable
+- no behavioral response monitoring, inferred engagement-risk scoring, or relationship-health alerting
+- delivery throttling may use technical provider errors and queue health, not personal responsiveness
 
 ### Module 5 - Architecture, Security, and Delivery
 
@@ -218,6 +226,7 @@ Every requirement must map from user journey to implementation and verification.
 | UX-006 | Core workflow | User can create and review a non-verbal representation without AI-authored interpersonal language | M1/M2 | Connection Profile UI + privacy controls | privacy, authorship, and no-generative-output tests |
 | UX-007 | Presentation | Organic Holography remains accessible, readable, keyboard-usable, and functional without WebGPU or motion | M1/M5 | design tokens + components + fallbacks | WCAG, keyboard, reduced-motion, and fallback review |
 | UX-008 | Core workflow | User can explicitly select one of eight Flow octants or `Not assessed` for each Love dimension | M1/M2 | Connection Profile calibration UI | enum, usability, privacy, and no-inference tests |
+| UX-009 | Retention | User controls pacing presets, quiet hours, pause/off, timezone, and per-connection or per-reminder behavior | M4 | settings UI + scheduler | control persistence, opt-out, timezone, and job-cancellation tests |
 | DAT-001 | Trust | Private and shared data are structurally isolated | M2 | schema boundaries + query guards | data-boundary test pack |
 | DAT-002 | Consent | Shared agreement requires bilateral explicit consent | M2 | consent gating + ledger | consent gate integration tests |
 | DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
@@ -225,7 +234,11 @@ Every requirement must map from user journey to implementation and verification.
 | DAT-005 | Ontology | Eight Lenses and Eight Loves remain independent while sharing the approved visual taxonomy | M1/M2 | design tokens + separate schemas | schema independence and token mapping tests |
 | PAY-001 | Monetization | Primary membership is €4.99/month and supports five sponsored partner connections; no annual plan is offered without separate approval | M1/M5 | Stripe checkout + subscription APIs + entitlement model | price, interval, sponsorship, and annual-plan absence tests |
 | ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
-| ADM-002 | Operations | Kill switch pauses outbound integrations | M3 | control plane toggles | kill switch verification tests |
+| ADM-002 | Operations | Scoped provider/workflow switches and a global emergency stop safely pause outbound work and support controlled restart | M3 | control plane toggles + queues | isolation, pause, backlog, duplicate-suppression, and recommissioning tests |
+| ADM-003 | Support | Named break-glass grants expire within 24 hours, are immediately revocable and audited, and cannot expose private vault data | M3 | privileged-access service + audit ledger | grant, scope, expiry, revocation, misuse, and private-data-denial tests |
+| ADM-004 | Incident response | Operators have owned playbooks and can create a redacted diagnostic bundle without secrets or private payloads | M3/M5 | runbooks + diagnostic exporter | scenario exercises, redaction fixtures, access, retention, and deletion tests |
+| INT-001 | Optional Google connection | User separately authorizes minimum-scope Calendar event operations and explicit Drive exports | M4/M5 | Google OAuth + provider adapters | scope, consent, write preview, disconnect, token-revocation, and cross-account tests |
+| SAF-001 | Non-surveillance | The product does not score ignored notifications, infer relationship health, or alert admins about individual responsiveness | M2/M4 | scheduler + telemetry boundaries | prohibited-signal, admin-visibility, aggregation, and retention tests |
 | ARC-001 | Delivery | New features are implemented on SvelteKit target stack | M5 | repo architecture + CI checks | architecture gate checklist |
 | ARC-002 | Operations | Runtime capacity and cost controls can scale with measured demand | M5 | Replit deployment + billing controls | capacity, invoice, alert, and approval review |
 | ARC-003 | Migration | MyFive proves the exact SvelteKit/Svelte 5/Zero/Neon/Replit topology before root-site cutover begins | M5 | MyFive proof deployment + test harness | proof record covering auth, privacy, sync, reconnect, redeploy, and rollback |
@@ -387,6 +400,60 @@ Then the selected value shall be stored as the user's private explicit input
 
 And MyFive shall not infer, diagnose, rank, or expose the selection to a partner by default.
 
+### AC-017 Break-glass expiry and isolation
+
+Given a named authorized operator receives a break-glass grant for a recorded support reason
+
+When the approved scope is used, revoked, or reaches its expiry within 24 hours
+
+Then every event shall be appended to the administrative audit trail
+
+And the operator shall never gain access to private browser vaults, private Connection Profile payloads, secrets, or payment-card data.
+
+### AC-018 Layered emergency stop and recovery
+
+Given one outbound provider or workflow is unsafe
+
+When an operator activates its scoped kill switch
+
+Then new work for that scope shall pause without deleting data or falsely completing queued work
+
+And unaffected revenue workflows shall continue where isolation is technically safe
+
+And recommissioning shall require the recorded recovery checklist.
+
+### AC-019 Redacted emergency bundle
+
+Given an authorized operator deliberately requests an incident diagnostic bundle
+
+When the bundle is created
+
+Then its creation and access shall be audited
+
+And it shall contain only purpose-limited operational metadata with no credentials, tokens, payment-card data, private vault content, private reflections, or unrestricted raw payloads.
+
+### AC-020 Granular Google connection
+
+Given a user wants a MyFive Calendar event or Drive export
+
+When the user authorizes that capability
+
+Then the interface shall identify the Google account, requested operation, destination, and minimum verified scope
+
+And Calendar and Drive consent shall remain separately revocable
+
+And no unrelated Google data shall be collected in the background.
+
+### AC-021 User-controlled pacing without response surveillance
+
+Given a user enables a pacing preset
+
+When the user changes quiet hours, pauses a connection, or disables pacing
+
+Then future jobs shall follow the new setting and disabling shall stop future pacing jobs
+
+And the system shall not use ignored notifications, response timing, or partner behavior to score engagement, infer relationship health, or alert administrators.
+
 ---
 
 ## 6. Two-Stage Sequential Refactor Plan
@@ -482,6 +549,7 @@ Begin immediately after Stage 1 exit evidence is recorded. Use reversible vertic
 - [ ] Port admin authentication, role enforcement, integration controls, campaign controls, analytics, and operational dashboards.
 - [ ] Inventory and verify Google OAuth, Sheets, Analytics, Gmail, Fonts, and documented Slides dependencies separately; do not treat “Google” as one credential or scope.
 - [ ] Verify least privilege, cross-user isolation, callback origins, token handling, and break-glass audit behavior.
+- [ ] Verify MyFive Calendar and Drive operations use separate consent, minimum scopes, explicit write intent, and independent revocation without changing established Green Elephant Google behavior.
 
 #### Migration Step 2.6 - Stabilization and legacy retirement
 
@@ -671,6 +739,8 @@ Definition of done for sync:
 - confirm the exact clock-time intended by "Sunday night"; the current canonical target is end of day 2026-09-06 in Europe/Helsinki
 - define the per-surface stabilization window and production rollback mechanism
 - decide whether and when to approve the deferred €48/year MyFive membership, including billing and entitlement behavior
+- define owners, escalation contacts, retention periods, and rehearsal cadence for each approved incident playbook
+- verify the exact minimum Google OAuth scopes and callback identities before enabling MyFive Calendar or Drive in production
 - confirm whether any missing follow-on book section still needs inclusion
 - complete full RTM expansion for all active requirement IDs
 - attach automated tests to each acceptance criterion in the delivery backlog

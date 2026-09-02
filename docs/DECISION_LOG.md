@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.3.1 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.3.2 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.3.1`
-*   **Last Updated:** `2026-09-02T22:02:45+03:00`
+*   **Document Version:** `11.3.2`
+*   **Last Updated:** `2026-09-02T22:06:58+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -45,6 +45,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.3.2 | 2026-09-02T22:06:58+03:00 | Estève | Revalidated DEC-020 through DEC-025 operational safety, Google, and pacing controls |
 | 11.3.1 | 2026-09-02T22:02:45+03:00 | Estève | Revalidated DEC-016 through DEC-019 product experience baseline |
 | 11.3.0 | 2026-09-02T21:40:17+03:00 | Estève | Revalidated DEC-015 sequential unified refactor with revenue continuity |
 | 11.2.29 | 2026-09-02T20:06:56+03:00 | Estève | Revalidated DEC-013 and DEC-014 with Alpha Beta Theta phase governance |
@@ -296,6 +297,66 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Privacy and history:** Selections remain private by default and may be stored as append-only timestamped snapshots under DEC-004 and DEC-037. Partner visibility requires a separately approved, explicit, purpose-specific, voluntary, and revocable sharing flow.
 *   **Claims boundary:** Do not describe the product model as clinically validated, diagnostic, or therapeutic without separately established authoritative evidence and approval.
 *   **Revalidation basis:** Explicit human approval of Option 19A. This preserves DEC-037 and the current eight-octant schema while correcting the historical automatic-context and clinical-validation overclaims.
+
+### DEC-020 — Audited Break-Glass Support Access — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** An authorized support person may receive narrowly limited emergency access for no more than 24 hours, but every use must be attributable, justified, visible in the audit trail, and immediately revocable.
+*   **🛠️ Canonical rule:** Break-glass support grants must be issued to a named authorized operator, restricted to the minimum roles and surfaces needed for the recorded support reason, expire automatically within 24 hours, and support immediate revocation. Grant, use, attempted misuse, revocation, and expiry events must be appended to the administrative audit trail.
+*   **Private-data boundary:** A break-glass grant must not provide access to private browser vaults, private Connection Profile payloads, passwords, payment-card data, provider secrets, or encryption-key material. It must not silently impersonate a participant or bypass bilateral consent.
+*   **Activation boundary:** A generic permanent emergency account is prohibited. Granting access requires strong operator authentication, an explicit reason, a defined scope, and a recorded expiry. A shorter duration must be used whenever it is sufficient.
+*   **Revalidation basis:** Explicit human approval of Option 20A. This replaces historical broad or fixed-duration interpretations with a 24-hour maximum, least-privilege access, auditability, and private-vault isolation.
+
+### DEC-021 — Layered Emergency Integration Kill Switches — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Operators can stop one unsafe integration without unnecessarily stopping the others, and can still use a global emergency stop when the blast radius is unclear.
+*   **🛠️ Canonical rule:** Provide separately auditable kill switches for Resend, each Google integration, synchronization or replication workers, and other material outbound providers, plus a global emergency stop. A switch pauses new outbound work for its scope without deleting source data, invalidating audit history, or silently marking unsent work as completed.
+*   **Recovery boundary:** Recommission providers one at a time through an owned recovery checklist covering incident containment, credential and configuration verification, queue or backlog inspection, duplicate suppression, test execution, operator approval, and post-restart monitoring.
+*   **Continuity boundary:** During DEC-015 migration, controls must distinguish MyFive from established Green Elephant revenue and Satellite Scan workflows wherever isolation is technically possible. A global stop is reserved for incidents whose scope cannot safely be contained with a provider- or workflow-specific switch.
+*   **Revalidation basis:** Explicit human approval of Option 21A. This retains the historical global emergency capability while adding service-level containment and preventing destructive or ambiguous shutdown behavior.
+
+### DEC-022 — Incident Playbooks and Redacted Emergency Diagnostic Bundle — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** The team will have practical response instructions for the incidents most likely to threaten customers or revenue, and can deliberately export safe diagnostic evidence without packaging secrets or private content.
+*   **🛠️ Canonical rule:** Maintain owned, versioned incident playbooks for payment and webhook failures, suspected data exfiltration, DDoS or abusive automation, malicious data injection, transactional-email incidents, provider outages, synchronization failures, containment, recovery, customer communication, and post-incident review.
+*   **Bundle boundary:** An emergency diagnostic bundle must be human-triggered, access-controlled, timestamped, and redacted by construction. It may contain relevant configuration state without secret values, service health, versions, request or event identifiers, audit metadata, queue counts, error classifications, and checksums. It must exclude credentials, tokens, payment-card data, private vault content, private reflections, unnecessary personal data, and unrestricted raw production payloads.
+*   **Retention boundary:** Bundle creation, access, sharing, retention, and deletion must be logged and governed by the incident's documented purpose. Export does not authorize transmission to an external party without a separate authorized operational basis.
+*   **Revalidation basis:** Explicit human approval of Option 22A. This keeps the historical incident-response intent while replacing an unrestricted raw-log export with a privacy-safe diagnostic artifact.
+
+### DEC-023 — Optional User-Connected Google Calendar and Drive Export — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** A MyFive member may deliberately connect Google Calendar for selected events and export selected data to Google Drive. MyFive does not receive a general licence to explore the person's Google account.
+*   **🛠️ Canonical rule:** Permit optional MyFive Google Calendar event creation or update and explicit user-initiated Google Drive exports. Each capability requires separate, plain-language consent, the minimum verified OAuth scopes, a clear account indicator, failure-safe behavior, and accessible disconnect and revocation controls.
+*   **Access boundary:** Do not request general Drive browsing, unrelated Calendar access, Gmail access, organization-wide access, or background collection. Each write or export must follow a user action or a separately enabled, clearly described scheduling instruction, and must expose what will be written and where.
+*   **Migration boundary:** Existing Green Elephant Google workflows and credentials remain operational under DEC-015 until their replacements pass parity and cutover gates. MyFive-specific credentials, scopes, callbacks, tokens, and records must be inventoried separately and must not broaden established root-site access.
+*   **Revalidation basis:** Explicit human approval of Option 23A. This approves the useful Calendar and Drive operations from the historical proposal while imposing granular consent, minimum scopes, revocation, and migration isolation.
+
+### DEC-024 — Accessibility-Friendly User-Controlled Pacing — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Members can choose a pacing rhythm that helps them, including an optional Fibonacci curve, but can always change it, pause it, or turn it off.
+*   **🛠️ Canonical rule:** Notification pacing is optional and controlled by the user. Provide quiet hours, timezone awareness, pause, mute, off, and per-connection or per-reminder settings. Fibonacci pacing may be offered as an understandable selectable preset, never as an invisible or compulsory default.
+*   **Calendar boundary:** Calendar creation or synchronization is allowed only when DEC-023's Google connection is active and the user separately requests or enables the relevant event behavior. Disabling pacing must stop future pacing jobs without removing access to manual reminders.
+*   **Claims boundary:** Describe the feature in plain accessibility and user-control language. Do not claim that pacing is “ADHD-proof,” medically effective, clinically validated, or universally suitable without separately approved authoritative evidence.
+*   **Revalidation basis:** Explicit human approval of Option 24A. This consolidates DEC-034 with concrete controls and corrects the historical automatic and medicalized framing.
+
+### DEC-025 — No Behavioral Response Monitoring or Relationship-Health Scoring — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive may keep message delivery safe, but it will not watch ignored notifications and turn them into a judgment about a person or relationship.
+*   **🛠️ Canonical rule:** Do not compute NFI or equivalent engagement-risk scores from ignored messages, response timing, notification interaction, partner activity, or inferred emotional state. Do not automatically change interpersonal pacing, warn administrators about a person's engagement, or label relationship health from such behavior.
+*   **Permitted operations:** The system may throttle or retry work using technical delivery evidence such as provider errors, rate limits, bounce state, queue depth, duplicate risk, or system volume. Users may change their own pacing at any time. Administrators may see aggregate operational delivery health that does not expose private content or profile individual responsiveness.
+*   **Privacy boundary:** Operational telemetry must remain purpose-limited, minimized, access-controlled, and subject to documented retention. It must not be repurposed into behavioral surveillance, partner comparison, emotional inference, or coercive engagement optimization.
+*   **Revalidation basis:** Explicit human approval of Option 25A. This rejects the historical response-monitoring NFI loop while retaining necessary technical delivery safeguards and user-directed pacing.
 
 ---
 
