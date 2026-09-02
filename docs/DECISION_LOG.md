@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.21 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.22 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.21`
-*   **Last Updated:** `2026-09-02T01:18:32+03:00`
+*   **Document Version:** `11.2.22`
+*   **Last Updated:** `2026-09-02T03:03:53+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -34,9 +34,18 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Conflict handling:** Preserve provenance and historical wording, but classify duplicates, superseded entries, exclusions, deferrals, proposals, research, and uncertain approval claims explicitly. Later approved deltas override conflicting historical wording.
 *   **Scope effect:** This policy governs consolidation only. It does not approve, reject, defer, or otherwise change the product scope of any individual historical decision.
 
+### Workshop Handover Checkpoint — 2026-09-02
+
+*   **Completed:** The historical decision-log inventory and evidence-first consolidation policy are recorded. DEC-001 through DEC-006 have been explicitly revalidated as active baseline decisions.
+*   **Next decision:** DEC-007 — canonical relational database foundation. No option has been approved for DEC-007 in the current workshop.
+*   **Remaining historical review:** DEC-008 through DEC-031 remain pending evidence-first revalidation in small, ADHD-friendly steps.
+*   **Presentation format:** Show each decision with parallel 🧠 plain-language and 🛠️ canonical/technical wording. Present large, scroll-friendly 🅰️ A, 🅱️ B, and 🅲 C option headings, followed by a clear recommendation and approval box.
+*   **Approval safety:** This checkpoint records workshop progress only. It does not imply approval of DEC-007 or any later historical decision.
+
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.22 | 2026-09-02T03:03:53+03:00 | Estève | Recorded dated workshop handover after DEC-001 through DEC-006; DEC-007 remains pending |
 | 11.2.21 | 2026-09-02T01:18:32+03:00 | Estève | Revalidated DEC-006 ban on coercive engagement while allowing neutral private history |
 | 11.2.20 | 2026-09-02T01:04:08+03:00 | Estève | Revalidated DEC-005 strict ban on partner-facing micro-surveillance signals |
 | 11.2.19 | 2026-09-02T00:59:30+03:00 | Estève | Revalidated DEC-004 private-by-default data and explicit separate consent boundary |
