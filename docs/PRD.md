@@ -1,4 +1,4 @@
-# MyFive - Consolidated PRD - Master v1.6.0 - Execution and Traceability Upgrade
+# MyFive - Consolidated PRD - Master v1.6.1 - Scalable Runtime Cost Governance
 
 ## 1. Authority and Scope
 
@@ -99,6 +99,13 @@ Target architecture:
 - Stripe checkout and subscription events
 - Replit Reserved VM runtime
 
+Runtime cost and capacity model:
+
+- allow a capped Replit base plan plus variable compute and usage costs
+- support capacity-driven movement to a higher Replit plan as measured demand grows
+- require explicit human authorization before any actual billing-plan or spending-limit change
+- treat current plan details, prices, included resources, and variable rates as operational facts to verify rather than permanent product assumptions
+
 Migration constraint:
 
 - legacy React/Vite/Express flows may run during transition
@@ -124,6 +131,7 @@ Every requirement must map from user journey to implementation and verification.
 | ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
 | ADM-002 | Operations | Kill switch pauses outbound integrations | M3 | control plane toggles | kill switch verification tests |
 | ARC-001 | Delivery | New features are implemented on SvelteKit target stack | M5 | repo architecture + CI checks | architecture gate checklist |
+| ARC-002 | Operations | Runtime capacity and cost controls can scale with measured demand | M5 | Replit deployment + billing controls | capacity, invoice, alert, and approval review |
 
 ---
 
@@ -245,6 +253,15 @@ Exit criteria:
 - explicit rollback procedures for failed releases
 - incident severity model with response/runbook ownership
 
+### Capacity and cost governance
+
+- the capped Replit base plan is not a fixed all-in infrastructure ceiling
+- variable compute and usage charges are permitted and must be observable
+- define capacity, reliability, and unit-economic signals for reviewing a move to the next plan
+- configure billing visibility and alerts, and reconcile actual charges against usage
+- require explicit human authorization before changing the billing plan or spending limit; do not upgrade automatically
+- verify current plan terms and prices from authoritative account evidence rather than embedding historical amounts as permanent requirements
+
 ### Security and privacy
 
 - no plaintext secrets in repo or logs
@@ -270,6 +287,7 @@ Exit criteria:
 - timezone drift and quiet-hour boundary crossing
 - consent revocation after prior sharing
 - export/deletion retries after partial failure
+- base-plan capacity exhaustion or an unexpected variable-compute cost spike
 
 Each edge case must have:
 
@@ -364,4 +382,3 @@ Definition of done for sync:
 - confirm whether any missing follow-on book section still needs inclusion
 - complete full RTM expansion for all active requirement IDs
 - attach automated tests to each acceptance criterion in the delivery backlog
-
