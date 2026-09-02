@@ -1,6 +1,6 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.28 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.3.0 (Δ Update) — Drift-Safe / Canonical Source
 
-This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
+This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
 All specifications are mapped against the canonical baseline of Decision Log v10.0 and v11.0, establishing clear scope boundaries and aligning feature extensions with the approved MyFive target architecture and migration path [Approved Product Decision Log].
 
@@ -9,12 +9,12 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.28`
-*   **Last Updated:** `2026-09-02T19:37:57+03:00`
+*   **Document Version:** `11.3.0`
+*   **Last Updated:** `2026-09-02T21:40:17+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
-*   **Legacy Stack Clarification:** `React_Vite_Express` is now treated as a legacy transition baseline to be refactored. New architecture decisions and PRD rebuilds must target the approved SvelteKit stack above.
+*   **Legacy Stack Clarification:** `React_Vite_Express` is the live continuity baseline to be refactored through DEC-015's sequential program. It remains operational surface by surface until verified replacement; new architecture decisions and PRD rebuilds must target the approved SvelteKit stack above.
 
 ### Canonical Versioning & Audit Protocol
 
@@ -45,6 +45,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.3.0 | 2026-09-02T21:40:17+03:00 | Estève | Revalidated DEC-015 sequential unified refactor with revenue continuity |
+| 11.2.29 | 2026-09-02T20:06:56+03:00 | Estève | Revalidated DEC-013 and DEC-014 with Alpha Beta Theta phase governance |
 | 11.2.28 | 2026-09-02T19:37:57+03:00 | Estève | Revalidated DEC-012 human-led non-verbal communication and generative mediation ban |
 | 11.2.27 | 2026-09-02T18:59:39+03:00 | Estève | Revalidated DEC-011 and added scalable Replit compute cost governance |
 | 11.2.26 | 2026-09-02T18:54:43+03:00 | Estève | Revalidated DEC-010 Resend server-side transactional email provider |
@@ -210,6 +212,45 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Technology boundary:** This decision does not authorize biometrics, camera input, emotion recognition, behavioural inference, diagnosis, or surveillance. DEC-032 remains in force. Internal developer tools remain permitted only outside user-facing interpersonal workflows and must not weaken private-vault isolation.
 *   **Scope boundary:** The non-verbal direction is approved as a product principle. Specific new signals, gestures, shared interactions, notification behaviours, or interpretation systems require their own requirements and approval; none are inferred by this decision.
 *   **Revalidation basis:** Explicit human approval of Option A with clarification that MyFive should become a non-verbal communication enhancement. This consolidates historical DEC-012 with active DEC-035, DEC-004, DEC-005, DEC-032, and DEC-037 without expanding automatic sharing or sensitive-data processing.
+
+### DEC-013 — Privacy-Preserving EAP Vouchers Without Legal-Exemption Claims — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Organisations may buy MyFive voucher capacity and receive safe commercial totals, but they must never learn who redeemed a voucher or how an individual uses MyFive. The voucher model reduces privacy risk but is not described as bypassing the law.
+*   **🛠️ Canonical rule:** Preserve privacy-isolated B2B EAP vouchers. A purchaser may receive invoices and approved aggregate entitlement totals such as purchased, redeemed, expired, or remaining capacity. Prohibit purchaser access to employee identity, sensitive or relationship data, activity, individual redemption status, and employee-level usage reporting.
+*   **Aggregation boundary:** Purchaser-facing totals must remain genuinely non-identifying and limited to benefit administration. Suppress or withhold a total when cohort size, voucher distribution, auxiliary information, or another factor creates a reasonable re-identification risk. Pseudonymized or linkable data must not be represented as anonymous.
+*   **Legal boundary:** Do not claim that the voucher architecture sidesteps, bypasses, or creates an exemption from Finnish employment privacy law, the GDPR, or other applicable obligations. Controller and processor roles, lawful bases, notices, contracts, retention, and reporting controls require qualified legal validation for the implemented workflow.
+*   **Research evidence:** Finland's current Act on the Protection of Privacy in Working Life limits employer processing to employee data directly necessary for the employment relationship or employer-provided benefits and states that consent cannot override that necessity requirement ([Finlex 759/2004](https://www.finlex.fi/en/legislation/2004/759)). EU case law distinguishes genuinely anonymous information from pseudonymized information that can still be attributed to a person ([CJEU C-683/21](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A62021CJ0683)). These sources inform the safeguard but do not establish product approval or legal sign-off.
+*   **Revalidation basis:** Explicit human approval of Option 13A during the evidence-first historical baseline workshop. This preserves DEC-002 and the privacy-isolated Stage 3.3 voucher implementation while correcting the historical legal-exemption claim.
+
+### DEC-014 — Lean MVP with Alpha, Beta, and Theta Phase Governance — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Keep the product focused while retaining capabilities approved after the original MVP. MyFive is now in **Alpha (MVP)**, moves to **Beta** after sales confirm the MVP, and then moves to **Theta** when sales are being scaled.
+*   **🛠️ Canonical rule:** Deliver the smallest coherent, safe, paid self-service release defined by the current canonical PRD. Later approved decisions override the historical no-payment and no-pacing wording. Preserve Stripe, privacy-isolated EAP vouchers, user-controlled notification pacing, GDPR controls, non-verbal Connection Profiles, and the active exclusions.
+*   **Canonical phase labels:** **Alpha — Now / MVP:** build, validate, and operate the current approved MVP. **Beta — Sales-confirmed MVP:** begins after recorded sales evidence confirms the MVP. **Theta — Scaling sales:** begins when the product enters deliberate sales, capacity, and operational scaling.
+*   **Phase-gate boundary:** Exact sales evidence and thresholds for Alpha-to-Beta and Beta-to-Theta remain pending definition. A phase transition requires recorded evidence and Estève's explicit approval; it must never be inferred from activity, revenue, or elapsed time.
+*   **Scope boundary:** A phase transition does not automatically approve features, integrations, spending changes, data uses, or implementation checklist items. Each remains governed by its own approved decision and delivery evidence.
+*   **Exclusion boundary:** Biometrics, camera, and rPPG remain excluded under DEC-032. User-facing generative AI remains excluded under DEC-012 and DEC-035. Celestial or space-weather integrations require a separate explicit decision and are not activated by notification-pacing approval.
+*   **Revalidation basis:** Explicit human approval of Option 14A with the Alpha, Beta, and Theta lifecycle labels. This preserves the smallest-useful-product discipline while reconciling historical DEC-014 with later approved scope deltas.
+
+### DEC-015 — Sequential Unified SvelteKit Refactor with Revenue Continuity — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive and the complete Green Elephant website will converge on one Svelte 5, SvelteKit, and Zero architecture. The work happens in two tightly sequential stages: prove MyFive first, then immediately refactor the root website while the existing revenue-producing website and automations remain live until their replacements are proven.
+*   **🛠️ Canonical rule:** Adopt Svelte 5, SvelteKit, and Rocicorp Zero as the unified target application and synchronization stack for MyFive and the eventual complete refactor of `greenelephant.org`, deployed on the approved Replit Reserved VM runtime with Neon PostgreSQL and Drizzle. Retire React/Vite/Express legacy surfaces only after their replacement routes and workflows satisfy recorded parity, safety, rollback, and cutover evidence. Any Astro configuration encountered during migration may be retired only after confirming that it is unused or fully replaced.
+*   **Two-stage sequence:** **Refactor Stage 1 — MyFive proof of concept:** prove a bounded MyFive vertical slice on SvelteKit + Svelte 5 + Zero, including the Svelte integration approach, Neon replication path, authentication and authorization, private-vault exclusion, reconnect/redeploy behaviour, and rollback. **Refactor Stage 2 — Green Elephant root-site refactor:** begin immediately after Stage 1 exit evidence is recorded, with no planned idle interval, and migrate the remaining public, portal, admin, API, integration, and automation surfaces through reversible vertical slices.
+*   **Operational continuity boundary:** Keep the current Green Elephant website available as the live continuity baseline throughout migration. Preserve the working Typeform flows, existing Google integrations, Stripe pay gates, checkout and webhook processing, Satellite Scan purchase/intake/fulfilment infrastructure, existing Resend email automations, schedulers, and their supporting Neon and operational Notion workflows. Do not use a big-bang replacement. Each legacy surface remains active until its replacement passes contract, smoke, parity, provider-callback, and rollback checks.
+*   **Revenue boundary:** Migration must not intentionally interrupt the ability to market, sell, receive payment for, fulfil, support, or maintain invoicing records for the existing Green Elephant offers, especially Satellite Scan. If a replacement fails its gate, route traffic and automation back to the verified legacy surface rather than retiring the revenue path.
+*   **Email boundary:** Existing Green Elephant Resend automations remain in operation during migration. This continuity approval does not activate MyFive outbound email or weaken DEC-010: every new MyFive recipient, trigger, sender, subject, body, attachment, and template still requires separate approval.
+*   **Zero validation boundary:** Zero remains part of the mandatory target stack, but production cutover depends on the Stage 1 proof. If the proof fails, stop the affected cutover and require a separately approved architecture correction; do not silently substitute another synchronization engine. Zero's current official documentation describes a client-server system rather than a local-first system and does not support offline writes, so canonical requirements must not claim otherwise.
+*   **Schedule target:** Target completion of both refactor stages by the end of Sunday, `2026-09-06`, in `Europe/Helsinki`. This is an execution target, not permission to skip privacy, security, payment, data-integrity, provider-callback, accessibility, parity, or rollback gates. If the target is missed, keep verified legacy surfaces live until safe cutover evidence exists.
+*   **Performance boundary:** Historical bundle-size, framework-comparison, sub-5ms query, sub-50ms interaction, persistent-connection, and 48-hour reliability claims remain `VERIFY` evidence under DEC-036. They are not guaranteed outcomes or blocking compliance requirements until reproduced on the actual MyFive and Replit topology.
+*   **Research evidence:** SvelteKit's official Node adapter produces a standalone Node server and accepts `PORT` and `HOST` configuration ([SvelteKit Node servers](https://svelte.dev/docs/kit/adapter-node)). Zero officially provides first-class React and SolidJS integrations plus a low-level TypeScript API for other frameworks, making the exact Svelte integration a proof item ([Install Zero](https://zero.rocicorp.dev/docs/install)). Zero self-hosting requires `zero-cache`, PostgreSQL replication, query/mutate endpoints, WebSocket-capable networking, and a direct upstream database connection, while other Zero database roles may use pooling ([Self-Hosting Zero](https://zero.rocicorp.dev/docs/self-host)). Replit describes Reserved VM as an always-on dedicated runtime, which supports but does not prove the selected topology ([Replit deployment types](https://docs.replit.com/features/publishing/deployment-types)).
+*   **Revalidation basis:** Explicit human selection of Option B with a required two-stage, continuity-first sequence. Estève explicitly approved full-site refactoring immediately after the MyFive proof of concept while preserving the current Typeform, Google, Stripe, Satellite Scan, and Resend revenue workflows during migration.
 
 ---
 
