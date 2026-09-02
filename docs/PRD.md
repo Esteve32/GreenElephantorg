@@ -1,4 +1,4 @@
-# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.3 - Consent, Operations, and Human-Agency Baseline
+# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.4 - Proof Gate, Deadline, and Stabilization Baseline
 
 ## 1. Authority and Scope
 
@@ -267,9 +267,12 @@ Every requirement must map from user journey to implementation and verification.
 | ARC-002 | Operations | Runtime capacity and cost controls can scale with measured demand | M5 | Replit deployment + billing controls | capacity, invoice, alert, and approval review |
 | ARC-003 | Migration | MyFive proves the exact SvelteKit/Svelte 5/Zero/Neon/Replit topology before root-site cutover begins | M5 | MyFive proof deployment + test harness | proof record covering auth, privacy, sync, reconnect, redeploy, and rollback |
 | MIG-001 | Migration | Refactor Stage 2 begins immediately after recorded Stage 1 exit evidence | M5/M6 | delivery plan + migration ledger | timestamped Stage 1 exit and Stage 2 start records |
+| MIG-002 | Proof gate | The exact synthetic paid MyFive connection journey passes on the target stack before Stage 2 begins | M1-M5 | test deployment + providers + evidence pack | checkout, entitlement, invitation, consent, profile, agreement, export, deletion, sync, and rollback tests |
+| MIG-003 | Schedule | The approved two-stage refactor targets 2026-09-06 23:59 Europe/Helsinki without weakening any gate | M5/M6 | plan + migration ledger | scope, timestamp, evidence, deviation, forecast, and no-forced-cutover review |
 | CON-001 | Continuity | Legacy production surfaces remain available until each replacement passes its cutover gate | M6 | routing, compatibility adapters, deployment controls | old/new parity, smoke, and rollback tests |
 | CON-002 | Revenue | Existing Green Elephant purchase and fulfilment paths remain operational throughout migration | M6 | public site + Stripe + Typeform + Satellite Scan workflows | synthetic purchase-to-fulfilment test and operational reconciliation |
 | CON-003 | Integrations | Existing Google, Typeform, Resend, Neon, and operational Notion workflows preserve current behavior during migration | M6 | provider adapters, callbacks, jobs, and schedulers | provider contract tests, callback verification, job health, and duplicate suppression |
+| CON-004 | Stabilization | Each cutover receives its approved risk-based observation window and retains verified rollback for at least 24 hours | M6 | health monitoring + per-surface ledger | risk class, continuous window, synthetic reconciliation, incident reset, and rollback-retention tests |
 | GOV-001 | Governance | Product work and release claims use the canonical Alpha, Beta, and Theta labels | M5 | PRD, decision log, roadmap, and release records | evidence-backed phase-gate review |
 | GOV-002 | Human agency | A versioned internal evaluation maps accessibility, privacy, consent, reversibility, non-surveillance, human authorship, and safety checks to inspectable evidence without certification claims | M1-M6 | evaluation checklist + evidence index | traceability, owner, result, remediation, trigger, and prohibited-claim review |
 
@@ -539,6 +542,38 @@ Then each applicable item shall identify its requirement, owner, evidence, resul
 
 And the result shall not be represented as clinical validation, ethical certification, guaranteed safety, or universal suitability.
 
+### AC-028 Exact MyFive proof journey
+
+Given two synthetic participants and Stripe test mode are isolated from production users and charges
+
+When the primary participant completes monthly checkout, sponsors the second participant, both accept the current nine ValueRules™, a private eight-dimensional Connection Profile is created, a consent-gated shared agreement is created, and the test accounts are exported and deleted
+
+Then entitlement, seat limits, consent receipts, private/shared isolation, webhook idempotency, synchronization, reconnect, redeploy, export, deletion, rollback, and legacy-regression evidence shall pass
+
+And Stage 2 shall begin only after the Stage 1 completion evidence is recorded in the decision log.
+
+### AC-029 Sunday target without forced cutover
+
+Given the approved refactor target is 2026-09-06 at 23:59 Europe/Helsinki
+
+When a replacement surface has not passed every applicable gate by that time
+
+Then its verified legacy path shall remain operational
+
+And the unmet evidence and new forecast shall be recorded instead of forcing cutover or claiming completion.
+
+### AC-030 Risk-based stabilization and rollback
+
+Given a replacement slice has passed its applicable parity checks
+
+When it enters stabilization
+
+Then it shall complete a continuous 15-minute static/read-only, 30-minute authenticated/stateful, or 60-minute revenue/external-integration observation window according to its recorded risk class
+
+And the highest-risk class shall include a fully reconciled synthetic success with no unresolved critical error
+
+And the verified legacy rollback path shall remain recoverable for at least 24 hours after cutover.
+
 ---
 
 ## 6. Two-Stage Sequential Refactor Plan
@@ -577,14 +612,19 @@ Exit criteria:
 
 #### Migration Step 1.2 - Bounded MyFive vertical slice
 
-- [ ] Port one complete MyFive journey through UI, authenticated API, Drizzle data access, Zero synchronization where approved, and user-visible error handling.
-- [ ] Prove authentication, authorization, bilateral consent, seat boundaries, and private/shared data isolation.
+- [ ] Authenticate a synthetic primary participant and complete the `€4.99/month` Stripe test-mode checkout through webhook-backed five-seat entitlement.
+- [ ] Sponsor and accept one invitation with a second synthetic participant, then record separate current nine-ValueRules™ consent receipts for both participants.
+- [ ] Create and review one private eight-dimensional Connection Profile, prove that it does not leak to the partner, and create one shared agreement only after bilateral consent.
+- [ ] Export and delete the synthetic accounts and current-browser test vault data through the approved sovereignty flows.
+- [ ] Execute the journey through UI, authenticated API, Drizzle data access, Zero synchronization where approved, and user-visible error handling.
+- [ ] Prove authentication, authorization, consent versioning, seat boundaries, webhook idempotency, and private/shared data isolation.
 - [ ] Test reconnect, redeploy, rollback, duplicate events, partial failure, and intermittent connectivity without promising offline writes.
 - [ ] Record measured performance and connection behavior as evidence under DEC-036 rather than guaranteed claims.
 
 Stage 1 exit criteria:
 
 - the bounded MyFive journey passes functional, privacy, security, sync, deployment, and rollback tests
+- all proof identities, payments, destinations, connections, profiles, and agreements are synthetic, test-bound, and reconciled or deleted
 - exact Zero/Svelte/Neon/Replit behavior is recorded
 - no regression is detected in the current Green Elephant site
 - the decision log records Stage 1 completion before implementation claims advance
@@ -592,6 +632,8 @@ Stage 1 exit criteria:
 ### Refactor Stage 2 - Green Elephant root-site refactor
 
 Begin immediately after Stage 1 exit evidence is recorded. Use reversible vertical slices and retain the legacy implementation for each surface until that slice completes its stabilization gate.
+
+Delivery target: complete the approved refactor scope by `2026-09-06T23:59:00 Europe/Helsinki`. This target never overrides an evidence, parity, privacy, continuity, stabilization, reconciliation, or rollback gate. A missed gate keeps the legacy path live and requires a recorded forecast rather than a forced cutover.
 
 #### Migration Step 2.0 - Immediate handoff and compatibility shell
 
@@ -640,7 +682,11 @@ Begin immediately after Stage 1 exit evidence is recorded. Use reversible vertic
 #### Migration Step 2.6 - Stabilization and legacy retirement
 
 - [ ] Run production smoke checks for public discovery, forms, login, checkout, Satellite Scan fulfilment, email automation, portal, and admin operations.
-- [ ] Monitor errors, latency, webhook backlog, scheduler health, email duplicates, payment reconciliation, and provider failures through the stabilization window.
+- [ ] Classify and record each slice as static/read-only, authenticated/stateful non-revenue, or revenue/external-integration; use the higher class when uncertain.
+- [ ] After parity checks pass, observe static/read-only slices continuously for at least 15 minutes and authenticated/stateful non-revenue slices for at least 30 minutes.
+- [ ] Observe revenue and external-integration slices continuously for at least 60 minutes after a complete synthetic provider/application reconciliation with duplicate-suppression checks and no unresolved critical error.
+- [ ] Restart the applicable window after a critical failure or material corrective deployment; record timestamps, tests, monitoring evidence, incidents, approver, and rollback state.
+- [ ] Keep the verified legacy handler, routing fallback, configuration, and rollback instructions recoverable for at least 24 hours after cutover while independent migration work may continue.
 - [ ] Retire React/Vite/Express routes, jobs, and components only after their surface ledger is complete and rollback evidence remains available.
 - [ ] Remove Astro configuration only if found and verified unused or fully replaced.
 - [ ] Update runbooks, architecture diagrams, integration inventory, and the decision-log implementation evidence.
@@ -820,10 +866,7 @@ Definition of done for sync:
 ## 11. Open Items
 
 - define the quantitative sales evidence for Alpha-to-Beta and Beta-to-Theta transitions
-- record the exact Stage 1 MyFive proof journey and its test-data boundary
 - inventory every production callback, scheduler, connector identity, Google scope, and revenue workflow before its migration slice
-- confirm the exact clock-time intended by "Sunday night"; the current canonical target is end of day 2026-09-06 in Europe/Helsinki
-- define the per-surface stabilization window and production rollback mechanism
 - decide whether and when to approve the deferred €48/year MyFive membership, including billing and entitlement behavior
 - define owners, escalation contacts, retention periods, and rehearsal cadence for each approved incident playbook
 - verify the exact minimum Google OAuth scopes and callback identities before enabling MyFive Calendar or Drive in production

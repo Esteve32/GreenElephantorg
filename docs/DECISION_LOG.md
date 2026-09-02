@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.3.3 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.3.4 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.3.3`
-*   **Last Updated:** `2026-09-02T22:24:41+03:00`
+*   **Document Version:** `11.3.4`
+*   **Last Updated:** `2026-09-02T22:56:26+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.3.4 | 2026-09-02T22:56:26+03:00 | Estève | Approved DEC-038 through DEC-040 proof journey, Sunday deadline, and risk-based stabilization |
 | 11.3.3 | 2026-09-02T22:24:41+03:00 | Estève | Revalidated DEC-026 through DEC-031 and completed the historical baseline review |
 | 11.3.2 | 2026-09-02T22:06:58+03:00 | Estève | Revalidated DEC-020 through DEC-025 operational safety, Google, and pacing controls |
 | 11.3.1 | 2026-09-02T22:02:45+03:00 | Estève | Revalidated DEC-016 through DEC-019 product experience baseline |
@@ -428,6 +429,38 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Coverage boundary:** The checklist must include accessibility, comprehension, error recovery, user control, reversibility, consent, private-by-default behavior, non-surveillance, non-coercion, non-diagnostic language, human authorship, incident safety, and migration continuity. It supplements rather than replaces specialist accessibility, security, privacy, legal, payment, or clinical review where such review is required.
 *   **Claims boundary:** Do not claim “absolute alignment,” clinical validation, ethical certification, guaranteed safety, or universal suitability from this internal assessment. If ACX provenance, terminology, licence, or applicability cannot be established, label the checklist as an internal MyFive Human-Agency and Safety Evaluation.
 *   **Revalidation basis:** Explicit human approval of Option 31A. This retains structured self-evaluation while replacing the historical guarantee language with traceable, testable, reviewable evidence.
+
+### DEC-038 — Exact Test-Bound MyFive Proof Journey — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** The proof of concept is complete when two test participants can travel through one realistic paid MyFive connection journey and safely remove their test data, while the current Green Elephant business remains untouched.
+*   **🛠️ Canonical rule:** Prove this exact bounded journey on the SvelteKit, Svelte 5, Zero, Neon PostgreSQL, Drizzle, Stripe, and Replit Reserved VM target: authenticate a primary test participant; complete a `€4.99/month` Stripe test-mode checkout; receive webhook-backed five-seat entitlement; create and accept one sponsored invitation with a second test participant; record each participant's separate current nine-ValueRules™ consent; create and review a private eight-dimensional Connection Profile without partner leakage; create one shared agreement only after bilateral consent; export the test account data; and complete the approved deletion path for the test identities and their browser-vault test data.
+*   **Test-data boundary:** Use synthetic identities, test-mode payment instruments, non-production message destinations, isolated test records, and explicitly labelled test connections. Do not use real private reflections, production charges, uninvolved recipients, production marketing sends, or unapproved Google writes to prove the journey.
+*   **Proof evidence:** Record functional results plus authentication, authorization, seat-cap, consent-version, private/shared isolation, webhook idempotency, Zero synchronization, reconnect, intermittent-connectivity, redeploy, export, deletion, rollback, and legacy-regression evidence. Performance observations remain evidence under DEC-036, not guarantees.
+*   **Handoff rule:** Stage 2 begins immediately after the decision log records the complete Stage 1 evidence. Passing a smaller signup or private-check-in demo is insufficient; completing unrelated production features is not required.
+*   **Approval basis:** Explicit human approval of Option 38A.
+
+### DEC-039 — Sunday Refactor Target at 23:59 Europe/Helsinki — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** The team is aiming to finish the approved refactor by the end of Sunday, but the clock never justifies breaking payments, Satellite Scan, privacy, or rollback safety.
+*   **🛠️ Canonical rule:** Set the target for completing the approved two-stage refactor scope to `2026-09-06T23:59:00 Europe/Helsinki`. Plan and report delivery against that local civil-time deadline, including the timezone name so daylight-saving interpretation is not lost.
+*   **Safety boundary:** The date is an aggressive delivery target, not an automatic cutover, legacy-retirement, feature-activation, phase-transition, spending, or risk-acceptance authorization. Every applicable proof, privacy, parity, continuity, reconciliation, stabilization, and rollback gate remains mandatory.
+*   **Miss rule:** If a surface cannot safely satisfy its gate by the target, keep its verified legacy path operational, record the unmet evidence and new forecast, and continue the sequential refactor. Never force an unsafe cutover or conceal unfinished scope to claim the date was met.
+*   **Approval basis:** Explicit human approval of Option 39A.
+
+### DEC-040 — Risk-Based Stabilization with 24-Hour Rollback Retention — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Simple pages can settle quickly; accounts, payments, and integrations get more observation. The old path remains ready for rollback for at least a day even while work continues onto the next slice.
+*   **🛠️ Canonical rule:** After the relevant automated and manual parity checks pass, apply a minimum continuous observation window of 15 minutes to static or read-only public surfaces; 30 minutes to authenticated, administrative, or stateful non-revenue surfaces; and 60 minutes to payments, fulfilment, schedulers, email automation, Typeform, Satellite Scan, Google, Notion, Zero replication, and other external or revenue-bearing integrations.
+*   **Evidence boundary:** The 60-minute class also requires at least one complete synthetic success with provider-side and application-side reconciliation, duplicate-suppression checks where applicable, and no unresolved critical error. Every window requires monitored logs and health signals appropriate to the surface. A critical failure or material corrective deployment restarts the applicable window.
+*   **Rollback boundary:** Keep the verified legacy handler, routing fallback, configuration, and rollback instructions available for at least 24 hours after cutover. Work may continue to the next independent slice during that retention period, but the legacy path must not be deleted, invalidated, or made unrecoverable.
+*   **Classification boundary:** Record the risk class, start and end timestamps, tests, monitoring evidence, incidents, reconciliation, approver, and rollback state in the per-surface migration ledger. When classification is uncertain, use the higher-risk window.
+*   **Approval basis:** Explicit human approval of Option 40A.
 
 ---
 
