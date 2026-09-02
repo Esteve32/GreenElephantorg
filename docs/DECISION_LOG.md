@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.3.0 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.3.1 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.3.0`
-*   **Last Updated:** `2026-09-02T21:40:17+03:00`
+*   **Document Version:** `11.3.1`
+*   **Last Updated:** `2026-09-02T22:02:45+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -45,6 +45,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.3.1 | 2026-09-02T22:02:45+03:00 | Estève | Revalidated DEC-016 through DEC-019 product experience baseline |
 | 11.3.0 | 2026-09-02T21:40:17+03:00 | Estève | Revalidated DEC-015 sequential unified refactor with revenue continuity |
 | 11.2.29 | 2026-09-02T20:06:56+03:00 | Estève | Revalidated DEC-013 and DEC-014 with Alpha Beta Theta phase governance |
 | 11.2.28 | 2026-09-02T19:37:57+03:00 | Estève | Revalidated DEC-012 human-led non-verbal communication and generative mediation ban |
@@ -251,6 +252,50 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Performance boundary:** Historical bundle-size, framework-comparison, sub-5ms query, sub-50ms interaction, persistent-connection, and 48-hour reliability claims remain `VERIFY` evidence under DEC-036. They are not guaranteed outcomes or blocking compliance requirements until reproduced on the actual MyFive and Replit topology.
 *   **Research evidence:** SvelteKit's official Node adapter produces a standalone Node server and accepts `PORT` and `HOST` configuration ([SvelteKit Node servers](https://svelte.dev/docs/kit/adapter-node)). Zero officially provides first-class React and SolidJS integrations plus a low-level TypeScript API for other frameworks, making the exact Svelte integration a proof item ([Install Zero](https://zero.rocicorp.dev/docs/install)). Zero self-hosting requires `zero-cache`, PostgreSQL replication, query/mutate endpoints, WebSocket-capable networking, and a direct upstream database connection, while other Zero database roles may use pooling ([Self-Hosting Zero](https://zero.rocicorp.dev/docs/self-host)). Replit describes Reserved VM as an always-on dedicated runtime, which supports but does not prove the selected topology ([Replit deployment types](https://docs.replit.com/features/publishing/deployment-types)).
 *   **Revalidation basis:** Explicit human selection of Option B with a required two-stage, continuity-first sequence. Estève explicitly approved full-site refactoring immediately after the MyFive proof of concept while preserving the current Typeform, Google, Stripe, Satellite Scan, and Resend revenue workflows during migration.
+
+### DEC-016 — Accessible Organic Holography Design Direction — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive keeps its dark, fluid, bioluminescent Organic Holography identity, but beauty must not make the product harder to read, navigate, or operate. Familiar controls and clear boundaries are allowed whenever they help people use the product safely.
+*   **🛠️ Canonical rule:** Use Organic Holography as the MyFive design direction: dark obsidian foundations, fluid gradients, bioluminescent accents, overlapping aura forms, and the approved eight-colour taxonomy. Permit straight lines, grids, cards, boxes, tables, and conventional controls when accessibility, information hierarchy, data comparison, responsive behavior, or operational clarity requires them.
+*   **Accessibility boundary:** WCAG requirements, readable contrast, keyboard navigation, focus visibility, semantic structure, reduced-motion preferences, cognitive clarity, and usable error states take priority over decorative fidelity. No visual treatment may obscure consent, privacy, billing, safety, or recovery controls.
+*   **Technology boundary:** WebGPU, advanced SVG, particle systems, bloom, and similar effects are optional progressive enhancements, not required dependencies. Every essential journey must retain a stable non-WebGPU fallback. Performance claims remain `VERIFY` under DEC-036.
+*   **Root-site boundary:** The Green Elephant root site may reuse approved tokens and motifs during DEC-015's refactor, but public, portal, admin, assessment, payment, Satellite Scan, and automation interfaces remain function-first and subject to parity and continuity gates.
+*   **Revalidation basis:** Explicit human approval of Option 16A. This preserves the implemented Organic Holography identity while correcting the historical absolute ban on rigid UI structures and the unsupported requirement for WebGPU effects.
+
+### DEC-017 — Separate Eight Lenses and Eight Loves with Visual Taxonomy — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** The Eight Lenses describe communication perspectives; the Eight Loves describe relational qualities. They stay separate, but can share a consistent colour and storytelling system so the experience feels coherent.
+*   **🛠️ Canonical rule:** Model the Eight Lenses and Eight Greek Loves as independent concepts and data dimensions. Preserve this one-to-one visual storytelling taxonomy: Influence → Agape; Attitude → Mania; Chaordic → Eros; Flow → Ludus; Alignment → Pragma; Needs → Storge; Ego → Philia; Dynamics → Philautia.
+*   **Semantic boundary:** The mapping is a brand, colour, and storytelling device only. It must not be represented as scientific equivalence, diagnosis, metaphysical fact, causal mechanism, or a constraint on a connection's love composition. Historical “catalyst” labels remain evidence, not canonical product claims.
+*   **Data boundary:** Lens records and Love-profile records must remain independently identifiable and queryable. A user may calibrate all eight Love dimensions independently regardless of the visual Lens/Love pairing.
+*   **Revalidation basis:** Explicit human approval of Option 17A. This consolidates the implemented design-token map with DEC-037's later rule that the taxonomy must not constrain the eight-dimensional Connection Profile.
+
+### DEC-018 — €4.99 Monthly Membership and Sponsored Connections — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE; ANNUAL PLAN DEFERRED**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive costs €4.99 per month. A paying member can sponsor up to five partner connections so invitees can join those shared spaces without paying. The historical €48 annual plan is not active yet.
+*   **🛠️ Canonical rule:** Offer the MyFive primary membership at `€4.99/month` through Stripe. A primary member receives five active partner-connection seats and may sponsor invitees' access to those shared connections without requiring invitee checkout. A person who buys their own primary membership receives their own five partner-connection seats, subject to DEC-003.
+*   **Annual-plan boundary:** `€48/year` remains deferred and unimplemented. It requires a separate explicit decision covering Stripe price configuration, checkout choice, entitlement periods, renewal, cancellation, proration, refunds, customer communication, tax presentation, and migration between billing intervals.
+*   **Commercial verification boundary:** VAT treatment, Stripe account pricing, payment-method fees, refunds, discounts, and displayed tax-inclusive or tax-exclusive wording must be verified against the actual business and provider configuration. Historical arithmetic does not create a permanent fee or tax requirement.
+*   **Scope boundary:** This decision governs MyFive membership only. It does not change Satellite Scan pricing, root-site offers, EAP voucher pricing, or any other Green Elephant product.
+*   **Revalidation basis:** Explicit human approval of Option 18A. This preserves DEC-033 and the implemented monthly Stripe checkout while declining to infer approval for an annual plan that is not currently implemented.
+
+### DEC-019 — Private User-Selected Eight-Octant Flow States — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** For each Love dimension, a person may privately choose Arousal, Flow, Control, Relaxation, Boredom, Apathy, Worry, Anxiety, or leave it not assessed. MyFive explains the choices but never tells the person what they feel.
+*   **🛠️ Canonical rule:** Use the canonical Flow-octant values `Arousal`, `Flow`, `Control`, `Relaxation`, `Boredom`, `Apathy`, `Worry`, and `Anxiety`, plus explicit `Not assessed`, for private user-directed Connection Profile calibration across all eight Love dimensions.
+*   **Interpretation boundary:** The state must come from the user's explicit selection. MyFive must not infer, diagnose, rank, moralize, or automatically assign a state from behavior, biometrics, partner activity, or another Love/Lens value. Any numeric proximity or ordering metadata must not become a user-worth, relationship-health, or partner-facing score.
+*   **Microcopy boundary:** Plain-language and context-sensitive explanations are permitted when they clarify the user's available choices without changing the canonical values or interpreting the user. Historical Typeform wording is source evidence, not mandatory exact copy; every published wording set requires readability, emotional-safety, accessibility, and localization review.
+*   **Privacy and history:** Selections remain private by default and may be stored as append-only timestamped snapshots under DEC-004 and DEC-037. Partner visibility requires a separately approved, explicit, purpose-specific, voluntary, and revocable sharing flow.
+*   **Claims boundary:** Do not describe the product model as clinically validated, diagnostic, or therapeutic without separately established authoritative evidence and approval.
+*   **Revalidation basis:** Explicit human approval of Option 19A. This preserves DEC-037 and the current eight-octant schema while correcting the historical automatic-context and clinical-validation overclaims.
 
 ---
 

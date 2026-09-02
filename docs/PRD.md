@@ -1,4 +1,4 @@
-# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.0 - Sequential Revenue-Safe Migration
+# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.1 - Product Experience Baseline
 
 ## 1. Authority and Scope
 
@@ -17,6 +17,11 @@ This is the canonical Product Requirements Document for MyFive (`myfive.greenele
 - Stripe pay gates: In scope
 - Notification pacing: In scope (must be user-controlled)
 - Human-led non-verbal communication enhancement: In scope
+- Accessible Organic Holography design direction: In scope
+- Separate Eight Lenses and Eight Loves with shared visual taxonomy: In scope
+- Private user-selected eight-octant Flow calibration: In scope
+- MyFive membership at €4.99/month with sponsored partner connections: In scope
+- MyFive annual membership: Deferred pending separate approval
 - Complete `greenelephant.org` refactor into the unified target stack: In scope after the MyFive proof gate
 - Existing Green Elephant Typeform, Google, Stripe, Satellite Scan, Resend, Neon, and operational Notion workflows: Must remain operational until verified replacement
 - Biometrics / camera / rPPG: Excluded
@@ -46,6 +51,8 @@ Core principles:
 - low time-in-app
 - user control and reversibility
 - explicit consent boundaries
+- accessibility and operational clarity before decorative fidelity
+- explanation without diagnosis or automated emotional interpretation
 
 ### Canonical product phases
 
@@ -83,7 +90,9 @@ The target is to complete both stages by the end of Sunday, 2026-09-06, Europe/H
 - Connection Profile entry and review
 - user-directed non-verbal Connection Profile expression and review
 - settings system for privacy, pacing, and notification controls
-- membership state and sponsorship views
+- membership state and sponsorship views for the €4.99 monthly plan
+- accessible Organic Holography presentation with stable reduced-motion and non-WebGPU fallbacks
+- independent Eight-Lens and Eight-Love concepts joined only through the approved visual taxonomy
 
 ### Module 2 - Data Model, Consent, and GDPR
 
@@ -95,6 +104,7 @@ Primary domains:
 - `consent_ledger`
 - `myfive_subscriptions`
 - invitation and voucher entities
+- private append-only eight-Love profiles using the eight Flow octants or `Not assessed`
 
 Core rules:
 
@@ -103,6 +113,8 @@ Core rules:
 - shared data requires explicit bilateral consent
 - consent records are append-only and timestamped
 - users can export and delete account data
+- Flow states are selected by the user and are never inferred, diagnosed, ranked, or moralized
+- Lens data and Love-profile data remain independently identifiable and queryable
 
 ### Module 3 - Admin Control Plane and Operations
 
@@ -142,6 +154,13 @@ Target architecture:
 - Neon PostgreSQL + Drizzle ORM
 - Stripe checkout and subscription events
 - Replit Reserved VM runtime
+
+Experience rendering constraints:
+
+- WebGPU, particles, bloom, and advanced SVG are optional progressive enhancements
+- essential journeys must work without WebGPU and with reduced motion enabled
+- conventional cards, tables, grids, and boundaries are permitted when they improve accessibility, comparison, hierarchy, or operational control
+- privacy, consent, payment, safety, and error-recovery controls must remain visually explicit
 
 Zero constraints:
 
@@ -197,10 +216,14 @@ Every requirement must map from user journey to implementation and verification.
 | UX-004 | Retention | User can control notification pacing and quiet hours | M4 | settings UI + pacing engine | settings persistence tests |
 | UX-005 | Monetization | User can subscribe with Stripe and sponsor seats | M1/M5 | Stripe checkout/webhooks + sponsorship model | webhook and entitlement tests |
 | UX-006 | Core workflow | User can create and review a non-verbal representation without AI-authored interpersonal language | M1/M2 | Connection Profile UI + privacy controls | privacy, authorship, and no-generative-output tests |
+| UX-007 | Presentation | Organic Holography remains accessible, readable, keyboard-usable, and functional without WebGPU or motion | M1/M5 | design tokens + components + fallbacks | WCAG, keyboard, reduced-motion, and fallback review |
+| UX-008 | Core workflow | User can explicitly select one of eight Flow octants or `Not assessed` for each Love dimension | M1/M2 | Connection Profile calibration UI | enum, usability, privacy, and no-inference tests |
 | DAT-001 | Trust | Private and shared data are structurally isolated | M2 | schema boundaries + query guards | data-boundary test pack |
 | DAT-002 | Consent | Shared agreement requires bilateral explicit consent | M2 | consent gating + ledger | consent gate integration tests |
 | DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
 | DAT-004 | Sovereignty | User can delete account with cascade wipe | M2 | deletion pipeline | deletion integrity tests |
+| DAT-005 | Ontology | Eight Lenses and Eight Loves remain independent while sharing the approved visual taxonomy | M1/M2 | design tokens + separate schemas | schema independence and token mapping tests |
+| PAY-001 | Monetization | Primary membership is €4.99/month and supports five sponsored partner connections; no annual plan is offered without separate approval | M1/M5 | Stripe checkout + subscription APIs + entitlement model | price, interval, sponsorship, and annual-plan absence tests |
 | ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
 | ADM-002 | Operations | Kill switch pauses outbound integrations | M3 | control plane toggles | kill switch verification tests |
 | ARC-001 | Delivery | New features are implemented on SvelteKit target stack | M5 | repo architecture + CI checks | architecture gate checklist |
@@ -321,6 +344,48 @@ When the MyFive proof is evaluated
 Then the exact Svelte integration, direct Neon replication path, permission model, private-vault exclusion, reconnect/redeploy behavior, and rollback shall be demonstrated
 
 And the evidence shall not describe Zero as local-first, promise offline writes, or promote unverified latency and reliability claims.
+
+### AC-013 Accessible Organic Holography
+
+Given a MyFive journey uses Organic Holography styling
+
+When the journey is operated with keyboard navigation, reduced motion, or without WebGPU support
+
+Then every essential action and state shall remain readable and usable
+
+And conventional boundaries or controls may replace decorative effects where clarity requires them.
+
+### AC-014 Independent Lens and Love taxonomy
+
+Given the interface uses the approved Lens/Love colour pairing
+
+When a user creates or reviews a Connection Profile
+
+Then the mapping shall be presented only as visual storytelling taxonomy
+
+And all eight Love dimensions shall remain independently selectable regardless of their paired Lens.
+
+### AC-015 Monthly membership boundary
+
+Given a user starts MyFive primary-membership checkout
+
+When Stripe Checkout is created
+
+Then the recurring interval shall be monthly at €4.99
+
+And the resulting entitlement shall support five sponsored partner connections
+
+And no annual plan shall be offered unless a later explicit decision approves and defines it.
+
+### AC-016 Explicit eight-octant calibration
+
+Given a user calibrates a Love dimension
+
+When the user selects Arousal, Flow, Control, Relaxation, Boredom, Apathy, Worry, Anxiety, or `Not assessed`
+
+Then the selected value shall be stored as the user's private explicit input
+
+And MyFive shall not infer, diagnose, rank, or expose the selection to a partner by default.
 
 ---
 
@@ -605,6 +670,7 @@ Definition of done for sync:
 - inventory every production callback, scheduler, connector identity, Google scope, and revenue workflow before its migration slice
 - confirm the exact clock-time intended by "Sunday night"; the current canonical target is end of day 2026-09-06 in Europe/Helsinki
 - define the per-surface stabilization window and production rollback mechanism
+- decide whether and when to approve the deferred €48/year MyFive membership, including billing and entitlement behavior
 - confirm whether any missing follow-on book section still needs inclusion
 - complete full RTM expansion for all active requirement IDs
 - attach automated tests to each acceptance criterion in the delivery backlog
