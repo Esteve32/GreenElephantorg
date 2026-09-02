@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.3.2 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.3.3 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.3.2`
-*   **Last Updated:** `2026-09-02T22:06:58+03:00`
+*   **Document Version:** `11.3.3`
+*   **Last Updated:** `2026-09-02T22:24:41+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -42,9 +42,17 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Presentation format:** Show each decision with parallel 🧠 plain-language and 🛠️ canonical/technical wording. Present large, scroll-friendly 🅰️ A, 🅱️ B, and 🅲 C option headings, followed by a clear recommendation and approval box.
 *   **Approval safety:** This checkpoint records workshop progress only. It does not imply approval of DEC-007 or any later historical decision.
 
+### Historical Baseline Review Completion — 2026-09-02
+
+*   **Completed review:** DEC-001 through DEC-031 have now each been explicitly revalidated through recorded human selections in this workshop.
+*   **Canonical effect:** The corrected active decision sections and later approved deltas in this document govern implementation. Unsafe, unsupported, absolute, superseded, or conflicting wording from historical v10 remains evidence only.
+*   **No inferred expansion:** Completing the historical review does not activate deferred integrations, outbound messages, spending changes, annual billing, production cutovers, or any feature not expressly approved in an active decision.
+*   **Next governance work:** Resolve the PRD's recorded open items and implementation proof gates through separately attributable decisions and evidence.
+
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.3.3 | 2026-09-02T22:24:41+03:00 | Estève | Revalidated DEC-026 through DEC-031 and completed the historical baseline review |
 | 11.3.2 | 2026-09-02T22:06:58+03:00 | Estève | Revalidated DEC-020 through DEC-025 operational safety, Google, and pacing controls |
 | 11.3.1 | 2026-09-02T22:02:45+03:00 | Estève | Revalidated DEC-016 through DEC-019 product experience baseline |
 | 11.3.0 | 2026-09-02T21:40:17+03:00 | Estève | Revalidated DEC-015 sequential unified refactor with revenue continuity |
@@ -357,6 +365,69 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Permitted operations:** The system may throttle or retry work using technical delivery evidence such as provider errors, rate limits, bounce state, queue depth, duplicate risk, or system volume. Users may change their own pacing at any time. Administrators may see aggregate operational delivery health that does not expose private content or profile individual responsiveness.
 *   **Privacy boundary:** Operational telemetry must remain purpose-limited, minimized, access-controlled, and subject to documented retention. It must not be repurposed into behavioral surveillance, partner comparison, emotional inference, or coercive engagement optimization.
 *   **Revalidation basis:** Explicit human approval of Option 25A. This rejects the historical response-monitoring NFI loop while retaining necessary technical delivery safeguards and user-directed pacing.
+
+### DEC-026 — Versioned Nine-ValueRules™ Shared-Agreement Gate — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Before two people enter a shared agreement, each person separately reviews and accepts all nine ValueRules™. A person can still use MyFive privately without crossing that shared boundary.
+*   **🛠️ Canonical rule:** Present Respect, Kindness, Privacy, Self-Awareness, Curiosity, Humility, Collective Intelligence, Social Learning, and Transparency as nine individually accepted items in the unskippable boundary immediately before shared-agreement access. Record each participant's separate receipt with rule-set version, accepted rule identifiers, account, connection, and timestamp in the append-only consent ledger.
+*   **Scope boundary:** The gate controls shared-agreement functionality, not registration, subscription, private reflection, private Connection Profiles, export, deletion, or withdrawal. One participant's acceptance never substitutes for the other's. Withholding or withdrawing consent must not create punishment, pressure, or partner-facing blame.
+*   **Revision boundary:** A material change to the rule set, meaning, purpose, or sharing behavior requires a new version and fresh acceptance before further shared-agreement use. Historical receipts remain preserved as evidence of the version accepted at the time.
+*   **Claims boundary:** ValueRules™ are a product communication agreement, not proof of legal compliance, safety, compatibility, therapeutic benefit, or relationship quality.
+*   **Revalidation basis:** Explicit human approval of Option 26A. The rule matches the current individually validated nine-item gate and corrects the historical claim that the gate itself guarantees legal compliance.
+
+### DEC-027 — Accessible Resend Administrative Control Plane Without Behavioral Experimentation — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Administrators get a clear place to understand and safely control transactional email, but the system does not experiment on people's responsiveness or resurrect the rejected NFI monitoring loop.
+*   **🛠️ Canonical rule:** Provide an accessible Resend administrative control plane showing provider and kill-switch state, approved message categories, sender configuration status without secret values, template preview, explicitly authorized test-send controls, delivery failures, queues, retries, suppression state, audit history, and contextual recovery guidance.
+*   **Activation boundary:** This decision does not activate MyFive outbound email or approve any sender, recipient, message category, trigger, subject, body, attachment, template, experiment, or production test. DEC-010's default-off and separate-approval rules remain controlling.
+*   **Experiment boundary:** Live A/B messaging experiments, automated engagement optimization, and NFI-style downshifts based on ignored messages or personal responsiveness are not approved. A future experiment requires a separate decision defining purpose, population, variants, lawful data, success and guardrail metrics, stopping rules, consent or notice, retention, and review.
+*   **Language boundary:** Describe the interface as accessible, beginner-supportive, and recoverable. Do not claim it is “ADHD-proof,” anxiety-proof, error-free, or universally usable.
+*   **Revalidation basis:** Explicit human approval of Option 27A. This preserves the useful operational control surface while enforcing DEC-010, DEC-025, and the ban on unsupported medicalized claims.
+
+### DEC-028 — Accessible Metadata-Only Security and Integration Health HUD — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Operators can quickly see which important services are healthy, paused, degraded, or unverified, without exposing credentials or relying on colour and animation alone.
+*   **🛠️ Canonical rule:** Provide a visual operational map for material providers and pipelines, including Resend, approved Google capabilities, synchronization or replication, database connectivity, Stripe, and other inventoried dependencies. Pair the Organic Holography view with an accessible semantic table showing last verified state, timestamp, evidence source, ownership, active switch state, and safe next action.
+*   **Security boundary:** Display status metadata only. Never render secret values, tokens, private payloads, payment-card data, encryption keys, user reflections, or unrestricted logs. Credential creation, reveal, copying, and editing remain outside this HUD.
+*   **Control boundary:** Emergency controls must use the scoped switches and recovery rules in DEC-021, clear consequences, intentional confirmation, authorization checks, and audit events. Colour, glow, motion, or a claimed “real-time” state must never be the only status signal; stale and unknown states must be explicit.
+*   **Revalidation basis:** Explicit human approval of Option 28A. This keeps the historical visual threat-model concept while adding accessible fallback, evidence timestamps, safe status semantics, and strict separation from secret material.
+
+### DEC-029 — Human-Controlled 1Password Vault with Replit-Managed Runtime Secrets — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE; RUNTIME CONNECT AND AUTOMATIC ROTATION DEFERRED**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** People may manage production credentials in 1Password, while the deployed application receives only the runtime secrets it needs through Replit's managed environment. MyFive will not depend on a new automated vault bridge until that bridge is separately proven and approved.
+*   **🛠️ Canonical rule:** Use 1Password as the human-controlled administrative credential vault and recovery inventory, and use Replit-managed environment secrets to inject least-privilege values into the approved runtime. Maintain a provider-specific rotation and emergency-revocation runbook with named ownership, recovery access, validation, and audit evidence.
+*   **Deferred boundary:** 1Password Connect or another runtime API dependency, automatic provider-key rotation, secret synchronization, and 1Password as an operational log destination remain deferred. Each requires a separate proof covering identity and service accounts, permissions, network dependency, availability and recovery, supported provider rotation behavior, auditability, cost, and failure-safe rollback.
+*   **Authentication boundary:** Human authentication may use security controls supplied by the credential provider and device. The application must not claim to implement biometric authentication, collect biometric data, or infer that WebAuthn always uses biometrics.
+*   **Migration boundary:** Existing working credentials must not be rotated, moved, invalidated, or removed during DEC-015 migration until the dependent legacy and replacement workflows have passed coordinated callback, authentication, rollback, and continuity checks.
+*   **Revalidation basis:** Explicit human approval of Option 29A. This approves a clear human-vault/runtime-injection model while declining the historical unproven automated runtime, biometric, rotation, and offsite-log bundle.
+
+### DEC-030 — Purpose-Limited Incident Mode and Operational Audit Logging — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** When emergency controls are active, authorized operators see an unmistakable incident-mode state and the system records the security-relevant actions needed for investigation—without copying secrets or private relationship content into logs.
+*   **🛠️ Canonical rule:** Activate a prominent, accessible incident-mode banner whenever a break-glass grant, provider kill switch, or global emergency stop is active. Increase purpose-limited security audit coverage for actor, authorization, reason, scope, target, action, result, timestamp, expiry, revocation, correlation identifier, and recovery state. Preserve integrity and restricted access according to the approved retention policy.
+*   **Data boundary:** Do not log credentials, tokens, encryption keys, payment-card data, private browser-vault content, private reflections, unnecessary personal data, or unrestricted request and response bodies. Incident logging is not authorization for continuous behavioral monitoring.
+*   **Records boundary:** Operational incident logs and incident records are distinct from the organization's record of processing activities and other compliance documentation. Do not label decorative log markers as legal compliance records. Sending logs offsite or into a credential vault requires a separately approved destination, purpose, access model, data-processing terms, retention, deletion, and recovery design.
+*   **Revalidation basis:** Explicit human approval of Option 30A. This preserves fast visual recognition and high-quality incident evidence while correcting the historical ROPA and 1Password-log conflation.
+
+### DEC-031 — Versioned Internal Human-Agency and Safety Evaluation — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive will repeatedly check whether the product protects accessibility, privacy, consent, human agency, and calm use, but passing an internal checklist is not a clinical or ethical certification.
+*   **🛠️ Canonical rule:** Maintain a versioned internal evaluation checklist, which may be described as ACX-inspired only when its referenced source and version are recorded. Map every checklist item to a canonical decision or PRD requirement, an accountable owner, inspectable evidence, a pass/fail or documented-risk result, remediation, and a re-evaluation trigger.
+*   **Coverage boundary:** The checklist must include accessibility, comprehension, error recovery, user control, reversibility, consent, private-by-default behavior, non-surveillance, non-coercion, non-diagnostic language, human authorship, incident safety, and migration continuity. It supplements rather than replaces specialist accessibility, security, privacy, legal, payment, or clinical review where such review is required.
+*   **Claims boundary:** Do not claim “absolute alignment,” clinical validation, ethical certification, guaranteed safety, or universal suitability from this internal assessment. If ACX provenance, terminology, licence, or applicability cannot be established, label the checklist as an internal MyFive Human-Agency and Safety Evaluation.
+*   **Revalidation basis:** Explicit human approval of Option 31A. This retains structured self-evaluation while replacing the historical guarantee language with traceable, testable, reviewable evidence.
 
 ---
 

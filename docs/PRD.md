@@ -1,4 +1,4 @@
-# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.2 - Operational Safety and User-Control Baseline
+# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.3 - Consent, Operations, and Human-Agency Baseline
 
 ## 1. Authority and Scope
 
@@ -24,6 +24,10 @@ This is the canonical Product Requirements Document for MyFive (`myfive.greenele
 - MyFive annual membership: Deferred pending separate approval
 - optional user-connected Google Calendar events and explicit Google Drive exports: In scope with granular consent and minimum scopes
 - behavioral response monitoring, NFI engagement scoring, and inferred relationship-health alerts: Excluded
+- versioned nine-ValueRules™ bilateral gate before shared agreements: In scope
+- accessible Resend administration, provider-health HUD, and incident-mode audit controls: In scope without activating outbound email
+- 1Password human credential vault with Replit-managed runtime secrets: In scope; runtime vault connection and automatic rotation deferred
+- versioned internal human-agency and safety evaluation: In scope; not a certification
 - Complete `greenelephant.org` refactor into the unified target stack: In scope after the MyFive proof gate
 - Existing Green Elephant Typeform, Google, Stripe, Satellite Scan, Resend, Neon, and operational Notion workflows: Must remain operational until verified replacement
 - Biometrics / camera / rPPG: Excluded
@@ -114,6 +118,9 @@ Core rules:
 - non-verbal representations remain private unless separately and explicitly shared
 - shared data requires explicit bilateral consent
 - consent records are append-only and timestamped
+- each participant must individually accept all nine current ValueRules™ before shared-agreement access
+- private product use, export, deletion, withdrawal, and subscription access must not be blocked by the shared-agreement gate
+- material ValueRules™ revisions require a new version and fresh acceptance for further shared-agreement use
 - users can export and delete account data
 - Flow states are selected by the user and are never inferred, diagnosed, ranked, or moralized
 - Lens data and Love-profile data remain independently identifiable and queryable
@@ -132,8 +139,11 @@ Operational requirements:
 - named, least-privilege break-glass support with a 24-hour maximum, automatic expiry, immediate revocation, and audit trail
 - provider- and workflow-specific kill switches plus a global emergency stop
 - transactional communications controls
+- accessible Resend status, category, preview, failure, queue, suppression, audit, and recovery controls without implicit send activation
 - owned incident playbooks and a human-triggered redacted diagnostic bundle
 - service-by-service recommissioning checks after an emergency stop
+- metadata-only provider and pipeline health HUD with semantic-table fallback and explicit stale or unknown states
+- prominent incident-mode state with purpose-limited security audit coverage
 
 ### Module 4 - Connections, Notifications, and Pacing
 
@@ -162,6 +172,7 @@ Target architecture:
 - Neon PostgreSQL + Drizzle ORM
 - Stripe checkout and subscription events
 - Replit Reserved VM runtime
+- 1Password as the human-controlled credential vault and Replit-managed environment secrets for runtime injection
 
 Experience rendering constraints:
 
@@ -169,6 +180,14 @@ Experience rendering constraints:
 - essential journeys must work without WebGPU and with reduced motion enabled
 - conventional cards, tables, grids, and boundaries are permitted when they improve accessibility, comparison, hierarchy, or operational control
 - privacy, consent, payment, safety, and error-recovery controls must remain visually explicit
+- operational colour, glow, and motion must always have textual, semantic, timestamped status equivalents
+
+Security and credential constraints:
+
+- provider-health interfaces expose metadata and evidence state, never secret values or private payloads
+- runtime 1Password Connect, automated provider-key rotation, secret synchronization, and offsite log destinations require separate proof and approval
+- migration must not rotate or invalidate working production credentials before dependent old and new workflows pass coordinated continuity checks
+- incident logs exclude secrets, payment-card data, private vault data, private reflections, and unrestricted payloads
 
 Zero constraints:
 
@@ -232,13 +251,18 @@ Every requirement must map from user journey to implementation and verification.
 | DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
 | DAT-004 | Sovereignty | User can delete account with cascade wipe | M2 | deletion pipeline | deletion integrity tests |
 | DAT-005 | Ontology | Eight Lenses and Eight Loves remain independent while sharing the approved visual taxonomy | M1/M2 | design tokens + separate schemas | schema independence and token mapping tests |
+| DAT-006 | Shared consent | Both participants individually accept the same version of all nine ValueRules™ before shared-agreement access without blocking private use | M1/M2 | consent gate + append-only ledger | nine-item, bilateral, version, reconsent, withdrawal, and private-use tests |
 | PAY-001 | Monetization | Primary membership is €4.99/month and supports five sponsored partner connections; no annual plan is offered without separate approval | M1/M5 | Stripe checkout + subscription APIs + entitlement model | price, interval, sponsorship, and annual-plan absence tests |
 | ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
 | ADM-002 | Operations | Scoped provider/workflow switches and a global emergency stop safely pause outbound work and support controlled restart | M3 | control plane toggles + queues | isolation, pause, backlog, duplicate-suppression, and recommissioning tests |
 | ADM-003 | Support | Named break-glass grants expire within 24 hours, are immediately revocable and audited, and cannot expose private vault data | M3 | privileged-access service + audit ledger | grant, scope, expiry, revocation, misuse, and private-data-denial tests |
 | ADM-004 | Incident response | Operators have owned playbooks and can create a redacted diagnostic bundle without secrets or private payloads | M3/M5 | runbooks + diagnostic exporter | scenario exercises, redaction fixtures, access, retention, and deletion tests |
+| ADM-005 | Email operations | Accessible Resend administration exposes safe status, preview, test, delivery, suppression, audit, and recovery controls without implicitly activating sends | M3 | admin control plane + Resend adapter | default-off, authorization, redaction, preview, test-send gate, failure, and recovery tests |
+| ADM-006 | Operational visibility | Provider and pipeline health is shown through a metadata-only visual map and equivalent semantic table with explicit timestamp and unknown state | M3/M5 | health collectors + admin HUD | accessibility, staleness, authorization, redaction, and switch-confirmation tests |
 | INT-001 | Optional Google connection | User separately authorizes minimum-scope Calendar event operations and explicit Drive exports | M4/M5 | Google OAuth + provider adapters | scope, consent, write preview, disconnect, token-revocation, and cross-account tests |
 | SAF-001 | Non-surveillance | The product does not score ignored notifications, infer relationship health, or alert admins about individual responsiveness | M2/M4 | scheduler + telemetry boundaries | prohibited-signal, admin-visibility, aggregation, and retention tests |
+| SEC-001 | Credential handling | 1Password holds human-managed credential inventory while Replit injects least-privilege runtime secrets; automated vault connectivity remains absent until separately approved | M3/M5 | secret inventory + runtime configuration | repository scan, access review, rotation rehearsal, recovery, and no-runtime-vault-dependency tests |
+| SEC-002 | Incident audit | Active emergency controls produce a prominent incident state and purpose-limited security events without secrets or private content | M3/M5 | admin shell + audit service | activation, correlation, integrity, retention, authorization, and prohibited-payload tests |
 | ARC-001 | Delivery | New features are implemented on SvelteKit target stack | M5 | repo architecture + CI checks | architecture gate checklist |
 | ARC-002 | Operations | Runtime capacity and cost controls can scale with measured demand | M5 | Replit deployment + billing controls | capacity, invoice, alert, and approval review |
 | ARC-003 | Migration | MyFive proves the exact SvelteKit/Svelte 5/Zero/Neon/Replit topology before root-site cutover begins | M5 | MyFive proof deployment + test harness | proof record covering auth, privacy, sync, reconnect, redeploy, and rollback |
@@ -247,6 +271,7 @@ Every requirement must map from user journey to implementation and verification.
 | CON-002 | Revenue | Existing Green Elephant purchase and fulfilment paths remain operational throughout migration | M6 | public site + Stripe + Typeform + Satellite Scan workflows | synthetic purchase-to-fulfilment test and operational reconciliation |
 | CON-003 | Integrations | Existing Google, Typeform, Resend, Neon, and operational Notion workflows preserve current behavior during migration | M6 | provider adapters, callbacks, jobs, and schedulers | provider contract tests, callback verification, job health, and duplicate suppression |
 | GOV-001 | Governance | Product work and release claims use the canonical Alpha, Beta, and Theta labels | M5 | PRD, decision log, roadmap, and release records | evidence-backed phase-gate review |
+| GOV-002 | Human agency | A versioned internal evaluation maps accessibility, privacy, consent, reversibility, non-surveillance, human authorship, and safety checks to inspectable evidence without certification claims | M1-M6 | evaluation checklist + evidence index | traceability, owner, result, remediation, trigger, and prohibited-claim review |
 
 ---
 
@@ -454,6 +479,66 @@ Then future jobs shall follow the new setting and disabling shall stop future pa
 
 And the system shall not use ignored notifications, response timing, or partner behavior to score engagement, infer relationship health, or alert administrators.
 
+### AC-022 Versioned bilateral ValueRules™ gate
+
+Given two participants want to use a shared agreement
+
+When either participant has not individually accepted all nine items in the current ValueRules™ version
+
+Then shared-agreement access shall remain blocked without blocking either participant's private product use
+
+And each acceptance or withdrawal shall remain separately attributable in the append-only consent ledger.
+
+### AC-023 Default-off Resend control plane
+
+Given an administrator opens the Resend control plane
+
+When no separately approved outbound configuration is active
+
+Then the interface may show redacted configuration state, previews, failures, queues, suppression, and recovery guidance
+
+But it shall not send a production or test message without an authorized sender, recipient, category, template, and active scoped switch.
+
+### AC-024 Accessible metadata-only health HUD
+
+Given a provider-health signal is healthy, paused, degraded, stale, or unknown
+
+When an authorized operator views the operational HUD without colour or motion
+
+Then the equivalent semantic table shall identify the state, evidence timestamp, source, owner, switch state, and safe next action
+
+And neither view shall expose secret values or private payloads.
+
+### AC-025 Credential-boundary continuity
+
+Given a working legacy workflow depends on a production credential
+
+When the replacement workflow is being prepared
+
+Then the credential shall not be moved, rotated, invalidated, or removed until both paths pass coordinated authentication, callback, continuity, recovery, and rollback checks
+
+And runtime 1Password connectivity or automatic rotation shall remain absent unless separately proven and approved.
+
+### AC-026 Purpose-limited incident mode
+
+Given a break-glass grant or emergency switch becomes active
+
+When an authorized operator uses or ends the emergency control
+
+Then an accessible incident-mode state and correlated audit events shall record the authorized operational facts
+
+And logs shall exclude credentials, tokens, payment-card data, private vault data, private reflections, and unrestricted payloads.
+
+### AC-027 Internal human-agency evaluation
+
+Given a release candidate reaches its review gate
+
+When the versioned internal human-agency and safety evaluation is completed
+
+Then each applicable item shall identify its requirement, owner, evidence, result, remediation, and re-evaluation trigger
+
+And the result shall not be represented as clinical validation, ethical certification, guaranteed safety, or universal suitability.
+
 ---
 
 ## 6. Two-Stage Sequential Refactor Plan
@@ -547,6 +632,7 @@ Begin immediately after Stage 1 exit evidence is recorded. Use reversible vertic
 
 - [ ] Port portal sessions, password flows, Google OAuth, linked scan history, export/deletion behavior, and user-scoped integrations.
 - [ ] Port admin authentication, role enforcement, integration controls, campaign controls, analytics, and operational dashboards.
+- [ ] Port the default-off Resend control plane, metadata-only health HUD, scoped emergency controls, incident-mode state, and audit behavior without exposing secrets or activating new message categories.
 - [ ] Inventory and verify Google OAuth, Sheets, Analytics, Gmail, Fonts, and documented Slides dependencies separately; do not treat “Google” as one credential or scope.
 - [ ] Verify least privilege, cross-user isolation, callback origins, token handling, and break-glass audit behavior.
 - [ ] Verify MyFive Calendar and Drive operations use separate consent, minimum scopes, explicit write intent, and independent revocation without changing established Green Elephant Google behavior.
@@ -741,6 +827,9 @@ Definition of done for sync:
 - decide whether and when to approve the deferred €48/year MyFive membership, including billing and entitlement behavior
 - define owners, escalation contacts, retention periods, and rehearsal cadence for each approved incident playbook
 - verify the exact minimum Google OAuth scopes and callback identities before enabling MyFive Calendar or Drive in production
+- approve the first concrete MyFive outbound-email categories, triggers, recipients, sender identity, templates, and production activation separately from the Resend control plane
+- determine whether any runtime 1Password connection or automatic provider-key rotation is needed after the manual credential and rotation model is proven
+- establish and record the provenance, version, terminology, and licence of any ACX source before using the ACX name externally
 - confirm whether any missing follow-on book section still needs inclusion
 - complete full RTM expansion for all active requirement IDs
 - attach automated tests to each acceptance criterion in the delivery backlog
