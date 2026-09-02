@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.24 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.26 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.24`
-*   **Last Updated:** `2026-09-02T17:19:58+03:00`
+*   **Document Version:** `11.2.26`
+*   **Last Updated:** `2026-09-02T18:54:43+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -45,6 +45,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.26 | 2026-09-02T18:54:43+03:00 | Estève | Revalidated DEC-010 Resend server-side transactional email provider |
+| 11.2.25 | 2026-09-02T18:41:23+03:00 | Estève | Revalidated DEC-009 no runtime Notion dependency with optional mirror |
 | 11.2.24 | 2026-09-02T17:19:58+03:00 | Estève | Revalidated DEC-008 Replit Reserved VM application runtime |
 | 11.2.23 | 2026-09-02T16:59:13+03:00 | Estève | Revalidated DEC-007 Neon PostgreSQL and Drizzle relational foundation |
 | 11.2.22 | 2026-09-02T03:03:53+03:00 | Estève | Recorded dated workshop handover after DEC-001 through DEC-006; DEC-007 remains pending |
@@ -163,6 +165,27 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Migration boundary:** A move from Replit, a split-runtime topology, or a change that weakens the explicit `ReplitReservedVM` stack contract requires a separately approved architecture and migration decision.
 *   **Validation boundary:** This decision selects the runtime target; it does not verify plan pricing, production reliability, capacity, or Zero connection behaviour. Those claims require direct deployment and operational validation before they may become enforced metrics.
 *   **Revalidation basis:** Explicit human approval of Option A during the evidence-first historical baseline workshop. Historical Decision Log v10, the current canonical PRD, and existing Replit-specific runtime integrations support continuity with Replit while preserving later migration as a separately governed choice.
+
+### DEC-009 — No Runtime Notion Dependency; Mirror Allowed — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive does not depend on Notion to operate. GitHub holds the canonical documents, while Notion may display non-authoritative copies or support project tracking.
+*   **🛠️ Canonical rule:** MyFive must not use Notion as a runtime CMS, application database, or authoritative configuration source. Runtime content and configuration must reside in the repository or approved application data stores. Notion may serve as a downstream documentation mirror or project-tracking workspace.
+*   **Synchronization boundary:** Manual or automated GitHub-to-Notion documentation mirroring is permitted when GitHub remains authoritative and the mirror identifies its source version, commit, and synchronization timestamp. Mirror drift or failure must not affect the deployed MyFive application.
+*   **Scope boundary:** This decision governs MyFive only. It neither approves nor requires removal of unrelated Green Elephant Notion integrations; those integrations remain subject to their own decisions and migration work.
+*   **Revalidation basis:** Explicit human approval of Option A during the evidence-first historical baseline workshop. This reconciles historical Decision Log v10's runtime-decommissioning intent with the current PRD's GitHub-authoritative Notion mirror guidance and the absence of a MyFive-specific runtime Notion dependency in the reviewed code.
+
+### DEC-010 — Resend Server-Side Transactional Email Provider — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** When a separately approved MyFive workflow is allowed to send a transactional email, it uses Resend from the Replit server. Choosing Resend does not switch email on or approve any particular message.
+*   **🛠️ Canonical rule:** Use Resend as MyFive's canonical transactional email provider, invoked only from authenticated server-side code running on Replit. Resend credentials and sender configuration must remain in environment-managed secrets and must never be exposed to browser clients or committed to the repository.
+*   **Activation boundary:** Keep MyFive outbound email disabled by default behind an auditable kill switch until activation is explicitly approved. This decision does not approve marketing email, a message category, trigger, recipient rule, sender identity, subject, body, attachment, or template.
+*   **Delivery boundary:** Each permitted transactional email purpose must be separately defined with its lawful basis or consent rule, minimum necessary data, retry and duplicate-suppression behaviour, failure handling, and verification evidence.
+*   **Scope boundary:** This decision governs MyFive email delivery and does not alter unrelated Green Elephant messaging workflows.
+*   **Revalidation basis:** Explicit human approval of Option A during the evidence-first historical baseline workshop. Historical Decision Log v10 and the existing server-side Resend client and connector kill-switch checks support provider continuity; reviewed MyFive routes do not currently establish outbound activation.
 
 ---
 
