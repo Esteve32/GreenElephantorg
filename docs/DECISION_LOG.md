@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.27 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.28 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.27`
-*   **Last Updated:** `2026-09-02T18:59:39+03:00`
+*   **Document Version:** `11.2.28`
+*   **Last Updated:** `2026-09-02T19:37:57+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -45,6 +45,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.28 | 2026-09-02T19:37:57+03:00 | Estève | Revalidated DEC-012 human-led non-verbal communication and generative mediation ban |
 | 11.2.27 | 2026-09-02T18:59:39+03:00 | Estève | Revalidated DEC-011 and added scalable Replit compute cost governance |
 | 11.2.26 | 2026-09-02T18:54:43+03:00 | Estève | Revalidated DEC-010 Resend server-side transactional email provider |
 | 11.2.25 | 2026-09-02T18:41:23+03:00 | Estève | Revalidated DEC-009 no runtime Notion dependency with optional mirror |
@@ -197,6 +198,18 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Verification boundary:** Verify the active base plan, its cap, included resources, variable-compute rates, current invoices, alerts, and spending controls directly in the Replit billing console. Historical statements do not establish the current amount or account state.
 *   **Growth boundary:** Plan capacity, compute consumption, reliability, and unit economics must be reviewed as usage grows. Product and deployment requirements must not assume a permanent `$20` all-in infrastructure ceiling.
 *   **Revalidation basis:** Explicit human selection of Option A with clarification that the billing plan is capped while compute costs may vary and future growth may require the next plan. This preserves cost control without blocking approved platform growth.
+
+### DEC-012 — Human-Led Non-Verbal Communication; No Generative Mediation — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive helps people notice and voluntarily communicate relationship states through non-verbal visual expression. It must not write messages, apologies, boundaries, or relationship responses for them.
+*   **🛠️ Canonical rule:** Design MyFive as a human-led, non-verbal communication enhancement. Permanently prohibit generative AI, LLMs, and chatbots from authoring, rewriting, suggesting, simulating, evaluating, or mediating interpersonal communication on behalf of users. Maintain DEC-035's broader exclusion of user-facing generative AI unless a separately approved future decision narrows that boundary.
+*   **Permitted expression:** User-directed visual, spatial, colour, pattern, and Connection Profile representations may support private reflection and voluntary non-verbal expression when their meaning comes from the user rather than automated interpretation.
+*   **Privacy and consent boundary:** Non-verbal does not mean inferred or automatically shared. Representations remain private by default under DEC-004; any partner-visible expression requires separate, explicit, purpose-specific, voluntary, and revocable consent. Do not infer a partner's state or meaning.
+*   **Technology boundary:** This decision does not authorize biometrics, camera input, emotion recognition, behavioural inference, diagnosis, or surveillance. DEC-032 remains in force. Internal developer tools remain permitted only outside user-facing interpersonal workflows and must not weaken private-vault isolation.
+*   **Scope boundary:** The non-verbal direction is approved as a product principle. Specific new signals, gestures, shared interactions, notification behaviours, or interpretation systems require their own requirements and approval; none are inferred by this decision.
+*   **Revalidation basis:** Explicit human approval of Option A with clarification that MyFive should become a non-verbal communication enhancement. This consolidates historical DEC-012 with active DEC-035, DEC-004, DEC-005, DEC-032, and DEC-037 without expanding automatic sharing or sensitive-data processing.
 
 ---
 

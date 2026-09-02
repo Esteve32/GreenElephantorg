@@ -1,4 +1,4 @@
-# MyFive - Consolidated PRD - Master v1.6.1 - Scalable Runtime Cost Governance
+# MyFive - Consolidated PRD - Master v1.6.2 - Human-Led Non-Verbal Communication Direction
 
 ## 1. Authority and Scope
 
@@ -13,6 +13,7 @@ This is the canonical Product Requirements Document for MyFive (`myfive.greenele
 
 - Stripe pay gates: In scope
 - Notification pacing: In scope (must be user-controlled)
+- Human-led non-verbal communication enhancement: In scope
 - Biometrics / camera / rPPG: Excluded
 - User-facing AI mediation: Excluded
 
@@ -20,11 +21,13 @@ This is the canonical Product Requirements Document for MyFive (`myfive.greenele
 
 ## 2. Product Summary
 
-MyFive is a calm relationship compass that helps users maintain up to five active human connection seats plus one separate self-connection slot.
+MyFive is a calm, human-led, non-verbal relationship compass that helps users maintain up to five active human connection seats plus one separate self-connection slot. It enhances private awareness and voluntary expression through user-directed visual forms rather than generating interpersonal language or interpreting another person.
 
 Core principles:
 
 - illumination, not judgment
+- non-verbal expression, not automated interpretation
+- human authorship, not generative mediation
 - privacy by design
 - low time-in-app
 - user control and reversibility
@@ -39,6 +42,7 @@ Core principles:
 - onboarding and account activation
 - connection seat management (5 partner seats + separate self slot)
 - Connection Profile entry and review
+- user-directed non-verbal Connection Profile expression and review
 - settings system for privacy, pacing, and notification controls
 - membership state and sponsorship views
 
@@ -56,6 +60,7 @@ Primary domains:
 Core rules:
 
 - private check-ins are structurally separated from partner-visible records
+- non-verbal representations remain private unless separately and explicitly shared
 - shared data requires explicit bilateral consent
 - consent records are append-only and timestamped
 - users can export and delete account data
@@ -124,6 +129,7 @@ Every requirement must map from user journey to implementation and verification.
 | UX-003 | Core workflow | User can record Connection Profile state privately | M1/M2 | check-in UI + check-in APIs + DB | authz and privacy tests |
 | UX-004 | Retention | User can control notification pacing and quiet hours | M4 | settings UI + pacing engine | settings persistence tests |
 | UX-005 | Monetization | User can subscribe with Stripe and sponsor seats | M1/M5 | Stripe checkout/webhooks + sponsorship model | webhook and entitlement tests |
+| UX-006 | Core workflow | User can create and review a non-verbal representation without AI-authored interpersonal language | M1/M2 | Connection Profile UI + privacy controls | privacy, authorship, and no-generative-output tests |
 | DAT-001 | Trust | Private and shared data are structurally isolated | M2 | schema boundaries + query guards | data-boundary test pack |
 | DAT-002 | Consent | Shared agreement requires bilateral explicit consent | M2 | consent gating + ledger | consent gate integration tests |
 | DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
@@ -178,6 +184,14 @@ Given a user confirms account deletion with required confirmation steps
 When deletion is executed  
 Then user-linked records shall be removed according to policy  
 And subsequent authenticated fetches shall return no active account profile.
+
+### AC-007 Human-led non-verbal expression
+
+Given a user creates or reviews a non-verbal Connection Profile representation
+When MyFive renders the representation
+Then its meaning shall derive from the user's explicit input rather than automated interpretation
+And MyFive shall not generate interpersonal wording or infer the partner's state
+And the representation shall remain private unless the user completes a separate approved sharing flow.
 
 ---
 
