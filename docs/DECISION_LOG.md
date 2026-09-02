@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.2.22 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.2.24 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.2 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.2.22`
-*   **Last Updated:** `2026-09-02T03:03:53+03:00`
+*   **Document Version:** `11.2.24`
+*   **Last Updated:** `2026-09-02T17:19:58+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -45,6 +45,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.2.24 | 2026-09-02T17:19:58+03:00 | Estève | Revalidated DEC-008 Replit Reserved VM application runtime |
+| 11.2.23 | 2026-09-02T16:59:13+03:00 | Estève | Revalidated DEC-007 Neon PostgreSQL and Drizzle relational foundation |
 | 11.2.22 | 2026-09-02T03:03:53+03:00 | Estève | Recorded dated workshop handover after DEC-001 through DEC-006; DEC-007 remains pending |
 | 11.2.21 | 2026-09-02T01:18:32+03:00 | Estève | Revalidated DEC-006 ban on coercive engagement while allowing neutral private history |
 | 11.2.20 | 2026-09-02T01:04:08+03:00 | Estève | Revalidated DEC-005 strict ban on partner-facing micro-surveillance signals |
@@ -141,6 +143,26 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Permitted history:** Private chronological records, append-only Connection Profile snapshots, and calm reflection timelines are permitted when they do not rank the user, prescribe frequency, or frame inactivity as failure.
 *   **Pacing relationship:** Notification pacing under DEC-034 must respect this boundary and remain optional, reversible, non-coercive, and easy to pause or disable.
 *   **Revalidation basis:** Explicit human approval during the evidence-first historical baseline workshop. Historical v1, v2, v4, and v10 decision logs consistently ban coercive streaks and punishment for silence; DEC-037 separately supports neutral private append-only history.
+
+### DEC-007 — Neon PostgreSQL + Drizzle Relational Foundation — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Neon is MyFive's main server database, with Drizzle providing structured access to it. Zero synchronization and each user's encrypted browser-local vault remain separate layers with separate responsibilities.
+*   **🛠️ Canonical rule:** Use Neon PostgreSQL as the canonical server-side relational system of record, accessed through Drizzle ORM. Zero is the synchronization layer and must not be treated as the relational system of record. Encrypted browser-local vaults remain separate from both Neon and Zero.
+*   **Architecture boundary:** Server-side relational records, synchronized application state, and encrypted browser-local private data must remain explicitly distinguishable in architecture, implementation, and documentation. This decision does not authorize synchronizing private vault payloads to the server.
+*   **Provider boundary:** Replacing Neon or weakening the explicit Neon stack contract requires a separately approved architecture and migration decision.
+*   **Revalidation basis:** Explicit human approval of Option A during the evidence-first historical baseline workshop. This preserves the current integrated stack contract, canonical PRD architecture, Drizzle schemas, and existing migration evidence without introducing a provider migration.
+
+### DEC-008 — Replit Reserved VM Application Runtime — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** MyFive runs on an always-on Replit Reserved VM. Moving the production application to another provider or splitting it across runtime providers requires a separate decision.
+*   **🛠️ Canonical rule:** Use Replit Reserved VM as the canonical production runtime for MyFive's SvelteKit application and server processes. The deployed application must bind to Replit's assigned `PORT` and use environment-managed runtime configuration.
+*   **Migration boundary:** A move from Replit, a split-runtime topology, or a change that weakens the explicit `ReplitReservedVM` stack contract requires a separately approved architecture and migration decision.
+*   **Validation boundary:** This decision selects the runtime target; it does not verify plan pricing, production reliability, capacity, or Zero connection behaviour. Those claims require direct deployment and operational validation before they may become enforced metrics.
+*   **Revalidation basis:** Explicit human approval of Option A during the evidence-first historical baseline workshop. Historical Decision Log v10, the current canonical PRD, and existing Replit-specific runtime integrations support continuity with Replit while preserving later migration as a separately governed choice.
 
 ---
 
