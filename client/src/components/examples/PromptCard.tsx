@@ -6,18 +6,22 @@ export default function PromptCardExample() {
     <>
       <div className="p-8 space-y-4 max-w-2xl">
         <PromptCard
-          title="Empathetic Listening Check-in"
-          prompt="Before I respond, I want to make sure I understand your perspective. What I'm hearing is... Is that accurate?"
+          code="PROMPT-001"
+          name="Empathetic Listening Check-in"
+          type="Quick Template"
+          template="Before I respond, I want to make sure I understand your perspective. What I'm hearing is... Is that accurate?"
+          howToUse="Use this template during conflict resolution to check your understanding before responding."
           lens="needs"
           role="Executive Assistant"
-          scenario="Conflict Resolution"
         />
         <PromptCard
-          title="Trust Building in Teams"
-          prompt="I appreciate your willingness to share this challenge. What support would be most helpful to you right now?"
+          code="PROMPT-002"
+          name="Trust Building in Teams"
+          type="Quick Template"
+          template="I appreciate your willingness to share this challenge. What support would be most helpful to you right now?"
+          howToUse="Use this template in a team meeting to invite a clear request for support."
           lens="dynamics"
           role="Startup Founder"
-          scenario="Team Meeting"
         />
       </div>
       <Toaster />

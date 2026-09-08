@@ -13,6 +13,7 @@ export default function RetreatCardExample() {
         imageUrl={retreatImageUrl}
         description="Join us for a transformative weekend exploring the microhabit methodology for conscious communication in a serene mountain setting."
         price="€1,200"
+        retreatType="provence"
       />
     </div>
   )
