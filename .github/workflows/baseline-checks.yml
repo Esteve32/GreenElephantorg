@@ -1,9 +1,6 @@
 name: Baseline checks
 
 on:
-  push:
-    branches:
-      - feature/seed-mvp
   pull_request:
     branches:
       - main
@@ -17,25 +14,51 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify:
-    name: Clean install, type-check and build
+  clean-install:
+    name: 1 — Clean install
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Type-check
+  type-check:
+    name: 2 — Type-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run TypeScript check
         run: npm run check
 
-      - name: Build
+  build:
+    name: 3 — Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Build application
         run: npm run build
