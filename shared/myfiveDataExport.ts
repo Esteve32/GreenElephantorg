@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 export const MYFIVE_EXPORT_SCHEMA_VERSION = "myfive-gdpr-article-20.v2" as const;
 
 export interface PortableLocalCheckIn {

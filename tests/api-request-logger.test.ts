@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { afterEach, test } from "node:test";

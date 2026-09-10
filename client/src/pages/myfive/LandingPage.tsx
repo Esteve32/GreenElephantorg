@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 import React from "react";
 import { Link } from "wouter";
 import { Compass, ShieldCheck, Users, Sparkles, ArrowRight, HeartHandshake } from "lucide-react";

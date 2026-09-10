@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 import { Router, Request, Response, NextFunction } from "express";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { and, asc, desc, eq, or } from "drizzle-orm";

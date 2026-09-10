@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 import type { RequestHandler } from "express";
 
 export const PRIVATE_CHECK_IN_SERVER_DISABLED_MESSAGE =
