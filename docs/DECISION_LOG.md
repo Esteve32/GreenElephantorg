@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.3.4 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.4.0 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.3.4`
-*   **Last Updated:** `2026-09-02T22:56:26+03:00`
+*   **Document Version:** `11.4.0`
+*   **Last Updated:** `2026-09-10T23:31:38+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.0 | 2026-09-10T23:31:38+03:00 | Estève | Approved DEC-041 MyFive Alpha privacy-isolation contract and bounded remediation sequence |
 | 11.3.4 | 2026-09-02T22:56:26+03:00 | Estève | Approved DEC-038 through DEC-040 proof journey, Sunday deadline, and risk-based stabilization |
 | 11.3.3 | 2026-09-02T22:24:41+03:00 | Estève | Revalidated DEC-026 through DEC-031 and completed the historical baseline review |
 | 11.3.2 | 2026-09-02T22:06:58+03:00 | Estève | Revalidated DEC-020 through DEC-025 operational safety, Google, and pacing controls |
@@ -461,6 +462,27 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 *   **Rollback boundary:** Keep the verified legacy handler, routing fallback, configuration, and rollback instructions available for at least 24 hours after cutover. Work may continue to the next independent slice during that retention period, but the legacy path must not be deleted, invalidated, or made unrecoverable.
 *   **Classification boundary:** Record the risk class, start and end timestamps, tests, monitoring evidence, incidents, reconciliation, approver, and rollback state in the per-surface migration ledger. When classification is uncertain, use the higher-risk window.
 *   **Approval basis:** Explicit human approval of Option 40A.
+
+---
+
+### DEC-041 — MyFive Alpha Privacy-Isolation Contract — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Anonymous visitors may use the private check-in vault in their own browser, but MyFive must verify an account before saving relationship data on the server. Private check-ins stay browser-local unless the user explicitly exports them. A shared agreement requires current consent from both participants, and one participant must not be able to erase or expose the other's independently authored data.
+*   **🛠️ Canonical rule:** Apply the following privacy contract to the Alpha implementation and all successor-stack replacements. Stage 4.3 remains incomplete until each rule has direct test evidence and human privacy/security approval.
+*   **Authentication boundary:** Anonymous use is permitted only for the browser-local private vault. Require a verified MyFive account before server persistence of slots, invitations, consent receipts, agreements, Connection Profiles, subscriptions, exports, or deletion requests. Anonymous-to-account reconciliation is excluded from Alpha unless separately approved.
+*   **Private check-in boundary:** Remove or hard-disable the server check-in endpoint for Alpha and remove the server `myfiveCheckIns` persistence path unless a separately approved encrypted-sync design supersedes this rule. Approved product wording is “Stored only in this browser unless you export it”; absolute confidentiality claims are prohibited. XSS prevention, CSP, dependency review, and sensitive-log exclusion are part of the vault boundary.
+*   **Bilateral consent boundary:** Store one immutable receipt per participant, connection slot, and material ValueRules version. Agreement creation or update is permitted only when both linked account IDs have complete receipts for the current version. A rejected attempt may append a non-sensitive reason code such as `partner_current_consent_missing`, but must never copy private answers or Connection Profile data. A material rules update resets agreement-write eligibility for both participants until both re-consent.
+*   **Ownership and deletion boundary:** Individually authored private or profile data belongs to its author. Deleting one account must not delete the other participant's independently authored data. A joint agreement is a distinct shared record: deletion revokes the deleting subject's participation and hides or locks the record, while final erasure or retention follows an explicitly documented joint-record policy. Slot ownership must never be treated as ownership of every record under the slot.
+*   **Deletion and billing boundary:** Fail closed by marking the account deletion-pending and revoking every active session. Commit durable deletion state before external Stripe work. Stripe cancellation or customer deletion must be idempotent, retryable, observable, and safely resumable after partial failure. User-visible status must distinguish pending, completed, and action-required states and must not imply atomic success across Stripe and PostgreSQL.
+*   **Provisional partner-data boundary:** Before invitation acceptance, store only a user-chosen nickname or label and relationship type, discourage legal names, provide a clear notice, allow immediate owner deletion, and expire unaccepted invitations plus provisional partner data after 30 days. Acceptance links the connection by internal user ID; typed labels must not be used to infer identity.
+*   **Export boundary:** Export the authenticated subject's authored data, consent evidence, account and subscription state, and approved view of shared-record metadata, including both owned and explicitly linked slots. Never export another participant's private check-ins or Connection Profile payloads. Browser-vault export remains local, explicit, and user-triggered.
+*   **Session, administration, and logging boundary:** Use a per-user session/auth version or equivalent global-revocation mechanism. Voucher creation requires a write-capable administrator role and an immutable audit event. Application logging must use an allowlist and redact tokens, invitation URLs, voucher codes, cookies, authorization values, emails, credentials, and free-text/private payloads before serialization.
+*   **Stage 4.3 proof gate:** Direct regression tests must prove AC-002, AC-003, AC-006, AC-016, and AC-017; evidence must cover partner, administrator, anonymous, authenticated, export, deletion, consent-version, session-revocation, logging, and partial-failure paths. Stage 4.3 may be checked complete only after the evidence is linked and a human privacy/security review approves it.
+*   **Delivery order:** Deliver as separately bounded and approved units: (A) remove misleading server check-in surfaces and redact logs; (B) enforce authentication on server-persisted MyFive routes; (C) implement bilateral consent and tests; (D) redesign ownership, export, and deletion; (E) implement global session revocation and idempotent Stripe deletion orchestration; and (F) complete the privacy regression suite and human review. Each unit follows the one-numbered-step-per-commit protocol.
+*   **Evidence:** GitHub issue #8 records the static findings, positive controls, risks, required decisions, and acceptance gates reviewed before this approval.
+*   **Approval basis:** Estève explicitly approved the recommended privacy-contract bundle in the Codex workshop on 2026-09-10.
 
 ---
 
