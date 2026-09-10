@@ -1,9 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { and, asc, desc, eq, or } from "drizzle-orm";
 import Stripe from "stripe";
 import { db, pool } from "../db";
 import {
+  adminUsers,
+  auditLogs,
   clientSubscriptions,
   clientUsers,
   myfiveAgreements,
@@ -21,8 +23,13 @@ import { MYFIVE_EXPORT_SCHEMA_VERSION, renderMyFiveExportMarkdown } from "../../
 import type { MyFiveDataExport } from "../../shared/myfiveDataExport";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 import { isConnectorEnabled } from "../lib/connectorGuard";
-import { requireAdminAuth } from "../auth";
-import { requirePortalAuth } from "../portal-auth";
+import {
+  buildEapVoucherAuditDetails,
+  createRequireMyFiveAccount,
+  createRequireMyFiveAdminWriter,
+  getVerifiedMyFiveUserId,
+  hasMyFiveSlotAccess,
+} from "./myfive-authorization";
 import { rejectServerPrivateCheckIn } from "./myfive-private-check-in";
 
 export const myfiveRouter = Router();
@@ -40,11 +47,21 @@ function hashVoucherCode(code: string): string {
   return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
 }
 
-function getMyFiveActorId(req: Request): string {
-  if (req.session.clientUserId) return req.session.clientUserId;
-  if (!req.session.myfiveActorId) req.session.myfiveActorId = `session:${randomUUID()}`;
-  return req.session.myfiveActorId;
-}
+const requireMyFiveAccount = createRequireMyFiveAccount(async (userId) => {
+  const [account] = await db.select({ id: clientUsers.id, email: clientUsers.email, isActive: clientUsers.isActive })
+    .from(clientUsers).where(eq(clientUsers.id, userId)).limit(1);
+  return account ?? null;
+});
+
+const requireMyFiveAdminWriter = createRequireMyFiveAdminWriter(async (adminUserId) => {
+  const [admin] = await db.select({
+    id: adminUsers.id,
+    email: adminUsers.email,
+    role: adminUsers.role,
+    isActive: adminUsers.isActive,
+  }).from(adminUsers).where(eq(adminUsers.id, adminUserId)).limit(1);
+  return admin ?? null;
+});
 
 function readSlotId(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -58,7 +75,7 @@ async function findOwnedSlot(actorUserId: string, slotId: string, allowSelf = tr
     eq(myfiveConnectionSlots.userId, actorUserId),
     eq(myfiveConnectionSlots.status, "active"),
   )).limit(1);
-  return slot && (allowSelf || slot.isSelfVault !== "true") ? slot : null;
+  return slot && hasMyFiveSlotAccess(actorUserId, slot, "owner", allowSelf) ? slot : null;
 }
 
 async function findAccessibleSlot(actorUserId: string, slotId: string, allowSelf = true) {
@@ -66,7 +83,7 @@ async function findAccessibleSlot(actorUserId: string, slotId: string, allowSelf
     eq(myfiveConnectionSlots.id, slotId), eq(myfiveConnectionSlots.status, "active"),
     or(eq(myfiveConnectionSlots.userId, actorUserId), eq(myfiveConnectionSlots.partnerUserId, actorUserId)),
   )).limit(1);
-  return slot && (allowSelf || slot.isSelfVault !== "true") ? slot : null;
+  return slot && hasMyFiveSlotAccess(actorUserId, slot, "participant", allowSelf) ? slot : null;
 }
 
 function serializeSlot(slot: typeof myfiveConnectionSlots.$inferSelect) {
@@ -99,6 +116,12 @@ function setDataExportPrivacyHeaders(_req: Request, res: Response, next: NextFun
 }
 
 async function persistMyFiveSubscription(userId: string, customerId: string | null, subscriptionId: string, planStatus: string) {
+  const [account] = await db.select({ id: clientUsers.id }).from(clientUsers).where(and(
+    eq(clientUsers.id, userId),
+    eq(clientUsers.isActive, "true"),
+  )).limit(1);
+  if (!account) throw new Error("Active MyFive account required for subscription persistence");
+
   await db.insert(myfiveSubscriptions).values({
     userId, stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId,
     planStatus, sponsoredSeatsAllocated: 0,
@@ -108,10 +131,19 @@ async function persistMyFiveSubscription(userId: string, customerId: string | nu
 }
 
 export async function handleMyFiveStripeEvent(event: Stripe.Event): Promise<void> {
+  const myFiveEvent = event.type === "checkout.session.completed"
+    ? (event.data.object as Stripe.Checkout.Session).metadata?.product === "myfive_primary"
+    : (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted")
+      ? (event.data.object as Stripe.Subscription).metadata?.product === "myfive_primary"
+      : false;
+  if (!myFiveEvent) return;
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    throw new Error("Verified Stripe signature required for MyFive subscription persistence");
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    if (session.metadata?.product !== "myfive_primary") return;
-    const userId = session.metadata.actorUserId;
+    const userId = session.metadata?.actorUserId;
     const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
     const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
     if (userId && subscriptionId) await persistMyFiveSubscription(userId, customerId, subscriptionId, "active");
@@ -137,8 +169,8 @@ myfiveRouter.get("/health", (_req: Request, res: Response) => {
 });
 
 // Fetch active connection slots (Dunbar limit 5 + 1 Philautia)
-myfiveRouter.get("/slots", async (req: Request, res: Response) => {
-  const actorUserId = getMyFiveActorId(req);
+myfiveRouter.get("/slots", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
   try {
     await db.insert(myfiveConnectionSlots).values({
       userId: actorUserId, slotIndex: 0, status: "active", isSelfVault: "true",
@@ -155,8 +187,8 @@ myfiveRouter.get("/slots", async (req: Request, res: Response) => {
   }
 });
 
-myfiveRouter.post("/slots", async (req: Request, res: Response) => {
-  const actorUserId = getMyFiveActorId(req);
+myfiveRouter.post("/slots", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
   const partnerName = typeof req.body?.partnerName === "string" ? req.body.partnerName.trim() : "";
   const relationType = typeof req.body?.relationType === "string" ? req.body.relationType.trim() : "";
   if (!partnerName || partnerName.length > 100 || !relationType || relationType.length > 100) {
@@ -196,9 +228,8 @@ myfiveRouter.post("/slots", async (req: Request, res: Response) => {
   }
 });
 
-myfiveRouter.post("/slots/:slotId/invitations", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before inviting a partner" });
-  const sponsorUserId = req.session.clientUserId;
+myfiveRouter.post("/slots/:slotId/invitations", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const sponsorUserId = getVerifiedMyFiveUserId(req);
   const slotId = readSlotId(req.params.slotId);
   const inviteeEmail = typeof req.body?.inviteeEmail === "string" ? req.body.inviteeEmail.trim().toLowerCase() : "";
   if (!slotId || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteeEmail)) {
@@ -228,12 +259,12 @@ myfiveRouter.post("/slots/:slotId/invitations", async (req: Request, res: Respon
   }
 });
 
-myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId || !req.session.clientEmail) return res.status(401).json({ error: "Sign in with the invited email address to accept" });
+myfiveRouter.post("/invitations/:token/accept", requireMyFiveAccount, async (req: Request, res: Response) => {
+  if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in with the invited email address to accept" });
   const token = typeof req.params.token === "string" ? req.params.token : "";
   if (token.length < 32 || token.length > 100) return res.status(400).json({ error: "Invalid invitation token" });
   const tokenHash = createHash("sha256").update(token).digest("hex");
-  const inviteeUserId = req.session.clientUserId;
+  const inviteeUserId = getVerifiedMyFiveUserId(req);
   const inviteeEmail = req.session.clientEmail.toLowerCase();
   const client = await pool.connect();
   try {
@@ -288,7 +319,7 @@ myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Respon
 myfiveRouter.post("/check-in", rejectServerPrivateCheckIn);
 
 // Validate the unskippable consent boundary before a shared view is unlocked.
-myfiveRouter.post("/consent", async (req: Request, res: Response) => {
+myfiveRouter.post("/consent", requireMyFiveAccount, async (req: Request, res: Response) => {
   const { acceptedRuleIds, rulesVersion, consentType } = req.body ?? {};
   const slotId = readSlotId(req.body?.slotId);
   if (rulesVersion !== VALUE_RULES_VERSION || !includesEveryValueRule(acceptedRuleIds)) {
@@ -302,7 +333,7 @@ myfiveRouter.post("/consent", async (req: Request, res: Response) => {
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
     const [receipt] = await db.insert(myfiveConsentLedger).values({
       actorUserId,
@@ -326,12 +357,12 @@ myfiveRouter.post("/consent", async (req: Request, res: Response) => {
 });
 
 // Read the latest immutable agreement version for this actor and connection slot.
-myfiveRouter.get("/agreements/:slotId", async (req: Request, res: Response) => {
+myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.params.slotId);
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
     const [latest] = await db.select().from(myfiveAgreements).where(and(
       eq(myfiveAgreements.slotId, slotId),
@@ -355,10 +386,10 @@ myfiveRouter.get("/agreements/:slotId", async (req: Request, res: Response) => {
 });
 
 // Append a new version; prior versions are never overwritten or deleted.
-myfiveRouter.post("/agreements", async (req: Request, res: Response) => {
+myfiveRouter.post("/agreements", requireMyFiveAccount, async (req: Request, res: Response) => {
   const { agreementText, consentReceiptId, expectedVersion } = req.body ?? {};
   const slotId = readSlotId(req.body?.slotId);
-  const actorUserId = getMyFiveActorId(req);
+  const actorUserId = getVerifiedMyFiveUserId(req);
   if (!slotId || typeof agreementText !== "string" || !agreementText.trim() || agreementText.length > 20_000) {
     return res.status(400).json({ error: "A connection slot and agreement text (maximum 20,000 characters) are required" });
   }
@@ -411,12 +442,12 @@ myfiveRouter.post("/agreements", async (req: Request, res: Response) => {
 });
 
 // Read only the current actor's latest private eight-dimensional profile.
-myfiveRouter.get("/love-profiles/:slotId", async (req: Request, res: Response) => {
+myfiveRouter.get("/love-profiles/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.params.slotId);
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (!await findAccessibleSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
     const [latest] = await db.select().from(myfiveLoveProfileSnapshots).where(and(
       eq(myfiveLoveProfileSnapshots.actorUserId, actorUserId),
@@ -438,7 +469,7 @@ myfiveRouter.get("/love-profiles/:slotId", async (req: Request, res: Response) =
 });
 
 // Append a complete snapshot. Existing calibrations are never mutated.
-myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
+myfiveRouter.post("/love-profiles", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.body?.slotId);
   const profile = req.body?.profile;
   if (!slotId || !isLoveFlowProfile(profile)) {
@@ -446,7 +477,7 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   }
 
   try {
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (!await findAccessibleSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
     const [snapshot] = await db.insert(myfiveLoveProfileSnapshots).values({
       actorUserId,
@@ -465,7 +496,7 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   }
 });
 
-myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth, async (req: Request, res: Response) => {
+myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requireMyFiveAccount, async (req: Request, res: Response) => {
   const format = req.query.format === undefined ? "json" : req.query.format;
   if (format !== "json" && format !== "markdown") {
     return res.status(400).json({ error: "Export format must be json or markdown" });
@@ -661,10 +692,10 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
   }
 });
 
-myfiveRouter.delete("/account", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId || !req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
+myfiveRouter.delete("/account", requireMyFiveAccount, async (req: Request, res: Response) => {
+  if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
   if (req.body?.confirmation !== "DELETE MYFIVE") return res.status(400).json({ error: "Type DELETE MYFIVE to confirm permanent deletion" });
-  const userId = req.session.clientUserId;
+  const userId = getVerifiedMyFiveUserId(req);
   const userEmail = req.session.clientEmail.toLowerCase();
   const client = await pool.connect();
   try {
@@ -716,7 +747,7 @@ myfiveRouter.delete("/account", async (req: Request, res: Response) => {
   } finally { client.release(); }
 });
 
-myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, res: Response) => {
+myfiveRouter.post("/admin/eap-vouchers", requireMyFiveAdminWriter, async (req: Request, res: Response) => {
   const organizationLabel = typeof req.body?.organizationLabel === "string" ? req.body.organizationLabel.trim() : "";
   const maxRedemptions = Number(req.body?.maxRedemptions);
   const expiresAt = req.body?.expiresAt ? new Date(req.body.expiresAt) : null;
@@ -728,9 +759,25 @@ myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, 
   }
   try {
     const code = `EAP-${randomBytes(9).toString("hex").toUpperCase()}`;
-    const [voucher] = await db.insert(myfiveEapVouchers).values({
-      organizationLabel, codeHash: hashVoucherCode(code), maxRedemptions, expiresAt,
-    }).returning({ id: myfiveEapVouchers.id, expiresAt: myfiveEapVouchers.expiresAt });
+    const voucher = await db.transaction(async (transaction) => {
+      const [created] = await transaction.insert(myfiveEapVouchers).values({
+        organizationLabel, codeHash: hashVoucherCode(code), maxRedemptions, expiresAt,
+      }).returning({ id: myfiveEapVouchers.id, expiresAt: myfiveEapVouchers.expiresAt });
+      await transaction.insert(auditLogs).values({
+        // Attribute by durable admin ID so a matching client-account email deletion cannot erase this record.
+        userEmail: `admin-account:${req.session.adminUserId!}`,
+        actionType: "CREATE_MYFIVE_EAP_VOUCHER",
+        resource: `myfive_eap_vouchers:${created.id}`,
+        details: buildEapVoucherAuditDetails({
+          voucherId: created.id,
+          organizationLabel,
+          maxRedemptions,
+          expiresAt: created.expiresAt,
+        }),
+        ipAddress: req.ip || req.socket.remoteAddress || "unknown",
+      });
+      return created;
+    });
     res.status(201).type("application/json").send(JSON.stringify({
       id: voucher.id, code, expiresAt: voucher.expiresAt?.toISOString() ?? null,
       warning: "Store this code securely; only its hash is retained and the code cannot be recovered.",
@@ -741,11 +788,10 @@ myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, 
   }
 });
 
-myfiveRouter.post("/eap-vouchers/redeem", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before redeeming an EAP voucher" });
+myfiveRouter.post("/eap-vouchers/redeem", requireMyFiveAccount, async (req: Request, res: Response) => {
   const code = typeof req.body?.code === "string" ? req.body.code.trim() : "";
   if (code.length < 12 || code.length > 100) return res.status(400).json({ error: "Enter a valid EAP voucher code" });
-  const userId = req.session.clientUserId;
+  const userId = getVerifiedMyFiveUserId(req);
   const codeHash = hashVoucherCode(code);
   const client = await pool.connect();
   try {
@@ -780,13 +826,12 @@ myfiveRouter.post("/eap-vouchers/redeem", async (req: Request, res: Response) =>
   } finally { client.release(); }
 });
 
-myfiveRouter.post("/subscription/checkout", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before starting a MyFive membership" });
+myfiveRouter.post("/subscription/checkout", requireMyFiveAccount, async (req: Request, res: Response) => {
   const stripe = getStripe();
   if (!stripe || !(await isConnectorEnabled("stripe"))) {
     return res.status(503).json({ error: "Stripe checkout is currently unavailable" });
   }
-  const actorUserId = getMyFiveActorId(req);
+  const actorUserId = getVerifiedMyFiveUserId(req);
   const customerEmail = typeof req.body?.customerEmail === "string" ? req.body.customerEmail.trim().toLowerCase() : "";
   if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
     return res.status(400).json({ error: "A valid email address is required" });
@@ -819,13 +864,13 @@ myfiveRouter.post("/subscription/checkout", async (req: Request, res: Response) 
   }
 });
 
-myfiveRouter.post("/subscription/confirm", async (req: Request, res: Response) => {
+myfiveRouter.post("/subscription/confirm", requireMyFiveAccount, async (req: Request, res: Response) => {
   const stripe = getStripe();
   const sessionId = typeof req.body?.sessionId === "string" ? req.body.sessionId : "";
   if (!stripe || !sessionId.startsWith("cs_")) return res.status(400).json({ error: "A valid Checkout Session is required" });
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (session.metadata?.product !== "myfive_primary" || session.metadata.actorUserId !== actorUserId || session.payment_status !== "paid") {
       return res.status(403).json({ error: "This paid MyFive Checkout Session does not belong to the current account" });
     }
@@ -840,10 +885,10 @@ myfiveRouter.post("/subscription/confirm", async (req: Request, res: Response) =
   }
 });
 
-myfiveRouter.get("/subscription", async (req: Request, res: Response) => {
+myfiveRouter.get("/subscription", requireMyFiveAccount, async (req: Request, res: Response) => {
   try {
     const [subscription] = await db.select().from(myfiveSubscriptions)
-      .where(eq(myfiveSubscriptions.userId, getMyFiveActorId(req))).limit(1);
+      .where(eq(myfiveSubscriptions.userId, getVerifiedMyFiveUserId(req))).limit(1);
     res.json({
       plan: "B2C Primary Subscription", status: subscription?.planStatus ?? "inactive",
       priceEur: 4.99, sponsoredSeatsAllowed: 5,
