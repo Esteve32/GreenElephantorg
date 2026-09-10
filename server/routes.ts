@@ -2115,11 +2115,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: customerName || null,
           passwordHash: null,
           googleId: null,
-          linkedinSub: null,
-          linkedinAccessToken: null,
+          linkedinSub: undefined,
           avatarUrl: null,
-          notionAccessToken: null,
-          notionWorkspaceId: null,
         });
       }
 
@@ -2705,7 +2702,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fQuiz = allQuizResults.filter(q => inWindow(q.createdAt));
       const fMessages = allContactMessages.filter(m => inWindow(m.createdAt));
       const fWaitlist = allWaitlist.filter(w => inWindow(w.createdAt));
-      const fEmailLogs = allEmailLogs.filter(l => inWindow(l.createdAt));
+      const fEmailLogs = allEmailLogs.filter(l => inWindow(l.sentAt));
 
       const totalRevenue = fScanPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
         + fPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
@@ -2749,7 +2746,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }).length;
 
       const ga4Enabled = await isConnectorEnabled("google-analytics");
-      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : null;
+      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : {
+        sessions: null,
+        uniqueUsers: null,
+        organicUsers: null,
+        topTrafficSources: null,
+        scanPageViews: null,
+        promptCopyEvents: null,
+        coachingCTAClicks: null,
+        returnVisitorRate: null,
+        promptCopiesPerSession: null,
+        directTrafficShare: null,
+      };
       const ga4Connected = ga4Enabled && isGA4Configured();
 
       let typeformApiRate: number | null = null;
@@ -2802,7 +2810,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pQuiz = allQuizResults.filter(q => inPrevWindow(q.createdAt));
       const pMessages = allContactMessages.filter(m => inPrevWindow(m.createdAt));
       const pWaitlist = allWaitlist.filter(w => inPrevWindow(w.createdAt));
-      const pEmailLogs = allEmailLogs.filter(l => inPrevWindow(l.createdAt));
+      const pEmailLogs = allEmailLogs.filter(l => inPrevWindow(l.sentAt));
 
       const prevRevenue = pScanPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
         + pPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
@@ -3745,6 +3753,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/notion/schema", requireAdminAuth, async (_req, res) => {
     try {
       const schema = await getNotionDatabaseSchema();
+      if (!schema) {
+        return res.status(400).json({ message: "Notion connection is disabled or not configured" });
+      }
       res.json({ 
         message: "Notion connection verified",
         databaseId: schema.id,
@@ -6323,7 +6334,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     }
     try {
       const userId = req.session.clientUserId as string;
-      const user = await storage.getClientUser(userId);
+      const user = await storage.getClientUserById(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const [timeline, context] = await Promise.all([
