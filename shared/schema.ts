@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, jsonb, timestamp, integer, index, uniqueIndex, check } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -120,8 +121,13 @@ export const myfiveInvitations = pgTable("myfive_invitations", {
   slotStatus: index("myfive_invitation_slot_status_idx").on(table.slotId, table.status),
 }));
 
-// Private Check-Ins Vault (100% blind to partners and admins)
-export const myfiveCheckIns = pgTable("myfive_check_ins", {
+/**
+ * @deprecated Quarantined compatibility mapping for the legacy server table.
+ * Alpha runtime code must not import this mapping to read or write reflections.
+ * It remains declared only to prevent schema tooling from inferring a destructive
+ * table removal before legacy-data treatment receives separate approval.
+ */
+export const legacyMyfiveCheckInsQuarantine = pgTable("myfive_check_ins", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   slotId: varchar("slot_id").notNull(),

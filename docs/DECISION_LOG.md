@@ -1,6 +1,7 @@
-# 💞 MyFive — Approved Product Decision Log v11.4.0 (Δ Update) — Drift-Safe / Canonical Source
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
+# 💞 MyFive — Approved Product Decision Log v11.4.1 (Δ Update) — Drift-Safe / Canonical Source
 
-This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
+This log represents the official v11.4 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
 All specifications are mapped against the canonical baseline of Decision Log v10.0 and v11.0, establishing clear scope boundaries and aligning feature extensions with the approved MyFive target architecture and migration path [Approved Product Decision Log].
 
@@ -9,8 +10,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.4.0`
-*   **Last Updated:** `2026-09-10T23:31:38+03:00`
+*   **Document Version:** `11.4.1`
+*   **Last Updated:** `2026-09-10T23:45:42+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +53,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.1 | 2026-09-10T23:45:42+03:00 | Estève | Completed Stage 4.3-A server check-in quarantine and metadata-only API logging |
 | 11.4.0 | 2026-09-10T23:31:38+03:00 | Estève | Approved DEC-041 MyFive Alpha privacy-isolation contract and bounded remediation sequence |
 | 11.3.4 | 2026-09-02T22:56:26+03:00 | Estève | Approved DEC-038 through DEC-040 proof journey, Sunday deadline, and risk-based stabilization |
 | 11.3.3 | 2026-09-02T22:24:41+03:00 | Estève | Revalidated DEC-026 through DEC-031 and completed the historical baseline review |
@@ -583,6 +585,12 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 - [x] **4.1** Implement GDPR Article 17 hard cascade account wipe API and explicit-confirmation button, including Stripe billing identity, MyFive server data, linked portal identity/context, and the encrypted browser vault.
 - [x] **4.2** Implement GDPR Article 20 JSON/Markdown data export engine with privacy headers.
 - [ ] **4.3** Audit check-in queries to ensure 100% blind vault isolation from partner views & admins.
+  - [x] **4.3-A** Disable server private-check-in acceptance and reads, quarantine the legacy table mapping without destructive migration, remove response-body logging, and replace absolute vault claims with the approved browser-local wording.
+  - [ ] **4.3-B** Enforce account and privileged authorization on MyFive persistence.
+  - [ ] **4.3-C** Implement bilateral versioned ValueRules consent for shared agreements.
+  - [ ] **4.3-D** Separate data ownership and rebuild export/deletion boundaries.
+  - [ ] **4.3-E** Add global session revocation and idempotent Stripe deletion orchestration.
+  - [ ] **4.3-F** Complete the privacy regression suite and obtain human Stage 4.3 approval.
 
 ### Stage 5: Production Polish & Deployment Verification
 - [ ] **5.1** WCAG AA contrast & accessibility audit on organic HUD.
@@ -609,6 +617,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 3.3 — privacy-isolated B2B EAP voucher redemption | 11.2.6 | Commit containing this `11.2.6` ledger entry | `20260901_myfive_eap_vouchers.sql` |
 | Stage 4.1 — GDPR Article 17 account and vault cascade wipe | 11.2.9 | Commit containing this `11.2.9` ledger entry | No schema migration required |
 | Stage 4.2 — GDPR Article 20 JSON/Markdown account and current-browser vault export | 11.2.10 | Commit containing this `11.2.10` ledger entry | No schema migration required |
+| Stage 4.3-A — server check-in quarantine and metadata-only API logging | 11.4.1 | Commit containing this `11.4.1` ledger entry | No schema migration; legacy table retained and quarantined |
 
 ---
 

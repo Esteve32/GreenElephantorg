@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 import { Router, Request, Response, NextFunction } from "express";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { and, asc, desc, eq, or } from "drizzle-orm";
@@ -7,7 +8,6 @@ import {
   clientSubscriptions,
   clientUsers,
   myfiveAgreements,
-  myfiveCheckIns,
   myfiveConnectionSlots,
   myfiveConsentLedger,
   myfiveEapVouchers,
@@ -24,6 +24,7 @@ import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueR
 import { isConnectorEnabled } from "../lib/connectorGuard";
 import { requireAdminAuth } from "../auth";
 import { requirePortalAuth } from "../portal-auth";
+import { rejectServerPrivateCheckIn } from "./myfive-private-check-in";
 
 export const myfiveRouter = Router();
 
@@ -284,16 +285,8 @@ myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Respon
   } finally { client.release(); }
 });
 
-// Create/store private check-in
-myfiveRouter.post("/check-in", (req: Request, res: Response) => {
-  const { octant, reflectionText } = req.body;
-  res.json({
-    success: true,
-    message: "Private check-in securely logged into encrypted vault",
-    octant: octant || "flow",
-    savedAt: new Date().toISOString()
-  });
-});
+// Alpha privacy boundary: this endpoint never accepts private check-in content.
+myfiveRouter.post("/check-in", rejectServerPrivateCheckIn);
 
 // Validate the unskippable consent boundary before a shared view is unlocked.
 myfiveRouter.post("/consent", async (req: Request, res: Response) => {
@@ -484,7 +477,6 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
     const [
       accountRows,
       slots,
-      serverCheckIns,
       profiles,
       agreements,
       consentReceipts,
@@ -503,9 +495,6 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
       db.select().from(myfiveConnectionSlots)
         .where(eq(myfiveConnectionSlots.userId, userId))
         .orderBy(asc(myfiveConnectionSlots.slotIndex)),
-      db.select().from(myfiveCheckIns)
-        .where(eq(myfiveCheckIns.userId, userId))
-        .orderBy(asc(myfiveCheckIns.createdAt)),
       db.select().from(myfiveLoveProfileSnapshots)
         .where(eq(myfiveLoveProfileSnapshots.actorUserId, userId))
         .orderBy(asc(myfiveLoveProfileSnapshots.createdAt)),
@@ -541,7 +530,7 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
           "MyFive account identity",
           "subject-owned connection records",
           "subject-authored agreements and consent receipts",
-          "subject-authored private profiles and check-ins",
+          "subject-authored private profiles",
           "data-minimized membership status",
           "linked portal context and timeline",
           "current-browser encrypted vault when combined by the client",
@@ -573,14 +562,6 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
           isSelfVault: slot.isSelfVault === "true",
           partnerAccountLinked: Boolean(slot.partnerUserId),
           createdAt: slot.createdAt.toISOString(),
-        })),
-        privateServerCheckIns: serverCheckIns.map((checkIn) => ({
-          id: checkIn.id,
-          slotId: checkIn.slotId,
-          flowOctant: checkIn.flowOctant,
-          privateReflection: checkIn.privateReflection,
-          vaultEncryptedAtRest: checkIn.isVaultEncrypted === "true",
-          createdAt: checkIn.createdAt.toISOString(),
         })),
         connectionProfiles: profiles.map((profile) => ({
           id: profile.id,

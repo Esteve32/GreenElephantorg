@@ -1,4 +1,5 @@
-export const MYFIVE_EXPORT_SCHEMA_VERSION = "myfive-gdpr-article-20.v1" as const;
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
+export const MYFIVE_EXPORT_SCHEMA_VERSION = "myfive-gdpr-article-20.v2" as const;
 
 export interface PortableLocalCheckIn {
   id: string;
@@ -31,7 +32,6 @@ export interface MyFiveDataExport {
   data: {
     account: Record<string, unknown>;
     connectionSlots: Array<Record<string, unknown>>;
-    privateServerCheckIns: Array<Record<string, unknown>>;
     connectionProfiles: Array<Record<string, unknown>>;
     agreementVersions: Array<Record<string, unknown>>;
     consentReceipts: Array<Record<string, unknown>>;
@@ -104,8 +104,6 @@ export function renderMyFiveExportMarkdown(dataExport: MyFiveDataExport): string
     jsonBlock(data.account),
     "",
     recordSections("Connection slots", data.connectionSlots),
-    "",
-    recordSections("Private server check-ins", data.privateServerCheckIns),
     "",
     recordSections("Private connection-profile snapshots", data.connectionProfiles),
     "",

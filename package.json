@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 {
   "name": "rest-express",
   "version": "1.0.0",
@@ -8,6 +9,7 @@
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
+    "test": "tsx --test tests/*.test.ts",
     "decision:record": "node scripts/record-decision-version.mjs",
     "db:push": "drizzle-kit push"
   },
