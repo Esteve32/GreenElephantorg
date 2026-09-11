@@ -1076,11 +1076,12 @@ export function registerPortalRoutes(app: Express) {
   });
 
   app.get("/api/portal/spotify/recent-tracks", async (req, res) => {
-    if (!req.session?.clientUserId) {
+    const clientUserId = req.session?.clientUserId;
+    if (!clientUserId) {
       return res.status(401).json({ message: "Login required" });
     }
     try {
-      const user = await storage.getClientUserById(req.session.clientUserId);
+      const user = await storage.getClientUserById(clientUserId);
       if (!user?.spotifyAccessToken) {
         return res.status(400).json({ message: "Spotify not connected" });
       }
@@ -1112,7 +1113,7 @@ export function registerPortalRoutes(app: Express) {
         if (refreshData.refresh_token) {
           updateFields.spotifyRefreshToken = refreshData.refresh_token;
         }
-        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        await storage.updateClientUser(clientUserId, updateFields);
         return refreshData.access_token;
       };
 
@@ -1341,11 +1342,12 @@ export function registerPortalRoutes(app: Express) {
   });
 
   app.get("/api/portal/oura/daily", async (req, res) => {
-    if (!req.session?.clientUserId) {
+    const clientUserId = req.session?.clientUserId;
+    if (!clientUserId) {
       return res.status(401).json({ message: "Login required" });
     }
     try {
-      const user = await storage.getClientUserById(req.session.clientUserId);
+      const user = await storage.getClientUserById(clientUserId);
       if (!user?.ouraAccessToken) {
         return res.status(400).json({ message: "Oura not connected" });
       }
@@ -1376,7 +1378,7 @@ export function registerPortalRoutes(app: Express) {
         if (refreshData.refresh_token) {
           updateFields.ouraRefreshToken = refreshData.refresh_token;
         }
-        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        await storage.updateClientUser(clientUserId, updateFields);
         return refreshData.access_token;
       };
 

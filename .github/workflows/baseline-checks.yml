@@ -1,0 +1,97 @@
+name: Baseline checks
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: baseline-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Baseline evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Run checks and capture output
+        id: checks
+        shell: bash
+        run: |
+          set +e
+          npm ci > npm-ci.log 2>&1
+          CI_STATUS=$?
+
+          if [ "$CI_STATUS" -eq 0 ]; then
+            npm run check > npm-check.log 2>&1
+            CHECK_STATUS=$?
+            npm test > npm-test.log 2>&1
+            TEST_STATUS=$?
+            npm run build > npm-build.log 2>&1
+            BUILD_STATUS=$?
+          else
+            CHECK_STATUS=125
+            TEST_STATUS=125
+            BUILD_STATUS=125
+            printf 'Skipped because npm ci failed.\n' > npm-check.log
+            printf 'Skipped because npm ci failed.\n' > npm-test.log
+            printf 'Skipped because npm ci failed.\n' > npm-build.log
+          fi
+
+          {
+            printf '## Automated baseline evidence\n\n'
+            printf -- '- Commit: `%s`\n' "$GITHUB_SHA"
+            printf -- '- Node: `%s`\n' "$(node --version)"
+            printf -- '- npm: `%s`\n' "$(npm --version)"
+            printf -- '- `npm ci` exit code: `%s`\n' "$CI_STATUS"
+            printf -- '- `npm run check` exit code: `%s`\n' "$CHECK_STATUS"
+            printf -- '- `npm test` exit code: `%s`\n' "$TEST_STATUS"
+            printf -- '- `npm run build` exit code: `%s`\n\n' "$BUILD_STATUS"
+            for entry in 'npm ci:npm-ci.log' 'npm run check:npm-check.log' 'npm test:npm-test.log' 'npm run build:npm-build.log'; do
+              label="${entry%%:*}"
+              file="${entry#*:}"
+              printf '### `%s` output\n\n```text\n' "$label"
+              tail -c 12000 "$file" | sed -E 's/((TOKEN|SECRET|PASSWORD|API_KEY|DATABASE_URL|STRIPE_SECRET_KEY)[=:][[:space:]]*)[^[:space:]]+/\1[REDACTED]/Ig'
+              printf '\n```\n\n'
+            done
+          } > baseline-evidence.md
+
+          printf 'ci_status=%s\n' "$CI_STATUS" >> "$GITHUB_OUTPUT"
+          printf 'check_status=%s\n' "$CHECK_STATUS" >> "$GITHUB_OUTPUT"
+          printf 'test_status=%s\n' "$TEST_STATUS" >> "$GITHUB_OUTPUT"
+          printf 'build_status=%s\n' "$BUILD_STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Publish evidence to draft PR
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file baseline-evidence.md
+
+      - name: Enforce baseline result
+        if: always()
+        env:
+          CI_STATUS: ${{ steps.checks.outputs.ci_status }}
+          CHECK_STATUS: ${{ steps.checks.outputs.check_status }}
+          TEST_STATUS: ${{ steps.checks.outputs.test_status }}
+          BUILD_STATUS: ${{ steps.checks.outputs.build_status }}
+        run: |
+          test "$CI_STATUS" = '0'
+          test "$CHECK_STATUS" = '0'
+          test "$TEST_STATUS" = '0'
+          test "$BUILD_STATUS" = '0'

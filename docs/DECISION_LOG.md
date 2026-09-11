@@ -1,6 +1,6 @@
-# 💞 MyFive — Approved Product Decision Log v11.3.4 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.4.7 (Δ Update) — Drift-Safe / Canonical Source
 
-This log represents the official v11.3 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
+This log represents the official v11.4 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
 All specifications are mapped against the canonical baseline of Decision Log v10.0 and v11.0, establishing clear scope boundaries and aligning feature extensions with the approved MyFive target architecture and migration path [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.3.4`
-*   **Last Updated:** `2026-09-02T22:56:26+03:00`
+*   **Document Version:** `11.4.7`
+*   **Last Updated:** `2026-09-12T02:25:39+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,14 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.7 | 2026-09-12T02:25:39+03:00 | Estève | Prepared Stage 4.3-D ownership boundaries for privacy review |
+| 11.4.6 | 2026-09-12T01:52:42+03:00 | Estève | Approved Stage 4.3-D survivor-access retention policy |
+| 11.4.5 | 2026-09-11T21:45:29+03:00 | Estève | Approved Stage 4.3-C privacy and security evidence and completed issue 11 |
+| 11.4.4 | 2026-09-11T21:39:07+03:00 | Estève | Corrected Stage 4.3-C status and recorded privacy-audit amendments pending human review |
+| 11.4.3 | 2026-09-11T19:26:47+03:00 | Estève | Completed Stage 4.3-C bilateral versioned ValueRules consent for shared agreements |
+| 11.4.2 | 2026-09-11T00:05:02+03:00 | Estève | Completed Stage 4.3-B account and privileged authorization controls |
+| 11.4.1 | 2026-09-10T23:45:42+03:00 | Estève | Completed Stage 4.3-A server check-in quarantine and metadata-only API logging |
+| 11.4.0 | 2026-09-10T23:31:38+03:00 | Estève | Approved DEC-041 MyFive Alpha privacy-isolation contract and bounded remediation sequence |
 | 11.3.4 | 2026-09-02T22:56:26+03:00 | Estève | Approved DEC-038 through DEC-040 proof journey, Sunday deadline, and risk-based stabilization |
 | 11.3.3 | 2026-09-02T22:24:41+03:00 | Estève | Revalidated DEC-026 through DEC-031 and completed the historical baseline review |
 | 11.3.2 | 2026-09-02T22:06:58+03:00 | Estève | Revalidated DEC-020 through DEC-025 operational safety, Google, and pacing controls |
@@ -464,6 +472,29 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 
 ---
 
+### DEC-041 — MyFive Alpha Privacy-Isolation Contract — APPROVED & ACTIVE BASELINE
+
+*   **Status:** **APPROVED & ACTIVE BASELINE**
+*   **Owner:** Estève
+*   **🧠 Plain-language meaning:** Anonymous visitors may use the private check-in vault in their own browser, but MyFive must verify an account before saving relationship data on the server. Private check-ins stay browser-local unless the user explicitly exports them. A shared agreement requires current consent from both participants, and one participant must not be able to erase or expose the other's independently authored data.
+*   **🛠️ Canonical rule:** Apply the following privacy contract to the Alpha implementation and all successor-stack replacements. Stage 4.3 remains incomplete until each rule has direct test evidence and human privacy/security approval.
+*   **Authentication boundary:** Anonymous use is permitted only for the browser-local private vault. Require a verified MyFive account before server persistence of slots, invitations, consent receipts, agreements, Connection Profiles, subscriptions, exports, or deletion requests. Anonymous-to-account reconciliation is excluded from Alpha unless separately approved.
+*   **Private check-in boundary:** Remove or hard-disable the server check-in endpoint for Alpha and remove the server `myfiveCheckIns` persistence path unless a separately approved encrypted-sync design supersedes this rule. Approved product wording is “Stored only in this browser unless you export it”; absolute confidentiality claims are prohibited. XSS prevention, CSP, dependency review, and sensitive-log exclusion are part of the vault boundary.
+*   **Bilateral consent boundary:** Store one immutable receipt per participant, connection slot, and material ValueRules version. Agreement creation or update is permitted only when both linked account IDs have complete receipts for the current version. A rejected attempt may append a non-sensitive reason code such as `partner_current_consent_missing`, but must never copy private answers or Connection Profile data. A material rules update resets agreement-write eligibility for both participants until both re-consent.
+*   **Ownership and deletion boundary:** Individually authored private or profile data belongs to its author. Deleting one account must not delete the other participant's independently authored data. A joint agreement is a distinct shared record: deletion revokes the deleting subject's participation and hides or locks the record, while final erasure or retention follows an explicitly documented joint-record policy. Slot ownership must never be treated as ownership of every record under the slot.
+*   **Joint-agreement survivor-custody policy (Option C):** When one participant deletes their account, immediately and permanently revoke that account's access, freeze every joint agreement against edits, remove the deleted account's direct identifiers and consent-receipt links, and preserve the other participant's read, export, and delete access. Retain the frozen agreement only until the surviving participant deletes it or deletes their account, whichever occurs first; erase it when no participant remains. Survivor custody may not be used for search, analytics, training, new sharing, relinking, or a new partner. Green Elephant must disclose this lifecycle before agreement creation and again at account deletion, warn that free text may still refer to the deleted participant, and provide a documented process for erasure, restriction, and objection requests concerning retained text.
+*   **Survivor-custody production gate:** Option C records Estève's product decision, not a claim of legal sufficiency. Before production activation, qualified privacy counsel or the accountable DPO must record the specific purpose and lawful basis for continued processing, any Article 9 condition required by the content risk, the necessity and rights-balancing assessment where Article 6(1)(f) is proposed, the applicable privacy-notice text, the rights-request procedure, and backup-erasure handling. Production behavior must fail closed while that record is absent; implementation and disposable-fixture testing may proceed without representing the policy as legally validated.
+*   **Deletion and billing boundary:** Fail closed by marking the account deletion-pending and revoking every active session. Commit durable deletion state before external Stripe work. Stripe cancellation or customer deletion must be idempotent, retryable, observable, and safely resumable after partial failure. User-visible status must distinguish pending, completed, and action-required states and must not imply atomic success across Stripe and PostgreSQL.
+*   **Provisional partner-data boundary:** Before invitation acceptance, store only a user-chosen nickname or label and relationship type, discourage legal names, provide a clear notice, allow immediate owner deletion, and expire unaccepted invitations plus provisional partner data after 30 days. Acceptance links the connection by internal user ID; typed labels must not be used to infer identity.
+*   **Export boundary:** Export the authenticated subject's authored data, consent evidence, account and subscription state, and approved view of shared-record metadata, including both owned and explicitly linked slots. Never export another participant's private check-ins or Connection Profile payloads. Browser-vault export remains local, explicit, and user-triggered.
+*   **Session, administration, and logging boundary:** Use a per-user session/auth version or equivalent global-revocation mechanism. Voucher creation requires a write-capable administrator role and an immutable audit event. Application logging must use an allowlist and redact tokens, invitation URLs, voucher codes, cookies, authorization values, emails, credentials, and free-text/private payloads before serialization.
+*   **Stage 4.3 proof gate:** Direct regression tests must prove AC-002, AC-003, AC-006, AC-016, and AC-017; evidence must cover partner, administrator, anonymous, authenticated, export, deletion, consent-version, session-revocation, logging, and partial-failure paths. Stage 4.3 may be checked complete only after the evidence is linked and a human privacy/security review approves it.
+*   **Delivery order:** Deliver as separately bounded and approved units: (A) remove misleading server check-in surfaces and redact logs; (B) enforce authentication on server-persisted MyFive routes; (C) implement bilateral consent and tests; (D) redesign ownership, export, and deletion; (E) implement global session revocation and idempotent Stripe deletion orchestration; and (F) complete the privacy regression suite and human review. Each unit follows the one-numbered-step-per-commit protocol.
+*   **Evidence:** GitHub issue #8 records the static findings, positive controls, risks, required decisions, and acceptance gates reviewed before this approval.
+*   **Approval basis:** Estève explicitly approved the recommended privacy-contract bundle in the Codex workshop on 2026-09-10.
+
+---
+
 ## ✅ Approved Scope Deltas
 
 ### DEC-037 (Δ) — Eight-Dimensional Greek-Love Flow Profiles — APPROVED & IN SCOPE
@@ -561,6 +592,12 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 - [x] **4.1** Implement GDPR Article 17 hard cascade account wipe API and explicit-confirmation button, including Stripe billing identity, MyFive server data, linked portal identity/context, and the encrypted browser vault.
 - [x] **4.2** Implement GDPR Article 20 JSON/Markdown data export engine with privacy headers.
 - [ ] **4.3** Audit check-in queries to ensure 100% blind vault isolation from partner views & admins.
+  - [x] **4.3-A** Disable server private-check-in acceptance and reads, quarantine the legacy table mapping without destructive migration, remove response-body logging, and replace absolute vault claims with the approved browser-local wording.
+  - [x] **4.3-B** Enforce account and privileged authorization on MyFive persistence.
+  - [x] **4.3-C** Implement bilateral versioned ValueRules consent for shared agreements. Privacy/security evidence approved by Estève on 2026-09-11 in #11.
+  - [ ] **4.3-D** Separate data ownership and rebuild export/deletion boundaries.
+  - [ ] **4.3-E** Add global session revocation and idempotent Stripe deletion orchestration.
+  - [ ] **4.3-F** Complete the privacy regression suite and obtain human Stage 4.3 approval.
 
 ### Stage 5: Production Polish & Deployment Verification
 - [ ] **5.1** WCAG AA contrast & accessibility audit on organic HUD.
@@ -587,6 +624,10 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 3.3 — privacy-isolated B2B EAP voucher redemption | 11.2.6 | Commit containing this `11.2.6` ledger entry | `20260901_myfive_eap_vouchers.sql` |
 | Stage 4.1 — GDPR Article 17 account and vault cascade wipe | 11.2.9 | Commit containing this `11.2.9` ledger entry | No schema migration required |
 | Stage 4.2 — GDPR Article 20 JSON/Markdown account and current-browser vault export | 11.2.10 | Commit containing this `11.2.10` ledger entry | No schema migration required |
+| Stage 4.3-A — server check-in quarantine and metadata-only API logging | 11.4.1 | Commit containing this `11.4.1` ledger entry | No schema migration; legacy table retained and quarantined |
+| Stage 4.3-B — account, record, Stripe-webhook, and privileged voucher authorization | 11.4.2 | Commit containing this `11.4.2` ledger entry | No schema migration required |
+| Stage 4.3-C — bilateral versioned ValueRules consent for shared agreements | 11.4.3–11.4.5 | Initial branch implementation: `3c52d20`; audit correction: `63202fe`; approval: commit containing `11.4.5` | Additive plan only: `20260911_myfive_bilateral_value_rules_consent.sql`; no production migration run; privacy/security evidence approved in #11 |
+| Stage 4.3-D — ownership, export, deletion, and joint-agreement survivor custody | 11.4.6–11.4.7 | Option C specification: commit containing `11.4.6`; branch implementation for privacy/security review: commit containing `11.4.7` | Additive, unexecuted plan: `20260912_myfive_ownership_boundaries.sql`; 26/26 contract tests, type-check, and build pass; disposable PostgreSQL proof and human approval remain pending; no production migration run |
 
 ---
 

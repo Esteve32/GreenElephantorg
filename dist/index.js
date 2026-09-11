@@ -63,6 +63,14 @@ __export(schema_exports, {
   insertWebinarSessionSchema: () => insertWebinarSessionSchema,
   insertWebinarSettingsSchema: () => insertWebinarSettingsSchema,
   insertWebinarWaitlistEntrySchema: () => insertWebinarWaitlistEntrySchema,
+  legacyMyfiveCheckInsQuarantine: () => legacyMyfiveCheckInsQuarantine,
+  myfiveAgreements: () => myfiveAgreements,
+  myfiveConnectionSlots: () => myfiveConnectionSlots,
+  myfiveConsentLedger: () => myfiveConsentLedger,
+  myfiveEapVouchers: () => myfiveEapVouchers,
+  myfiveInvitations: () => myfiveInvitations,
+  myfiveLoveProfileSnapshots: () => myfiveLoveProfileSnapshots,
+  myfiveSubscriptions: () => myfiveSubscriptions,
   newsletterCampaigns: () => newsletterCampaigns,
   newsletterRecipients: () => newsletterRecipients,
   newsletterSubscriptions: () => newsletterSubscriptions,
@@ -86,10 +94,10 @@ __export(schema_exports, {
   webinarWaitlistEntries: () => webinarWaitlistEntries
 });
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer, index, uniqueIndex, check } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-var users, insertUserSchema, recommendationSubmissions, insertRecommendationSubmissionSchema, contacts, insertContactSchema, webinarWaitlistEntries, insertWebinarWaitlistEntrySchema, waitlistEntries, insertWaitlistEntrySchema, newsletterSubscriptions, insertNewsletterSubscriptionSchema, signalsQuizResults, insertSignalsQuizResultSchema, purchases, insertPurchaseSchema, contactMessages, insertContactMessageSchema, satellitescanPurchases, insertSatellitescanPurchaseSchema, coupons, insertCouponSchema, prompts, insertPromptSchema, onboardingEmailTemplates, insertOnboardingEmailTemplateSchema, onboardingEmailLogs, insertOnboardingEmailLogSchema, emailVerifications, insertEmailVerificationSchema, batchEmailSends, insertBatchEmailSendSchema, batchEmailRecipients, insertBatchEmailRecipientSchema, newsletterCampaigns, insertNewsletterCampaignSchema, newsletterRecipients, insertNewsletterRecipientSchema, webinarSettings, insertWebinarSettingsSchema, webinarSessions, insertWebinarSessionSchema, calendarEvents, insertCalendarEventSchema, flowCheckResults, insertFlowCheckResultSchema, connectorStates, insertConnectorStateSchema, connectorToggleLogs, insertConnectorToggleLogSchema, seoSuggestions, insertSeoSuggestionSchema, clientUsers, insertClientUserSchema, clientSubscriptions, insertClientSubscriptionSchema, adminSettings, testimonials, insertTestimonialSchema, adminUsers, insertAdminUserSchema, auditLogs, insertAuditLogSchema, portalTimelineEvents, insertPortalTimelineEventSchema, portalUserContext, insertPortalUserContextSchema, qrCodes, insertQrCodeSchema, qrScans, insertQrScanSchema, coachingDebriefs, insertCoachingDebriefSchema;
+var users, insertUserSchema, recommendationSubmissions, insertRecommendationSubmissionSchema, contacts, insertContactSchema, myfiveConnectionSlots, myfiveInvitations, legacyMyfiveCheckInsQuarantine, myfiveAgreements, myfiveConsentLedger, myfiveLoveProfileSnapshots, myfiveSubscriptions, myfiveEapVouchers, webinarWaitlistEntries, insertWebinarWaitlistEntrySchema, waitlistEntries, insertWaitlistEntrySchema, newsletterSubscriptions, insertNewsletterSubscriptionSchema, signalsQuizResults, insertSignalsQuizResultSchema, purchases, insertPurchaseSchema, contactMessages, insertContactMessageSchema, satellitescanPurchases, insertSatellitescanPurchaseSchema, coupons, insertCouponSchema, prompts, insertPromptSchema, onboardingEmailTemplates, insertOnboardingEmailTemplateSchema, onboardingEmailLogs, insertOnboardingEmailLogSchema, emailVerifications, insertEmailVerificationSchema, batchEmailSends, insertBatchEmailSendSchema, batchEmailRecipients, insertBatchEmailRecipientSchema, newsletterCampaigns, insertNewsletterCampaignSchema, newsletterRecipients, insertNewsletterRecipientSchema, webinarSettings, insertWebinarSettingsSchema, webinarSessions, insertWebinarSessionSchema, calendarEvents, insertCalendarEventSchema, flowCheckResults, insertFlowCheckResultSchema, connectorStates, insertConnectorStateSchema, connectorToggleLogs, insertConnectorToggleLogSchema, seoSuggestions, insertSeoSuggestionSchema, clientUsers, insertClientUserSchema, clientSubscriptions, insertClientSubscriptionSchema, adminSettings, testimonials, insertTestimonialSchema, adminUsers, insertAdminUserSchema, auditLogs, insertAuditLogSchema, portalTimelineEvents, insertPortalTimelineEventSchema, portalUserContext, insertPortalUserContextSchema, qrCodes, insertQrCodeSchema, qrScans, insertQrScanSchema, coachingDebriefs, insertCoachingDebriefSchema;
 var init_schema = __esm({
   "shared/schema.ts"() {
     "use strict";
@@ -161,6 +169,118 @@ var init_schema = __esm({
       source: z.enum(["waitlist", "newsletter", "recommendation", "quiz", "webinar", "scan_interest", "flow_check"]),
       channelsReached: z.array(z.string()).optional()
     });
+    myfiveConnectionSlots = pgTable("myfive_connection_slots", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      userId: varchar("user_id").notNull(),
+      slotIndex: integer("slot_index").notNull(),
+      // 0 = Philautia, 1..5 = Partner Seats
+      partnerName: text("partner_name"),
+      partnerUserId: varchar("partner_user_id"),
+      relationType: text("relation_type"),
+      // e.g. "Partner", "Friend", "Family"
+      status: text("status").notNull().default("empty"),
+      // "active", "empty", "siloed"
+      isSelfVault: text("is_self_vault").notNull().default("false"),
+      // "true" or "false"
+      createdAt: timestamp("created_at").defaultNow().notNull()
+    }, (table) => ({
+      userSlotIdentity: uniqueIndex("myfive_connection_slot_user_index_idx").on(table.userId, table.slotIndex),
+      validSlotIndex: check("myfive_connection_slot_index_check", sql`${table.slotIndex} BETWEEN 0 AND 5`),
+      selfSlotConsistency: check(
+        "myfive_connection_slot_self_check",
+        sql`(${table.slotIndex} = 0 AND ${table.isSelfVault} = 'true') OR (${table.slotIndex} BETWEEN 1 AND 5 AND ${table.isSelfVault} = 'false')`
+      )
+    }));
+    myfiveInvitations = pgTable("myfive_invitations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      sponsorUserId: varchar("sponsor_user_id").notNull(),
+      slotId: varchar("slot_id").notNull(),
+      inviteeEmail: text("invitee_email").notNull(),
+      tokenHash: text("token_hash").notNull().unique(),
+      status: text("status").notNull().default("pending"),
+      acceptedByUserId: varchar("accepted_by_user_id"),
+      expiresAt: timestamp("expires_at").notNull(),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      acceptedAt: timestamp("accepted_at")
+    }, (table) => ({
+      sponsorStatus: index("myfive_invitation_sponsor_status_idx").on(table.sponsorUserId, table.status),
+      slotStatus: index("myfive_invitation_slot_status_idx").on(table.slotId, table.status)
+    }));
+    legacyMyfiveCheckInsQuarantine = pgTable("myfive_check_ins", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      userId: varchar("user_id").notNull(),
+      slotId: varchar("slot_id").notNull(),
+      flowOctant: text("flow_octant").notNull(),
+      // "flow", "control", "relaxation", etc.
+      privateReflection: text("private_reflection"),
+      isVaultEncrypted: text("is_vault_encrypted").notNull().default("true"),
+      createdAt: timestamp("created_at").defaultNow().notNull()
+    });
+    myfiveAgreements = pgTable("myfive_agreements", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      slotId: varchar("slot_id").notNull(),
+      creatorUserId: varchar("creator_user_id").notNull(),
+      partnerUserId: varchar("partner_user_id"),
+      agreementText: text("agreement_text").notNull(),
+      valueRulesConsented: text("value_rules_consented").notNull().default("true"),
+      version: integer("version").notNull().default(1),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at").defaultNow().notNull()
+    }, (table) => ({
+      versionIdentity: uniqueIndex("myfive_agreement_slot_creator_version_idx").on(
+        table.slotId,
+        table.creatorUserId,
+        table.version
+      )
+    }));
+    myfiveConsentLedger = pgTable("myfive_consent_ledger", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      actorUserId: varchar("actor_user_id").notNull(),
+      slotId: varchar("slot_id").notNull(),
+      consentType: text("consent_type").notNull(),
+      rulesVersion: text("rules_version").notNull(),
+      acceptedRuleIds: text("accepted_rule_ids").array().notNull(),
+      acceptedAt: timestamp("accepted_at").defaultNow().notNull()
+    });
+    myfiveLoveProfileSnapshots = pgTable("myfive_love_profile_snapshots", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      actorUserId: varchar("actor_user_id").notNull(),
+      slotId: varchar("slot_id").notNull(),
+      profile: jsonb("profile").notNull(),
+      createdAt: timestamp("created_at").defaultNow().notNull()
+    }, (table) => ({
+      actorSlotCreated: index("myfive_love_profile_actor_slot_created_idx").on(
+        table.actorUserId,
+        table.slotId,
+        table.createdAt.desc()
+      )
+    }));
+    myfiveSubscriptions = pgTable("myfive_subscriptions", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      userId: varchar("user_id").notNull().unique(),
+      stripeCustomerId: text("stripe_customer_id"),
+      stripeSubscriptionId: text("stripe_subscription_id"),
+      planStatus: text("plan_status").notNull().default("active"),
+      // "active", "canceled", "sponsored", "eap"
+      sponsorUserId: text("sponsor_user_id"),
+      // Null if primary subscriber; Populated if partner seat is sponsored
+      sponsoredSeatsAllocated: integer("sponsored_seats_allocated").notNull().default(0),
+      createdAt: timestamp("created_at").defaultNow().notNull()
+    });
+    myfiveEapVouchers = pgTable("myfive_eap_vouchers", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      organizationLabel: text("organization_label").notNull(),
+      codeHash: text("code_hash").notNull().unique(),
+      maxRedemptions: integer("max_redemptions").notNull(),
+      redeemedCount: integer("redeemed_count").notNull().default(0),
+      status: text("status").notNull().default("active"),
+      expiresAt: timestamp("expires_at"),
+      createdAt: timestamp("created_at").defaultNow().notNull()
+    }, (table) => ({
+      statusExpiry: index("myfive_eap_voucher_status_expiry_idx").on(table.status, table.expiresAt),
+      positiveCapacity: check("myfive_eap_voucher_capacity_check", sql`${table.maxRedemptions} > 0`),
+      validCount: check("myfive_eap_voucher_count_check", sql`${table.redeemedCount} BETWEEN 0 AND ${table.maxRedemptions}`)
+    }));
     webinarWaitlistEntries = pgTable("webinar_waitlist_entries", {
       id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
       contactId: varchar("contact_id").notNull(),
@@ -1306,7 +1426,7 @@ var init_storage = __esm({
       }
       async createWebinarSession(session2) {
         const id = randomUUID();
-        const record = { ...session2, id, createdAt: /* @__PURE__ */ new Date() };
+        const record = { sortOrder: 0, spotsLeft: 0, ...session2, id, createdAt: /* @__PURE__ */ new Date() };
         this.webinarSessionsMap.set(id, record);
         return record;
       }
@@ -1325,7 +1445,7 @@ var init_storage = __esm({
       }
       async createCalendarEvent(event) {
         const id = randomUUID();
-        const record = { ...event, id, createdAt: /* @__PURE__ */ new Date() };
+        const record = { sortOrder: 0, ...event, id, createdAt: /* @__PURE__ */ new Date() };
         this.calendarEventsMap.set(id, record);
         return record;
       }
@@ -1372,7 +1492,7 @@ var init_storage = __esm({
         return true;
       }
       async createConnectorToggleLog(log2) {
-        return { id: randomUUID(), connectorName: log2.connectorName, action: log2.action, performedBy: log2.performedBy || "admin", createdAt: /* @__PURE__ */ new Date() };
+        return { id: randomUUID(), connectorName: log2.connectorName, action: log2.action, performedBy: log2.performedBy || "admin", previousEnabled: null, newEnabled: null, triggeredBy: "admin", createdAt: /* @__PURE__ */ new Date() };
       }
       async getConnectorToggleLogs(_limit) {
         return [];
@@ -1488,7 +1608,7 @@ var init_storage = __esm({
       }
       async deleteAllPortalTimelineEvents(userId) {
         let count = 0;
-        for (const [id, event] of this.portalTimelineEvents.entries()) {
+        for (const [id, event] of Array.from(this.portalTimelineEvents.entries())) {
           if (event.userId === userId) {
             this.portalTimelineEvents.delete(id);
             count++;
@@ -1518,7 +1638,7 @@ var init_storage = __esm({
       }
       async deleteAllPortalUserContext(userId) {
         let count = 0;
-        for (const [id, ctx] of this.portalUserContextMap.entries()) {
+        for (const [id, ctx] of Array.from(this.portalUserContextMap.entries())) {
           if (ctx.userId === userId) {
             this.portalUserContextMap.delete(id);
             count++;
@@ -1571,7 +1691,7 @@ var init_storage = __esm({
       }
       async deleteQrScansByCodeId(qrCodeId) {
         let count = 0;
-        for (const [id, scan] of this.qrScansMap.entries()) {
+        for (const [id, scan] of Array.from(this.qrScansMap.entries())) {
           if (scan.qrCodeId === qrCodeId) {
             this.qrScansMap.delete(id);
             count++;
@@ -5166,7 +5286,7 @@ __export(notionSync_exports, {
   syncContactWithNotion: () => syncContactWithNotion,
   syncNewsletterToNotion: () => syncNewsletterToNotion
 });
-import { eq as eq2, isNull } from "drizzle-orm";
+import { eq as eq3, isNull } from "drizzle-orm";
 function normalizeEmail(email) {
   return (email || "").trim().toLowerCase();
 }
@@ -5350,7 +5470,7 @@ async function pullContactsFromNotion() {
           const name = nameArr && nameArr.length > 0 ? nameArr[0].text?.content : null;
           const sourceSelect = props.Source?.select?.name;
           const source = sourceSelect ? sourceSelect.toLowerCase() : "newsletter";
-          const existingContact = await db.select().from(contacts).where(eq2(contacts.email, email)).limit(1);
+          const existingContact = await db.select().from(contacts).where(eq3(contacts.email, email)).limit(1);
           if (existingContact.length > 0) {
             const contact = existingContact[0];
             const notionEditedTime = new Date(notionPage.last_edited_time);
@@ -5360,7 +5480,7 @@ async function pullContactsFromNotion() {
                 name: name || contact.name,
                 notionPageId: notionPage.id,
                 notionSyncedAt: /* @__PURE__ */ new Date()
-              }).where(eq2(contacts.id, contact.id));
+              }).where(eq3(contacts.id, contact.id));
               result.updated++;
             }
           } else {
@@ -5404,7 +5524,7 @@ async function pushAllContactsToNotion() {
         await db.update(contacts).set({
           notionPageId,
           notionSyncedAt: /* @__PURE__ */ new Date()
-        }).where(eq2(contacts.id, contact.id));
+        }).where(eq3(contacts.id, contact.id));
         result.pushed++;
       } else {
         result.errors.push(`Failed to push contact: ${contact.email}`);
@@ -5417,7 +5537,7 @@ async function pushAllContactsToNotion() {
 }
 async function syncContactWithNotion(contactId) {
   try {
-    const contactResults = await db.select().from(contacts).where(eq2(contacts.id, contactId)).limit(1);
+    const contactResults = await db.select().from(contacts).where(eq3(contacts.id, contactId)).limit(1);
     if (contactResults.length === 0) return false;
     const contact = contactResults[0];
     const notionPageId = await pushContactToNotion(contact);
@@ -5425,7 +5545,7 @@ async function syncContactWithNotion(contactId) {
       await db.update(contacts).set({
         notionPageId,
         notionSyncedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(contacts.id, contactId));
+      }).where(eq3(contacts.id, contactId));
       return true;
     }
     return false;
@@ -5456,7 +5576,7 @@ async function markContactAsCustomer(email, purchaseDetails) {
   }
   try {
     const notion = await getNotionClient();
-    let existingContact = await db.select().from(contacts).where(eq2(contacts.email, email)).limit(1);
+    let existingContact = await db.select().from(contacts).where(eq3(contacts.email, email)).limit(1);
     let isNewContact = false;
     let linkedExisting = false;
     let contact;
@@ -5474,13 +5594,13 @@ async function markContactAsCustomer(email, purchaseDetails) {
     } else {
       contact = existingContact[0];
       if (purchaseDetails.customerName && !contact.name) {
-        await db.update(contacts).set({ name: purchaseDetails.customerName }).where(eq2(contacts.id, contact.id));
+        await db.update(contacts).set({ name: purchaseDetails.customerName }).where(eq3(contacts.id, contact.id));
         contact.name = purchaseDetails.customerName;
       }
     }
     if (contact.notionPageId) {
       console.log(`Contact ${email} already synced to Notion (page: ${contact.notionPageId})`);
-      await db.update(contacts).set({ notionSyncedAt: /* @__PURE__ */ new Date() }).where(eq2(contacts.id, contact.id));
+      await db.update(contacts).set({ notionSyncedAt: /* @__PURE__ */ new Date() }).where(eq3(contacts.id, contact.id));
       return { success: true, isNewContact, notionPageId: contact.notionPageId };
     }
     const existingNotionContact = await findNotionContactByEmail(email);
@@ -5492,12 +5612,12 @@ async function markContactAsCustomer(email, purchaseDetails) {
           name: existingNotionContact.name,
           notionPageId: existingNotionContact.pageId,
           notionSyncedAt: /* @__PURE__ */ new Date()
-        }).where(eq2(contacts.id, contact.id));
+        }).where(eq3(contacts.id, contact.id));
       } else {
         await db.update(contacts).set({
           notionPageId: existingNotionContact.pageId,
           notionSyncedAt: /* @__PURE__ */ new Date()
-        }).where(eq2(contacts.id, contact.id));
+        }).where(eq3(contacts.id, contact.id));
       }
       console.log(`Linked existing Notion contact for: ${email}`);
       return { success: true, isNewContact, notionPageId: existingNotionContact.pageId, linkedExisting };
@@ -5516,7 +5636,7 @@ async function markContactAsCustomer(email, purchaseDetails) {
     await db.update(contacts).set({
       notionPageId: response.id,
       notionSyncedAt: /* @__PURE__ */ new Date()
-    }).where(eq2(contacts.id, contact.id));
+    }).where(eq3(contacts.id, contact.id));
     console.log(`Created new Notion page for customer: ${email}`);
     return { success: true, isNewContact, notionPageId: response.id };
   } catch (error) {
@@ -5525,7 +5645,7 @@ async function markContactAsCustomer(email, purchaseDetails) {
   }
 }
 async function findContactByEmail(email) {
-  const results = await db.select().from(contacts).where(eq2(contacts.email, email)).limit(1);
+  const results = await db.select().from(contacts).where(eq3(contacts.email, email)).limit(1);
   return results.length > 0 ? results[0] : null;
 }
 async function syncNewsletterToNotion(campaignId, contactId) {
@@ -5666,7 +5786,7 @@ __export(portal_auth_exports, {
   registerPortalRoutes: () => registerPortalRoutes,
   requirePortalAuth: () => requirePortalAuth
 });
-import { scrypt as scrypt2, randomBytes as randomBytes2, timingSafeEqual as timingSafeEqual2 } from "crypto";
+import { scrypt as scrypt2, randomBytes as randomBytes3, timingSafeEqual as timingSafeEqual2 } from "crypto";
 import { promisify as promisify2 } from "util";
 function getBaseUrl(req) {
   if (process.env.REPLIT_DEV_DOMAIN) {
@@ -5712,7 +5832,7 @@ async function autoConnectScansToUser(userId, email) {
   }
 }
 async function hashPassword(password) {
-  const salt = randomBytes2(16).toString("hex");
+  const salt = randomBytes3(16).toString("hex");
   const buf = await scryptAsync2(password, salt, 64);
   return `${buf.toString("hex")}.${salt}`;
 }
@@ -5833,7 +5953,7 @@ function registerPortalRoutes(app2) {
       if (!user || !user.passwordHash) {
         return res.json({ message: "If an account exists with that email, a reset link has been sent." });
       }
-      const token = randomBytes2(32).toString("hex");
+      const token = randomBytes3(32).toString("hex");
       const expiry = new Date(Date.now() + 60 * 60 * 1e3);
       await storage.updateClientUser(user.id, {
         resetToken: token,
@@ -5972,7 +6092,7 @@ function registerPortalRoutes(app2) {
       console.log("Portal Google OAuth: dev domain detected, redirecting to login with dev_google error");
       return res.redirect("/portal/login?error=dev_google");
     }
-    const oauthNonce = randomBytes2(24).toString("hex");
+    const oauthNonce = randomBytes3(24).toString("hex");
     req.session.googleOAuthState = oauthNonce;
     const redirectUri = `${baseUrl}/api/portal/auth/google/callback`;
     const scope = encodeURIComponent("openid email profile");
@@ -6157,7 +6277,7 @@ function registerPortalRoutes(app2) {
     }
     const baseUrl = process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "https://greenelephant.org";
     const redirectUri = `${baseUrl}/api/portal/notion/callback`;
-    const oauthNonce = randomBytes2(24).toString("hex");
+    const oauthNonce = randomBytes3(24).toString("hex");
     req.session.notionOAuthState = oauthNonce;
     const authUrl = `https://api.notion.com/v1/oauth/authorize?client_id=${clientId}&response_type=code&owner=user&redirect_uri=${encodeURIComponent(redirectUri)}&state=${oauthNonce}`;
     res.redirect(authUrl);
@@ -6321,7 +6441,7 @@ function registerPortalRoutes(app2) {
       return res.redirect("/portal/login?error=dev_linkedin");
     }
     const redirectUri = `${baseUrl}/api/portal/auth/linkedin/callback`;
-    const state = randomBytes2(16).toString("hex");
+    const state = randomBytes3(16).toString("hex");
     req.session.linkedinOAuthState = state;
     const scope = encodeURIComponent("openid profile email");
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope}`;
@@ -6465,7 +6585,7 @@ function registerPortalRoutes(app2) {
       return res.status(400).json({ message: "Spotify connection only works on the published site (greenelephant.org). Please try again after publishing." });
     }
     const redirectUri = `${baseUrl}/api/portal/spotify/callback`;
-    const oauthNonce = randomBytes2(24).toString("hex");
+    const oauthNonce = randomBytes3(24).toString("hex");
     req.session.spotifyOAuthState = oauthNonce;
     const scopes = "user-read-recently-played user-read-email user-top-read";
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=${oauthNonce}`;
@@ -6562,11 +6682,12 @@ function registerPortalRoutes(app2) {
     }
   });
   app2.get("/api/portal/spotify/recent-tracks", async (req, res) => {
-    if (!req.session?.clientUserId) {
+    const clientUserId = req.session?.clientUserId;
+    if (!clientUserId) {
       return res.status(401).json({ message: "Login required" });
     }
     try {
-      const user = await storage.getClientUserById(req.session.clientUserId);
+      const user = await storage.getClientUserById(clientUserId);
       if (!user?.spotifyAccessToken) {
         return res.status(400).json({ message: "Spotify not connected" });
       }
@@ -6595,7 +6716,7 @@ function registerPortalRoutes(app2) {
         if (refreshData.refresh_token) {
           updateFields.spotifyRefreshToken = refreshData.refresh_token;
         }
-        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        await storage.updateClientUser(clientUserId, updateFields);
         return refreshData.access_token;
       };
       let accessToken = user.spotifyAccessToken;
@@ -6689,7 +6810,7 @@ function registerPortalRoutes(app2) {
     }
     const baseUrl = process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "https://greenelephant.org";
     const redirectUri = `${baseUrl}/api/portal/auth/oura/callback`;
-    const oauthNonce = randomBytes2(24).toString("hex");
+    const oauthNonce = randomBytes3(24).toString("hex");
     req.session.ouraOAuthState = oauthNonce;
     const scopes = "email personal daily tag workout session spo2 ring_configuration stress heart_health heartrate";
     const authUrl = `https://cloud.ouraring.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=${oauthNonce}`;
@@ -6780,11 +6901,12 @@ function registerPortalRoutes(app2) {
     }
   });
   app2.get("/api/portal/oura/daily", async (req, res) => {
-    if (!req.session?.clientUserId) {
+    const clientUserId = req.session?.clientUserId;
+    if (!clientUserId) {
       return res.status(401).json({ message: "Login required" });
     }
     try {
-      const user = await storage.getClientUserById(req.session.clientUserId);
+      const user = await storage.getClientUserById(clientUserId);
       if (!user?.ouraAccessToken) {
         return res.status(400).json({ message: "Oura not connected" });
       }
@@ -6812,7 +6934,7 @@ function registerPortalRoutes(app2) {
         if (refreshData.refresh_token) {
           updateFields.ouraRefreshToken = refreshData.refresh_token;
         }
-        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        await storage.updateClientUser(clientUserId, updateFields);
         return refreshData.access_token;
       };
       let accessToken = user.ouraAccessToken;
@@ -7523,13 +7645,12 @@ function redactBody(body) {
 }
 function auditMiddleware(req, res, next) {
   if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method) && req.session?.adminEmail) {
-    const originalEnd = res.end;
     const email = req.session.adminEmail;
     const ip = req.ip || req.socket.remoteAddress || "unknown";
-    res.end = function(...args) {
+    res.once("finish", () => {
       const statusCode = res.statusCode;
       if (statusCode < 400) {
-        logAuditEvent(
+        void logAuditEvent(
           email,
           `${req.method} ${req.path}`,
           req.path,
@@ -7537,8 +7658,7 @@ function auditMiddleware(req, res, next) {
           ip
         );
       }
-      return originalEnd.apply(this, args);
-    };
+    });
   }
   next();
 }
@@ -7761,7 +7881,7 @@ async function fetchGA4Metrics(window) {
 
 // server/routes.ts
 init_connectorGuard();
-import Stripe from "stripe";
+import Stripe2 from "stripe";
 
 // shared/packages.ts
 var COACHING_PACKAGES = {
@@ -7825,12 +7945,1069 @@ init_schema();
 init_email_notifications();
 init_googleSheets();
 init_thesysApi();
-init_notionSync();
 import { fromError } from "zod-validation-error";
+
+// server/routes/myfive.ts
+init_db();
+init_schema();
+import { Router } from "express";
+import { createHash, randomBytes as randomBytes2 } from "node:crypto";
+import { and as and2, asc, desc as desc2, eq as eq2, or } from "drizzle-orm";
+import Stripe from "stripe";
+
+// shared/loveFlowProfile.ts
+var GREEK_LOVE_TYPES = [
+  "agape",
+  "mania",
+  "eros",
+  "ludus",
+  "pragma",
+  "storge",
+  "philia",
+  "philautia"
+];
+var FLOW_OCTANT_STATES = [
+  "arousal",
+  "flow",
+  "control",
+  "relaxation",
+  "boredom",
+  "apathy",
+  "worry",
+  "anxiety"
+];
+var EMPTY_LOVE_FLOW_PROFILE = {
+  agape: null,
+  mania: null,
+  eros: null,
+  ludus: null,
+  pragma: null,
+  storge: null,
+  philia: null,
+  philautia: null
+};
+function isLoveFlowProfile(candidate) {
+  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return false;
+  const profile = candidate;
+  if (Object.keys(profile).length !== GREEK_LOVE_TYPES.length) return false;
+  return GREEK_LOVE_TYPES.every((love) => {
+    const state = profile[love];
+    return state === null || FLOW_OCTANT_STATES.includes(state);
+  });
+}
+
+// shared/myfiveDataExport.ts
+var MYFIVE_EXPORT_SCHEMA_VERSION = "myfive-gdpr-article-20.v2";
+function escapeInline(value) {
+  if (value === null || value === void 0 || value === "") return "Not provided";
+  return String(value).replace(/\\/g, "\\\\").replace(/([|*_`[\]<>])/g, "\\$1").replace(/\r?\n/g, " ");
+}
+function jsonBlock(value) {
+  const serialized = JSON.stringify(value, null, 2);
+  const longestFence = Math.max(3, ...Array.from(serialized.matchAll(/`+/g), (match) => match[0].length + 1));
+  const fence = "`".repeat(longestFence);
+  return `${fence}json
+${serialized}
+${fence}`;
+}
+function recordSections(title, records) {
+  if (records.length === 0) return `## ${title}
+
+No records.`;
+  return `## ${title}
+
+${records.map((record, index2) => `### Record ${index2 + 1}
+
+${jsonBlock(record)}`).join("\n\n")}`;
+}
+function renderMyFiveExportMarkdown(dataExport) {
+  const { metadata, privacy, data, localBrowserVault, omissions } = dataExport;
+  const localRecords = localBrowserVault.checkIns ?? [];
+  return [
+    "# MyFive GDPR Article 20 Data Export",
+    "",
+    `> ${privacy.classification}`,
+    `> Intended recipient: ${escapeInline(privacy.intendedRecipient)}`,
+    `> ${privacy.handlingNotice}`,
+    "",
+    "## Export metadata",
+    "",
+    `- Schema version: ${escapeInline(metadata.schemaVersion)}`,
+    `- Exported at: ${escapeInline(metadata.exportedAt)}`,
+    `- Data subject account ID: ${escapeInline(metadata.dataSubject.accountId)}`,
+    `- Data subject email: ${escapeInline(metadata.dataSubject.email)}`,
+    `- Data subject name: ${escapeInline(metadata.dataSubject.name)}`,
+    `- Scope: ${metadata.scope.map(escapeInline).join("; ")}`,
+    `- Server provenance: ${escapeInline(metadata.provenance.serverData)}`,
+    `- Local-vault provenance: ${escapeInline(metadata.provenance.localBrowserVault)}`,
+    "",
+    "## Account",
+    "",
+    jsonBlock(data.account),
+    "",
+    recordSections("Connection slots", data.connectionSlots),
+    "",
+    recordSections("Private connection-profile snapshots", data.connectionProfiles),
+    "",
+    recordSections("Agreement versions created by you", data.agreementVersions),
+    "",
+    recordSections("Consent receipts", data.consentReceipts),
+    "",
+    "## Membership",
+    "",
+    jsonBlock(data.membership),
+    "",
+    recordSections("Linked portal context", data.linkedPortal.context),
+    "",
+    recordSections("Linked portal timeline", data.linkedPortal.timeline),
+    "",
+    "## Encrypted local browser vault",
+    "",
+    `- Status: ${escapeInline(localBrowserVault.status)}`,
+    `- Description: ${escapeInline(localBrowserVault.description)}`,
+    `- Combined at: ${escapeInline(localBrowserVault.combinedAt)}`,
+    `- Record count: ${escapeInline(localBrowserVault.recordCount)}`,
+    "",
+    ...localRecords.length > 0 ? localRecords.flatMap((record, index2) => [`### Local check-in ${index2 + 1}`, "", jsonBlock(record), ""]) : ["No local-vault records were included.", ""],
+    "## Deliberate omissions and privacy boundaries",
+    "",
+    ...omissions.flatMap((omission) => [
+      `- **${escapeInline(omission.category)}:** ${escapeInline(omission.reason)}`
+    ]),
+    ""
+  ].join("\n");
+}
+
+// shared/valueRules.ts
+var VALUE_RULES_VERSION = "1.0";
+var VALUE_RULES = [
+  { id: "respect", name: "Respect", description: "Honor each person\u2019s boundaries and dignity." },
+  { id: "kindness", name: "Kindness", description: "Offer warmth in tone and action." },
+  { id: "privacy", name: "Privacy", description: "Protect confidential dyadic discussions." },
+  { id: "self-awareness", name: "Self-Awareness", description: "Take responsibility for your own reactions." },
+  { id: "curiosity", name: "Curiosity", description: "Ask open questions before making assumptions." },
+  { id: "humility", name: "Humility", description: "Stay willing to listen, learn, and adjust." },
+  { id: "collective-intelligence", name: "Collective Intelligence", description: "Co-create understanding and solutions together." },
+  { id: "social-learning", name: "Social Learning", description: "Grow through shared experience and reflection." },
+  { id: "transparency", name: "Transparency", description: "Express needs clearly without hidden agendas." }
+];
+var VALUE_RULE_IDS = VALUE_RULES.map((rule) => rule.id);
+function includesEveryValueRule(candidate) {
+  if (!Array.isArray(candidate) || candidate.length !== VALUE_RULE_IDS.length) return false;
+  const uniqueRules = new Set(candidate);
+  return uniqueRules.size === VALUE_RULE_IDS.length && VALUE_RULE_IDS.every((ruleId) => uniqueRules.has(ruleId));
+}
+
+// server/routes/myfive.ts
+init_connectorGuard();
+
+// server/routes/myfive-authorization.ts
+function createRequireMyFiveAccount(findAccount) {
+  return async (req, res, next) => {
+    const userId = req.session?.clientUserId;
+    if (!userId) {
+      return res.status(401).json({ error: "authentication_required" });
+    }
+    try {
+      const account = await findAccount(userId);
+      if (!account || account.id !== userId || !req.session.clientEmail || account.email.toLowerCase() !== req.session.clientEmail.toLowerCase()) {
+        return res.status(401).json({ error: "account_session_invalid" });
+      }
+      if (account.isActive !== "true") {
+        return res.status(403).json({ error: "account_inactive" });
+      }
+      return next();
+    } catch {
+      console.error("MyFive account verification unavailable");
+      return res.status(503).json({ error: "account_verification_unavailable" });
+    }
+  };
+}
+function createRequireMyFiveAdminWriter(findAdmin) {
+  return async (req, res, next) => {
+    const session2 = req.session;
+    if (!session2?.isAdmin || !session2.adminUserId || !session2.adminEmail || !session2.adminRole) {
+      return res.status(401).json({ error: "admin_authentication_required" });
+    }
+    try {
+      const admin = await findAdmin(session2.adminUserId);
+      if (!admin || admin.id !== session2.adminUserId || admin.email.toLowerCase() !== session2.adminEmail.toLowerCase() || admin.role !== session2.adminRole) {
+        return res.status(401).json({ error: "admin_session_invalid" });
+      }
+      if (admin.isActive !== "true") {
+        return res.status(403).json({ error: "admin_account_inactive" });
+      }
+      if (!(/* @__PURE__ */ new Set(["admin", "super_admin"])).has(admin.role)) {
+        return res.status(403).json({ error: "admin_write_access_required" });
+      }
+      return next();
+    } catch {
+      console.error("MyFive administrator verification unavailable");
+      return res.status(503).json({ error: "admin_verification_unavailable" });
+    }
+  };
+}
+function getVerifiedMyFiveUserId(req) {
+  const userId = req.session?.clientUserId;
+  if (!userId) throw new Error("MyFive account middleware invariant violated");
+  return userId;
+}
+function hasMyFiveSlotAccess(actorUserId, slot, mode, allowSelf = true) {
+  if (slot.status !== "active" || !allowSelf && slot.isSelfVault === "true") return false;
+  if (mode === "owner") return slot.userId === actorUserId;
+  return slot.userId === actorUserId || slot.partnerUserId === actorUserId;
+}
+function buildEapVoucherAuditDetails(input) {
+  return {
+    voucherId: input.voucherId,
+    organizationLabel: input.organizationLabel,
+    maxRedemptions: input.maxRedemptions,
+    expiresAt: input.expiresAt?.toISOString() ?? null
+  };
+}
+
+// server/routes/myfive-private-check-in.ts
+var PRIVATE_CHECK_IN_SERVER_DISABLED_MESSAGE = "Private check-ins are stored only in this browser unless you export them.";
+var rejectServerPrivateCheckIn = (_req, res) => {
+  res.status(410).json({
+    error: "server_private_check_in_disabled",
+    message: PRIVATE_CHECK_IN_SERVER_DISABLED_MESSAGE
+  });
+};
+
+// server/routes/myfive.ts
+var myfiveRouter = Router();
+var DEFAULT_AGREEMENT = "Agreement on Quiet Hours & Evening Energy:\n- We agree to keep 21:00 to 08:00 notification-free.\n- We review this living agreement every 30 days.";
+var MYFIVE_MONTHLY_PRICE_CENTS = 499;
+function getStripe() {
+  return process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2023-10-16" }) : null;
+}
+function hashVoucherCode(code) {
+  return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
+}
+var requireMyFiveAccount = createRequireMyFiveAccount(async (userId) => {
+  const [account] = await db.select({ id: clientUsers.id, email: clientUsers.email, isActive: clientUsers.isActive }).from(clientUsers).where(eq2(clientUsers.id, userId)).limit(1);
+  return account ?? null;
+});
+var requireMyFiveAdminWriter = createRequireMyFiveAdminWriter(async (adminUserId) => {
+  const [admin] = await db.select({
+    id: adminUsers.id,
+    email: adminUsers.email,
+    role: adminUsers.role,
+    isActive: adminUsers.isActive
+  }).from(adminUsers).where(eq2(adminUsers.id, adminUserId)).limit(1);
+  return admin ?? null;
+});
+function readSlotId(value) {
+  if (typeof value !== "string") return null;
+  const slotId = value.trim();
+  return slotId && slotId.length <= 100 ? slotId : null;
+}
+async function findOwnedSlot(actorUserId, slotId, allowSelf = true) {
+  const [slot] = await db.select().from(myfiveConnectionSlots).where(and2(
+    eq2(myfiveConnectionSlots.id, slotId),
+    eq2(myfiveConnectionSlots.userId, actorUserId),
+    eq2(myfiveConnectionSlots.status, "active")
+  )).limit(1);
+  return slot && hasMyFiveSlotAccess(actorUserId, slot, "owner", allowSelf) ? slot : null;
+}
+async function findAccessibleSlot(actorUserId, slotId, allowSelf = true) {
+  const [slot] = await db.select().from(myfiveConnectionSlots).where(and2(
+    eq2(myfiveConnectionSlots.id, slotId),
+    eq2(myfiveConnectionSlots.status, "active"),
+    or(eq2(myfiveConnectionSlots.userId, actorUserId), eq2(myfiveConnectionSlots.partnerUserId, actorUserId))
+  )).limit(1);
+  return slot && hasMyFiveSlotAccess(actorUserId, slot, "participant", allowSelf) ? slot : null;
+}
+function serializeSlot(slot) {
+  const isSelf = slot.isSelfVault === "true";
+  return {
+    id: slot.id,
+    slotIndex: slot.slotIndex,
+    name: isSelf ? "Self (Philautia)" : slot.partnerName,
+    relation: isSelf ? "Self-Reflection Slot" : slot.relationType,
+    status: slot.status,
+    isSelf,
+    partnerConnected: Boolean(slot.partnerUserId)
+  };
+}
+function isoString(value) {
+  return value?.toISOString() ?? null;
+}
+function setDataExportPrivacyHeaders(_req, res, next) {
+  res.set({
+    "Cache-Control": "private, no-store, max-age=0",
+    Pragma: "no-cache",
+    Expires: "0",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "X-Robots-Tag": "noindex, nofollow, noarchive",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Content-Security-Policy": "sandbox; default-src 'none'",
+    Vary: "Cookie"
+  });
+  next();
+}
+async function persistMyFiveSubscription(userId, customerId, subscriptionId, planStatus) {
+  const [account] = await db.select({ id: clientUsers.id }).from(clientUsers).where(and2(
+    eq2(clientUsers.id, userId),
+    eq2(clientUsers.isActive, "true")
+  )).limit(1);
+  if (!account) throw new Error("Active MyFive account required for subscription persistence");
+  await db.insert(myfiveSubscriptions).values({
+    userId,
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: subscriptionId,
+    planStatus,
+    sponsoredSeatsAllocated: 0
+  }).onConflictDoUpdate({ target: myfiveSubscriptions.userId, set: {
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: subscriptionId,
+    planStatus
+  } });
+}
+async function handleMyFiveStripeEvent(event) {
+  const myFiveEvent = event.type === "checkout.session.completed" ? event.data.object.metadata?.product === "myfive_primary" : event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted" ? event.data.object.metadata?.product === "myfive_primary" : false;
+  if (!myFiveEvent) return;
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    throw new Error("Verified Stripe signature required for MyFive subscription persistence");
+  }
+  if (event.type === "checkout.session.completed") {
+    const session2 = event.data.object;
+    const userId = session2.metadata?.actorUserId;
+    const subscriptionId = typeof session2.subscription === "string" ? session2.subscription : session2.subscription?.id;
+    const customerId = typeof session2.customer === "string" ? session2.customer : session2.customer?.id ?? null;
+    if (userId && subscriptionId) await persistMyFiveSubscription(userId, customerId, subscriptionId, "active");
+  }
+  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object;
+    const planStatus = event.type === "customer.subscription.deleted" ? "canceled" : ["active", "trialing"].includes(subscription.status) ? "active" : subscription.status;
+    await db.update(myfiveSubscriptions).set({ planStatus }).where(eq2(myfiveSubscriptions.stripeSubscriptionId, subscription.id));
+  }
+}
+myfiveRouter.get("/health", (_req, res) => {
+  res.json({
+    status: "ok",
+    service: "MyFive Extension",
+    version: "1.4.0",
+    stack: "React_Vite_Express_NeonPG_Drizzle_Stripe"
+  });
+});
+myfiveRouter.get("/slots", requireMyFiveAccount, async (req, res) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
+  try {
+    await db.insert(myfiveConnectionSlots).values({
+      userId: actorUserId,
+      slotIndex: 0,
+      status: "active",
+      isSelfVault: "true"
+    }).onConflictDoNothing();
+    const stored = await db.select().from(myfiveConnectionSlots).where(eq2(myfiveConnectionSlots.userId, actorUserId)).orderBy(asc(myfiveConnectionSlots.slotIndex));
+    const byIndex = new Map(stored.map((slot) => [slot.slotIndex, serializeSlot(slot)]));
+    res.json({ maxSeats: 5, selfVaultActive: true, slots: Array.from(
+      { length: 6 },
+      (_, slotIndex) => byIndex.get(slotIndex) ?? { id: null, slotIndex, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false }
+    ) });
+  } catch (error) {
+    console.error("MyFive slot read failed", error);
+    res.status(500).json({ error: "Connection seats could not be loaded" });
+  }
+});
+myfiveRouter.post("/slots", requireMyFiveAccount, async (req, res) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
+  const partnerName = typeof req.body?.partnerName === "string" ? req.body.partnerName.trim() : "";
+  const relationType = typeof req.body?.relationType === "string" ? req.body.relationType.trim() : "";
+  if (!partnerName || partnerName.length > 100 || !relationType || relationType.length > 100) {
+    return res.status(400).json({ error: "Partner name and relationship type are required (maximum 100 characters each)" });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-slots:${actorUserId}`]);
+    const occupied = await client.query(
+      "SELECT slot_index FROM myfive_connection_slots WHERE user_id = $1 AND slot_index BETWEEN 1 AND 5 AND status = 'active' ORDER BY slot_index",
+      [actorUserId]
+    );
+    const used = new Set(occupied.rows.map((row2) => row2.slot_index));
+    const slotIndex = [1, 2, 3, 4, 5].find((candidate) => !used.has(candidate));
+    if (!slotIndex) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({ error: "All five active partner connection seats are occupied" });
+    }
+    const result = await client.query(
+      `INSERT INTO myfive_connection_slots (user_id, slot_index, partner_name, relation_type, status, is_self_vault)
+       VALUES ($1, $2, $3, $4, 'active', 'false')
+       ON CONFLICT (user_id, slot_index) DO UPDATE SET partner_name = EXCLUDED.partner_name, relation_type = EXCLUDED.relation_type, status = 'active'
+       RETURNING id, user_id, slot_index, partner_name, partner_user_id, relation_type, status, is_self_vault, created_at`,
+      [actorUserId, slotIndex, partnerName, relationType]
+    );
+    await client.query("COMMIT");
+    const row = result.rows[0];
+    res.status(201).json({ slot: serializeSlot({
+      id: row.id,
+      userId: row.user_id,
+      slotIndex: row.slot_index,
+      partnerName: row.partner_name,
+      partnerUserId: row.partner_user_id ?? null,
+      relationType: row.relation_type,
+      status: row.status,
+      isSelfVault: row.is_self_vault,
+      createdAt: row.created_at
+    }) });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive slot creation failed", error);
+    res.status(500).json({ error: "Connection seat could not be created" });
+  } finally {
+    client.release();
+  }
+});
+myfiveRouter.post("/slots/:slotId/invitations", requireMyFiveAccount, async (req, res) => {
+  const sponsorUserId = getVerifiedMyFiveUserId(req);
+  const slotId = readSlotId(req.params.slotId);
+  const inviteeEmail = typeof req.body?.inviteeEmail === "string" ? req.body.inviteeEmail.trim().toLowerCase() : "";
+  if (!slotId || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteeEmail)) {
+    return res.status(400).json({ error: "An active partner seat and valid invitee email are required" });
+  }
+  try {
+    const slot = await findOwnedSlot(sponsorUserId, slotId, false);
+    if (!slot) return res.status(404).json({ error: "Active partner connection not found" });
+    if (slot.partnerUserId) return res.status(409).json({ error: "This connection seat is already linked to a partner account" });
+    const [membership] = await db.select().from(myfiveSubscriptions).where(and2(
+      eq2(myfiveSubscriptions.userId, sponsorUserId),
+      eq2(myfiveSubscriptions.planStatus, "active")
+    )).limit(1);
+    if (!membership) return res.status(402).json({ error: "An active MyFive primary membership is required to sponsor partners" });
+    await db.update(myfiveInvitations).set({ status: "revoked" }).where(and2(
+      eq2(myfiveInvitations.slotId, slotId),
+      eq2(myfiveInvitations.sponsorUserId, sponsorUserId),
+      eq2(myfiveInvitations.status, "pending")
+    ));
+    const token = randomBytes2(32).toString("base64url");
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1e3);
+    await db.insert(myfiveInvitations).values({ sponsorUserId, slotId, inviteeEmail, tokenHash, expiresAt });
+    const origin = `${req.protocol}://${req.get("host")}`;
+    res.status(201).json({ invitationUrl: `${origin}/myfive/invite/${token}`, expiresAt: expiresAt.toISOString() });
+  } catch (error) {
+    console.error("MyFive invitation creation failed", error);
+    res.status(500).json({ error: "Partner invitation could not be created" });
+  }
+});
+myfiveRouter.post("/invitations/:token/accept", requireMyFiveAccount, async (req, res) => {
+  if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in with the invited email address to accept" });
+  const token = typeof req.params.token === "string" ? req.params.token : "";
+  if (token.length < 32 || token.length > 100) return res.status(400).json({ error: "Invalid invitation token" });
+  const tokenHash = createHash("sha256").update(token).digest("hex");
+  const inviteeUserId = getVerifiedMyFiveUserId(req);
+  const inviteeEmail = req.session.clientEmail.toLowerCase();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const found = await client.query(
+      `SELECT id, sponsor_user_id, slot_id, invitee_email, status, expires_at
+       FROM myfive_invitations WHERE token_hash = $1 FOR UPDATE`,
+      [tokenHash]
+    );
+    const invitation = found.rows[0];
+    if (!invitation || invitation.status !== "pending" || new Date(invitation.expires_at) <= /* @__PURE__ */ new Date()) {
+      await client.query("ROLLBACK");
+      return res.status(410).json({ error: "This invitation is invalid, expired, or already used" });
+    }
+    if (invitation.invitee_email.toLowerCase() !== inviteeEmail) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({ error: "Sign in with the email address that received this invitation" });
+    }
+    const linked = await client.query(
+      "UPDATE myfive_connection_slots SET partner_user_id = $1 WHERE id = $2 AND user_id = $3 AND slot_index BETWEEN 1 AND 5 AND status = 'active' AND partner_user_id IS NULL",
+      [inviteeUserId, invitation.slot_id, invitation.sponsor_user_id]
+    );
+    if (linked.rowCount !== 1) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({ error: "This connection seat has already been claimed" });
+    }
+    await client.query(
+      "UPDATE myfive_invitations SET status = 'accepted', accepted_by_user_id = $1, accepted_at = now() WHERE id = $2",
+      [inviteeUserId, invitation.id]
+    );
+    await client.query(
+      `INSERT INTO myfive_subscriptions (user_id, plan_status, sponsor_user_id, sponsored_seats_allocated)
+       VALUES ($1, 'sponsored', $2, 0)
+       ON CONFLICT (user_id) DO UPDATE SET plan_status = 'sponsored', sponsor_user_id = EXCLUDED.sponsor_user_id
+       WHERE myfive_subscriptions.plan_status <> 'active'`,
+      [inviteeUserId, invitation.sponsor_user_id]
+    );
+    await client.query(
+      `UPDATE myfive_subscriptions SET sponsored_seats_allocated = (
+         SELECT count(*)::integer FROM myfive_invitations WHERE sponsor_user_id = $1 AND status = 'accepted'
+       ) WHERE user_id = $1 AND plan_status = 'active'`,
+      [invitation.sponsor_user_id]
+    );
+    await client.query("COMMIT");
+    res.json({ status: "accepted", sponsored: true, slotId: invitation.slot_id });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive invitation acceptance failed", error);
+    res.status(500).json({ error: "Partner invitation could not be accepted" });
+  } finally {
+    client.release();
+  }
+});
+myfiveRouter.post("/check-in", rejectServerPrivateCheckIn);
+myfiveRouter.post("/consent", requireMyFiveAccount, async (req, res) => {
+  const { acceptedRuleIds, rulesVersion, consentType } = req.body ?? {};
+  const slotId = readSlotId(req.body?.slotId);
+  if (rulesVersion !== VALUE_RULES_VERSION || !includesEveryValueRule(acceptedRuleIds)) {
+    return res.status(400).json({
+      error: "All nine current ValueRules\u2122 must be accepted individually"
+    });
+  }
+  if (consentType !== "agreement-sharing") {
+    return res.status(400).json({ error: "Unsupported consent purpose" });
+  }
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  try {
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
+    const [receipt] = await db.insert(myfiveConsentLedger).values({
+      actorUserId,
+      slotId,
+      consentType,
+      rulesVersion,
+      acceptedRuleIds: [...acceptedRuleIds]
+    }).returning();
+    res.status(201).json({
+      success: true,
+      receiptId: receipt.id,
+      rulesVersion: receipt.rulesVersion,
+      acceptedAt: receipt.acceptedAt.toISOString(),
+      note: "Partner consent is a separate required event"
+    });
+  } catch (error) {
+    console.error("MyFive consent persistence failed", error);
+    res.status(500).json({ error: "Consent could not be recorded" });
+  }
+});
+myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req, res) => {
+  const slotId = readSlotId(req.params.slotId);
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  try {
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
+    const [latest] = await db.select().from(myfiveAgreements).where(and2(
+      eq2(myfiveAgreements.slotId, slotId),
+      eq2(myfiveAgreements.creatorUserId, actorUserId)
+    )).orderBy(desc2(myfiveAgreements.version)).limit(1);
+    res.json(latest ? {
+      id: latest.id,
+      agreementText: latest.agreementText,
+      version: latest.version,
+      savedAt: latest.createdAt.toISOString()
+    } : {
+      agreementText: DEFAULT_AGREEMENT,
+      version: 0,
+      savedAt: null
+    });
+  } catch (error) {
+    console.error("MyFive agreement read failed", error);
+    res.status(500).json({ error: "Agreement could not be loaded" });
+  }
+});
+myfiveRouter.post("/agreements", requireMyFiveAccount, async (req, res) => {
+  const { agreementText, consentReceiptId, expectedVersion } = req.body ?? {};
+  const slotId = readSlotId(req.body?.slotId);
+  const actorUserId = getVerifiedMyFiveUserId(req);
+  if (!slotId || typeof agreementText !== "string" || !agreementText.trim() || agreementText.length > 2e4) {
+    return res.status(400).json({ error: "A connection slot and agreement text (maximum 20,000 characters) are required" });
+  }
+  if (typeof consentReceiptId !== "string" || !Number.isInteger(expectedVersion) || expectedVersion < 0) {
+    return res.status(400).json({ error: "A valid consent receipt and expected version are required" });
+  }
+  try {
+    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
+    const [consent] = await db.select({ id: myfiveConsentLedger.id }).from(myfiveConsentLedger).where(and2(
+      eq2(myfiveConsentLedger.id, consentReceiptId),
+      eq2(myfiveConsentLedger.actorUserId, actorUserId),
+      eq2(myfiveConsentLedger.slotId, slotId),
+      eq2(myfiveConsentLedger.consentType, "agreement-sharing"),
+      eq2(myfiveConsentLedger.rulesVersion, VALUE_RULES_VERSION)
+    )).limit(1);
+    if (!consent) return res.status(403).json({ error: "Current ValueRules\u2122 consent is required" });
+    const [latest] = await db.select({ version: myfiveAgreements.version }).from(myfiveAgreements).where(and2(
+      eq2(myfiveAgreements.slotId, slotId),
+      eq2(myfiveAgreements.creatorUserId, actorUserId)
+    )).orderBy(desc2(myfiveAgreements.version)).limit(1);
+    const currentVersion = latest?.version ?? 0;
+    if (currentVersion !== expectedVersion) {
+      return res.status(409).json({ error: "A newer agreement version exists", currentVersion });
+    }
+    const [saved] = await db.insert(myfiveAgreements).values({
+      slotId,
+      creatorUserId: actorUserId,
+      agreementText: agreementText.trim(),
+      valueRulesConsented: consentReceiptId,
+      version: currentVersion + 1
+    }).returning();
+    res.status(201).json({
+      success: true,
+      id: saved.id,
+      version: saved.version,
+      savedAt: saved.createdAt.toISOString(),
+      message: "Dyadic relationship agreement version timestamped and saved"
+    });
+  } catch (error) {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {
+      return res.status(409).json({ error: "A newer agreement version exists; reload before saving" });
+    }
+    console.error("MyFive agreement persistence failed", error);
+    res.status(500).json({ error: "Agreement could not be saved" });
+  }
+});
+myfiveRouter.get("/love-profiles/:slotId", requireMyFiveAccount, async (req, res) => {
+  const slotId = readSlotId(req.params.slotId);
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  try {
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (!await findAccessibleSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
+    const [latest] = await db.select().from(myfiveLoveProfileSnapshots).where(and2(
+      eq2(myfiveLoveProfileSnapshots.actorUserId, actorUserId),
+      eq2(myfiveLoveProfileSnapshots.slotId, slotId)
+    )).orderBy(desc2(myfiveLoveProfileSnapshots.createdAt)).limit(1);
+    res.json(latest ? {
+      id: latest.id,
+      profile: latest.profile,
+      calibratedAt: latest.createdAt.toISOString()
+    } : {
+      profile: EMPTY_LOVE_FLOW_PROFILE,
+      calibratedAt: null
+    });
+  } catch (error) {
+    console.error("MyFive love profile read failed", error);
+    res.status(500).json({ error: "Love profile could not be loaded" });
+  }
+});
+myfiveRouter.post("/love-profiles", requireMyFiveAccount, async (req, res) => {
+  const slotId = readSlotId(req.body?.slotId);
+  const profile = req.body?.profile;
+  if (!slotId || !isLoveFlowProfile(profile)) {
+    return res.status(400).json({ error: "A valid slot and all eight love dimensions are required" });
+  }
+  try {
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (!await findAccessibleSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
+    const [snapshot] = await db.insert(myfiveLoveProfileSnapshots).values({
+      actorUserId,
+      slotId,
+      profile
+    }).returning();
+    res.status(201).json({
+      id: snapshot.id,
+      profile: snapshot.profile,
+      calibratedAt: snapshot.createdAt.toISOString()
+    });
+  } catch (error) {
+    console.error("MyFive love profile persistence failed", error);
+    res.status(500).json({ error: "Love profile could not be saved" });
+  }
+});
+myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requireMyFiveAccount, async (req, res) => {
+  const format = req.query.format === void 0 ? "json" : req.query.format;
+  if (format !== "json" && format !== "markdown") {
+    return res.status(400).json({ error: "Export format must be json or markdown" });
+  }
+  const userId = req.session.clientUserId;
+  try {
+    const [
+      accountRows,
+      slots,
+      profiles,
+      agreements,
+      consentReceipts,
+      myfiveMembershipRows,
+      portalMemberships,
+      context,
+      timeline
+    ] = await Promise.all([
+      db.select({
+        id: clientUsers.id,
+        email: clientUsers.email,
+        name: clientUsers.name,
+        avatarUrl: clientUsers.avatarUrl,
+        createdAt: clientUsers.createdAt
+      }).from(clientUsers).where(eq2(clientUsers.id, userId)).limit(1),
+      db.select().from(myfiveConnectionSlots).where(eq2(myfiveConnectionSlots.userId, userId)).orderBy(asc(myfiveConnectionSlots.slotIndex)),
+      db.select().from(myfiveLoveProfileSnapshots).where(eq2(myfiveLoveProfileSnapshots.actorUserId, userId)).orderBy(asc(myfiveLoveProfileSnapshots.createdAt)),
+      db.select().from(myfiveAgreements).where(eq2(myfiveAgreements.creatorUserId, userId)).orderBy(asc(myfiveAgreements.createdAt)),
+      db.select().from(myfiveConsentLedger).where(eq2(myfiveConsentLedger.actorUserId, userId)).orderBy(asc(myfiveConsentLedger.acceptedAt)),
+      db.select().from(myfiveSubscriptions).where(eq2(myfiveSubscriptions.userId, userId)).limit(1),
+      db.select().from(clientSubscriptions).where(eq2(clientSubscriptions.userId, userId)).orderBy(asc(clientSubscriptions.createdAt)),
+      db.select().from(portalUserContext).where(eq2(portalUserContext.userId, userId)).orderBy(asc(portalUserContext.key)),
+      db.select().from(portalTimelineEvents).where(eq2(portalTimelineEvents.userId, userId)).orderBy(asc(portalTimelineEvents.date))
+    ]);
+    const account = accountRows[0];
+    if (!account) return res.status(404).json({ error: "Authenticated account was not found" });
+    const myfiveMembership = myfiveMembershipRows[0];
+    const exportedAt = (/* @__PURE__ */ new Date()).toISOString();
+    const dataExport = {
+      metadata: {
+        schemaVersion: MYFIVE_EXPORT_SCHEMA_VERSION,
+        exportedAt,
+        dataSubject: { accountId: account.id, email: account.email, name: account.name },
+        scope: [
+          "MyFive account identity",
+          "subject-owned connection records",
+          "subject-authored agreements and consent receipts",
+          "subject-authored private profiles",
+          "data-minimized membership status",
+          "linked portal context and timeline",
+          "current-browser encrypted vault when combined by the client"
+        ],
+        provenance: {
+          serverData: "Selected at export time from authenticated account-scoped GreenElephant/MyFive database queries.",
+          localBrowserVault: "The server cannot access IndexedDB or associate legacy local records with an account. The MyFive settings client combines records from the current browser only after an explicit browser-vault ownership confirmation and download request."
+        }
+      },
+      privacy: {
+        classification: "PRIVATE - DATA SUBJECT COPY",
+        intendedRecipient: account.email,
+        handlingNotice: "This file can contain sensitive relationship and reflection data. Store it securely and share it only by deliberate choice."
+      },
+      data: {
+        account: {
+          id: account.id,
+          email: account.email,
+          name: account.name,
+          avatarUrl: account.avatarUrl,
+          createdAt: account.createdAt.toISOString()
+        },
+        connectionSlots: slots.map((slot) => ({
+          id: slot.id,
+          slotIndex: slot.slotIndex,
+          userProvidedPartnerName: slot.partnerName,
+          userProvidedRelationType: slot.relationType,
+          status: slot.status,
+          isSelfVault: slot.isSelfVault === "true",
+          partnerAccountLinked: Boolean(slot.partnerUserId),
+          createdAt: slot.createdAt.toISOString()
+        })),
+        connectionProfiles: profiles.map((profile) => ({
+          id: profile.id,
+          slotId: profile.slotId,
+          profile: profile.profile,
+          createdAt: profile.createdAt.toISOString()
+        })),
+        agreementVersions: agreements.map((agreement) => ({
+          id: agreement.id,
+          slotId: agreement.slotId,
+          agreementText: agreement.agreementText,
+          consentReceiptId: agreement.valueRulesConsented,
+          version: agreement.version,
+          createdAt: agreement.createdAt.toISOString(),
+          updatedAt: agreement.updatedAt.toISOString()
+        })),
+        consentReceipts: consentReceipts.map((receipt) => ({
+          id: receipt.id,
+          slotId: receipt.slotId,
+          consentType: receipt.consentType,
+          rulesVersion: receipt.rulesVersion,
+          acceptedRuleIds: receipt.acceptedRuleIds,
+          acceptedAt: receipt.acceptedAt.toISOString()
+        })),
+        membership: {
+          myfive: myfiveMembership ? {
+            planStatus: myfiveMembership.planStatus,
+            sponsoredSeatsAllocated: myfiveMembership.sponsoredSeatsAllocated,
+            createdAt: myfiveMembership.createdAt.toISOString()
+          } : null,
+          linkedPortal: portalMemberships.map((membership) => ({
+            id: membership.id,
+            plan: membership.plan,
+            status: membership.status,
+            currentPeriodStart: isoString(membership.currentPeriodStart),
+            currentPeriodEnd: isoString(membership.currentPeriodEnd),
+            cancelledAt: isoString(membership.cancelledAt),
+            createdAt: membership.createdAt.toISOString()
+          }))
+        },
+        linkedPortal: {
+          context: context.map((entry) => ({
+            id: entry.id,
+            key: entry.key,
+            value: entry.value,
+            updatedAt: entry.updatedAt.toISOString()
+          })),
+          timeline: timeline.map((event) => ({
+            id: event.id,
+            type: event.type,
+            title: event.title,
+            description: event.description,
+            details: event.details,
+            lens: event.lens,
+            toolId: event.toolId,
+            date: event.date.toISOString(),
+            createdAt: event.createdAt.toISOString()
+          }))
+        }
+      },
+      localBrowserVault: {
+        status: "not_accessible_to_server",
+        description: "Encrypted check-ins in browser IndexedDB are absent from this server response. Use MyFive Settings on each browser/device to create a combined download from that local vault."
+      },
+      omissions: [
+        {
+          category: "Partner-private data",
+          reason: "Another person's profile snapshots, reflections, consent receipts, account data, and agreement versions they authored are never queried or exported."
+        },
+        {
+          category: "Authentication and OAuth secrets",
+          reason: "Password hashes, reset and two-factor secrets, OAuth identifiers, access tokens, refresh tokens, and token-expiry security metadata are excluded."
+        },
+        {
+          category: "Billing and invitation secrets",
+          reason: "Stripe customer/subscription identifiers, Stripe secrets, invitation token hashes, invitee email addresses, and sponsor account identifiers are excluded."
+        },
+        {
+          category: "Employer and administration data",
+          reason: "EAP organization identifiers, voucher records or hashes, audit logs, admin accounts, settings, and aggregate employer information are outside the data-subject export and are excluded."
+        },
+        {
+          category: "Other devices and browser profiles",
+          reason: "Origin-bound local-vault encryption keys are non-extractable and legacy records have no server account identifier. Inclusion relies on the signed-in user's explicit confirmation that the browser profile's vault is theirs. Repeat the export on other browsers/devices that hold your records."
+        }
+      ]
+    };
+    const filenameDate = exportedAt.slice(0, 10);
+    res.set("Content-Disposition", `attachment; filename="myfive-data-export-${filenameDate}.${format === "json" ? "json" : "md"}"`);
+    if (format === "markdown") {
+      return res.type("text/markdown; charset=utf-8").send(renderMyFiveExportMarkdown(dataExport));
+    }
+    return res.type("application/json; charset=utf-8").send(JSON.stringify(dataExport, null, 2));
+  } catch (error) {
+    console.error("MyFive Article 20 data export failed", error);
+    return res.status(500).json({ error: "Your data export could not be created safely" });
+  }
+});
+myfiveRouter.delete("/account", requireMyFiveAccount, async (req, res) => {
+  if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
+  if (req.body?.confirmation !== "DELETE MYFIVE") return res.status(400).json({ error: "Type DELETE MYFIVE to confirm permanent deletion" });
+  const userId = getVerifiedMyFiveUserId(req);
+  const userEmail = req.session.clientEmail.toLowerCase();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-delete:${userId}`]);
+    const membership = await client.query(
+      "SELECT stripe_customer_id, stripe_subscription_id FROM myfive_subscriptions WHERE user_id = $1 FOR UPDATE",
+      [userId]
+    );
+    const stripeCustomerId = membership.rows[0]?.stripe_customer_id;
+    const stripeSubscriptionId = membership.rows[0]?.stripe_subscription_id;
+    const stripe2 = getStripe();
+    if (stripeCustomerId) {
+      if (!stripe2) throw new Error("Stripe must be available to remove the billing identity before account deletion");
+      await stripe2.customers.del(stripeCustomerId);
+    } else if (stripeSubscriptionId?.startsWith("sub_")) {
+      if (!stripe2) throw new Error("Stripe must be available to cancel billing before account deletion");
+      await stripe2.subscriptions.cancel(stripeSubscriptionId);
+    }
+    const ownedSlotSubquery = "SELECT id FROM myfive_connection_slots WHERE user_id = $1";
+    await client.query(`DELETE FROM myfive_agreements WHERE creator_user_id = $1 OR partner_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_consent_ledger WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_love_profile_snapshots WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_check_ins WHERE user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_invitations WHERE sponsor_user_id = $1 OR accepted_by_user_id = $1 OR lower(invitee_email) = $2 OR slot_id IN (${ownedSlotSubquery})`, [userId, userEmail]);
+    await client.query("UPDATE myfive_connection_slots SET partner_user_id = NULL WHERE partner_user_id = $1", [userId]);
+    await client.query("DELETE FROM myfive_connection_slots WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM myfive_subscriptions WHERE user_id = $1 OR sponsor_user_id = $1", [userId]);
+    await client.query(`UPDATE myfive_subscriptions AS subscriptions SET sponsored_seats_allocated = (
+      SELECT count(*)::integer FROM myfive_invitations AS invitations
+      WHERE invitations.sponsor_user_id = subscriptions.user_id AND invitations.status = 'accepted'
+    ) WHERE subscriptions.plan_status = 'active'`);
+    await client.query("DELETE FROM portal_timeline_events WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM portal_user_context WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM client_subscriptions WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM audit_logs WHERE lower(user_email) = $1", [userEmail]);
+    await client.query("DELETE FROM client_users WHERE id = $1", [userId]);
+    await client.query("COMMIT");
+    await new Promise((resolve) => req.session.destroy((sessionError) => {
+      if (sessionError) console.error("MyFive session destruction after committed account deletion failed", sessionError);
+      resolve();
+    }));
+    res.json({ deleted: true, message: "MyFive account and linked personal data were permanently deleted" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive Article 17 account deletion failed", error);
+    res.status(500).json({ error: "Account deletion could not be completed safely; no database deletion was committed" });
+  } finally {
+    client.release();
+  }
+});
+myfiveRouter.post("/admin/eap-vouchers", requireMyFiveAdminWriter, async (req, res) => {
+  const organizationLabel = typeof req.body?.organizationLabel === "string" ? req.body.organizationLabel.trim() : "";
+  const maxRedemptions = Number(req.body?.maxRedemptions);
+  const expiresAt = req.body?.expiresAt ? new Date(req.body.expiresAt) : null;
+  if (!organizationLabel || organizationLabel.length > 150 || !Number.isInteger(maxRedemptions) || maxRedemptions < 1 || maxRedemptions > 1e5) {
+    return res.status(400).json({ error: "Organization and a redemption capacity between 1 and 100,000 are required" });
+  }
+  if (expiresAt && (Number.isNaN(expiresAt.getTime()) || expiresAt <= /* @__PURE__ */ new Date())) {
+    return res.status(400).json({ error: "Voucher expiry must be a valid future date" });
+  }
+  try {
+    const code = `EAP-${randomBytes2(9).toString("hex").toUpperCase()}`;
+    const voucher = await db.transaction(async (transaction) => {
+      const [created] = await transaction.insert(myfiveEapVouchers).values({
+        organizationLabel,
+        codeHash: hashVoucherCode(code),
+        maxRedemptions,
+        expiresAt
+      }).returning({ id: myfiveEapVouchers.id, expiresAt: myfiveEapVouchers.expiresAt });
+      await transaction.insert(auditLogs).values({
+        // Attribute by durable admin ID so a matching client-account email deletion cannot erase this record.
+        userEmail: `admin-account:${req.session.adminUserId}`,
+        actionType: "CREATE_MYFIVE_EAP_VOUCHER",
+        resource: `myfive_eap_vouchers:${created.id}`,
+        details: buildEapVoucherAuditDetails({
+          voucherId: created.id,
+          organizationLabel,
+          maxRedemptions,
+          expiresAt: created.expiresAt
+        }),
+        ipAddress: req.ip || req.socket.remoteAddress || "unknown"
+      });
+      return created;
+    });
+    res.status(201).type("application/json").send(JSON.stringify({
+      id: voucher.id,
+      code,
+      expiresAt: voucher.expiresAt?.toISOString() ?? null,
+      warning: "Store this code securely; only its hash is retained and the code cannot be recovered."
+    }));
+  } catch (error) {
+    console.error("MyFive EAP voucher creation failed", error);
+    res.status(500).json({ error: "EAP voucher could not be created" });
+  }
+});
+myfiveRouter.post("/eap-vouchers/redeem", requireMyFiveAccount, async (req, res) => {
+  const code = typeof req.body?.code === "string" ? req.body.code.trim() : "";
+  if (code.length < 12 || code.length > 100) return res.status(400).json({ error: "Enter a valid EAP voucher code" });
+  const userId = getVerifiedMyFiveUserId(req);
+  const codeHash = hashVoucherCode(code);
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const current = await client.query("SELECT plan_status FROM myfive_subscriptions WHERE user_id = $1 FOR UPDATE", [userId]);
+    if (["active", "eap"].includes(current.rows[0]?.plan_status)) {
+      await client.query("ROLLBACK");
+      return res.json({ status: current.rows[0].plan_status, alreadyEntitled: true });
+    }
+    const found = await client.query(
+      `SELECT id FROM myfive_eap_vouchers
+       WHERE code_hash = $1 AND status = 'active' AND redeemed_count < max_redemptions
+         AND (expires_at IS NULL OR expires_at > now()) FOR UPDATE`,
+      [codeHash]
+    );
+    if (!found.rows[0]) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "This voucher is invalid, expired, or fully redeemed" });
+    }
+    await client.query("UPDATE myfive_eap_vouchers SET redeemed_count = redeemed_count + 1 WHERE id = $1", [found.rows[0].id]);
+    await client.query(
+      `INSERT INTO myfive_subscriptions (user_id, plan_status, sponsored_seats_allocated)
+       VALUES ($1, 'eap', 0)
+       ON CONFLICT (user_id) DO UPDATE SET plan_status = 'eap', sponsor_user_id = NULL
+       WHERE myfive_subscriptions.plan_status NOT IN ('active', 'eap')`,
+      [userId]
+    );
+    await client.query("COMMIT");
+    res.json({ status: "eap", message: "EAP access activated. Your employer cannot see your identity or MyFive activity." });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("MyFive EAP voucher redemption failed", error);
+    res.status(500).json({ error: "EAP voucher could not be redeemed" });
+  } finally {
+    client.release();
+  }
+});
+myfiveRouter.post("/subscription/checkout", requireMyFiveAccount, async (req, res) => {
+  const stripe2 = getStripe();
+  if (!stripe2 || !await isConnectorEnabled("stripe")) {
+    return res.status(503).json({ error: "Stripe checkout is currently unavailable" });
+  }
+  const actorUserId = getVerifiedMyFiveUserId(req);
+  const customerEmail = typeof req.body?.customerEmail === "string" ? req.body.customerEmail.trim().toLowerCase() : "";
+  if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+    return res.status(400).json({ error: "A valid email address is required" });
+  }
+  try {
+    const origin = `${req.protocol}://${req.get("host")}`;
+    const session2 = await stripe2.checkout.sessions.create({
+      mode: "subscription",
+      customer_email: customerEmail || req.session.clientEmail || void 0,
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: "eur",
+          unit_amount: MYFIVE_MONTHLY_PRICE_CENTS,
+          recurring: { interval: "month" },
+          product_data: { name: "MyFive Primary Membership", description: "Five partner connection seats plus one private Philautia self-vault" }
+        }
+      }],
+      metadata: { product: "myfive_primary", actorUserId },
+      subscription_data: { metadata: { product: "myfive_primary", actorUserId } },
+      success_url: `${origin}/myfive/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/myfive/settings?checkout=canceled`,
+      allow_promotion_codes: true
+    });
+    if (!session2.url) return res.status(502).json({ error: "Stripe did not return a checkout URL" });
+    res.status(201).json({ checkoutUrl: session2.url });
+  } catch (error) {
+    console.error("MyFive Stripe Checkout creation failed", error);
+    res.status(500).json({ error: "Checkout could not be created" });
+  }
+});
+myfiveRouter.post("/subscription/confirm", requireMyFiveAccount, async (req, res) => {
+  const stripe2 = getStripe();
+  const sessionId = typeof req.body?.sessionId === "string" ? req.body.sessionId : "";
+  if (!stripe2 || !sessionId.startsWith("cs_")) return res.status(400).json({ error: "A valid Checkout Session is required" });
+  try {
+    const session2 = await stripe2.checkout.sessions.retrieve(sessionId);
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (session2.metadata?.product !== "myfive_primary" || session2.metadata.actorUserId !== actorUserId || session2.payment_status !== "paid") {
+      return res.status(403).json({ error: "This paid MyFive Checkout Session does not belong to the current account" });
+    }
+    const subscriptionId = typeof session2.subscription === "string" ? session2.subscription : session2.subscription?.id;
+    const customerId = typeof session2.customer === "string" ? session2.customer : session2.customer?.id ?? null;
+    if (!subscriptionId) return res.status(409).json({ error: "Stripe subscription is not ready yet" });
+    await persistMyFiveSubscription(actorUserId, customerId, subscriptionId, "active");
+    res.json({ status: "active", plan: "primary", priceEur: 4.99 });
+  } catch (error) {
+    console.error("MyFive Stripe Checkout confirmation failed", error);
+    res.status(500).json({ error: "Subscription could not be confirmed" });
+  }
+});
+myfiveRouter.get("/subscription", requireMyFiveAccount, async (req, res) => {
+  try {
+    const [subscription] = await db.select().from(myfiveSubscriptions).where(eq2(myfiveSubscriptions.userId, getVerifiedMyFiveUserId(req))).limit(1);
+    res.json({
+      plan: "B2C Primary Subscription",
+      status: subscription?.planStatus ?? "inactive",
+      priceEur: 4.99,
+      sponsoredSeatsAllowed: 5,
+      sponsoredSeatsAllocated: subscription?.sponsoredSeatsAllocated ?? 0,
+      stripeConnected: Boolean(process.env.STRIPE_SECRET_KEY)
+    });
+  } catch (error) {
+    console.error("MyFive subscription read failed", error);
+    res.status(500).json({ error: "Subscription status could not be loaded" });
+  }
+});
+
+// server/routes.ts
+init_notionSync();
 var STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
 var stripe = null;
 if (STRIPE_KEY) {
-  stripe = new Stripe(STRIPE_KEY, {
+  stripe = new Stripe2(STRIPE_KEY, {
     apiVersion: "2023-10-16"
     // Using stable version with type assertion
   });
@@ -7841,6 +9018,7 @@ if (STRIPE_KEY) {
 }
 async function registerRoutes(app2) {
   app2.use("/api/admin", auditMiddleware);
+  app2.use("/api/myfive", myfiveRouter);
   app2.post("/api/create-payment-intent", async (req, res) => {
     if (!stripe) {
       return res.status(503).json({
@@ -7982,6 +9160,7 @@ async function registerRoutes(app2) {
           console.log("\u2139\uFE0F Duplicate webhook event received for payment:", paymentIntent.id);
         }
       }
+      await handleMyFiveStripeEvent(event);
       res.json({ received: true });
     } catch (error) {
       console.error("Webhook error:", error);
@@ -8875,8 +10054,8 @@ async function registerRoutes(app2) {
       console.log("Admin Google OAuth: dev domain detected, redirecting to admin login");
       return res.redirect("/admin?error=dev_google");
     }
-    const { randomBytes: randomBytes3 } = await import("crypto");
-    const state = randomBytes3(16).toString("hex");
+    const { randomBytes: randomBytes4 } = await import("crypto");
+    const state = randomBytes4(16).toString("hex");
     req.session.adminOAuthState = state;
     const redirectUri = `${baseUrl}/api/admin/auth/google/callback`;
     const scope = encodeURIComponent("openid email profile");
@@ -8986,8 +10165,8 @@ async function registerRoutes(app2) {
     if (!clientId) {
       return res.status(503).json({ message: "Fathom integration is not configured \u2014 set FATHOM_CLIENT_ID" });
     }
-    const { randomBytes: randomBytes3 } = await import("crypto");
-    const state = randomBytes3(16).toString("hex");
+    const { randomBytes: randomBytes4 } = await import("crypto");
+    const state = randomBytes4(16).toString("hex");
     req.session.fathomOAuthState = state;
     const { getBaseUrl: getBaseUrl2 } = await Promise.resolve().then(() => (init_portal_auth(), portal_auth_exports));
     const redirectUri = `${getBaseUrl2(req)}/api/admin/auth/fathom/callback`;
@@ -9568,11 +10747,8 @@ async function registerRoutes(app2) {
           name: customerName || null,
           passwordHash: null,
           googleId: null,
-          linkedinSub: null,
-          linkedinAccessToken: null,
-          avatarUrl: null,
-          notionAccessToken: null,
-          notionWorkspaceId: null
+          linkedinSub: void 0,
+          avatarUrl: null
         });
       }
       const existingSub = await storage.getClientSubscriptionByUserId(clientUser.id);
@@ -10079,7 +11255,7 @@ async function registerRoutes(app2) {
       const fQuiz = allQuizResults.filter((q) => inWindow(q.createdAt));
       const fMessages = allContactMessages.filter((m) => inWindow(m.createdAt));
       const fWaitlist = allWaitlist.filter((w) => inWindow(w.createdAt));
-      const fEmailLogs = allEmailLogs.filter((l) => inWindow(l.createdAt));
+      const fEmailLogs = allEmailLogs.filter((l) => inWindow(l.sentAt));
       const totalRevenue = fScanPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0) + fPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
       const totalPurchaseCount = fScanPurchases.length + fPurchases.length;
       const avgOrderValue = totalPurchaseCount > 0 ? Math.round(totalRevenue / totalPurchaseCount * 100) / 100 : 0;
@@ -10112,7 +11288,18 @@ async function registerRoutes(app2) {
         return text2.includes("recommend") || text2.includes("referred") || text2.includes("colleague");
       }).length;
       const ga4Enabled = await isConnectorEnabled("google-analytics");
-      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : null;
+      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : {
+        sessions: null,
+        uniqueUsers: null,
+        organicUsers: null,
+        topTrafficSources: null,
+        scanPageViews: null,
+        promptCopyEvents: null,
+        coachingCTAClicks: null,
+        returnVisitorRate: null,
+        promptCopiesPerSession: null,
+        directTrafficShare: null
+      };
       const ga4Connected = ga4Enabled && isGA4Configured();
       let typeformApiRate = null;
       let typeformApiResponses = null;
@@ -10159,7 +11346,7 @@ async function registerRoutes(app2) {
       const pQuiz = allQuizResults.filter((q) => inPrevWindow(q.createdAt));
       const pMessages = allContactMessages.filter((m) => inPrevWindow(m.createdAt));
       const pWaitlist = allWaitlist.filter((w) => inPrevWindow(w.createdAt));
-      const pEmailLogs = allEmailLogs.filter((l) => inPrevWindow(l.createdAt));
+      const pEmailLogs = allEmailLogs.filter((l) => inPrevWindow(l.sentAt));
       const prevRevenue = pScanPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0) + pPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
       const prevPurchaseCount = pScanPurchases.length + pPurchases.length;
       const prevAvgOrderValue = prevPurchaseCount > 0 ? Math.round(prevRevenue / prevPurchaseCount * 100) / 100 : 0;
@@ -10823,8 +12010,8 @@ ${enrichmentText.trim().substring(0, 3e3)}`;
   app2.get("/api/admin/seo-suggestions", requireAdminAuth, async (_req, res) => {
     try {
       const { seoSuggestions: seoSuggestions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
-      const { desc: desc2 } = await import("drizzle-orm");
-      const suggestions = await db.select().from(seoSuggestions2).orderBy(desc2(seoSuggestions2.createdAt)).limit(50);
+      const { desc: desc3 } = await import("drizzle-orm");
+      const suggestions = await db.select().from(seoSuggestions2).orderBy(desc3(seoSuggestions2.createdAt)).limit(50);
       res.json(suggestions);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -10848,13 +12035,13 @@ ${enrichmentText.trim().substring(0, 3e3)}`;
   app2.patch("/api/admin/seo-suggestions/:id", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
       const { seoSuggestions: seoSuggestions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
-      const { eq: eq3 } = await import("drizzle-orm");
+      const { eq: eq4 } = await import("drizzle-orm");
       const { status } = req.body;
       const validStatuses = ["pending", "applied", "dismissed"];
       if (!status || !validStatuses.includes(status)) {
         return res.status(400).json({ message: "status must be one of: pending, applied, dismissed" });
       }
-      const [updated] = await db.update(seoSuggestions2).set({ status }).where(eq3(seoSuggestions2.id, req.params.id)).returning();
+      const [updated] = await db.update(seoSuggestions2).set({ status }).where(eq4(seoSuggestions2.id, req.params.id)).returning();
       res.json(updated);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -10941,6 +12128,9 @@ ${enrichmentText.trim().substring(0, 3e3)}`;
   app2.get("/api/admin/notion/schema", requireAdminAuth, async (_req, res) => {
     try {
       const schema = await getNotionDatabaseSchema();
+      if (!schema) {
+        return res.status(400).json({ message: "Notion connection is disabled or not configured" });
+      }
       res.json({
         message: "Notion connection verified",
         databaseId: schema.id,
@@ -13257,7 +14447,7 @@ Participants: ${Array.from(participants).join(", ")}` } }]
     }
     try {
       const userId = req.session.clientUserId;
-      const user = await storage.getClientUser(userId);
+      const user = await storage.getClientUserById(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
       const [timeline, context] = await Promise.all([
         storage.getPortalTimelineEvents(userId),
@@ -13664,8 +14854,8 @@ Additional context: ${context}` : userMessage;
       const rawIp = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
       const userAgent = req.headers["user-agent"] || "";
       const referer = req.headers["referer"] || "";
-      const { createHash } = await import("crypto");
-      const ipHash = rawIp && rawIp !== "unknown" ? createHash("sha256").update(rawIp + "ge-qr-salt-2026").digest("hex").slice(0, 16) : "unknown";
+      const { createHash: createHash2 } = await import("crypto");
+      const ipHash = rawIp && rawIp !== "unknown" ? createHash2("sha256").update(rawIp + "ge-qr-salt-2026").digest("hex").slice(0, 16) : "unknown";
       let deviceType = "desktop";
       if (/mobile|android|iphone|ipad/i.test(userAgent)) deviceType = "mobile";
       else if (/tablet|ipad/i.test(userAgent)) deviceType = "tablet";
@@ -14056,6 +15246,34 @@ function serveStatic(app2) {
 // server/index.ts
 init_onboarding_scheduler();
 init_daily_pulse();
+
+// server/api-request-logger.ts
+function safeMethod(method) {
+  const normalized = method.toUpperCase();
+  return /^[A-Z]+$/.test(normalized) ? normalized : "OTHER";
+}
+function safeRoutePattern(req) {
+  const routePath = typeof req.route?.path === "string" ? req.route.path : null;
+  if (!routePath) return "/api/<unmatched>";
+  const baseUrl = typeof req.baseUrl === "string" && req.baseUrl.startsWith("/api") ? req.baseUrl : "/api";
+  const path3 = routePath.startsWith("/api") ? routePath : `${baseUrl}${routePath}`;
+  return path3.replace(/[\r\n]/g, "");
+}
+function formatApiRequestLog(req, res, durationMs) {
+  return `${safeMethod(req.method)} ${safeRoutePattern(req)} ${res.statusCode} in ${Math.max(0, Math.round(durationMs))}ms`;
+}
+function createApiRequestLogger(writeLog) {
+  return (req, res, next) => {
+    if (!req.path.startsWith("/api")) return next();
+    const start = Date.now();
+    res.on("finish", () => {
+      writeLog(formatApiRequestLog(req, res, Date.now() - start));
+    });
+    next();
+  };
+}
+
+// server/index.ts
 var app = express2();
 app.set("trust proxy", 1);
 if (!process.env.SESSION_SECRET) {
@@ -14090,30 +15308,7 @@ app.use(express2.json({
   }
 }));
 app.use(express2.urlencoded({ extended: false, limit: "10mb" }));
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path3 = req.path;
-  let capturedJsonResponse = void 0;
-  const originalResJson = res.json;
-  res.json = function(bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path3.startsWith("/api")) {
-      let logLine = `${req.method} ${path3} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "\u2026";
-      }
-      log(logLine);
-    }
-  });
-  next();
-});
+app.use(createApiRequestLogger(log));
 (async () => {
   registerPortalRoutes(app);
   const server = await registerRoutes(app);

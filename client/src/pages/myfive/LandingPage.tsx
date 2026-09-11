@@ -91,7 +91,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Data Sovereignty</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Private check-ins remain 100% blind to partners and admins. Absolute GDPR Article 17 cascade wipe at any time.
+                Private check-ins are stored only in this browser unless you export them. Account and local-vault deletion controls remain available in Settings.
               </p>
             </div>
           </div>

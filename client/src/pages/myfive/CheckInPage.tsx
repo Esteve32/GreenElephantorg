@@ -99,7 +99,7 @@ export default function CheckInPage() {
               <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest block mb-1">Step 2 of 2</span>
               <h2 className="text-xl font-bold text-white mb-2">Qualitative Reflection (Private)</h2>
               <p className="text-slate-400 text-sm mb-3">
-                Write down what you are sensing or what needs are coming up. This text stays 100% confidential in your private vault.
+                Write down what you are sensing or what needs are coming up. Stored only in this browser unless you export it.
               </p>
 
               <textarea

@@ -1,4 +1,4 @@
-# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.4 - Proof Gate, Deadline, and Stabilization Baseline
+# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.5 - Stage 4.3-D Survivor-Custody Baseline
 
 ## 1. Authority and Scope
 
@@ -249,9 +249,10 @@ Every requirement must map from user journey to implementation and verification.
 | DAT-001 | Trust | Private and shared data are structurally isolated | M2 | schema boundaries + query guards | data-boundary test pack |
 | DAT-002 | Consent | Shared agreement requires bilateral explicit consent | M2 | consent gating + ledger | consent gate integration tests |
 | DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
-| DAT-004 | Sovereignty | User can delete account with cascade wipe | M2 | deletion pipeline | deletion integrity tests |
+| DAT-004 | Sovereignty | Account deletion removes the subject's account and author-owned data without erasing another participant's independently authored data; shared records follow their explicit lifecycle policy | M2 | classified deletion pipeline | two-participant, both-order deletion integrity tests |
 | DAT-005 | Ontology | Eight Lenses and Eight Loves remain independent while sharing the approved visual taxonomy | M1/M2 | design tokens + separate schemas | schema independence and token mapping tests |
 | DAT-006 | Shared consent | Both participants individually accept the same version of all nine ValueRules™ before shared-agreement access without blocking private use | M1/M2 | consent gate + append-only ledger | nine-item, bilateral, version, reconsent, withdrawal, and private-use tests |
+| DAT-007 | Shared-record custody | After one participant deletes their account, the surviving participant retains read, export, and delete access to a frozen joint agreement until they delete it or their account, subject to the recorded production legal gate | M2 | participant lifecycle + frozen agreement state | survivor access, identifier removal, no-edit, final-erasure, and rights-request tests |
 | PAY-001 | Monetization | Primary membership is €4.99/month and supports five sponsored partner connections; no annual plan is offered without separate approval | M1/M5 | Stripe checkout + subscription APIs + entitlement model | price, interval, sponsorship, and annual-plan absence tests |
 | ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
 | ADM-002 | Operations | Scoped provider/workflow switches and a global emergency stop safely pause outbound work and support controlled restart | M3 | control plane toggles + queues | isolation, pause, backlog, duplicate-suppression, and recommissioning tests |
@@ -317,10 +318,19 @@ And the user shall retain access to manual reminders only.
 
 ### AC-006 Account deletion
 
-Given a user confirms account deletion with required confirmation steps  
-When deletion is executed  
-Then user-linked records shall be removed according to policy  
-And subsequent authenticated fetches shall return no active account profile.
+Given participant A confirms account deletion while participant B has independently authored records and a bilateral joint agreement
+
+When deletion is executed
+
+Then A's account access, participant relation, author-owned records, direct agreement identifiers, and consent-receipt links shall be removed according to the classified deletion policy
+
+And B's independently authored records shall remain intact
+
+And the joint agreement shall become permanently frozen while remaining readable, exportable, and deletable only by B
+
+And subsequent authenticated fetches shall return no active account profile for A
+
+And the frozen agreement shall be erased when B deletes it or B's account, whichever occurs first.
 
 ### AC-007 Human-led non-verbal expression
 
@@ -573,6 +583,46 @@ Then it shall complete a continuous 15-minute static/read-only, 30-minute authen
 And the highest-risk class shall include a fully reconciled synthetic success with no unresolved critical error
 
 And the verified legacy rollback path shall remain recoverable for at least 24 hours after cutover.
+
+### AC-031 Surviving-participant agreement custody
+
+Given two verified participants accepted the current ValueRules™ and created a joint agreement under the disclosed survivor-custody terms
+
+When either participant deletes their account
+
+Then the deleted account shall lose all agreement access immediately and permanently
+
+And the agreement shall be immutable and unavailable to new partners, relinking, search, analytics, training, or administrative browsing
+
+And the deleted account ID, cross-subject consent receipt IDs, invitation contact data, and unnecessary linkage metadata shall be erased or de-identified
+
+And the remaining participant alone may read, export, or delete the frozen text
+
+And free text shall be treated as potentially identifying both participants even after direct identifiers are removed
+
+And an erasure, restriction, or objection request concerning retained text shall enter a documented human review rather than be automatically denied
+
+And the last participant's deletion shall erase the text and remove the final relationship shell
+
+And production activation shall fail closed until qualified privacy review records the purpose, lawful basis, retention criterion, rights process, notices, and backup-erasure procedure.
+
+### Stage 4.3-D survivor-custody specification
+
+The approved product purpose is to preserve the surviving participant's access to a joint record they co-created or relied upon. That purpose does not, by itself, establish a lawful basis. Before production activation, Green Elephant shall record the applicable Article 6 lawful basis and obtain qualified privacy review. If Article 6(1)(f) legitimate interests is proposed, the record shall identify a lawful, present, and precisely articulated interest, prove that continued processing is necessary, balance it against the deleted participant's rights and reasonable expectations, and document how objections will be assessed. If agreement text may contain special-category data, the review shall also identify an applicable Article 9 condition or prevent that processing.
+
+The retention criterion is: keep the frozen agreement until the surviving participant explicitly deletes it or the surviving participant's account is deleted, whichever occurs first. A record shall never remain after the last participant is gone. The survivor may read, export, and delete it, but may not edit it, reopen it for collaboration, connect it to another person, or expose it through a shared or administrator view. The service shall not use frozen text for search, recommendations, analytics, model training, or any new purpose.
+
+At agreement creation, both participants shall see this text before giving the consent that unlocks shared writing:
+
+> This is a joint record. If either participant deletes their account, that account immediately loses access. The remaining participant may continue to read, export, and delete the frozen agreement until they delete it or their account. Green Elephant removes the deleted account's direct identifiers, does not permit further editing or sharing through MyFive, and handles any erasure or objection request under the published privacy process.
+
+At account deletion, the deleting participant shall see this text before final confirmation:
+
+> Deleting your account removes your private and account data and permanently revokes your access. A frozen copy of each joint agreement may remain available only to the other participant until they delete it or their account, subject to Green Elephant's published lawful-basis and rights-request process. Free text may still refer to you. Export anything you need before deleting.
+
+The UI shall discourage legal names and highly sensitive details in agreement text, keep the field purpose narrow, and explain that de-identifying database columns cannot remove references written into free text. Access logs shall record survivor reads, exports, and deletion without copying agreement content. Erasure shall propagate through live stores and the documented backup lifecycle, and restored backups shall reapply completed erasure requests before serving data.
+
+The production-readiness record shall link the lawful-basis assessment, privacy notice, rights-request runbook, retention/deletion matrix, backup procedure, security controls, and accountable approver. This specification authorizes implementation and disposable-fixture proof. It does not authorize a production migration, deployment, or claim that Option C is legally sufficient without the recorded review.
 
 ---
 

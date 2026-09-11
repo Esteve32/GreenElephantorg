@@ -87,29 +87,54 @@ export type Contact = typeof contacts.$inferSelect;
 // MyFive Connection Slots (Hard Dunbar Cap of 5 Seats + Philautia Vault)
 export const myfiveConnectionSlots = pgTable("myfive_connection_slots", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+  userId: varchar("user_id"),
   slotIndex: integer("slot_index").notNull(), // 0 = Philautia, 1..5 = Partner Seats
   partnerName: text("partner_name"),
   partnerUserId: varchar("partner_user_id"),
   relationType: text("relation_type"), // e.g. "Partner", "Friend", "Family"
   status: text("status").notNull().default("empty"), // "active", "empty", "siloed"
+  lifecycleState: text("lifecycle_state").notNull().default("active"), // "active", "locked", "erased"
+  lockedAt: timestamp("locked_at"),
   isSelfVault: text("is_self_vault").notNull().default("false"), // "true" or "false"
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   userSlotIdentity: uniqueIndex("myfive_connection_slot_user_index_idx").on(table.userId, table.slotIndex),
   validSlotIndex: check("myfive_connection_slot_index_check", sql`${table.slotIndex} BETWEEN 0 AND 5`),
+  validLifecycle: check("myfive_connection_slot_lifecycle_check", sql`${table.lifecycleState} IN ('active', 'locked', 'erased')`),
+  validLifecycleTimestamp: check(
+    "myfive_connection_slot_lifecycle_timestamp_check",
+    sql`(${table.lifecycleState} = 'active' AND ${table.lockedAt} IS NULL) OR (${table.lifecycleState} IN ('locked', 'erased') AND ${table.lockedAt} IS NOT NULL)`,
+  ),
+  distinctParticipants: check("myfive_connection_slot_distinct_participants_check", sql`${table.userId} IS NULL OR ${table.partnerUserId} IS NULL OR ${table.userId} <> ${table.partnerUserId}`),
   selfSlotConsistency: check(
     "myfive_connection_slot_self_check",
     sql`(${table.slotIndex} = 0 AND ${table.isSelfVault} = 'true') OR (${table.slotIndex} BETWEEN 1 AND 5 AND ${table.isSelfVault} = 'false')`,
   ),
 }));
 
+// Explicit membership in a connection. Slot ownership does not confer authority
+// over another participant's authored records.
+export const myfiveConnectionParticipants = pgTable("myfive_connection_participants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  connectionId: varchar("connection_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  role: text("role").notNull(), // "owner" or "partner"
+  lifecycleState: text("lifecycle_state").notNull().default("active"), // "active", "survivor", "revoked"
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  revokedAt: timestamp("revoked_at"),
+}, (table) => ({
+  connectionUserIdentity: uniqueIndex("myfive_connection_participant_connection_user_idx").on(table.connectionId, table.userId),
+  userLifecycle: index("myfive_connection_participant_user_lifecycle_idx").on(table.userId, table.lifecycleState),
+  validRole: check("myfive_connection_participant_role_check", sql`${table.role} IN ('owner', 'partner')`),
+  validLifecycle: check("myfive_connection_participant_lifecycle_check", sql`${table.lifecycleState} IN ('active', 'survivor', 'revoked')`),
+}));
+
 export const myfiveInvitations = pgTable("myfive_invitations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   sponsorUserId: varchar("sponsor_user_id").notNull(),
   slotId: varchar("slot_id").notNull(),
-  inviteeEmail: text("invitee_email").notNull(),
-  tokenHash: text("token_hash").notNull().unique(),
+  inviteeEmail: text("invitee_email"),
+  tokenHash: text("token_hash").unique(),
   status: text("status").notNull().default("pending"),
   acceptedByUserId: varchar("accepted_by_user_id"),
   expiresAt: timestamp("expires_at").notNull(),
@@ -120,8 +145,13 @@ export const myfiveInvitations = pgTable("myfive_invitations", {
   slotStatus: index("myfive_invitation_slot_status_idx").on(table.slotId, table.status),
 }));
 
-// Private Check-Ins Vault (100% blind to partners and admins)
-export const myfiveCheckIns = pgTable("myfive_check_ins", {
+/**
+ * @deprecated Quarantined compatibility mapping for the legacy server table.
+ * Alpha runtime code must not import this mapping to read or write reflections.
+ * It remains declared only to prevent schema tooling from inferring a destructive
+ * table removal before legacy-data treatment receives separate approval.
+ */
+export const legacyMyfiveCheckInsQuarantine = pgTable("myfive_check_ins", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   slotId: varchar("slot_id").notNull(),
@@ -135,10 +165,18 @@ export const myfiveCheckIns = pgTable("myfive_check_ins", {
 export const myfiveAgreements = pgTable("myfive_agreements", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   slotId: varchar("slot_id").notNull(),
-  creatorUserId: varchar("creator_user_id").notNull(),
+  creatorUserId: varchar("creator_user_id"),
   partnerUserId: varchar("partner_user_id"),
+  slotOwnerUserId: varchar("slot_owner_user_id"),
+  slotPartnerUserId: varchar("slot_partner_user_id"),
   agreementText: text("agreement_text").notNull(),
-  valueRulesConsented: text("value_rules_consented").notNull().default("true"),
+  valueRulesVersion: text("value_rules_version"),
+  ownerConsentReceiptId: varchar("owner_consent_receipt_id"),
+  partnerConsentReceiptId: varchar("partner_consent_receipt_id"),
+  valueRulesConsented: text("value_rules_consented").notNull(),
+  lifecycleState: text("lifecycle_state").notNull().default("active"), // "active" or "frozen"
+  frozenAt: timestamp("frozen_at"),
+  survivorUserId: varchar("survivor_user_id"),
   version: integer("version").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -148,6 +186,28 @@ export const myfiveAgreements = pgTable("myfive_agreements", {
     table.creatorUserId,
     table.version,
   ),
+  validLifecycle: check("myfive_agreement_lifecycle_check", sql`${table.lifecycleState} IN ('active', 'frozen')`),
+  validLifecycleCustody: check(
+    "myfive_agreement_lifecycle_custody_check",
+    sql`(${table.lifecycleState} = 'active' AND ${table.frozenAt} IS NULL AND ${table.survivorUserId} IS NULL) OR (${table.lifecycleState} = 'frozen' AND ${table.frozenAt} IS NOT NULL AND ${table.survivorUserId} IS NOT NULL)`,
+  ),
+}));
+
+// Data-minimized access evidence for frozen survivor copies. Agreement text,
+// account contact data, consent receipts, and the other participant's ID are
+// deliberately excluded.
+export const myfiveAgreementCustodyEvents = pgTable("myfive_agreement_custody_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  actorUserId: varchar("actor_user_id").notNull(),
+  connectionId: varchar("connection_id").notNull(),
+  eventType: text("event_type").notNull(), // "read", "export", or "delete"
+  outcome: text("outcome").notNull(), // "success" or "not_found"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  actorCreated: index("myfive_agreement_custody_actor_created_idx").on(table.actorUserId, table.createdAt.desc()),
+  connectionCreated: index("myfive_agreement_custody_connection_created_idx").on(table.connectionId, table.createdAt.desc()),
+  validEventType: check("myfive_agreement_custody_event_type_check", sql`${table.eventType} IN ('read', 'export', 'delete')`),
+  validOutcome: check("myfive_agreement_custody_outcome_check", sql`${table.outcome} IN ('success', 'not_found')`),
 }));
 
 // Immutable authorization events. Rows are inserted, never updated in place.
@@ -156,10 +216,25 @@ export const myfiveConsentLedger = pgTable("myfive_consent_ledger", {
   actorUserId: varchar("actor_user_id").notNull(),
   slotId: varchar("slot_id").notNull(),
   consentType: text("consent_type").notNull(),
+  eventType: text("event_type").notNull().default("accepted"),
   rulesVersion: text("rules_version").notNull(),
   acceptedRuleIds: text("accepted_rule_ids").array().notNull(),
   acceptedAt: timestamp("accepted_at").defaultNow().notNull(),
 });
+
+// Non-sensitive failed shared-agreement attempts. Rows are inserted, never updated.
+export const myfiveAgreementDeniedEvents = pgTable("myfive_agreement_denied_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  actorUserId: varchar("actor_user_id").notNull(),
+  slotId: varchar("slot_id").notNull(),
+  slotOwnerUserId: varchar("slot_owner_user_id"),
+  slotPartnerUserId: varchar("slot_partner_user_id"),
+  reasonCode: text("reason_code").notNull(),
+  rulesVersion: text("rules_version").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  slotCreated: index("myfive_agreement_denied_slot_created_idx").on(table.slotId, table.createdAt.desc()),
+}));
 
 // Private, append-only snapshots of all eight Greek-love Flow calibrations.
 export const myfiveLoveProfileSnapshots = pgTable("myfive_love_profile_snapshots", {
