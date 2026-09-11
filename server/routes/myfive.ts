@@ -23,6 +23,7 @@ import { MYFIVE_EXPORT_SCHEMA_VERSION, renderMyFiveExportMarkdown } from "../../
 import type { MyFiveDataExport } from "../../shared/myfiveDataExport";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
 import {
+  agreementMutationLockKey,
   agreementConsentStateForActor,
   evaluateBilateralValueRulesGate,
   type MyFiveBilateralSlot,
@@ -117,6 +118,67 @@ function normalizeConsentEvent(row: typeof myfiveConsentLedger.$inferSelect): My
     acceptedRuleIds: row.acceptedRuleIds,
     acceptedAt: row.acceptedAt,
   };
+}
+
+async function appendValueRulesConsentEvent(input: {
+  actorUserId: string;
+  slotId: string;
+  eventType: "accepted" | "withdrawn";
+  acceptedRuleIds: readonly string[];
+}) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [agreementMutationLockKey(input.slotId)]);
+    const slotResult = await client.query(
+      `SELECT id
+       FROM myfive_connection_slots
+       WHERE id = $1
+         AND status = 'active'
+         AND is_self_vault <> 'true'
+         AND (user_id = $2 OR partner_user_id = $2)
+       FOR UPDATE`,
+      [input.slotId, input.actorUserId],
+    );
+    if (!slotResult.rows[0]) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const receiptResult = await client.query<{
+      id: string;
+      rules_version: string;
+      accepted_at: Date;
+    }>(
+      `INSERT INTO myfive_consent_ledger
+        (actor_user_id, slot_id, consent_type, event_type, rules_version, accepted_rule_ids, accepted_at)
+       VALUES (
+         $1, $2, 'agreement-sharing', $3, $4, $5,
+         GREATEST(
+           clock_timestamp(),
+           COALESCE(
+             (SELECT MAX(accepted_at) + interval '1 millisecond'
+              FROM myfive_consent_ledger
+              WHERE slot_id = $2 AND consent_type = 'agreement-sharing'),
+             clock_timestamp()
+           )
+         )
+       )
+       RETURNING id, rules_version, accepted_at`,
+      [input.actorUserId, input.slotId, input.eventType, VALUE_RULES_VERSION, [...input.acceptedRuleIds]],
+    );
+    await client.query("COMMIT");
+    return receiptResult.rows[0];
+  } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // The transaction may already be closed by a fail-fast branch.
+    }
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 async function readBilateralConsentGate(actorUserId: string, slot: MyFiveBilateralSlot) {
@@ -367,21 +429,19 @@ myfiveRouter.post("/consent", requireMyFiveAccount, async (req: Request, res: Re
 
   try {
     const actorUserId = getVerifiedMyFiveUserId(req);
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
-    const [receipt] = await db.insert(myfiveConsentLedger).values({
+    const receipt = await appendValueRulesConsentEvent({
       actorUserId,
       slotId,
-      consentType,
       eventType: "accepted",
-      rulesVersion,
       acceptedRuleIds: [...acceptedRuleIds],
-    }).returning();
+    });
+    if (!receipt) return res.status(404).json({ error: "Active partner connection not found" });
 
     res.status(201).json({
       success: true,
       receiptId: receipt.id,
-      rulesVersion: receipt.rulesVersion,
-      acceptedAt: receipt.acceptedAt.toISOString(),
+      rulesVersion: receipt.rules_version,
+      acceptedAt: new Date(receipt.accepted_at).toISOString(),
       note: "Partner consent is a separate required event",
     });
   } catch (error) {
@@ -398,20 +458,18 @@ myfiveRouter.post("/consent/withdraw", requireMyFiveAccount, async (req: Request
 
   try {
     const actorUserId = getVerifiedMyFiveUserId(req);
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
-    const [receipt] = await db.insert(myfiveConsentLedger).values({
+    const receipt = await appendValueRulesConsentEvent({
       actorUserId,
       slotId,
-      consentType,
       eventType: "withdrawn",
-      rulesVersion: VALUE_RULES_VERSION,
       acceptedRuleIds: [],
-    }).returning();
+    });
+    if (!receipt) return res.status(404).json({ error: "Active partner connection not found" });
     res.status(201).json({
       success: true,
       receiptId: receipt.id,
-      rulesVersion: receipt.rulesVersion,
-      withdrawnAt: receipt.acceptedAt.toISOString(),
+      rulesVersion: receipt.rules_version,
+      withdrawnAt: new Date(receipt.accepted_at).toISOString(),
     });
   } catch (error) {
     console.error("MyFive consent withdrawal failed", error);
@@ -484,7 +542,7 @@ myfiveRouter.post("/agreements", requireMyFiveAccount, async (req: Request, res:
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-agreement:${slotId}`]);
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [agreementMutationLockKey(slotId)]);
     const slotResult = await client.query(
       `SELECT id, user_id, partner_user_id, status, is_self_vault
        FROM myfive_connection_slots

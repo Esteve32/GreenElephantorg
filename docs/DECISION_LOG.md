@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.4.3 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.4.4 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.4 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.4.3`
-*   **Last Updated:** `2026-09-11T19:26:47+03:00`
+*   **Document Version:** `11.4.4`
+*   **Last Updated:** `2026-09-11T21:39:07+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.4 | 2026-09-11T21:39:07+03:00 | Estève | Corrected Stage 4.3-C status and recorded privacy-audit amendments pending human review |
 | 11.4.3 | 2026-09-11T19:26:47+03:00 | Estève | Completed Stage 4.3-C bilateral versioned ValueRules consent for shared agreements |
 | 11.4.2 | 2026-09-11T00:05:02+03:00 | Estève | Completed Stage 4.3-B account and privileged authorization controls |
 | 11.4.1 | 2026-09-10T23:45:42+03:00 | Estève | Completed Stage 4.3-A server check-in quarantine and metadata-only API logging |
@@ -588,7 +589,7 @@ To ensure complete compliance and eliminate "AI autopilot" development creep, th
 - [ ] **4.3** Audit check-in queries to ensure 100% blind vault isolation from partner views & admins.
   - [x] **4.3-A** Disable server private-check-in acceptance and reads, quarantine the legacy table mapping without destructive migration, remove response-body logging, and replace absolute vault claims with the approved browser-local wording.
   - [x] **4.3-B** Enforce account and privileged authorization on MyFive persistence.
-  - [x] **4.3-C** Implement bilateral versioned ValueRules consent for shared agreements.
+  - [ ] **4.3-C** Implement bilateral versioned ValueRules consent for shared agreements. Branch implementation is saved; audit amendments and human evidence review are pending in #11.
   - [ ] **4.3-D** Separate data ownership and rebuild export/deletion boundaries.
   - [ ] **4.3-E** Add global session revocation and idempotent Stripe deletion orchestration.
   - [ ] **4.3-F** Complete the privacy regression suite and obtain human Stage 4.3 approval.
@@ -620,7 +621,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 4.2 — GDPR Article 20 JSON/Markdown account and current-browser vault export | 11.2.10 | Commit containing this `11.2.10` ledger entry | No schema migration required |
 | Stage 4.3-A — server check-in quarantine and metadata-only API logging | 11.4.1 | Commit containing this `11.4.1` ledger entry | No schema migration; legacy table retained and quarantined |
 | Stage 4.3-B — account, record, Stripe-webhook, and privileged voucher authorization | 11.4.2 | Commit containing this `11.4.2` ledger entry | No schema migration required |
-| Stage 4.3-C — bilateral versioned ValueRules consent for shared agreements | 11.4.3 | Commit containing this `11.4.3` ledger entry | Additive plan only: `20260911_myfive_bilateral_value_rules_consent.sql`; no production migration run |
+| Stage 4.3-C — bilateral versioned ValueRules consent for shared agreements | 11.4.3–11.4.4 | Initial branch implementation: `3c52d20`; audit correction: commit containing `11.4.4` | Additive plan only: `20260911_myfive_bilateral_value_rules_consent.sql`; no production migration run; human review pending |
 
 ---
 

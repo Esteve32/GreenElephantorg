@@ -148,7 +148,7 @@ export const myfiveAgreements = pgTable("myfive_agreements", {
   valueRulesVersion: text("value_rules_version"),
   ownerConsentReceiptId: varchar("owner_consent_receipt_id"),
   partnerConsentReceiptId: varchar("partner_consent_receipt_id"),
-  valueRulesConsented: text("value_rules_consented").notNull().default("true"),
+  valueRulesConsented: text("value_rules_consented").notNull(),
   version: integer("version").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

@@ -46,6 +46,10 @@ export interface MyFiveAgreementGateDenied {
 
 export type MyFiveAgreementGateResult = MyFiveAgreementGateAllowed | MyFiveAgreementGateDenied;
 
+export function agreementMutationLockKey(slotId: string): string {
+  return `myfive-agreement:${slotId}`;
+}
+
 export function latestCurrentValueRulesReceipt(
   events: readonly MyFiveConsentEvent[],
   subjectUserId: string,

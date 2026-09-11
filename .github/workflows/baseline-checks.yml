@@ -40,12 +40,16 @@ jobs:
           if [ "$CI_STATUS" -eq 0 ]; then
             npm run check > npm-check.log 2>&1
             CHECK_STATUS=$?
+            npm test > npm-test.log 2>&1
+            TEST_STATUS=$?
             npm run build > npm-build.log 2>&1
             BUILD_STATUS=$?
           else
             CHECK_STATUS=125
+            TEST_STATUS=125
             BUILD_STATUS=125
             printf 'Skipped because npm ci failed.\n' > npm-check.log
+            printf 'Skipped because npm ci failed.\n' > npm-test.log
             printf 'Skipped because npm ci failed.\n' > npm-build.log
           fi
 
@@ -56,8 +60,9 @@ jobs:
             printf -- '- npm: `%s`\n' "$(npm --version)"
             printf -- '- `npm ci` exit code: `%s`\n' "$CI_STATUS"
             printf -- '- `npm run check` exit code: `%s`\n' "$CHECK_STATUS"
+            printf -- '- `npm test` exit code: `%s`\n' "$TEST_STATUS"
             printf -- '- `npm run build` exit code: `%s`\n\n' "$BUILD_STATUS"
-            for entry in 'npm ci:npm-ci.log' 'npm run check:npm-check.log' 'npm run build:npm-build.log'; do
+            for entry in 'npm ci:npm-ci.log' 'npm run check:npm-check.log' 'npm test:npm-test.log' 'npm run build:npm-build.log'; do
               label="${entry%%:*}"
               file="${entry#*:}"
               printf '### `%s` output\n\n```text\n' "$label"
@@ -68,6 +73,7 @@ jobs:
 
           printf 'ci_status=%s\n' "$CI_STATUS" >> "$GITHUB_OUTPUT"
           printf 'check_status=%s\n' "$CHECK_STATUS" >> "$GITHUB_OUTPUT"
+          printf 'test_status=%s\n' "$TEST_STATUS" >> "$GITHUB_OUTPUT"
           printf 'build_status=%s\n' "$BUILD_STATUS" >> "$GITHUB_OUTPUT"
 
       - name: Publish evidence to draft PR
@@ -82,8 +88,10 @@ jobs:
         env:
           CI_STATUS: ${{ steps.checks.outputs.ci_status }}
           CHECK_STATUS: ${{ steps.checks.outputs.check_status }}
+          TEST_STATUS: ${{ steps.checks.outputs.test_status }}
           BUILD_STATUS: ${{ steps.checks.outputs.build_status }}
         run: |
           test "$CI_STATUS" = '0'
           test "$CHECK_STATUS" = '0'
+          test "$TEST_STATUS" = '0'
           test "$BUILD_STATUS" = '0'

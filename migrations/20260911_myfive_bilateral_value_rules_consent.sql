@@ -12,6 +12,11 @@ ALTER TABLE "myfive_agreements"
   ADD COLUMN IF NOT EXISTS "owner_consent_receipt_id" varchar,
   ADD COLUMN IF NOT EXISTS "partner_consent_receipt_id" varchar;
 
+-- The historical 'true' value is not bilateral evidence. Preserve existing
+-- rows, but require every future writer to supply an explicit reference.
+ALTER TABLE "myfive_agreements"
+  ALTER COLUMN "value_rules_consented" DROP DEFAULT;
+
 CREATE TABLE IF NOT EXISTS "myfive_agreement_denied_events" (
   "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   "actor_user_id" varchar NOT NULL,

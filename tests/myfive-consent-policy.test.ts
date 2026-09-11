@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import {
+  agreementMutationLockKey,
   agreementConsentStateForActor,
   evaluateBilateralValueRulesGate,
   latestCurrentValueRulesReceipt,
@@ -150,9 +151,43 @@ test("labels, email strings, session ids, and replayed receipt ids cannot substi
   assert.equal(replayAttempt.reasonCode, "partner_current_consent_missing");
 });
 
+test("serialized consent ordering cannot bypass a concurrent withdrawal", () => {
+  const bothAccepted = [
+    accepted("receipt-a1", "client-a"),
+    accepted("receipt-b1", "client-b"),
+  ];
+  const withdrawn = accepted("receipt-a2", "client-a", {
+    eventType: "withdrawn",
+    acceptedRuleIds: [],
+    acceptedAt: new Date("2030-01-01T00:00:03.000Z"),
+  });
+
+  const agreementFirst = evaluateBilateralValueRulesGate({
+    actorUserId: "client-b",
+    slot: linkedSlot,
+    rulesVersion: currentVersion,
+    consentEvents: bothAccepted,
+  });
+  assert.equal(agreementFirst.allowed, true);
+
+  const withdrawalFirst = evaluateBilateralValueRulesGate({
+    actorUserId: "client-b",
+    slot: linkedSlot,
+    rulesVersion: currentVersion,
+    consentEvents: [...bothAccepted, withdrawn],
+  });
+  assert.equal(withdrawalFirst.allowed, false);
+  assert.equal(withdrawalFirst.reasonCode, "owner_current_consent_missing");
+  assert.equal(agreementMutationLockKey("slot-1"), "myfive-agreement:slot-1");
+});
+
 test("agreement route uses a transaction lock, appends sanitized denials, and does not trust client receipt ids", async () => {
   const source = await readFile("server/routes/myfive.ts", "utf8");
   assert.match(source, /pg_advisory_xact_lock\(hashtext\(\$1\)\)/);
+  assert.match(source, /\[agreementMutationLockKey\(input\.slotId\)\]/);
+  assert.match(source, /\[agreementMutationLockKey\(slotId\)\]/);
+  assert.equal(source.match(/appendValueRulesConsentEvent\(\{/g)?.length, 2);
+  assert.match(source, /SELECT MAX\(accepted_at\) \+ interval '1 millisecond'/);
   assert.match(source, /INSERT INTO myfive_agreement_denied_events/);
   assert.match(source, /reason_code, rules_version/);
   const deniedInsert = source.slice(
@@ -166,4 +201,9 @@ test("agreement route uses a transaction lock, appends sanitized denials, and do
   const migration = await readFile("migrations/20260911_myfive_bilateral_value_rules_consent.sql", "utf8");
   assert.match(migration, /not promoted to receipt evidence/);
   assert.match(migration, /ADD COLUMN IF NOT EXISTS "event_type"/);
+  assert.match(migration, /ALTER COLUMN "value_rules_consented" DROP DEFAULT/);
+
+  const schema = await readFile("shared/schema.ts", "utf8");
+  const agreementSchema = schema.slice(schema.indexOf("export const myfiveAgreements"), schema.indexOf("export const myfiveConsentLedger"));
+  assert.doesNotMatch(agreementSchema, /valueRulesConsented:.*default\("true"\)/);
 });
