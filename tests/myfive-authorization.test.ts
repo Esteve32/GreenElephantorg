@@ -142,6 +142,7 @@ test("all MyFive server-data routes use the account gate and no session actor fa
     'myfiveRouter.post("/slots/:slotId/invitations", requireMyFiveAccount,',
     'myfiveRouter.post("/invitations/:token/accept", requireMyFiveAccount,',
     'myfiveRouter.post("/consent", requireMyFiveAccount,',
+    'myfiveRouter.post("/consent/withdraw", requireMyFiveAccount,',
     'myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount,',
     'myfiveRouter.post("/agreements", requireMyFiveAccount,',
     'myfiveRouter.get("/love-profiles/:slotId", requireMyFiveAccount,',

@@ -22,6 +22,12 @@ import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlo
 import { MYFIVE_EXPORT_SCHEMA_VERSION, renderMyFiveExportMarkdown } from "../../shared/myfiveDataExport";
 import type { MyFiveDataExport } from "../../shared/myfiveDataExport";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
+import {
+  agreementConsentStateForActor,
+  evaluateBilateralValueRulesGate,
+  type MyFiveBilateralSlot,
+  type MyFiveConsentEvent,
+} from "./myfive-consent-policy";
 import { isConnectorEnabled } from "../lib/connectorGuard";
 import {
   buildEapVoucherAuditDetails,
@@ -98,6 +104,33 @@ function serializeSlot(slot: typeof myfiveConnectionSlots.$inferSelect) {
 
 function isoString(value: Date | null): string | null {
   return value?.toISOString() ?? null;
+}
+
+function normalizeConsentEvent(row: typeof myfiveConsentLedger.$inferSelect): MyFiveConsentEvent {
+  return {
+    id: row.id,
+    actorUserId: row.actorUserId,
+    slotId: row.slotId,
+    consentType: row.consentType,
+    eventType: row.eventType === "withdrawn" ? "withdrawn" : "accepted",
+    rulesVersion: row.rulesVersion,
+    acceptedRuleIds: row.acceptedRuleIds,
+    acceptedAt: row.acceptedAt,
+  };
+}
+
+async function readBilateralConsentGate(actorUserId: string, slot: MyFiveBilateralSlot) {
+  const consentRows = await db.select().from(myfiveConsentLedger).where(and(
+    eq(myfiveConsentLedger.slotId, slot.id),
+    eq(myfiveConsentLedger.consentType, "agreement-sharing"),
+    eq(myfiveConsentLedger.rulesVersion, VALUE_RULES_VERSION),
+  ));
+  return evaluateBilateralValueRulesGate({
+    actorUserId,
+    slot,
+    consentEvents: consentRows.map(normalizeConsentEvent),
+    rulesVersion: VALUE_RULES_VERSION,
+  });
 }
 
 function setDataExportPrivacyHeaders(_req: Request, res: Response, next: NextFunction) {
@@ -339,6 +372,7 @@ myfiveRouter.post("/consent", requireMyFiveAccount, async (req: Request, res: Re
       actorUserId,
       slotId,
       consentType,
+      eventType: "accepted",
       rulesVersion,
       acceptedRuleIds: [...acceptedRuleIds],
     }).returning();
@@ -356,6 +390,35 @@ myfiveRouter.post("/consent", requireMyFiveAccount, async (req: Request, res: Re
   }
 });
 
+myfiveRouter.post("/consent/withdraw", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const slotId = readSlotId(req.body?.slotId);
+  const consentType = typeof req.body?.consentType === "string" ? req.body.consentType : "agreement-sharing";
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  if (consentType !== "agreement-sharing") return res.status(400).json({ error: "Unsupported consent purpose" });
+
+  try {
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
+    const [receipt] = await db.insert(myfiveConsentLedger).values({
+      actorUserId,
+      slotId,
+      consentType,
+      eventType: "withdrawn",
+      rulesVersion: VALUE_RULES_VERSION,
+      acceptedRuleIds: [],
+    }).returning();
+    res.status(201).json({
+      success: true,
+      receiptId: receipt.id,
+      rulesVersion: receipt.rulesVersion,
+      withdrawnAt: receipt.acceptedAt.toISOString(),
+    });
+  } catch (error) {
+    console.error("MyFive consent withdrawal failed", error);
+    res.status(500).json({ error: "Consent withdrawal could not be recorded" });
+  }
+});
+
 // Read the latest immutable agreement version for this actor and connection slot.
 myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.params.slotId);
@@ -363,10 +426,25 @@ myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Reques
 
   try {
     const actorUserId = getVerifiedMyFiveUserId(req);
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
+    const slot = await findAccessibleSlot(actorUserId, slotId, false);
+    if (!slot) return res.status(404).json({ error: "Active partner connection not found" });
+    const consentGate = await readBilateralConsentGate(actorUserId, slot);
+    let consentState = agreementConsentStateForActor(consentGate, actorUserId);
+    if (consentState === "own_consent_required") {
+      const [latestOwnConsent] = await db.select({
+        rulesVersion: myfiveConsentLedger.rulesVersion,
+        eventType: myfiveConsentLedger.eventType,
+      }).from(myfiveConsentLedger).where(and(
+        eq(myfiveConsentLedger.actorUserId, actorUserId),
+        eq(myfiveConsentLedger.slotId, slotId),
+        eq(myfiveConsentLedger.consentType, "agreement-sharing"),
+      )).orderBy(desc(myfiveConsentLedger.acceptedAt)).limit(1);
+      if (latestOwnConsent?.eventType === "accepted" && latestOwnConsent.rulesVersion !== VALUE_RULES_VERSION) {
+        consentState = "version_refresh_required";
+      }
+    }
     const [latest] = await db.select().from(myfiveAgreements).where(and(
       eq(myfiveAgreements.slotId, slotId),
-      eq(myfiveAgreements.creatorUserId, actorUserId),
     )).orderBy(desc(myfiveAgreements.version)).limit(1);
 
     res.json(latest ? {
@@ -374,10 +452,16 @@ myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Reques
       agreementText: latest.agreementText,
       version: latest.version,
       savedAt: latest.createdAt.toISOString(),
+      valueRulesVersion: latest.valueRulesVersion,
+      consentState,
+      consentGate,
     } : {
       agreementText: DEFAULT_AGREEMENT,
       version: 0,
       savedAt: null,
+      valueRulesVersion: VALUE_RULES_VERSION,
+      consentState,
+      consentGate,
     });
   } catch (error) {
     console.error("MyFive agreement read failed", error);
@@ -387,57 +471,137 @@ myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Reques
 
 // Append a new version; prior versions are never overwritten or deleted.
 myfiveRouter.post("/agreements", requireMyFiveAccount, async (req: Request, res: Response) => {
-  const { agreementText, consentReceiptId, expectedVersion } = req.body ?? {};
+  const { agreementText, expectedVersion } = req.body ?? {};
   const slotId = readSlotId(req.body?.slotId);
   const actorUserId = getVerifiedMyFiveUserId(req);
   if (!slotId || typeof agreementText !== "string" || !agreementText.trim() || agreementText.length > 20_000) {
     return res.status(400).json({ error: "A connection slot and agreement text (maximum 20,000 characters) are required" });
   }
-  if (typeof consentReceiptId !== "string" || !Number.isInteger(expectedVersion) || expectedVersion < 0) {
-    return res.status(400).json({ error: "A valid consent receipt and expected version are required" });
+  if (!Number.isInteger(expectedVersion) || expectedVersion < 0) {
+    return res.status(400).json({ error: "A valid expected version is required" });
   }
 
+  const client = await pool.connect();
   try {
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
-    const [consent] = await db.select({ id: myfiveConsentLedger.id }).from(myfiveConsentLedger).where(and(
-      eq(myfiveConsentLedger.id, consentReceiptId),
-      eq(myfiveConsentLedger.actorUserId, actorUserId),
-      eq(myfiveConsentLedger.slotId, slotId),
-      eq(myfiveConsentLedger.consentType, "agreement-sharing"),
-      eq(myfiveConsentLedger.rulesVersion, VALUE_RULES_VERSION),
-    )).limit(1);
-    if (!consent) return res.status(403).json({ error: "Current ValueRules™ consent is required" });
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-agreement:${slotId}`]);
+    const slotResult = await client.query(
+      `SELECT id, user_id, partner_user_id, status, is_self_vault
+       FROM myfive_connection_slots
+       WHERE id = $1
+         AND status = 'active'
+         AND (user_id = $2 OR partner_user_id = $2)
+       FOR UPDATE`,
+      [slotId, actorUserId],
+    );
+    const slotRow = slotResult.rows[0];
+    if (!slotRow) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Active partner connection not found" });
+    }
 
-    const [latest] = await db.select({ version: myfiveAgreements.version }).from(myfiveAgreements).where(and(
-      eq(myfiveAgreements.slotId, slotId),
-      eq(myfiveAgreements.creatorUserId, actorUserId),
-    )).orderBy(desc(myfiveAgreements.version)).limit(1);
-    const currentVersion = latest?.version ?? 0;
+    const slot = {
+      id: slotRow.id,
+      userId: slotRow.user_id,
+      partnerUserId: slotRow.partner_user_id ?? null,
+      status: slotRow.status,
+      isSelfVault: slotRow.is_self_vault,
+    };
+    const consentResult = await client.query(
+      `SELECT id, actor_user_id, slot_id, consent_type, event_type, rules_version, accepted_rule_ids, accepted_at
+       FROM myfive_consent_ledger
+       WHERE slot_id = $1
+         AND consent_type = 'agreement-sharing'
+         AND rules_version = $2
+       ORDER BY accepted_at DESC`,
+      [slotId, VALUE_RULES_VERSION],
+    );
+    const consentGate = evaluateBilateralValueRulesGate({
+      actorUserId,
+      slot,
+      rulesVersion: VALUE_RULES_VERSION,
+      consentEvents: consentResult.rows.map((row): MyFiveConsentEvent => ({
+        id: row.id,
+        actorUserId: row.actor_user_id,
+        slotId: row.slot_id,
+        consentType: row.consent_type,
+        eventType: row.event_type === "withdrawn" ? "withdrawn" : "accepted",
+        rulesVersion: row.rules_version,
+        acceptedRuleIds: row.accepted_rule_ids ?? [],
+        acceptedAt: row.accepted_at,
+      })),
+    });
+    if (!consentGate.allowed) {
+      await client.query(
+        `INSERT INTO myfive_agreement_denied_events
+          (actor_user_id, slot_id, slot_owner_user_id, slot_partner_user_id, reason_code, rules_version)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          actorUserId,
+          slotId,
+          consentGate.ownerUserId,
+          consentGate.partnerUserId,
+          consentGate.reasonCode,
+          consentGate.rulesVersion,
+        ],
+      );
+      await client.query("COMMIT");
+      return res.status(403).json({ error: "Current bilateral ValueRules™ consent is required", reasonCode: consentGate.reasonCode });
+    }
+
+    const latest = await client.query<{ version: number }>(
+      "SELECT version FROM myfive_agreements WHERE slot_id = $1 ORDER BY version DESC LIMIT 1",
+      [slotId],
+    );
+    const currentVersion = latest.rows[0]?.version ?? 0;
     if (currentVersion !== expectedVersion) {
+      await client.query("ROLLBACK");
       return res.status(409).json({ error: "A newer agreement version exists", currentVersion });
     }
 
-    const [saved] = await db.insert(myfiveAgreements).values({
-      slotId,
-      creatorUserId: actorUserId,
-      agreementText: agreementText.trim(),
-      valueRulesConsented: consentReceiptId,
-      version: currentVersion + 1,
-    }).returning();
+    const savedResult = await client.query(
+      `INSERT INTO myfive_agreements
+        (slot_id, creator_user_id, partner_user_id, slot_owner_user_id, slot_partner_user_id, agreement_text,
+         value_rules_version, owner_consent_receipt_id, partner_consent_receipt_id, value_rules_consented, version)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING id, version, created_at`,
+      [
+        slotId,
+        actorUserId,
+        actorUserId === consentGate.ownerUserId ? consentGate.partnerUserId : consentGate.ownerUserId,
+        consentGate.ownerUserId,
+        consentGate.partnerUserId,
+        agreementText.trim(),
+        consentGate.rulesVersion,
+        consentGate.ownerConsentReceiptId,
+        consentGate.partnerConsentReceiptId,
+        `bilateral:${consentGate.ownerConsentReceiptId}:${consentGate.partnerConsentReceiptId}`,
+        currentVersion + 1,
+      ],
+    );
+    await client.query("COMMIT");
+    const saved = savedResult.rows[0];
 
     res.status(201).json({
       success: true,
       id: saved.id,
       version: saved.version,
-      savedAt: saved.createdAt.toISOString(),
+      savedAt: saved.created_at.toISOString(),
       message: "Dyadic relationship agreement version timestamped and saved",
     });
   } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // The transaction may already be closed by a fail-fast branch.
+    }
     if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {
       return res.status(409).json({ error: "A newer agreement version exists; reload before saving" });
     }
     console.error("MyFive agreement persistence failed", error);
     res.status(500).json({ error: "Agreement could not be saved" });
+  } finally {
+    client.release();
   }
 });
 
@@ -603,7 +767,12 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requireMyFiveAccou
           id: agreement.id,
           slotId: agreement.slotId,
           agreementText: agreement.agreementText,
-          consentReceiptId: agreement.valueRulesConsented,
+          slotOwnerUserId: agreement.slotOwnerUserId,
+          slotPartnerUserId: agreement.slotPartnerUserId,
+          valueRulesVersion: agreement.valueRulesVersion,
+          ownerConsentReceiptId: agreement.ownerConsentReceiptId,
+          partnerConsentReceiptId: agreement.partnerConsentReceiptId,
+          legacyConsentReference: agreement.valueRulesConsented,
           version: agreement.version,
           createdAt: agreement.createdAt.toISOString(),
           updatedAt: agreement.updatedAt.toISOString(),
@@ -612,6 +781,7 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requireMyFiveAccou
           id: receipt.id,
           slotId: receipt.slotId,
           consentType: receipt.consentType,
+          eventType: receipt.eventType,
           rulesVersion: receipt.rulesVersion,
           acceptedRuleIds: receipt.acceptedRuleIds,
           acceptedAt: receipt.acceptedAt.toISOString(),
@@ -717,6 +887,7 @@ myfiveRouter.delete("/account", requireMyFiveAccount, async (req: Request, res: 
 
     const ownedSlotSubquery = "SELECT id FROM myfive_connection_slots WHERE user_id = $1";
     await client.query(`DELETE FROM myfive_agreements WHERE creator_user_id = $1 OR partner_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
+    await client.query(`DELETE FROM myfive_agreement_denied_events WHERE actor_user_id = $1 OR slot_owner_user_id = $1 OR slot_partner_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
     await client.query(`DELETE FROM myfive_consent_ledger WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
     await client.query(`DELETE FROM myfive_love_profile_snapshots WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
     await client.query(`DELETE FROM myfive_check_ins WHERE user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);

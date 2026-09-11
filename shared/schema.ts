@@ -142,7 +142,12 @@ export const myfiveAgreements = pgTable("myfive_agreements", {
   slotId: varchar("slot_id").notNull(),
   creatorUserId: varchar("creator_user_id").notNull(),
   partnerUserId: varchar("partner_user_id"),
+  slotOwnerUserId: varchar("slot_owner_user_id"),
+  slotPartnerUserId: varchar("slot_partner_user_id"),
   agreementText: text("agreement_text").notNull(),
+  valueRulesVersion: text("value_rules_version"),
+  ownerConsentReceiptId: varchar("owner_consent_receipt_id"),
+  partnerConsentReceiptId: varchar("partner_consent_receipt_id"),
   valueRulesConsented: text("value_rules_consented").notNull().default("true"),
   version: integer("version").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -161,10 +166,25 @@ export const myfiveConsentLedger = pgTable("myfive_consent_ledger", {
   actorUserId: varchar("actor_user_id").notNull(),
   slotId: varchar("slot_id").notNull(),
   consentType: text("consent_type").notNull(),
+  eventType: text("event_type").notNull().default("accepted"),
   rulesVersion: text("rules_version").notNull(),
   acceptedRuleIds: text("accepted_rule_ids").array().notNull(),
   acceptedAt: timestamp("accepted_at").defaultNow().notNull(),
 });
+
+// Non-sensitive failed shared-agreement attempts. Rows are inserted, never updated.
+export const myfiveAgreementDeniedEvents = pgTable("myfive_agreement_denied_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  actorUserId: varchar("actor_user_id").notNull(),
+  slotId: varchar("slot_id").notNull(),
+  slotOwnerUserId: varchar("slot_owner_user_id"),
+  slotPartnerUserId: varchar("slot_partner_user_id"),
+  reasonCode: text("reason_code").notNull(),
+  rulesVersion: text("rules_version").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  slotCreated: index("myfive_agreement_denied_slot_created_idx").on(table.slotId, table.createdAt.desc()),
+}));
 
 // Private, append-only snapshots of all eight Greek-love Flow calibrations.
 export const myfiveLoveProfileSnapshots = pgTable("myfive_love_profile_snapshots", {
