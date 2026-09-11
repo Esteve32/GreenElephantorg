@@ -31,7 +31,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-A / #9 — browser-only check-ins and log boundary | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-B / #10 — account and privileged authorization | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
-| 4.3-D / #12 — ownership, export, and deletion | Approved in DEC-041 and specified in #12 | **Not built** | None | Implementation authorized only after #11 closes |
+| 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | **Not built** | Approved matrix and acceptance contract | Build may start after the decision-only commit; production activation still requires qualified legal/privacy validation |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | **Not built** | None | Future separately bounded slice |
 | 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | **Not built** | None | Final Stage 4.3 human privacy/security approval |
 
@@ -42,14 +42,17 @@ not part of this audit.
 ## 4.3-D decision checkpoint
 
 The field-level ownership, visibility, export, deletion, and retention analysis is
-preserved in `docs/STAGE_4_3_D_OWNERSHIP_MATRIX_PROPOSAL.md`. It inventories the
-current query gaps, classifies each MyFive record, proposes an additive migration
-shape, and records three concrete joint-agreement retention choices.
+preserved in `docs/STAGE_4_3_D_OWNERSHIP_MATRIX_PROPOSAL.md`. Estève selected
+Option C on 2026-09-11: after one account is deleted, the surviving participant
+keeps read, export, and delete access to the frozen agreement until they delete
+it or their own account. The selected policy, disclosure copy, rights handling,
+and production legal gate are now recorded in DEC-041 and the PRD.
 
-That file is deliberately marked as an unapproved proposal. No 4.3-D schema or
-query work has begun because DEC-041 does not choose the final joint-agreement
-erasure/retention policy and issue #12 requires that ambiguity to return to a
-recorded human decision. The Stage 4.3-D row therefore remains **Not built**.
+Approval of the product direction does not certify a lawful basis. Production
+activation remains blocked until qualified privacy counsel or the accountable
+DPO records the purpose, lawful basis, any Article 9 condition, rights-request
+procedure, privacy notice, and backup-erasure process. The Stage 4.3-D row remains
+**Not built** until schema, query, UI, and direct proof are committed.
 
 ## 4.3-C state model
 

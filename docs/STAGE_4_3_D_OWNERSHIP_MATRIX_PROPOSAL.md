@@ -1,6 +1,6 @@
-# Stage 4.3-D Ownership, Visibility, Export, Deletion, and Retention Proposal
+# Stage 4.3-D Ownership, Visibility, Export, Deletion, and Retention Specification
 
-Status: **PROPOSAL — AWAITING ESTÈVE'S RETENTION DECISION**
+Status: **APPROVED PRODUCT SPECIFICATION — OPTION C SELECTED; IMPLEMENTATION NOT BUILT**
 
 Prepared: 2026-09-11
 
@@ -10,13 +10,14 @@ Delivery issue: [#12](https://github.com/Esteve32/GreenElephantorg/issues/12)
 
 Authority: DEC-041 in `docs/DECISION_LOG.md`
 
-This document is a recovery checkpoint and a proposed implementation contract.
-It does not approve a new product or legal decision. `docs/DECISION_LOG.md`
-remains the canonical record of approved decisions. No schema, query, migration,
-or deletion behavior may rely on the proposed policy below until Estève records
-an explicit choice.
+This document is a recovery checkpoint and implementation contract. Estève
+selected Option C on 2026-09-11 so the surviving participant retains restricted
+custody of a frozen joint agreement. `docs/DECISION_LOG.md` remains the canonical
+approval record. This product choice authorizes branch implementation and
+disposable-fixture proof, but it is not a legal conclusion and does not authorize
+production activation or migration before the legal/privacy gate below is met.
 
-## Why implementation is paused here
+## Approved decision boundary
 
 DEC-041 already approves these boundaries:
 
@@ -30,11 +31,12 @@ DEC-041 already approves these boundaries:
 - unaccepted invitations and provisional nickname/relation data expire after
   30 days.
 
-The baseline intentionally leaves one material choice open: what happens to a
-locked joint agreement after one participant deletes their account. Issue #12
-requires that ambiguity to return to a recorded human decision before schema or
-query changes. This proposal supplies the evidence and concrete choices for that
-decision.
+The earlier baseline left one material choice open: what happens to a locked
+joint agreement after one participant deletes their account. Estève resolved it
+by selecting Option C. The surviving participant may read, export, and delete the
+frozen agreement until they delete it or their account, whichever occurs first.
+The deleted participant loses access immediately. This policy remains subject to
+the production legal/privacy gate in this specification.
 
 ## Classification vocabulary
 
@@ -72,8 +74,8 @@ decision.
 | Provisional `partner_name` and `relation_type` | Author-owned labels supplied by the slot owner; they never establish the partner's identity | Owner only before acceptance; the acceptance flow does not treat them as identity | Include only in the owner's export | Owner may delete immediately | Purge with an unaccepted invitation after 30 days; acceptance does not convert a typed label into identity |
 | Accepted participant relation | Participant metadata keyed by internal account IDs | Each active participant sees connection ID, their role, state, and the fact that another account is linked; no partner email/profile payload | Include for owned and linked connections with the other account ID replaced by a presence/state marker | Revoke the deleting subject's relation; preserve the remaining participant relation in locked state | While a participant remains; remove the last relation when the last participant deletes |
 | Connection/slot container | Relationship container, not ownership of child records | Owner sees seat controls; linked participant sees a minimized linked-connection view | Include both owned and linked containers with role/state | Remove deleting subject's owner/participant relation; do not cascade through child author IDs | Keep a minimized locked shell only while required by a remaining participant's records |
-| Active agreement version: text | Joint shared record even though `creator_user_id` records who submitted the version | Both current active participants after bilateral consent | Both active participants may export the shared text; label it joint rather than solely authored | Immediately hide and permanently lock on either participant deletion | **Human choice required below** |
-| Agreement version: creator, participant, version, rules version, timestamps | Joint-record metadata plus an explicit submitting author | Active participants receive the minimized history needed for the shared editor | Include joint version/timestamps/rules version; expose the subject's role, not the other account's raw ID or receipt ID | Remove the deleted account identifier; preserve only metadata justified by the selected joint-record policy and remaining participant records | **Human choice required below** |
+| Active agreement version: text | Joint shared record even though `creator_user_id` records who submitted the version | Both current active participants; after one deletes, the surviving participant alone may read/export the frozen text | Both active participants may export it; after deletion only the survivor receives the frozen text, labelled as a joint retained record | Immediately revoke the deleting account and permanently freeze the text; survivor may read, export, or delete | Until the survivor deletes the agreement or their account, whichever occurs first; production use requires the recorded legal/privacy gate |
+| Agreement version: creator, participant, version, rules version, timestamps | Joint-record metadata plus an explicit submitting author | Active participants receive minimized history; after deletion the survivor receives only justified frozen-record metadata | Include joint version/timestamps/rules version and the subject's role without another account's raw ID or receipt ID | Remove the deleted account identifier and cross-subject receipt links; keep only metadata needed for survivor custody and final erasure | Same survivor-custody criterion as the text; no orphan after the last participant |
 | Agreement denied event | Operational evidence: actor, reason code, rules version, timestamp; private payload is prohibited | Service authorization/audit only | Excluded from portable content export | Delete events authored by the deleting subject; de-identify deleted participant columns in other actors' events | Until actor deletion; no free text |
 | Primary MyFive membership | Subject-owned entitlement and billing mapping | Subject and purpose-limited billing service | Include plan state and dates; exclude Stripe identifiers | Delete the subject mapping through the #13 resumable deletion workflow | Until account deletion completes; external provider retention is handled separately |
 | Sponsored MyFive membership | Subject-owned entitlement plus participant-like sponsorship metadata | Sponsored subject sees entitlement state; sponsor sees aggregate occupied-seat count | Subject gets plan state without sponsor account ID; sponsor gets aggregate seat count | Sponsor deletion ends sponsorship without deleting the sponsored person's account or private records; subject deletion removes only that subject's membership | Until sponsorship ends or subject deletion completes |
@@ -87,13 +89,21 @@ The European Data Protection Board's 2025 coordinated-enforcement report on the
 right to erasure says retention periods should be specific, no longer than needed
 for the processing purpose, and communicated to data subjects. It also recommends
 documented erasure procedures and a deletion matrix linking data types, legal
-bases, and retention periods. This proposal applies that structure, but the report
+bases, and retention periods. This specification applies that structure, but the report
 does not supply Green Elephant's lawful basis or replace qualified legal review.
 See the [EDPB report](https://www.edpb.europa.eu/system/files/2026-02/edpb_cef-report_2025_right-to-erasure_en.pdf).
 
-## Recommended joint-agreement policy
+The [GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj) requires purpose and
+storage limitation, a lawful basis, transparent retention information, and
+effective handling of erasure, restriction, and objection rights. The
+[EDPB Guidelines 1/2024](https://www.edpb.europa.eu/system/files/2024-10/edpb_guidelines_202401_legitimateinterest_en.pdf)
+explain that Article 6(1)(f) requires three cumulative conditions assessed and
+documented before processing: a legitimate interest, necessity, and a balance in
+which the data subject's interests and fundamental rights do not prevail.
 
-### Option A — privacy-first immediate content erasure (**recommended**)
+## Joint-agreement policy decision
+
+### Option A — immediate content erasure (**not selected**)
 
 When either participant's account enters the committed deletion phase:
 
@@ -114,7 +124,7 @@ The settings UI must warn both participants that either participant's account
 deletion permanently erases the shared agreement, and prompt the deleting person
 to export first if they want their own copy.
 
-### Option B — 30-day restricted surviving-participant export window
+### Option B — 30-day restricted surviving-participant export window (**not selected**)
 
 Lock and hide the joint record from the deleting account immediately, retain the
 text for 30 days in a deletion-only state accessible only to the surviving
@@ -125,17 +135,43 @@ documented processing purpose, legal basis, notice, access controls, purge proof
 and a decision about what happens if the surviving account deletes during the
 window.
 
-### Option C — retain until the surviving participant deletes
+### Option C — survivor custody (**selected by Estève on 2026-09-11**)
 
-Lock the deleted account out while the surviving participant can continue to
-read/export the historical joint agreement. This has no fixed erasure date and
-creates the largest privacy, notice, and storage-limitation burden. It is not
-recommended for Alpha without qualified legal validation and a separately
-approved retention schedule.
+Lock the deleted account out immediately and permanently. Freeze the agreement
+against edits while the surviving participant can read, export, or delete it.
+Remove the deleted account's direct identifiers, participant link, and consent
+receipt references. Do not allow relinking, new sharing, administrative browsing,
+search, analytics, recommendations, or model training. Retain the record only
+until the survivor deletes it or deletes their account, whichever occurs first;
+then erase the text and final relationship shell.
 
-## Proposed additive implementation shape after approval
+Free text may still identify or describe the deleted participant. The service
+therefore treats the frozen text as personal data concerning both people, accepts
+erasure, restriction, and objection requests for human review, and never denies
+such a request automatically because the survivor wants access.
 
-The exact SQL remains unbuilt. After a policy choice, the implementation should:
+### Production legal/privacy gate
+
+The product decision and user-facing wording do not make continued processing
+legally sufficient on their own. Before production activation, qualified privacy
+counsel or the accountable DPO must record:
+
+1. the specific continued-processing purpose and applicable Article 6 lawful basis;
+2. any Article 9 condition needed because free text may contain special-category data;
+3. if Article 6(1)(f) is proposed, the lawful, present, precisely articulated
+   interest, necessity assessment, balancing test, safeguards, and objection path;
+4. privacy-notice wording for the purpose, basis, recipients, retention criterion,
+   rights, and contact route;
+5. the erasure/restriction/objection runbook, accountable reviewer, response
+   record, and data-subject notification process; and
+6. live-store and backup erasure propagation, restoration controls, access logs,
+   periodic retention review, and proof that no orphan survives the last account.
+
+Until that record exists, production survivor custody must fail closed.
+
+## Approved additive implementation shape
+
+The exact SQL remains unbuilt. The branch implementation shall:
 
 1. Add explicit connection-participant relations with `connection_id`,
    `user_id`, role, lifecycle state, joined time, and revoked time. Treat the
@@ -144,9 +180,9 @@ The exact SQL remains unbuilt. After a policy choice, the implementation should:
 2. Separate owner-authored provisional label fields from accepted participant
    identity. Add a connection lifecycle state that can be `active`, `locked`, or
    `erased`.
-3. Add agreement lifecycle fields for lock/erasure timestamps and make agreement
-   content erasable under the approved policy. Keep submitting-author metadata
-   distinct from the joint-record classification.
+3. Add agreement lifecycle fields for lock/erasure timestamps, survivor custody,
+   and final content erasure. Keep submitting-author metadata distinct from the
+   joint-record classification and remove deleted-participant identifiers.
 4. Change every export query to select by explicit subject author/participant
    relations. Include owned and linked connections; project cross-subject IDs and
    receipt IDs into minimized state instead of returning them.
@@ -194,13 +230,23 @@ The exact SQL remains unbuilt. After a policy choice, the implementation should:
   or non-zero retention policy must receive qualified legal validation before it
   is represented as legally sufficient.
 
+## User-facing disclosures
+
+Before both participants unlock shared writing:
+
+> This is a joint record. If either participant deletes their account, that account immediately loses access. The remaining participant may continue to read, export, and delete the frozen agreement until they delete it or their account. Green Elephant removes the deleted account's direct identifiers, does not permit further editing or sharing through MyFive, and handles any erasure or objection request under the published privacy process.
+
+Before final account-deletion confirmation:
+
+> Deleting your account removes your private and account data and permanently revokes your access. A frozen copy of each joint agreement may remain available only to the other participant until they delete it or their account, subject to Green Elephant's published lawful-basis and rights-request process. Free text may still refer to you. Export anything you need before deleting.
+
 ## Recovery state
 
 - #11 is closed and its evidence is approved.
-- #12 is open and its implementation is authorized subject to this required
-  retention decision.
+- #12 is open. Option C is approved and its branch implementation is authorized;
+  production activation remains subject to the legal/privacy gate.
 - No #12 schema/query/UI change has been made.
 - No production migration, deletion, Stripe call, email, deployment, `main`
   update, or PR readiness transition has occurred.
-- After Estève chooses an option, record the approved policy in the decision log
-  before implementing any schema or query change.
+- Record this approved policy in the decision log and save that decision-only
+  commit to the PR branch before implementing any schema or query change.
