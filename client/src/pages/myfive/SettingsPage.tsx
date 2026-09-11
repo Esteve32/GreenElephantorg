@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { exportPrivateVault, wipePrivateVault } from "@/lib/myfiveVault";
 import { renderMyFiveExportMarkdown } from "@shared/myfiveDataExport";
 import type { MyFiveDataExport } from "@shared/myfiveDataExport";
+import { ACCOUNT_DELETION_SURVIVOR_DISCLOSURE } from "@shared/myfiveSurvivorCustody";
 
 export default function SettingsPage() {
   const [subscription, setSubscription] = useState<{ status: string; sponsoredSeatsAllocated: number; stripeConnected: boolean } | null>(null);
@@ -239,8 +240,8 @@ export default function SettingsPage() {
               <Trash2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-white">GDPR Article 17 Cascade Wipe</h2>
-              <p className="text-xs text-slate-400">Permanently delete your account, private check-ins, and agreements</p>
+              <h2 className="font-bold text-base text-white">Delete MyFive account</h2>
+              <p className="text-xs text-slate-400">Delete your account and private data under the classified record policy</p>
             </div>
           </div>
 
@@ -250,7 +251,7 @@ export default function SettingsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs leading-relaxed text-rose-200/80">This permanently deletes your account, billing identity, private records, and every shared workspace you own. Other users’ accounts remain intact, but agreements in your owned connections are removed. This cannot be undone.</p>
+              <p className="text-xs leading-relaxed text-rose-200/80">{ACCOUNT_DELETION_SURVIVOR_DISCLOSURE}</p>
               <label className="block text-xs text-slate-300">Type <strong>DELETE MYFIVE</strong> to confirm
                 <input value={deleteConfirmation} onChange={(event) => setDeleteConfirmation(event.target.value)} autoComplete="off" className="mt-2 w-full rounded-lg border border-rose-700/60 bg-slate-950 px-3 py-2 font-mono text-sm" />
               </label>

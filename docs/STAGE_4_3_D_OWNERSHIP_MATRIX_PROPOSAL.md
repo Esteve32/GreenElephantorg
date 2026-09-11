@@ -76,6 +76,7 @@ the production legal/privacy gate in this specification.
 | Connection/slot container | Relationship container, not ownership of child records | Owner sees seat controls; linked participant sees a minimized linked-connection view | Include both owned and linked containers with role/state | Remove deleting subject's owner/participant relation; do not cascade through child author IDs | Keep a minimized locked shell only while required by a remaining participant's records |
 | Active agreement version: text | Joint shared record even though `creator_user_id` records who submitted the version | Both current active participants; after one deletes, the surviving participant alone may read/export the frozen text | Both active participants may export it; after deletion only the survivor receives the frozen text, labelled as a joint retained record | Immediately revoke the deleting account and permanently freeze the text; survivor may read, export, or delete | Until the survivor deletes the agreement or their account, whichever occurs first; production use requires the recorded legal/privacy gate |
 | Agreement version: creator, participant, version, rules version, timestamps | Joint-record metadata plus an explicit submitting author | Active participants receive minimized history; after deletion the survivor receives only justified frozen-record metadata | Include joint version/timestamps/rules version and the subject's role without another account's raw ID or receipt ID | Remove the deleted account identifier and cross-subject receipt links; keep only metadata needed for survivor custody and final erasure | Same survivor-custody criterion as the text; no orphan after the last participant |
+| Frozen-agreement custody event: actor, connection, action, result, timestamp | Author-owned operational evidence for the surviving actor; private/free-text payload is prohibited | Service audit only | Excluded from the portable content export and available through the rights-request process where applicable | Delete events authored by the deleting subject; never use an event to prolong agreement text after the survivor leaves | Until actor deletion; no agreement text, email, receipt ID, or other participant ID |
 | Agreement denied event | Operational evidence: actor, reason code, rules version, timestamp; private payload is prohibited | Service authorization/audit only | Excluded from portable content export | Delete events authored by the deleting subject; de-identify deleted participant columns in other actors' events | Until actor deletion; no free text |
 | Primary MyFive membership | Subject-owned entitlement and billing mapping | Subject and purpose-limited billing service | Include plan state and dates; exclude Stripe identifiers | Delete the subject mapping through the #13 resumable deletion workflow | Until account deletion completes; external provider retention is handled separately |
 | Sponsored MyFive membership | Subject-owned entitlement plus participant-like sponsorship metadata | Sponsored subject sees entitlement state; sponsor sees aggregate occupied-seat count | Subject gets plan state without sponsor account ID; sponsor gets aggregate seat count | Sponsor deletion ends sponsorship without deleting the sponsored person's account or private records; subject deletion removes only that subject's membership | Until sponsorship ends or subject deletion completes |
@@ -171,7 +172,7 @@ Until that record exists, production survivor custody must fail closed.
 
 ## Approved additive implementation shape
 
-The exact SQL remains unbuilt. The branch implementation shall:
+The branch implementation applies this contract as follows:
 
 1. Add explicit connection-participant relations with `connection_id`,
    `user_id`, role, lifecycle state, joined time, and revoked time. Treat the
@@ -197,6 +198,10 @@ The exact SQL remains unbuilt. The branch implementation shall:
    production migration; never fabricate authorship.
 8. Keep the migration additive and unexecuted in this issue. Exercise deletion
    and export against disposable fixtures only.
+9. Record successful survivor reads and exports plus survivor deletion results
+   in an actor-owned, data-minimized custody ledger. Store no agreement content,
+   contact data, consent receipt ID, or other participant ID, and erase the
+   actor's events with their account.
 
 ## Before/after query inventory
 
@@ -205,13 +210,35 @@ The exact SQL remains unbuilt. The branch implementation shall:
 | `GET /slots` | Selects only slots where the subject is `user_id` | Return owned slots plus minimized linked connections through explicit participant relations |
 | `GET /data-export` slots | Selects only `user_id = subject` | Include owned and linked connection metadata with subject role and no other-account identifier |
 | `GET /data-export` profiles | Correctly selects `actor_user_id = subject` | Preserve the author-only predicate, including profiles on linked connections |
-| `GET /data-export` agreements | Selects only versions submitted by the subject and exposes both participant/receipt IDs | Select active joint records by participant relation; label them joint and project minimized evidence without cross-subject IDs |
+| `GET /data-export` agreements | Selects only versions submitted by the subject and exposes both participant/receipt IDs | Select active joint records by participant relation; label them joint and project minimized evidence without cross-subject IDs; append a data-minimized event when a frozen survivor copy is exported |
 | `GET /data-export` consent | Correctly selects `actor_user_id = subject` | Preserve author-only receipts and add minimized connection lifecycle context |
 | `DELETE /account` agreements | Deletes by creator, partner, or any slot owned by the subject | Apply the approved joint-record policy; never infer authority from slot ownership |
 | `DELETE /account` profiles/consent/denials | Deletes the other participant's rows when attached to a subject-owned slot | Delete only the subject's authored rows and de-identify deleted-participant links in preserved rows |
 | `DELETE /account` slots | Nulls partner links, then deletes every owned slot | Revoke only the subject relation and preserve a locked shell while another participant has records |
 | `DELETE /account` sponsorship | Deletes subscriptions sponsored by the subject | End the entitlement relationship without deleting the sponsored person's account or private records |
 | Invitation creation/acceptance | Token expires in 7 days; accepted email/hash remain stored | Enforce the approved 30-day provisional lifecycle and purge contact/secrets on acceptance/revocation/expiry |
+
+## Deletion and survivor-custody data flow
+
+```mermaid
+flowchart TD
+  Delete[Participant A confirms account deletion] --> Classify[Select A's explicit participant relations and authored rows]
+  Classify --> PrivateA[Erase A's account, profiles, consent, invitations, and other subject records]
+  Classify --> PreserveB[Leave participant B's authored profiles and consent untouched]
+  Classify --> Shared{Does an active participant remain?}
+  Shared -->|Yes| Freeze[Freeze joint agreement and remove A identifiers and receipt links]
+  Freeze --> Survivor[B alone may read, export, or delete]
+  Survivor -->|B deletes agreement| Erase[Erase agreement text]
+  Survivor -->|B deletes account| Erase
+  Shared -->|No| Erase
+  Erase --> Shell{Do quarantined or independently authored references remain?}
+  Shell -->|No| Remove[Remove final connection shell]
+  Shell -->|Yes| Quarantine[Keep inaccessible minimized shell for separate collision review]
+```
+
+The production legal gate is tracked separately in
+`docs/STAGE_4_3_D_PRODUCTION_LEGAL_GATE.md`. It must be satisfied before the
+survivor-custody behavior is activated against production data.
 
 ## Required proof before #12 can close
 
@@ -243,10 +270,12 @@ Before final account-deletion confirmation:
 ## Recovery state
 
 - #11 is closed and its evidence is approved.
-- #12 is open. Option C is approved and its branch implementation is authorized;
-  production activation remains subject to the legal/privacy gate.
-- No #12 schema/query/UI change has been made.
+- #12 is open. Option C is approved and its branch implementation is prepared
+  for validation and human privacy/security review.
+- The additive migration remains unexecuted. Disposable PostgreSQL fixtures and
+  qualified production legal/privacy validation remain outstanding.
 - No production migration, deletion, Stripe call, email, deployment, `main`
   update, or PR readiness transition has occurred.
-- Record this approved policy in the decision log and save that decision-only
-  commit to the PR branch before implementing any schema or query change.
+- The decision-only checkpoint was saved before implementation. The current
+  implementation must be saved separately to the PR branch with its validation
+  evidence and may not be marked approved until Estève reviews that evidence.

@@ -8,6 +8,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { startOnboardingScheduler } from "./onboarding-scheduler";
 import { startDailyPulseScheduler } from "./daily-pulse";
 import { createApiRequestLogger } from "./api-request-logger";
+import { startMyFiveProvisionalCleanupScheduler } from "./myfive-provisional-cleanup";
 
 const app = express();
 
@@ -105,6 +106,9 @@ app.use(createApiRequestLogger(log));
 
     // Set up daily pulse digest scheduler (runs at 8:00 AM UTC daily)
     startDailyPulseScheduler();
+
+    // Purge expired MyFive invitation secrets and provisional labels hourly.
+    startMyFiveProvisionalCleanupScheduler();
   });
 })();
 

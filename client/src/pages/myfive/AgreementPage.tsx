@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { Compass, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Compass, CheckCircle2, ArrowLeft, Trash2 } from "lucide-react";
 import { ValueRulesConsentGate } from "@/components/myfive/ValueRulesConsentGate";
 import { apiRequest } from "@/lib/queryClient";
 import { VALUE_RULES_VERSION, type ValueRuleId } from "@shared/valueRules";
@@ -11,7 +11,8 @@ type AgreementConsentState =
   | "eligible"
   | "version_refresh_required"
   | "partner_not_linked"
-  | "not_participant";
+  | "not_participant"
+  | "survivor_locked";
 
 interface AgreementResponse {
   agreementText: string;
@@ -19,6 +20,13 @@ interface AgreementResponse {
   savedAt: string | null;
   valueRulesVersion: string | null;
   consentState: AgreementConsentState;
+  lifecycleState: "active" | "frozen";
+  capabilities: {
+    canRead: boolean;
+    canEdit: boolean;
+    canExport: boolean;
+    canDelete: boolean;
+  };
 }
 
 export default function AgreementPage() {
@@ -29,6 +37,10 @@ export default function AgreementPage() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [capabilities, setCapabilities] = useState<AgreementResponse["capabilities"]>({
+    canRead: false, canEdit: false, canExport: false, canDelete: false,
+  });
   const [error, setError] = useState<string | null>(null);
 
   const loadAgreement = async (active = true) => {
@@ -43,6 +55,7 @@ export default function AgreementPage() {
       setVersion(agreement.version);
       setSavedAt(agreement.savedAt);
       setConsentState(agreement.consentState);
+      setCapabilities(agreement.capabilities);
     } catch (loadError) {
       if (active) setError(loadError instanceof Error ? loadError.message : "The living agreement could not be loaded.");
     } finally {
@@ -83,7 +96,7 @@ export default function AgreementPage() {
   };
 
   const saveAgreement = async () => {
-    if (consentState !== "eligible") return;
+    if (consentState !== "eligible" || !capabilities.canEdit) return;
     setIsSaving(true);
     setError(null);
     try {
@@ -102,15 +115,31 @@ export default function AgreementPage() {
     }
   };
 
+  const deleteFrozenAgreement = async () => {
+    if (!capabilities.canDelete) return;
+    setIsDeleting(true);
+    setError(null);
+    try {
+      await apiRequest("DELETE", `/api/myfive/agreements/${encodeURIComponent(slotId)}`);
+      setAgreementText("");
+      setCapabilities({ canRead: false, canEdit: false, canExport: false, canDelete: false });
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "The frozen agreement could not be deleted.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const consentMessage = () => {
     if (consentState === "partner_consent_pending") return "Your current ValueRules™ consent is recorded. The shared agreement unlocks after your linked partner independently accepts the current version.";
     if (consentState === "version_refresh_required") return "The ValueRules™ material version has changed. Please review and accept the current version before editing shared agreements.";
     if (consentState === "partner_not_linked") return "This agreement unlocks after the partner seat is linked to a verified account and both participants consent.";
     if (consentState === "not_participant") return "This account is not linked to this shared agreement.";
+    if (consentState === "survivor_locked") return "This is your frozen survivor copy. You may read, export through Settings, or permanently delete it. It cannot be edited, shared, or linked to another account.";
     return "Your and your partner's current ValueRules™ consent are recorded for this connection.";
   };
 
-  const agreementUnlocked = consentState === "eligible";
+  const agreementUnlocked = consentState === "eligible" && capabilities.canEdit;
   const showConsentGate = consentState === "own_consent_required" || consentState === "version_refresh_required";
 
   return (
@@ -141,20 +170,20 @@ export default function AgreementPage() {
             <div className="p-4 rounded-xl bg-teal-950/40 border border-teal-500/30 text-teal-300 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-teal-400" />
               <span>{consentMessage()}</span>
-              <button
+              {consentState !== "survivor_locked" && <button
                 type="button"
                 onClick={withdrawConsent}
                 disabled={isSaving || consentState === "own_consent_required" || consentState === "version_refresh_required"}
                 className="ml-auto shrink-0 text-teal-200 underline underline-offset-2 hover:text-white"
               >
                 Withdraw
-              </button>
+              </button>}
             </div>
 
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white">Living Relationship Agreement</h2>
               <p className="text-xs text-slate-400">
-                Co-created rules and mutual commitments. Re-negotiated fluidly at any time.
+                Co-created rules and mutual commitments. Avoid legal names, health details, sexual information, and other highly sensitive personal data; free text may still identify either participant after an account is deleted.
               </p>
 
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400" aria-live="polite">
@@ -172,7 +201,7 @@ export default function AgreementPage() {
               <textarea
                 value={agreementText}
                 onChange={(e) => setAgreementText(e.target.value)}
-                disabled={isLoading || isSaving || !agreementUnlocked}
+                disabled={isLoading || isSaving || isDeleting || !agreementUnlocked}
                 rows={8}
                 className="w-full p-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 font-mono text-sm leading-relaxed focus:outline-none focus:border-teal-500 resize-none"
               />
@@ -184,6 +213,15 @@ export default function AgreementPage() {
               >
                 {isLoading ? "Loading agreement…" : isSaving ? "Saving…" : agreementUnlocked ? `Save as version ${version + 1}` : "Waiting for bilateral consent"}
               </button>
+
+              {capabilities.canDelete && <button
+                type="button"
+                onClick={deleteFrozenAgreement}
+                disabled={isDeleting}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-950/40 py-3 text-sm font-semibold text-rose-100 hover:bg-rose-950/70 disabled:opacity-40"
+              >
+                <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting frozen agreement…" : "Permanently delete frozen agreement"}
+              </button>}
             </div>
           </div>
       </main>
