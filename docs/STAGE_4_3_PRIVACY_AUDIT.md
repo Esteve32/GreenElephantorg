@@ -39,6 +39,18 @@ Parent Stage 4.3 remains incomplete. Production schema/data migration, deploymen
 Stripe mutation, outbound email, DNS/infrastructure work, and merge to `main` are
 not part of this audit.
 
+## 4.3-D decision checkpoint
+
+The field-level ownership, visibility, export, deletion, and retention analysis is
+preserved in `docs/STAGE_4_3_D_OWNERSHIP_MATRIX_PROPOSAL.md`. It inventories the
+current query gaps, classifies each MyFive record, proposes an additive migration
+shape, and records three concrete joint-agreement retention choices.
+
+That file is deliberately marked as an unapproved proposal. No 4.3-D schema or
+query work has begun because DEC-041 does not choose the final joint-agreement
+erasure/retention policy and issue #12 requires that ambiguity to return to a
+recorded human decision. The Stage 4.3-D row therefore remains **Not built**.
+
 ## 4.3-C state model
 
 ```mermaid
