@@ -30,7 +30,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | :--- | :--- | :--- | :--- | :--- |
 | 4.3-A / #9 — browser-only check-ins and log boundary | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-B / #10 — account and privileged authorization | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
-| 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved; audit amendments prepared | State, identity, version, withdrawal, denial, and lock-order tests | Awaiting Estève's review of this evidence |
+| 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
 | 4.3-D / #12 — ownership, export, and deletion | Approved in DEC-041 and specified in #12 | **Not built** | None | Implementation authorized only after #11 closes |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | **Not built** | None | Future separately bounded slice |
 | 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | **Not built** | None | Final Stage 4.3 human privacy/security approval |
@@ -115,14 +115,14 @@ consent evidence.
   general response-body logger is already removed, but #14 must prove that
   database error details cannot serialize private/free-text row content.
 
-## Review gate
+## Review result
 
-The 4.3-C implementation may be marked complete and issue #11 closed only after:
+The 4.3-C review gate was satisfied on 2026-09-11:
 
-- the amended branch commit passes tests, type-check, and production build in CI;
-- the evidence is attached to #11; and
-- Estève explicitly approves the #11 privacy/security evidence.
+- the amended branch commit passed 18/18 tests, type-check, and production build in CI;
+- the evidence was attached to #11; and
+- Estève explicitly approved the #11 privacy/security evidence in the workshop.
 
-That approval closes only 4.3-C. It does not approve 4.3-D implementation choices
+This approval closes only 4.3-C. It does not approve 4.3-D implementation choices
 that require a new retention/legal decision, production migration, deployment, or
 final Stage 4.3 completion.
