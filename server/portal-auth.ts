@@ -83,11 +83,24 @@ async function verifyPassword(password: string, hash: string): Promise<boolean> 
   return timingSafeEqual(Buffer.from(hashedPassword, "hex"), buf);
 }
 
-export function requirePortalAuth(req: Request, res: Response, next: NextFunction) {
-  if (req.session && req.session.clientUserId) {
-    return next();
+export async function requirePortalAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session?.clientUserId) {
+    return res.status(401).json({ message: "Authentication required" });
   }
-  res.status(401).json({ message: "Authentication required" });
+  try {
+    const user = await storage.getClientUserById(req.session.clientUserId);
+    if (
+      !user
+      || user.isActive !== "true"
+      || user.accountState !== "active"
+      || req.session.clientAuthVersion !== user.authVersion
+    ) {
+      return res.status(401).json({ message: "Session is no longer valid" });
+    }
+    return next();
+  } catch {
+    return res.status(503).json({ message: "Account verification is temporarily unavailable" });
+  }
 }
 
 async function isPortalLoginEnabled(): Promise<boolean> {
@@ -127,6 +140,7 @@ export function registerPortalRoutes(app: Express) {
 
       req.session.clientUserId = user.id;
       req.session.clientEmail = user.email;
+      req.session.clientAuthVersion = user.authVersion;
 
       autoConnectScansToUser(user.id, user.email);
 
@@ -167,7 +181,7 @@ export function registerPortalRoutes(app: Express) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      if (user.isActive !== "true") {
+      if (user.isActive !== "true" || user.accountState !== "active") {
         return res.status(403).json({ message: "Account is disabled" });
       }
 
@@ -180,6 +194,7 @@ export function registerPortalRoutes(app: Express) {
 
       req.session.clientUserId = user.id;
       req.session.clientEmail = user.email;
+      req.session.clientAuthVersion = user.authVersion;
 
       autoConnectScansToUser(user.id, user.email);
 
@@ -203,6 +218,7 @@ export function registerPortalRoutes(app: Express) {
     if (req.session) {
       req.session.clientUserId = undefined;
       req.session.clientEmail = undefined;
+      req.session.clientAuthVersion = undefined;
     }
     res.json({ message: "Logged out" });
   });
@@ -217,7 +233,7 @@ export function registerPortalRoutes(app: Express) {
       const normalizedEmail = email.toLowerCase().trim();
       const user = await storage.getClientUserByEmail(normalizedEmail);
 
-      if (!user || !user.passwordHash) {
+      if (!user || !user.passwordHash || user.accountState !== "active") {
         return res.json({ message: "If an account exists with that email, a reset link has been sent." });
       }
 
@@ -253,7 +269,7 @@ export function registerPortalRoutes(app: Express) {
       const allUsers = await storage.getAllClientUsers();
       const user = allUsers.find(u => u.resetToken === token);
 
-      if (!user) {
+      if (!user || user.isActive !== "true" || user.accountState !== "active") {
         return res.status(400).json({ message: "Invalid or expired reset link" });
       }
 
@@ -282,7 +298,12 @@ export function registerPortalRoutes(app: Express) {
 
     try {
       const user = await storage.getClientUserById(req.session.clientUserId);
-      if (!user) {
+      if (
+        !user
+        || user.isActive !== "true"
+        || user.accountState !== "active"
+        || req.session.clientAuthVersion !== user.authVersion
+      ) {
         return res.json({ authenticated: false });
       }
 
@@ -463,9 +484,16 @@ export function registerPortalRoutes(app: Express) {
 
       let user = await storage.getClientUserByGoogleId(googleUser.id);
 
+      if (user && (user.isActive !== "true" || user.accountState !== "active")) {
+        return res.redirect("/portal/login?error=account_disabled");
+      }
+
       if (!user) {
         user = await storage.getClientUserByEmail(googleUser.email.toLowerCase());
         if (user) {
+          if (user.isActive !== "true" || user.accountState !== "active") {
+            return res.redirect("/portal/login?error=account_disabled");
+          }
           user = await storage.updateClientUser(user.id, {
             googleId: googleUser.id,
             avatarUrl: googleUser.picture || user.avatarUrl,
@@ -485,6 +513,7 @@ export function registerPortalRoutes(app: Express) {
 
       req.session.clientUserId = user.id;
       req.session.clientEmail = user.email;
+      req.session.clientAuthVersion = user.authVersion;
 
       autoConnectScansToUser(user.id, user.email);
 
@@ -853,9 +882,16 @@ export function registerPortalRoutes(app: Express) {
 
       let user = await storage.getClientUserByLinkedinSub(linkedinUser.sub);
 
+      if (user && (user.isActive !== "true" || user.accountState !== "active")) {
+        return res.redirect("/portal/login?error=account_disabled");
+      }
+
       if (!user) {
         user = await storage.getClientUserByEmail(linkedinUser.email.toLowerCase());
         if (user) {
+          if (user.isActive !== "true" || user.accountState !== "active") {
+            return res.redirect("/portal/login?error=account_disabled");
+          }
           user = await storage.updateClientUser(user.id, {
             linkedinSub: linkedinUser.sub,
             linkedinAccessToken: tokenData.access_token,
@@ -883,12 +919,13 @@ export function registerPortalRoutes(app: Express) {
         });
       }
 
-      if (user.isActive !== "true") {
+      if (user.isActive !== "true" || user.accountState !== "active") {
         return res.redirect("/portal/login?error=account_disabled");
       }
 
       req.session.clientUserId = user.id;
       req.session.clientEmail = user.email;
+      req.session.clientAuthVersion = user.authVersion;
 
       autoConnectScansToUser(user.id, user.email);
 

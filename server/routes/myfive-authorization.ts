@@ -4,10 +4,14 @@ export interface MyFiveAccountAuthorizationRecord {
   id: string;
   email: string;
   isActive: string;
+  accountState: string;
+  authVersion: number;
 }
 
-export interface MyFiveAdminAuthorizationRecord extends MyFiveAccountAuthorizationRecord {
+export interface MyFiveAdminAuthorizationRecord {
+  id: string;
   email: string;
+  isActive: string;
   role: string;
 }
 
@@ -35,11 +39,15 @@ export function createRequireMyFiveAccount(findAccount: MyFiveAccountLookup): Re
         || account.id !== userId
         || !req.session.clientEmail
         || account.email.toLowerCase() !== req.session.clientEmail.toLowerCase()
+        || req.session.clientAuthVersion !== account.authVersion
       ) {
         return res.status(401).json({ error: "account_session_invalid" });
       }
       if (account.isActive !== "true") {
         return res.status(403).json({ error: "account_inactive" });
+      }
+      if (account.accountState !== "active") {
+        return res.status(403).json({ error: "account_deletion_pending" });
       }
       return next();
     } catch {

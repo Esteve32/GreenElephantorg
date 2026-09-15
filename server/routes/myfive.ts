@@ -38,6 +38,12 @@ import {
 import { isConnectorEnabled } from "../lib/connectorGuard";
 import { purgeExpiredMyFiveProvisionalData } from "../myfive-provisional-cleanup";
 import { deleteMyFiveClassifiedRecords } from "../myfive-ownership-deletion";
+import {
+  beginMyFiveAccountDeletion,
+  createStripeDeletionGateway,
+  isResumableMyFiveDeletionEnabled,
+  resumeMyFiveAccountDeletion,
+} from "../myfive-account-deletion";
 import { readExportableMyFiveAgreements } from "../myfive-ownership-export";
 import {
   buildEapVoucherAuditDetails,
@@ -63,7 +69,13 @@ function hashVoucherCode(code: string): string {
 }
 
 const requireMyFiveAccount = createRequireMyFiveAccount(async (userId) => {
-  const [account] = await db.select({ id: clientUsers.id, email: clientUsers.email, isActive: clientUsers.isActive })
+  const [account] = await db.select({
+    id: clientUsers.id,
+    email: clientUsers.email,
+    isActive: clientUsers.isActive,
+    accountState: clientUsers.accountState,
+    authVersion: clientUsers.authVersion,
+  })
     .from(clientUsers).where(eq(clientUsers.id, userId)).limit(1);
   return account ?? null;
 });
@@ -279,18 +291,20 @@ function setDataExportPrivacyHeaders(_req: Request, res: Response, next: NextFun
 }
 
 async function persistMyFiveSubscription(userId: string, customerId: string | null, subscriptionId: string, planStatus: string) {
-  const [account] = await db.select({ id: clientUsers.id }).from(clientUsers).where(and(
-    eq(clientUsers.id, userId),
-    eq(clientUsers.isActive, "true"),
-  )).limit(1);
-  if (!account) throw new Error("Active MyFive account required for subscription persistence");
-
-  await db.insert(myfiveSubscriptions).values({
-    userId, stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId,
-    planStatus, sponsoredSeatsAllocated: 0,
-  }).onConflictDoUpdate({ target: myfiveSubscriptions.userId, set: {
-    stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId, planStatus,
-  } });
+  const result = await pool.query(
+    `INSERT INTO myfive_subscriptions
+       (user_id, stripe_customer_id, stripe_subscription_id, plan_status, sponsored_seats_allocated)
+     SELECT id, $2, $3, $4, 0
+     FROM client_users
+     WHERE id = $1 AND is_active = 'true' AND account_state = 'active'
+     ON CONFLICT (user_id) DO UPDATE SET
+       stripe_customer_id = EXCLUDED.stripe_customer_id,
+       stripe_subscription_id = EXCLUDED.stripe_subscription_id,
+       plan_status = EXCLUDED.plan_status
+     RETURNING user_id`,
+    [userId, customerId, subscriptionId, planStatus],
+  );
+  return result.rowCount === 1;
 }
 
 export async function handleMyFiveStripeEvent(event: Stripe.Event): Promise<void> {
@@ -316,8 +330,18 @@ export async function handleMyFiveStripeEvent(event: Stripe.Event): Promise<void
     const planStatus = event.type === "customer.subscription.deleted"
       ? "canceled"
       : (["active", "trialing"].includes(subscription.status) ? "active" : subscription.status);
-    await db.update(myfiveSubscriptions).set({ planStatus })
-      .where(eq(myfiveSubscriptions.stripeSubscriptionId, subscription.id));
+    await pool.query(
+      `UPDATE myfive_subscriptions AS subscriptions
+       SET plan_status = $1
+       WHERE subscriptions.stripe_subscription_id = $2
+         AND EXISTS (
+           SELECT 1 FROM client_users AS accounts
+           WHERE accounts.id = subscriptions.user_id
+             AND accounts.is_active = 'true'
+             AND accounts.account_state = 'active'
+         )`,
+      [planStatus, subscription.id],
+    );
   }
 }
 
@@ -1231,46 +1255,50 @@ myfiveRouter.delete("/account", requireMyFiveAccount, async (req: Request, res: 
   if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
   if (req.body?.confirmation !== "DELETE MYFIVE") return res.status(400).json({ error: "Type DELETE MYFIVE to confirm permanent deletion" });
   const userId = getVerifiedMyFiveUserId(req);
-  const userEmail = req.session.clientEmail.toLowerCase();
-  const client = await pool.connect();
+  if (!isResumableMyFiveDeletionEnabled()) {
+    return res.status(503).json({
+      state: "action_required",
+      accepted: false,
+      error: "Account deletion is temporarily unavailable while the protected deletion worker is disabled.",
+    });
+  }
+  let intentCommitted = false;
   try {
-    await client.query("BEGIN");
-    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-delete:${userId}`]);
-    const membership = await client.query(
-      "SELECT stripe_customer_id, stripe_subscription_id FROM myfive_subscriptions WHERE user_id = $1 FOR UPDATE", [userId],
-    );
-    const stripeCustomerId = membership.rows[0]?.stripe_customer_id as string | null | undefined;
-    const stripeSubscriptionId = membership.rows[0]?.stripe_subscription_id as string | null | undefined;
-    const stripe = getStripe();
-    if (stripeCustomerId) {
-      if (!stripe) throw new Error("Stripe must be available to remove the billing identity before account deletion");
-      await stripe.customers.del(stripeCustomerId);
-    } else if (stripeSubscriptionId?.startsWith("sub_")) {
-      if (!stripe) throw new Error("Stripe must be available to cancel billing before account deletion");
-      await stripe.subscriptions.cancel(stripeSubscriptionId);
-    }
-
-    await deleteMyFiveClassifiedRecords(client, userId, userEmail);
-    await client.query("DELETE FROM portal_timeline_events WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM portal_user_context WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM client_subscriptions WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM audit_logs WHERE lower(user_email) = $1", [userEmail]);
-    await client.query("DELETE FROM client_users WHERE id = $1", [userId]);
-    await client.query("COMMIT");
-
+    await beginMyFiveAccountDeletion(pool, userId);
+    intentCommitted = true;
     await new Promise<void>((resolve) => req.session.destroy((sessionError) => {
-      if (sessionError) console.error("MyFive session destruction after committed account deletion failed", sessionError);
+      if (sessionError) console.error("MyFive current-session cleanup failed after global revocation");
       resolve();
     }));
-    res.json({
-      deleted: true,
-      message: "Your MyFive account and private data were deleted. Joint agreements retained for another participant are frozen under the disclosed survivor-custody policy.",
+    const stripe = getStripe();
+    const result = await resumeMyFiveAccountDeletion(pool, stripe ? createStripeDeletionGateway(stripe) : null, userId);
+    if (result.state === "completed") {
+      return res.json({
+        state: result.state,
+        accepted: true,
+        deleted: true,
+        message: "Your MyFive account and private data were deleted. Joint agreements retained for another participant are frozen under the disclosed survivor-custody policy.",
+      });
+    }
+    return res.status(result.state === "action_required" ? 409 : 202).json({
+      state: result.state,
+      accepted: true,
+      deleted: false,
+      message: result.state === "action_required"
+        ? "Your account is locked and signed out. Support must resolve the billing deletion before database erasure can finish."
+        : "Your account is locked and signed out. Deletion is safely queued and will resume automatically.",
     });
-  } catch (error) {
-    await client.query("ROLLBACK");
-    console.error("MyFive Article 17 account deletion failed", error);
-    res.status(500).json({ error: "Account deletion could not be completed safely; no database deletion was committed" });
-  } finally { client.release(); }
+  } catch {
+    console.error("MyFive account deletion orchestration failed with a redacted internal outcome");
+    return res.status(intentCommitted ? 202 : 503).json({
+      state: intentCommitted ? "pending" : "action_required",
+      accepted: intentCommitted,
+      deleted: false,
+      message: intentCommitted
+        ? "Your account is locked and signed out. Deletion remains queued for a safe retry."
+        : "Deletion could not be accepted safely. Your account remains available and no completion is claimed.",
+    });
+  }
 });
 
 myfiveRouter.post("/admin/eap-vouchers", requireMyFiveAdminWriter, async (req: Request, res: Response) => {
@@ -1403,7 +1431,9 @@ myfiveRouter.post("/subscription/confirm", requireMyFiveAccount, async (req: Req
     const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
     const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
     if (!subscriptionId) return res.status(409).json({ error: "Stripe subscription is not ready yet" });
-    await persistMyFiveSubscription(actorUserId, customerId, subscriptionId, "active");
+    if (!(await persistMyFiveSubscription(actorUserId, customerId, subscriptionId, "active"))) {
+      return res.status(409).json({ error: "Account deletion prevents subscription activation" });
+    }
     res.json({ status: "active", plan: "primary", priceEur: 4.99 });
   } catch (error) {
     console.error("MyFive Stripe Checkout confirmation failed", error);

@@ -8,6 +8,7 @@ declare module "express-session" {
     adminRole?: string;
     clientUserId?: string;
     clientEmail?: string;
+    clientAuthVersion?: number;
     linkedinOAuthState?: string;
     adminOAuthState?: string;
     notionOAuthState?: string;

@@ -10,6 +10,12 @@ import {
   readExportableMyFiveAgreements,
   type MyFiveExportQueryClient,
 } from "../server/myfive-ownership-export";
+import {
+  beginMyFiveAccountDeletion,
+  resumeMyFiveAccountDeletion,
+  type MyFiveBillingDeletionGateway,
+  type MyFiveDeletionPool,
+} from "../server/myfive-account-deletion";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 
@@ -223,6 +229,158 @@ test("Stage 4.3-D migration and both deletion orders preserve authorship and sur
     assert.equal((await client.query("SELECT 1 FROM myfive_agreements WHERE slot_id = $1", [second.slot])).rowCount, 0);
     assert.equal((await client.query("SELECT 1 FROM myfive_connection_slots WHERE id = $1", [second.slot])).rowCount, 0);
     assert.equal((await client.query("SELECT 1 FROM myfive_check_ins WHERE id = 'legacy-check'")).rowCount, 1);
+  } finally {
+    await client.end();
+  }
+});
+
+test("Stage 4.3-E durable deletion revokes every session and resumes across Stripe and database failures", {
+  skip: databaseUrl ? false : "TEST_DATABASE_URL is not configured; disposable PostgreSQL evidence runs in CI",
+  timeout: 30_000,
+}, async () => {
+  assertDisposableDatabaseUrl(databaseUrl!);
+  const client = new pg.Client({ connectionString: databaseUrl });
+  await client.connect();
+  try {
+    await client.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public");
+    await client.query(`
+      CREATE TABLE client_users (
+        id varchar PRIMARY KEY,
+        email text NOT NULL UNIQUE,
+        is_active text DEFAULT 'true' NOT NULL
+      );
+      CREATE TABLE portal_timeline_events (id varchar PRIMARY KEY, user_id varchar NOT NULL);
+      CREATE TABLE portal_user_context (id varchar PRIMARY KEY, user_id varchar NOT NULL);
+      CREATE TABLE client_subscriptions (id varchar PRIMARY KEY, user_id varchar NOT NULL);
+      CREATE TABLE audit_logs (id varchar PRIMARY KEY, user_email text NOT NULL);
+    `);
+    for (const migration of [
+      "migrations/20260831_myfive_agreement_history.sql",
+      "migrations/20260831_myfive_connection_seat_cap.sql",
+      "migrations/20260831_myfive_love_flow_profiles.sql",
+      "migrations/20260901_myfive_sponsored_invitations.sql",
+      "migrations/20260911_myfive_bilateral_value_rules_consent.sql",
+      "migrations/20260912_myfive_ownership_boundaries.sql",
+      "migrations/20260915_myfive_resumable_account_deletion.sql",
+    ]) {
+      await applyMigration(client, migration);
+    }
+
+    const pooled = new pg.Pool({ connectionString: databaseUrl });
+    try {
+      await client.query(
+        `INSERT INTO client_users (id, email) VALUES ('retry-user', 'retry@example.test');
+         INSERT INTO myfive_subscriptions (id, user_id, stripe_customer_id) VALUES ('retry-sub', 'retry-user', 'cus_fixture');
+         INSERT INTO "session" (sid, sess, expire) VALUES
+           ('retry-session-1', '{"clientUserId":"retry-user","clientEmail":"retry@example.test","clientAuthVersion":1}', now() + interval '1 day'),
+           ('retry-session-2', '{"clientUserId":"retry-user","clientEmail":"retry@example.test","clientAuthVersion":1}', now() + interval '1 day'),
+           ('other-session', '{"clientUserId":"other-user"}', now() + interval '1 day');`,
+      );
+
+      await client.query(`
+        CREATE FUNCTION reject_first_deletion_intent() RETURNS trigger AS $$
+        BEGIN RAISE EXCEPTION 'fixture database unavailable'; END; $$ LANGUAGE plpgsql;
+        CREATE TRIGGER reject_first_deletion_intent
+        BEFORE UPDATE OF account_state ON client_users
+        FOR EACH ROW WHEN (NEW.id = 'retry-user') EXECUTE FUNCTION reject_first_deletion_intent();
+      `);
+      await assert.rejects(beginMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, "retry-user"));
+      assert.equal((await client.query("SELECT 1 FROM myfive_account_deletion_requests WHERE user_id = 'retry-user'")).rowCount, 0);
+      assert.equal((await client.query("SELECT 1 FROM \"session\" WHERE sess ->> 'clientUserId' = 'retry-user'")).rowCount, 2);
+      await client.query("DROP TRIGGER reject_first_deletion_intent ON client_users; DROP FUNCTION reject_first_deletion_intent()");
+
+      assert.deepEqual(
+        await beginMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, "retry-user"),
+        { state: "pending", phase: "intent_committed", errorCode: null },
+      );
+      assert.deepEqual(
+        (await client.query("SELECT account_state, auth_version FROM client_users WHERE id = 'retry-user'")).rows,
+        [{ account_state: "deletion_pending", auth_version: 2 }],
+      );
+      assert.equal((await client.query("SELECT 1 FROM \"session\" WHERE sess ->> 'clientUserId' = 'retry-user'")).rowCount, 0);
+      assert.equal((await client.query("SELECT 1 FROM \"session\" WHERE sid = 'other-session'")).rowCount, 1);
+
+      let customerDeletes = 0;
+      const transientGateway: MyFiveBillingDeletionGateway = {
+        async deleteCustomer() {
+          customerDeletes += 1;
+          throw { type: "StripeConnectionError" };
+        },
+        async cancelSubscription() { throw new Error("unexpected subscription cancellation"); },
+      };
+      assert.deepEqual(
+        await resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, transientGateway, "retry-user"),
+        { state: "pending", phase: "intent_committed", errorCode: "stripe_temporarily_unavailable" },
+      );
+      assert.equal(customerDeletes, 1);
+      assert.equal((await client.query("SELECT 1 FROM client_users WHERE id = 'retry-user' AND account_state = 'active'")).rowCount, 0);
+
+      const successGateway: MyFiveBillingDeletionGateway = {
+        async deleteCustomer() { customerDeletes += 1; },
+        async cancelSubscription() { throw new Error("unexpected subscription cancellation"); },
+      };
+      assert.deepEqual(
+        await resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, successGateway, "retry-user"),
+        { state: "completed", phase: "database_complete", errorCode: null },
+      );
+      assert.equal(customerDeletes, 2);
+      assert.equal((await client.query("SELECT 1 FROM client_users WHERE id = 'retry-user'")).rowCount, 0);
+      assert.equal((await client.query("SELECT 1 FROM myfive_subscriptions WHERE user_id = 'retry-user'")).rowCount, 0);
+      assert.deepEqual(
+        await resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, successGateway, "retry-user"),
+        { state: "completed", phase: "database_complete", errorCode: null },
+      );
+      assert.equal(customerDeletes, 2, "completed replay must not repeat Stripe work");
+
+      await client.query("INSERT INTO client_users (id, email) VALUES ('missing-user', 'missing@example.test')");
+      await beginMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, "missing-user");
+      const noBillingCalls: MyFiveBillingDeletionGateway = {
+        async deleteCustomer() { throw new Error("billing must be skipped"); },
+        async cancelSubscription() { throw new Error("billing must be skipped"); },
+      };
+      assert.equal((await resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, noBillingCalls, "missing-user")).state, "completed");
+
+      const pair = await seedPair(client, "db-retry");
+      await client.query(
+        `INSERT INTO client_users (id, email) VALUES ($1, 'db-retry-owner@example.test'), ($2, 'db-retry-partner@example.test');
+         INSERT INTO myfive_connection_participants (id, connection_id, user_id, role)
+         VALUES ('db-retry-collision', $3, 'unexpected-third', 'partner');`,
+        [pair.owner, pair.partner, pair.slot],
+      );
+      await beginMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, pair.owner);
+      let databaseRetryBillingCalls = 0;
+      const databaseRetryGateway: MyFiveBillingDeletionGateway = {
+        async deleteCustomer() { databaseRetryBillingCalls += 1; },
+        async cancelSubscription() { databaseRetryBillingCalls += 1; },
+      };
+      await assert.rejects(resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, databaseRetryGateway, pair.owner));
+      assert.deepEqual(
+        (await client.query("SELECT state, phase, last_error_code FROM myfive_account_deletion_requests WHERE user_id = $1", [pair.owner])).rows,
+        [{ state: "pending", phase: "billing_complete", last_error_code: "database_temporarily_unavailable" }],
+      );
+      await client.query("DELETE FROM myfive_connection_participants WHERE id = 'db-retry-collision'");
+      assert.equal((await resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, databaseRetryGateway, pair.owner)).state, "completed");
+      assert.equal(databaseRetryBillingCalls, 0, "database-phase retry must not repeat already-completed billing work");
+
+      await client.query(`
+        INSERT INTO client_users (id, email) VALUES ('action-user', 'action@example.test');
+        INSERT INTO myfive_subscriptions (id, user_id, stripe_subscription_id)
+        VALUES ('action-sub', 'action-user', 'sub_fixture');
+      `);
+      await beginMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, "action-user");
+      const rejectedGateway: MyFiveBillingDeletionGateway = {
+        async deleteCustomer() { throw new Error("unexpected customer deletion"); },
+        async cancelSubscription() { throw { statusCode: 400, code: "provider-private-code" }; },
+      };
+      assert.deepEqual(
+        await resumeMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, rejectedGateway, "action-user"),
+        { state: "action_required", phase: "intent_committed", errorCode: "stripe_configuration_or_request_rejected" },
+      );
+      assert.equal((await client.query("SELECT 1 FROM client_users WHERE id = 'action-user' AND account_state = 'deletion_pending'")).rowCount, 1);
+      assert.equal(JSON.stringify((await client.query("SELECT * FROM myfive_account_deletion_requests WHERE user_id = 'action-user'")).rows).includes("provider-private-code"), false);
+    } finally {
+      await pooled.end();
+    }
   } finally {
     await client.end();
   }

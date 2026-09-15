@@ -900,6 +900,8 @@ export const clientUsers = pgTable("client_users", {
   resetToken: text("reset_token"),
   resetTokenExpiry: timestamp("reset_token_expiry"),
   isActive: text("is_active").default("true").notNull(),
+  accountState: text("account_state").default("active").notNull(),
+  authVersion: integer("auth_version").default(1).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastLoginAt: timestamp("last_login_at"),
   notionAccessToken: text("notion_access_token"),

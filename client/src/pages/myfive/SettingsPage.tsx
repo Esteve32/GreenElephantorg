@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deletionState, setDeletionState] = useState<"pending" | "completed" | "action_required" | null>(null);
 
   useEffect(() => {
     apiRequest("GET", "/api/myfive/subscription")
@@ -59,10 +60,27 @@ export default function SettingsPage() {
   const deleteAccount = async () => {
     setDeleting(true); setDeleteError(null);
     try {
-      await apiRequest("DELETE", "/api/myfive/account", { confirmation: deleteConfirmation });
-      await wipePrivateVault();
-      setDataWiped(true);
-      setDeleteConfirmation("");
+      const response = await fetch("/api/myfive/account", {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmation: deleteConfirmation }),
+      });
+      const result = await response.json() as {
+        state?: "pending" | "completed" | "action_required";
+        accepted?: boolean;
+        message?: string;
+        error?: string;
+      };
+      if (result.state) setDeletionState(result.state);
+      if (result.accepted) {
+        await wipePrivateVault();
+        setDataWiped(result.state === "completed");
+        setDeleteConfirmation("");
+      }
+      if (!response.ok || !result.accepted) {
+        setDeleteError(result.message || result.error || "Account deletion could not be completed.");
+      }
     } catch (error) {
       setDeleteError(error instanceof Error ? error.message : "Account deletion could not be completed.");
     } finally { setDeleting(false); }
@@ -251,6 +269,16 @@ export default function SettingsPage() {
             </div>
           ) : (
             <div className="space-y-3">
+              {deletionState === "pending" && (
+                <div role="status" className="p-4 rounded-xl bg-amber-950/60 border border-amber-500/50 text-amber-200 text-xs font-mono">
+                  Deletion pending. Your account is locked, all sessions are revoked, and the protected worker will retry automatically.
+                </div>
+              )}
+              {deletionState === "action_required" && (
+                <div role="alert" className="p-4 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs font-mono">
+                  Deletion needs support action. Your account remains locked and signed out while billing cleanup is resolved.
+                </div>
+              )}
               <p className="text-xs leading-relaxed text-rose-200/80">{ACCOUNT_DELETION_SURVIVOR_DISCLOSURE}</p>
               <label className="block text-xs text-slate-300">Type <strong>DELETE MYFIVE</strong> to confirm
                 <input value={deleteConfirmation} onChange={(event) => setDeleteConfirmation(event.target.value)} autoComplete="off" className="mt-2 w-full rounded-lg border border-rose-700/60 bg-slate-950 px-3 py-2 font-mono text-sm" />

@@ -330,7 +330,32 @@ And the joint agreement shall become permanently frozen while remaining readable
 
 And subsequent authenticated fetches shall return no active account profile for A
 
-And the frozen agreement shall be erased when B deletes it or B's account, whichever occurs first.
+And the frozen agreement shall be erased when B deletes it or B's account, whichever occurs first
+
+And accepting A's deletion request shall atomically persist a durable request,
+set A's account to `deletion_pending`, rotate A's auth version, and revoke every
+stored session before external billing work begins
+
+And every password, OAuth, profile, and protected-resource path shall reject a
+pending account or stale auth version, while delayed Stripe webhooks shall not
+restore an entitlement for that account
+
+And Stripe customer deletion or subscription cancellation shall run outside the
+PostgreSQL transaction with idempotent handling for an already-absent resource,
+bounded retry for timeouts, rate limits, and provider 5xx responses, and an
+`action_required` state for a non-retryable provider or configuration rejection
+
+And database erasure shall begin only after billing completion is durably
+recorded, shall be idempotent, and shall resume without repeating confirmed
+billing work after a database failure
+
+And the user-visible response shall distinguish `pending`, `completed`, and
+`action_required`, shall say when the account is already locked and signed out,
+and shall never claim a cross-system atomic rollback
+
+And deletion operations shall record only allowlisted state, phase, attempt,
+timestamp, and error-code evidence without Stripe identifiers, tokens, email
+addresses, card data, agreement text, private profiles, or check-in content.
 
 ### AC-007 Human-led non-verbal expression
 

@@ -9,6 +9,7 @@ import { startOnboardingScheduler } from "./onboarding-scheduler";
 import { startDailyPulseScheduler } from "./daily-pulse";
 import { createApiRequestLogger } from "./api-request-logger";
 import { startMyFiveProvisionalCleanupScheduler } from "./myfive-provisional-cleanup";
+import { startMyFiveDeletionScheduler } from "./myfive-deletion-scheduler";
 
 const app = express();
 
@@ -109,6 +110,9 @@ app.use(createApiRequestLogger(log));
 
     // Purge expired MyFive invitation secrets and provisional labels hourly.
     startMyFiveProvisionalCleanupScheduler();
+
+    // Resume fail-closed account deletions after transient Stripe/database failures.
+    startMyFiveDeletionScheduler();
   });
 })();
 

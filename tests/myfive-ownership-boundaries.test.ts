@@ -140,7 +140,10 @@ test("account deletion preserves the other author and freezes joint records for 
   const source = await readFile("server/routes/myfive.ts", "utf8");
   const deletionRoute = source.slice(source.indexOf('myfiveRouter.delete("/account"'), source.indexOf('myfiveRouter.post("/admin/eap-vouchers"'));
   const deletion = await readFile("server/myfive-ownership-deletion.ts", "utf8");
-  assert.match(deletionRoute, /deleteMyFiveClassifiedRecords\(client, userId, userEmail\)/);
+  const orchestrator = await readFile("server/myfive-account-deletion.ts", "utf8");
+  assert.match(deletionRoute, /beginMyFiveAccountDeletion\(pool, userId\)/);
+  assert.match(deletionRoute, /resumeMyFiveAccountDeletion/);
+  assert.match(orchestrator, /deleteMyFiveClassifiedRecords\(client, userId, userEmail\)/);
   assert.doesNotMatch(deletion, /ownedSlotSubquery/);
   assert.doesNotMatch(deletion, /DELETE FROM myfive_check_ins/);
   assert.match(deletion, /DELETE FROM myfive_love_profile_snapshots WHERE actor_user_id = \$1/);

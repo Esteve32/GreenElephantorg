@@ -18,10 +18,11 @@ type TestSession = Partial<SessionData>;
 
 test("MyFive account gate distinguishes anonymous, invalid, inactive, and active sessions", async (t) => {
   const accounts = new Map<string, MyFiveAccountAuthorizationRecord>([
-    ["client-a", { id: "client-a", email: "a@example.test", isActive: "true" }],
-    ["client-b", { id: "client-b", email: "b@example.test", isActive: "true" }],
-    ["outsider", { id: "outsider", email: "outsider@example.test", isActive: "true" }],
-    ["inactive", { id: "inactive", email: "inactive@example.test", isActive: "false" }],
+    ["client-a", { id: "client-a", email: "a@example.test", isActive: "true", accountState: "active", authVersion: 1 }],
+    ["client-b", { id: "client-b", email: "b@example.test", isActive: "true", accountState: "active", authVersion: 1 }],
+    ["outsider", { id: "outsider", email: "outsider@example.test", isActive: "true", accountState: "active", authVersion: 1 }],
+    ["inactive", { id: "inactive", email: "inactive@example.test", isActive: "false", accountState: "active", authVersion: 1 }],
+    ["pending", { id: "pending", email: "pending@example.test", isActive: "true", accountState: "deletion_pending", authVersion: 2 }],
   ]);
   const admins = new Map<string, MyFiveAdminAuthorizationRecord>([
     ["admin-viewer", { id: "admin-viewer", email: "viewer@example.test", role: "viewer", isActive: "true" }],
@@ -29,12 +30,14 @@ test("MyFive account gate distinguishes anonymous, invalid, inactive, and active
   ]);
   const sessions = new Map<string, TestSession>([
     ["anonymous", {}],
-    ["client-a", { clientUserId: "client-a", clientEmail: "a@example.test" }],
-    ["client-b", { clientUserId: "client-b", clientEmail: "b@example.test" }],
-    ["outsider", { clientUserId: "outsider", clientEmail: "outsider@example.test" }],
-    ["orphan", { clientUserId: "orphan", clientEmail: "orphan@example.test" }],
-    ["mismatched-email", { clientUserId: "client-a", clientEmail: "b@example.test" }],
-    ["inactive", { clientUserId: "inactive", clientEmail: "inactive@example.test" }],
+    ["client-a", { clientUserId: "client-a", clientEmail: "a@example.test", clientAuthVersion: 1 }],
+    ["client-b", { clientUserId: "client-b", clientEmail: "b@example.test", clientAuthVersion: 1 }],
+    ["outsider", { clientUserId: "outsider", clientEmail: "outsider@example.test", clientAuthVersion: 1 }],
+    ["orphan", { clientUserId: "orphan", clientEmail: "orphan@example.test", clientAuthVersion: 1 }],
+    ["mismatched-email", { clientUserId: "client-a", clientEmail: "b@example.test", clientAuthVersion: 1 }],
+    ["stale-version", { clientUserId: "client-a", clientEmail: "a@example.test", clientAuthVersion: 0 }],
+    ["inactive", { clientUserId: "inactive", clientEmail: "inactive@example.test", clientAuthVersion: 1 }],
+    ["pending", { clientUserId: "pending", clientEmail: "pending@example.test", clientAuthVersion: 2 }],
     ["admin-viewer", {
       isAdmin: true,
       adminUserId: "admin-viewer",
@@ -92,9 +95,17 @@ test("MyFive account gate distinguishes anonymous, invalid, inactive, and active
     status: 401,
     body: { error: "account_session_invalid" },
   });
+  assert.deepEqual(await request("/account-scoped", "stale-version"), {
+    status: 401,
+    body: { error: "account_session_invalid" },
+  });
   assert.deepEqual(await request("/account-scoped", "inactive"), {
     status: 403,
     body: { error: "account_inactive" },
+  });
+  assert.deepEqual(await request("/account-scoped", "pending"), {
+    status: 403,
+    body: { error: "account_deletion_pending" },
   });
   for (const identity of ["client-a", "client-b", "outsider"]) {
     assert.deepEqual(await request("/account-scoped", identity), {
@@ -161,7 +172,7 @@ test("all MyFive server-data routes use the account gate and no session actor fa
   assert.match(source, /myfiveRouter\.post\("\/admin\/eap-vouchers", requireMyFiveAdminWriter,/);
   assert.doesNotMatch(source, /myfiveActorId|session:\$\{|randomUUID/);
   assert.match(source, /Verified Stripe signature required for MyFive subscription persistence/);
-  assert.match(source, /Active MyFive account required for subscription persistence/);
+  assert.match(source, /account_state = 'active'/);
 });
 
 test("MyFive subscription webhooks are downstream of Stripe signature verification", async () => {
