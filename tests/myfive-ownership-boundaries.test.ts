@@ -88,6 +88,7 @@ test("the additive migration models explicit participants without touching quara
 
 test("participant relations, rather than slot ownership, govern shared reads and exports", async () => {
   const source = await readFile("server/routes/myfive.ts", "utf8");
+  const exportSource = await readFile("server/myfive-ownership-export.ts", "utf8");
   const access = source.slice(source.indexOf("async function findAccessibleSlot"), source.indexOf("function serializeSlot"));
   assert.match(access, /from\(myfiveConnectionParticipants\)/);
   assert.match(access, /myfiveConnectionParticipants\.userId, actorUserId/);
@@ -95,10 +96,11 @@ test("participant relations, rather than slot ownership, govern shared reads and
 
   const dataExport = source.slice(source.indexOf('myfiveRouter.get("/data-export"'), source.indexOf('myfiveRouter.delete("/account"'));
   assert.match(dataExport, /from\(myfiveConnectionParticipants\)[\s\S]*innerJoin\(myfiveConnectionSlots/);
-  assert.match(dataExport, /innerJoin\(myfiveAgreements/);
-  assert.match(dataExport, /myfiveAgreements\.survivorUserId, userId/);
-  assert.match(dataExport, /myfiveConnectionSlots\.lifecycleState, "locked"/);
-  assert.match(dataExport, /myfiveConnectionSlots\.status, "siloed"/);
+  assert.match(dataExport, /readExportableMyFiveAgreements\(pool, userId\)/);
+  assert.match(exportSource, /INNER JOIN myfive_agreements AS agreements/);
+  assert.match(exportSource, /agreements\.survivor_user_id = \$1/);
+  assert.match(exportSource, /slots\.lifecycle_state = 'locked'/);
+  assert.match(exportSource, /slots\.status = 'siloed'/);
   assert.match(dataExport, /myfiveLoveProfileSnapshots\.actorUserId, userId/);
   assert.match(dataExport, /myfiveConsentLedger\.actorUserId, userId/);
   const agreementProjection = dataExport.slice(dataExport.indexOf("agreementVersions:"), dataExport.indexOf("consentReceipts:"));
@@ -111,9 +113,34 @@ test("participant relations, rather than slot ownership, govern shared reads and
   assert.match(access, /myfiveConnectionSlots\.status, "siloed"/);
 });
 
+test("administrator and break-glass identities have no MyFive read bypass", async () => {
+  const source = await readFile("server/routes/myfive.ts", "utf8");
+  const schema = await readFile("shared/schema.ts", "utf8");
+  const getRoutes = [...source.matchAll(/myfiveRouter\.get\("([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(getRoutes.some((path) => path.startsWith("/admin")), false);
+
+  const agreementRead = source.slice(
+    source.indexOf('myfiveRouter.get("/agreements/:slotId"'),
+    source.indexOf("// Append a new version"),
+  );
+  assert.match(agreementRead, /findReadableConnection\(actorUserId, slotId\)/);
+
+  const dataExport = source.slice(
+    source.indexOf('myfiveRouter.get("/data-export"'),
+    source.indexOf('myfiveRouter.delete("/account"'),
+  );
+  assert.match(dataExport, /requireMyFiveAccount/);
+  assert.match(dataExport, /const userId = req\.session\.clientUserId!/);
+  assert.match(dataExport, /Another person's profile snapshots/);
+  assert.match(dataExport, /Stripe customer\/subscription identifiers/);
+  assert.doesNotMatch(schema, /\b(?:card_number|cardNumber|pan|cvc|cvv)\b/i);
+});
+
 test("account deletion preserves the other author and freezes joint records for either survivor role", async () => {
   const source = await readFile("server/routes/myfive.ts", "utf8");
-  const deletion = source.slice(source.indexOf('myfiveRouter.delete("/account"'), source.indexOf('myfiveRouter.post("/admin/eap-vouchers"'));
+  const deletionRoute = source.slice(source.indexOf('myfiveRouter.delete("/account"'), source.indexOf('myfiveRouter.post("/admin/eap-vouchers"'));
+  const deletion = await readFile("server/myfive-ownership-deletion.ts", "utf8");
+  assert.match(deletionRoute, /deleteMyFiveClassifiedRecords\(client, userId, userEmail\)/);
   assert.doesNotMatch(deletion, /ownedSlotSubquery/);
   assert.doesNotMatch(deletion, /DELETE FROM myfive_check_ins/);
   assert.match(deletion, /DELETE FROM myfive_love_profile_snapshots WHERE actor_user_id = \$1/);
