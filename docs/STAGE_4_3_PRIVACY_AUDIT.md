@@ -32,7 +32,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-B / #10 — account and privileged authorization | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
 | 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Saved on the PR branch for review at `b002365`, corrected at `fa2a497`, and recorded at `90d6548` | [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065): 28/28 tests including disposable PostgreSQL, type-check, and production build; run 19 remains recorded as the failed typing discovery | Privacy/security evidence approved by Estève on 2026-09-15; production activation still requires qualified legal/privacy validation |
-| 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | Implementation candidate saved at `2970e7e`; fixture correction pending publication | Local compiler and 29/29 runnable tests pass; CI run 23 failed on parameterized multi-statement fixture setup before the Stage 4.3-E assertions, now corrected for rerun | Human privacy/security evidence approval pending |
+| 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | Implementation saved at `2970e7e`; fixture correction saved at `db0e290` | CI run 23 failed on parameterized multi-statement fixture setup; corrected CI run 24 passes 31/31 tests against PostgreSQL 16, type-check, and build | Human privacy/security evidence approval pending |
 | 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | **Not built** | None | Final Stage 4.3 human privacy/security approval |
 
 Parent Stage 4.3 remains incomplete. Production schema/data migration, deployment,
@@ -137,8 +137,9 @@ consent evidence.
   complete. The qualified legal/privacy gate remains mandatory before any
   production activation of survivor custody.
 - #13 now has an implementation candidate for global session revocation and
-  idempotent, resumable Stripe deletion orchestration. Its dedicated disposable
-  PostgreSQL fixture and branch CI must pass before evidence approval is requested.
+  idempotent, resumable Stripe deletion orchestration. Corrected CI run 24 passes
+  its dedicated disposable PostgreSQL fixture; Estève's explicit privacy/security
+  evidence approval remains pending.
 - #14 must run the complete AC-002/003/006/016/017 suite, including disposable
   database concurrency, browser-vault, administrator, logging, export, deletion,
   session-revocation, and partial-failure paths.

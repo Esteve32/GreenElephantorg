@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.4.13 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.4.14 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.4 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.4.13`
-*   **Last Updated:** `2026-09-15T20:44:17+03:00`
+*   **Document Version:** `11.4.14`
+*   **Last Updated:** `2026-09-15T20:48:17+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.14 | 2026-09-15T20:48:17+03:00 | Estève | Recorded passing PostgreSQL evidence for Stage 4.3-E |
 | 11.4.13 | 2026-09-15T20:44:17+03:00 | Estève | Corrected Stage 4.3-E PostgreSQL fixture setup found by CI run 23 |
 | 11.4.12 | 2026-09-15T20:37:00+03:00 | Estève | Recorded authorized Stage 4.3-E implementation candidate and evidence plan |
 | 11.4.11 | 2026-09-15T19:18:08+03:00 | Estève | Approved Stage 4.3-D privacy and security evidence |
@@ -634,7 +635,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 4.3-B — account, record, Stripe-webhook, and privileged voucher authorization | 11.4.2 | Commit containing this `11.4.2` ledger entry | No schema migration required |
 | Stage 4.3-C — bilateral versioned ValueRules consent for shared agreements | 11.4.3–11.4.5 | Initial branch implementation: `3c52d20`; audit correction: `63202fe`; approval: commit containing `11.4.5` | Additive plan only: `20260911_myfive_bilateral_value_rules_consent.sql`; no production migration run; privacy/security evidence approved in #11 |
 | Stage 4.3-D — ownership, export, deletion, and joint-agreement survivor custody | 11.4.6–11.4.11 | Option C specification: commit containing `11.4.6`; implementation: `10bc4bf`; fixture batch: `b002365`; PostgreSQL typing correction: `fa2a497`; passing evidence record: `90d6548`; approval: commit containing `11.4.11` | Additive, production-unexecuted plan: `20260912_myfive_ownership_boundaries.sql`; CI run 19 exposed `42P08`; corrected CI runs 20 and 21 passed 28/28 tests against PostgreSQL 16, type-check, and build; Estève approved privacy/security evidence on 2026-09-15; qualified production legal/privacy validation remains pending |
-| Stage 4.3-E — global session revocation and resumable Stripe deletion | 11.4.12–11.4.13 | Implementation candidate: `2970e7e`; fixture correction: commit containing `11.4.13` | Additive, production-unexecuted plan: `20260915_myfive_resumable_account_deletion.sql`; local compiler and 29/29 runnable tests pass; CI run 23 failed on PostgreSQL `42601` in parameterized multi-statement fixture setup before the Stage 4.3-E assertions and the setup is corrected for rerun; privacy/security evidence is not yet approved |
+| Stage 4.3-E — global session revocation and resumable Stripe deletion | 11.4.12–11.4.14 | Implementation candidate: `2970e7e`; fixture correction: `db0e290`; passing evidence: commit containing `11.4.14` | Additive, production-unexecuted plan: `20260915_myfive_resumable_account_deletion.sql`; CI run 23 failed on PostgreSQL `42601` in parameterized multi-statement fixture setup; corrected CI run 24 passed 31/31 tests against PostgreSQL 16, type-check, and build; privacy/security evidence is not yet approved |
 
 ---
 

@@ -47,10 +47,10 @@ transaction remains serialized by the subject advisory lock.
 
 | Requirement | Branch implementation | Current evidence state |
 | :--- | :--- | :--- |
-| Durable intent before Stripe | `beginMyFiveAccountDeletion` commits request, pending account, auth rotation, and session deletion together | Compiler and local non-database tests pass; run 23 reached the fixture but failed on multi-statement test setup before this assertion, now corrected for rerun |
+| Durable intent before Stripe | `beginMyFiveAccountDeletion` commits request, pending account, auth rotation, and session deletion together | CI run 24 passes the disposable PostgreSQL assertion |
 | All sessions fail closed | MyFive and portal gates compare `clientAuthVersion`; password, Google, LinkedIn, reset, and `/me` paths require active account state | Direct middleware and static auth-path tests pass |
-| Retryable Stripe boundary | Gateway classifies missing/404 as complete; timeout/connection/429/5xx as retry; other 4xx as action required | Pure outcome tests pass; PostgreSQL phase tests pending CI |
-| Database retry after Stripe | `billing_complete` commits before the classified erasure transaction; rollback writes a redacted retry state | Disposable PostgreSQL failure fixture pending CI |
+| Retryable Stripe boundary | Gateway classifies missing/404 as complete; timeout/connection/429/5xx as retry; other 4xx as action required | Pure outcome and PostgreSQL phase tests pass in CI run 24 |
+| Database retry after Stripe | `billing_complete` commits before the classified erasure transaction; rollback writes a redacted retry state | Disposable PostgreSQL failure and resume fixture passes in CI run 24 |
 | Webhook reorder | Checkout persistence is an atomic `INSERT … SELECT` from an active account; subscription updates require an active account | Static query-switch test passes; cross-stage journey remains for #14 |
 | User status | Settings renders pending, completed, and action-required copy and wipes the current browser vault only after intent is accepted | Branch implementation inspected; browser journey remains for #14 |
 | Redacted operations | Request ledger and worker logs exclude Stripe IDs, emails, tokens, card fields, and private payloads | Pure redaction assertions pass; final log audit remains for #14 |
@@ -104,3 +104,11 @@ Before #13 can request human privacy/security approval, the PR branch must show:
   parameterized call contained two statements. The state-machine assertion had
   not yet run. The fixture now sends those statements separately; the failed run
   remains part of the evidence trail.
+- [CI run 24](https://github.com/Esteve32/GreenElephantorg/actions/runs/35003221437)
+  passed dependency installation, TypeScript, all 31/31 tests against PostgreSQL
+  16, and the production build. The automated PR evidence is recorded in
+  [PR comment 5685166304](https://github.com/Esteve32/GreenElephantorg/pull/4#issuecomment-5685166304).
+
+Engineering evidence items 1–4 are satisfied. Item 5, Estève's explicit human
+privacy/security approval, remains pending. The Stage 4.3-E checklist and issue
+must remain open until that approval is separately recorded.
