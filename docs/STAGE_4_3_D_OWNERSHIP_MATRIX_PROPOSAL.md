@@ -270,8 +270,8 @@ Before final account-deletion confirmation:
 ## Recovery state
 
 - #11 is closed and its evidence is approved.
-- #12 is open. Option C is approved and its branch implementation is prepared
-  for validation and human privacy/security review.
+- #12 Option C and its branch privacy/security evidence were approved by Estève
+  on 2026-09-15. The qualified production legal/privacy gate remains open.
 - The additive migration remains unexecuted in production. A dedicated
   disposable PostgreSQL fixture passed all 28/28 repository tests in
   [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065),
@@ -279,6 +279,6 @@ Before final account-deletion confirmation:
   legal/privacy validation remains outstanding.
 - No production migration, deletion, Stripe call, email, deployment, `main`
   update, or PR readiness transition has occurred.
-- The decision-only checkpoint was saved before implementation. The current
-  implementation must be saved separately to the PR branch with its validation
-  evidence and may not be marked approved until Estève reviews that evidence.
+- The decision-only checkpoint, implementation, failed database evidence,
+  correction, passing database evidence, and human approval are separately
+  attributable on the PR branch and in the issue history.
