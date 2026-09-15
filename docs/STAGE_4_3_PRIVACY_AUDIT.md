@@ -31,7 +31,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-A / #9 — browser-only check-ins and log boundary | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-B / #10 — account and privileged authorization | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
-| 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Prepared on the PR branch for review; PostgreSQL parameter-type correction awaiting CI | 27/27 local non-database tests, type-check, production build, source/migration inspection; CI run 19 executed the disposable fixture and exposed PostgreSQL error `42P08` before deletion; explicit cast correction prepared | Awaiting successful CI and Estève's privacy/security evidence review; production activation still requires qualified legal/privacy validation |
+| 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Saved on the PR branch for review at `b002365` and corrected at `fa2a497` | [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065): 28/28 tests including disposable PostgreSQL, type-check, and production build; run 19 remains recorded as the failed typing discovery | Awaiting Estève's privacy/security evidence review; production activation still requires qualified legal/privacy validation |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | **Not built** | None | Future separately bounded slice |
 | 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | **Not built** | None | Final Stage 4.3 human privacy/security approval |
 
@@ -132,11 +132,11 @@ consent evidence.
 
 ### Explicitly pending after the branch implementation
 
-- #12 still requires a successful corrected disposable PostgreSQL CI run and Estève's
-  explicit privacy/security evidence approval before its checklist item can be
-  marked complete. The prepared fixture covers both deletion orders, rollback on
-  participant-cardinality collision, survivor/final export states, orphan
-  prevention, and unrelated/admin/break-glass agreement-export denial.
+- #12 still requires Estève's explicit privacy/security evidence approval before
+  its checklist item can be marked complete. The passing fixture covers both
+  deletion orders, rollback on participant-cardinality collision, survivor/final
+  export states, orphan prevention, and unrelated/admin/break-glass
+  agreement-export denial.
 - #13 must implement global session revocation and idempotent, resumable Stripe
   deletion orchestration.
 - #14 must run the complete AC-002/003/006/016/017 suite, including disposable
@@ -162,5 +162,8 @@ The first 4.3-D branch implementation passed 26/26 repository tests,
 `npm run check`, and `npm run build` on 2026-09-12. The evidence-hardening batch
 passed all 27 locally runnable tests and `npm run check` on 2026-09-15; its 28th
 test is the dedicated PostgreSQL fixture and correctly skips without
-`TEST_DATABASE_URL`. These checks do not replace a successful CI fixture run,
-the qualified production legal/privacy gate, or Estève's human review.
+`TEST_DATABASE_URL`. [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065)
+then passed all 28/28 tests against PostgreSQL 16 together with `npm run check`
+and `npm run build`. The database-fixture gate is satisfied. Qualified
+production legal/privacy validation and Estève's human evidence review remain
+open.

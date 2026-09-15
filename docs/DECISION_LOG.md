@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.4.9 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.4.10 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.4 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.4.9`
-*   **Last Updated:** `2026-09-15T19:07:34+03:00`
+*   **Document Version:** `11.4.10`
+*   **Last Updated:** `2026-09-15T19:11:52+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.10 | 2026-09-15T19:11:52+03:00 | Estève | Recorded passing PostgreSQL evidence for Stage 4.3-D |
 | 11.4.9 | 2026-09-15T19:07:34+03:00 | Estève | Corrected PostgreSQL subject-id typing found by Stage 4.3-D CI |
 | 11.4.8 | 2026-09-15T18:54:46+03:00 | Estève | Added disposable PostgreSQL proof for Stage 4.3-D |
 | 11.4.7 | 2026-09-12T02:25:39+03:00 | Estève | Prepared Stage 4.3-D ownership boundaries for privacy review |
@@ -629,7 +630,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 4.3-A — server check-in quarantine and metadata-only API logging | 11.4.1 | Commit containing this `11.4.1` ledger entry | No schema migration; legacy table retained and quarantined |
 | Stage 4.3-B — account, record, Stripe-webhook, and privileged voucher authorization | 11.4.2 | Commit containing this `11.4.2` ledger entry | No schema migration required |
 | Stage 4.3-C — bilateral versioned ValueRules consent for shared agreements | 11.4.3–11.4.5 | Initial branch implementation: `3c52d20`; audit correction: `63202fe`; approval: commit containing `11.4.5` | Additive plan only: `20260911_myfive_bilateral_value_rules_consent.sql`; no production migration run; privacy/security evidence approved in #11 |
-| Stage 4.3-D — ownership, export, deletion, and joint-agreement survivor custody | 11.4.6–11.4.9 | Option C specification: commit containing `11.4.6`; branch implementation for privacy/security review: commit containing `11.4.7`; disposable-fixture evidence batch: commit containing `11.4.8`; PostgreSQL parameter-type correction: commit containing `11.4.9` | Additive, production-unexecuted plan: `20260912_myfive_ownership_boundaries.sql`; local type-check and 27 runnable tests pass; CI run 19 exposed `42P08` before deletion and the explicit-cast correction awaits CI; human approval remains pending |
+| Stage 4.3-D — ownership, export, deletion, and joint-agreement survivor custody | 11.4.6–11.4.10 | Option C specification: commit containing `11.4.6`; implementation: `10bc4bf`; fixture batch: `b002365`; PostgreSQL typing correction: `fa2a497`; passing evidence record: commit containing `11.4.10` | Additive, production-unexecuted plan: `20260912_myfive_ownership_boundaries.sql`; CI run 19 exposed `42P08`; corrected CI run 20 passed 28/28 tests against PostgreSQL 16, type-check, and build; Estève's privacy/security evidence approval and qualified production legal/privacy validation remain pending |
 
 ---
 

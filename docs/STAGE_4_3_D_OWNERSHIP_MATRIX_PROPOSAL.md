@@ -273,9 +273,10 @@ Before final account-deletion confirmation:
 - #12 is open. Option C is approved and its branch implementation is prepared
   for validation and human privacy/security review.
 - The additive migration remains unexecuted in production. A dedicated
-  disposable PostgreSQL fixture is wired into pull-request CI and remains
-  pending until its first successful run. Qualified production legal/privacy
-  validation remains outstanding.
+  disposable PostgreSQL fixture passed all 28/28 repository tests in
+  [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065),
+  including both deletion orders and final erasure. Qualified production
+  legal/privacy validation remains outstanding.
 - No production migration, deletion, Stripe call, email, deployment, `main`
   update, or PR readiness transition has occurred.
 - The decision-only checkpoint was saved before implementation. The current
