@@ -21,9 +21,9 @@ export async function deleteMyFiveClassifiedRecords(
 ): Promise<void> {
   await client.query(
     `INSERT INTO myfive_connection_participants (connection_id, user_id, role)
-     SELECT id, $1, CASE WHEN user_id = $1 THEN 'owner' ELSE 'partner' END
+     SELECT id, $1::varchar, CASE WHEN user_id = $1::varchar THEN 'owner' ELSE 'partner' END
      FROM myfive_connection_slots
-     WHERE user_id = $1 OR partner_user_id = $1
+     WHERE user_id = $1::varchar OR partner_user_id = $1::varchar
      ON CONFLICT (connection_id, user_id) DO NOTHING`,
     [userId],
   );

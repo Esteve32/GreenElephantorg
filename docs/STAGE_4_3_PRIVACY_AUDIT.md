@@ -31,7 +31,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-A / #9 — browser-only check-ins and log boundary | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-B / #10 — account and privileged authorization | Approved in DEC-041 | Saved | Targeted tests recorded | Slice complete; final cross-stage proof remains in 4.3-F |
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
-| 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Prepared on the PR branch for review; PostgreSQL evidence batch awaiting CI | 27/27 local non-database tests, type-check, production build, source/migration inspection; disposable PostgreSQL migration/deletion/export fixture wired into CI but not yet executed | Awaiting CI and Estève's privacy/security evidence review; production activation still requires qualified legal/privacy validation |
+| 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Prepared on the PR branch for review; PostgreSQL parameter-type correction awaiting CI | 27/27 local non-database tests, type-check, production build, source/migration inspection; CI run 19 executed the disposable fixture and exposed PostgreSQL error `42P08` before deletion; explicit cast correction prepared | Awaiting successful CI and Estève's privacy/security evidence review; production activation still requires qualified legal/privacy validation |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | **Not built** | None | Future separately bounded slice |
 | 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | **Not built** | None | Final Stage 4.3 human privacy/security approval |
 
@@ -60,8 +60,12 @@ DPO records the purpose, lawful basis, any Article 9 condition, rights-request
 procedure, privacy notice, and backup-erasure process. This implementation also
 remains unapproved until Estève reviews the final #12 evidence. The current
 workspace has no `DATABASE_URL` or disposable PostgreSQL runtime. A dedicated
-local-only `myfive_test` fixture is now wired into the pull-request workflow, but
-the database-fixture gate remains open until that CI run executes successfully.
+local-only `myfive_test` fixture is now wired into the pull-request workflow.
+[CI run 19](https://github.com/Esteve32/GreenElephantorg/actions/runs/34992688749)
+executed it and failed closed before deletion because PostgreSQL could not infer
+a reused subject-ID parameter consistently (`42P08`). The query now casts that
+parameter explicitly; the database-fixture gate remains open until the corrected
+CI run succeeds.
 
 ## 4.3-C state model
 
@@ -128,7 +132,7 @@ consent evidence.
 
 ### Explicitly pending after the branch implementation
 
-- #12 still requires a successful disposable PostgreSQL CI run and Estève's
+- #12 still requires a successful corrected disposable PostgreSQL CI run and Estève's
   explicit privacy/security evidence approval before its checklist item can be
   marked complete. The prepared fixture covers both deletion orders, rollback on
   participant-cardinality collision, survivor/final export states, orphan
