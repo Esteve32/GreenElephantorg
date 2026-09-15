@@ -342,10 +342,14 @@ test("Stage 4.3-E durable deletion revokes every session and resumes across Stri
 
       const pair = await seedPair(client, "db-retry");
       await client.query(
-        `INSERT INTO client_users (id, email) VALUES ($1, 'db-retry-owner@example.test'), ($2, 'db-retry-partner@example.test');
-         INSERT INTO myfive_connection_participants (id, connection_id, user_id, role)
-         VALUES ('db-retry-collision', $3, 'unexpected-third', 'partner');`,
-        [pair.owner, pair.partner, pair.slot],
+        `INSERT INTO client_users (id, email)
+         VALUES ($1, 'db-retry-owner@example.test'), ($2, 'db-retry-partner@example.test')`,
+        [pair.owner, pair.partner],
+      );
+      await client.query(
+        `INSERT INTO myfive_connection_participants (id, connection_id, user_id, role)
+         VALUES ('db-retry-collision', $1, 'unexpected-third', 'partner')`,
+        [pair.slot],
       );
       await beginMyFiveAccountDeletion(pooled as unknown as MyFiveDeletionPool, pair.owner);
       let databaseRetryBillingCalls = 0;

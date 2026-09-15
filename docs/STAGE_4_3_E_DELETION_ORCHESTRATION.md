@@ -47,7 +47,7 @@ transaction remains serialized by the subject advisory lock.
 
 | Requirement | Branch implementation | Current evidence state |
 | :--- | :--- | :--- |
-| Durable intent before Stripe | `beginMyFiveAccountDeletion` commits request, pending account, auth rotation, and session deletion together | Compiler and local non-database tests pass; disposable PostgreSQL CI pending |
+| Durable intent before Stripe | `beginMyFiveAccountDeletion` commits request, pending account, auth rotation, and session deletion together | Compiler and local non-database tests pass; run 23 reached the fixture but failed on multi-statement test setup before this assertion, now corrected for rerun |
 | All sessions fail closed | MyFive and portal gates compare `clientAuthVersion`; password, Google, LinkedIn, reset, and `/me` paths require active account state | Direct middleware and static auth-path tests pass |
 | Retryable Stripe boundary | Gateway classifies missing/404 as complete; timeout/connection/429/5xx as retry; other 4xx as action required | Pure outcome tests pass; PostgreSQL phase tests pending CI |
 | Database retry after Stripe | `billing_complete` commits before the classified erasure transaction; rollback writes a redacted retry state | Disposable PostgreSQL failure fixture pending CI |
@@ -95,3 +95,12 @@ Before #13 can request human privacy/security approval, the PR branch must show:
    Log evidence index.
 5. A human privacy/security approval is recorded separately. Approval of the
    implementation evidence still does not authorize production activation.
+
+## Evidence chronology
+
+- [CI run 23](https://github.com/Esteve32/GreenElephantorg/actions/runs/35002764470)
+  passed dependency installation, TypeScript, and the production build. Its test
+  step failed at Stage 4.3-E fixture setup with PostgreSQL `42601` because a
+  parameterized call contained two statements. The state-machine assertion had
+  not yet run. The fixture now sends those statements separately; the failed run
+  remains part of the evidence trail.
