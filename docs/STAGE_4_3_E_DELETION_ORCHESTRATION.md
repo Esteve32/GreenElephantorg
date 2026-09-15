@@ -110,5 +110,7 @@ Before #13 can request human privacy/security approval, the PR branch must show:
   [PR comment 5685166304](https://github.com/Esteve32/GreenElephantorg/pull/4#issuecomment-5685166304).
 
 Engineering evidence items 1–4 are satisfied. Item 5, Estève's explicit human
-privacy/security approval, remains pending. The Stage 4.3-E checklist and issue
-must remain open until that approval is separately recorded.
+privacy/security approval, was satisfied on 2026-09-15 after review of the
+passing evidence. The approval completes the Stage 4.3-E branch gate only. It
+does not authorize the production migration, feature-flag activation, a live
+Stripe operation, deployment, merge to `main`, or Stage 4.3-F.
