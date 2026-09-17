@@ -5,6 +5,7 @@ import {
   isResumableMyFiveDeletionEnabled,
   resumeDueMyFiveAccountDeletions,
 } from "./myfive-account-deletion";
+import { writeMyFiveOperationalFailure } from "./myfive-security";
 
 const RETRY_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -26,7 +27,7 @@ export function startMyFiveDeletionScheduler(): void {
         console.log(`MyFive deletion worker processed ${result.attempted} request(s); ${result.completed} completed`);
       }
     } catch {
-      console.error("MyFive deletion worker unavailable; durable requests remain queued");
+      writeMyFiveOperationalFailure("deletion_worker_unavailable");
     } finally {
       running = false;
     }

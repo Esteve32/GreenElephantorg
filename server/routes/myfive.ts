@@ -52,6 +52,7 @@ import {
   getVerifiedMyFiveUserId,
 } from "./myfive-authorization";
 import { rejectServerPrivateCheckIn } from "./myfive-private-check-in";
+import { writeMyFiveOperationalFailure } from "../myfive-security";
 
 export const myfiveRouter = Router();
 
@@ -414,7 +415,7 @@ myfiveRouter.get("/slots", requireMyFiveAccount, async (req: Request, res: Respo
       survivorAgreementAvailable: frozenAgreementConnectionIds.has(record.slot.id),
     })) });
   } catch (error) {
-    console.error("MyFive slot read failed", error);
+    writeMyFiveOperationalFailure("slot_read_failed");
     res.status(500).json({ error: "Connection seats could not be loaded" });
   }
 });
@@ -464,7 +465,7 @@ myfiveRouter.post("/slots", requireMyFiveAccount, async (req: Request, res: Resp
       lifecycleState: row.lifecycle_state, lockedAt: row.locked_at, isSelfVault: row.is_self_vault, createdAt: row.created_at }) });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive slot creation failed", error);
+    writeMyFiveOperationalFailure("slot_creation_failed");
     res.status(500).json({ error: "Connection seat could not be created" });
   } finally {
     client.release();
@@ -498,7 +499,7 @@ myfiveRouter.post("/slots/:slotId/invitations", requireMyFiveAccount, async (req
     const origin = `${req.protocol}://${req.get("host")}`;
     res.status(201).json({ invitationUrl: `${origin}/myfive/invite/${token}`, expiresAt: expiresAt.toISOString() });
   } catch (error) {
-    console.error("MyFive invitation creation failed", error);
+    writeMyFiveOperationalFailure("invitation_creation_failed");
     res.status(500).json({ error: "Partner invitation could not be created" });
   }
 });
@@ -537,7 +538,7 @@ myfiveRouter.delete("/slots/:slotId", requireMyFiveAccount, async (req: Request,
     return res.status(204).send();
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive provisional connection deletion failed", error);
+    writeMyFiveOperationalFailure("provisional_connection_deletion_failed");
     return res.status(500).json({ error: "Provisional connection could not be removed" });
   } finally {
     client.release();
@@ -613,7 +614,7 @@ myfiveRouter.post("/invitations/:token/accept", requireMyFiveAccount, async (req
     res.json({ status: "accepted", sponsored: true, slotId: invitation.slot_id });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive invitation acceptance failed", error);
+    writeMyFiveOperationalFailure("invitation_acceptance_failed");
     res.status(500).json({ error: "Partner invitation could not be accepted" });
   } finally { client.release(); }
 });
@@ -653,7 +654,7 @@ myfiveRouter.post("/consent", requireMyFiveAccount, async (req: Request, res: Re
       note: "Partner consent is a separate required event",
     });
   } catch (error) {
-    console.error("MyFive consent persistence failed", error);
+    writeMyFiveOperationalFailure("consent_persistence_failed");
     res.status(500).json({ error: "Consent could not be recorded" });
   }
 });
@@ -680,7 +681,7 @@ myfiveRouter.post("/consent/withdraw", requireMyFiveAccount, async (req: Request
       withdrawnAt: new Date(receipt.accepted_at).toISOString(),
     });
   } catch (error) {
-    console.error("MyFive consent withdrawal failed", error);
+    writeMyFiveOperationalFailure("consent_withdrawal_failed");
     res.status(500).json({ error: "Consent withdrawal could not be recorded" });
   }
 });
@@ -771,7 +772,7 @@ myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Reques
       capabilities: agreementCapabilities("active", "active"),
     });
   } catch (error) {
-    console.error("MyFive agreement read failed", error);
+    writeMyFiveOperationalFailure("agreement_read_failed");
     res.status(500).json({ error: "Agreement could not be loaded" });
   }
 });
@@ -909,7 +910,7 @@ myfiveRouter.post("/agreements", requireMyFiveAccount, async (req: Request, res:
     if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {
       return res.status(409).json({ error: "A newer agreement version exists; reload before saving" });
     }
-    console.error("MyFive agreement persistence failed", error);
+    writeMyFiveOperationalFailure("agreement_persistence_failed");
     res.status(500).json({ error: "Agreement could not be saved" });
   } finally {
     client.release();
@@ -955,7 +956,7 @@ myfiveRouter.delete("/agreements/:slotId", requireMyFiveAccount, async (req: Req
     return res.json({ deleted: (deleted.rowCount ?? 0) > 0 });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive frozen agreement deletion failed", error);
+    writeMyFiveOperationalFailure("frozen_agreement_deletion_failed");
     return res.status(500).json({ error: "Frozen agreement could not be deleted" });
   } finally {
     client.release();
@@ -984,7 +985,7 @@ myfiveRouter.get("/love-profiles/:slotId", requireMyFiveAccount, async (req: Req
       calibratedAt: null,
     });
   } catch (error) {
-    console.error("MyFive love profile read failed", error);
+    writeMyFiveOperationalFailure("connection_profile_read_failed");
     res.status(500).json({ error: "Love profile could not be loaded" });
   }
 });
@@ -1012,7 +1013,7 @@ myfiveRouter.post("/love-profiles", requireMyFiveAccount, async (req: Request, r
       calibratedAt: snapshot.createdAt.toISOString(),
     });
   } catch (error) {
-    console.error("MyFive love profile persistence failed", error);
+    writeMyFiveOperationalFailure("connection_profile_persistence_failed");
     res.status(500).json({ error: "Love profile could not be saved" });
   }
 });
@@ -1246,7 +1247,7 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requireMyFiveAccou
     }
     return res.type("application/json; charset=utf-8").send(JSON.stringify(dataExport, null, 2));
   } catch (error) {
-    console.error("MyFive Article 20 data export failed", error);
+    writeMyFiveOperationalFailure("data_export_failed");
     return res.status(500).json({ error: "Your data export could not be created safely" });
   }
 });
@@ -1267,7 +1268,7 @@ myfiveRouter.delete("/account", requireMyFiveAccount, async (req: Request, res: 
     await beginMyFiveAccountDeletion(pool, userId);
     intentCommitted = true;
     await new Promise<void>((resolve) => req.session.destroy((sessionError) => {
-      if (sessionError) console.error("MyFive current-session cleanup failed after global revocation");
+      if (sessionError) writeMyFiveOperationalFailure("current_session_cleanup_failed");
       resolve();
     }));
     const stripe = getStripe();
@@ -1289,7 +1290,7 @@ myfiveRouter.delete("/account", requireMyFiveAccount, async (req: Request, res: 
         : "Your account is locked and signed out. Deletion is safely queued and will resume automatically.",
     });
   } catch {
-    console.error("MyFive account deletion orchestration failed with a redacted internal outcome");
+    writeMyFiveOperationalFailure("account_deletion_orchestration_failed");
     return res.status(intentCommitted ? 202 : 503).json({
       state: intentCommitted ? "pending" : "action_required",
       accepted: intentCommitted,
@@ -1337,7 +1338,7 @@ myfiveRouter.post("/admin/eap-vouchers", requireMyFiveAdminWriter, async (req: R
       warning: "Store this code securely; only its hash is retained and the code cannot be recovered.",
     }));
   } catch (error) {
-    console.error("MyFive EAP voucher creation failed", error);
+    writeMyFiveOperationalFailure("eap_voucher_creation_failed");
     res.status(500).json({ error: "EAP voucher could not be created" });
   }
 });
@@ -1375,7 +1376,7 @@ myfiveRouter.post("/eap-vouchers/redeem", requireMyFiveAccount, async (req: Requ
     res.json({ status: "eap", message: "EAP access activated. Your employer cannot see your identity or MyFive activity." });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive EAP voucher redemption failed", error);
+    writeMyFiveOperationalFailure("eap_voucher_redemption_failed");
     res.status(500).json({ error: "EAP voucher could not be redeemed" });
   } finally { client.release(); }
 });
@@ -1413,7 +1414,7 @@ myfiveRouter.post("/subscription/checkout", requireMyFiveAccount, async (req: Re
     if (!session.url) return res.status(502).json({ error: "Stripe did not return a checkout URL" });
     res.status(201).json({ checkoutUrl: session.url });
   } catch (error) {
-    console.error("MyFive Stripe Checkout creation failed", error);
+    writeMyFiveOperationalFailure("stripe_checkout_creation_failed");
     res.status(500).json({ error: "Checkout could not be created" });
   }
 });
@@ -1436,7 +1437,7 @@ myfiveRouter.post("/subscription/confirm", requireMyFiveAccount, async (req: Req
     }
     res.json({ status: "active", plan: "primary", priceEur: 4.99 });
   } catch (error) {
-    console.error("MyFive Stripe Checkout confirmation failed", error);
+    writeMyFiveOperationalFailure("stripe_checkout_confirmation_failed");
     res.status(500).json({ error: "Subscription could not be confirmed" });
   }
 });
@@ -1452,7 +1453,7 @@ myfiveRouter.get("/subscription", requireMyFiveAccount, async (req: Request, res
       stripeConnected: Boolean(process.env.STRIPE_SECRET_KEY),
     });
   } catch (error) {
-    console.error("MyFive subscription read failed", error);
+    writeMyFiveOperationalFailure("subscription_read_failed");
     res.status(500).json({ error: "Subscription status could not be loaded" });
   }
 });

@@ -33,8 +33,8 @@ export default function CheckInPage() {
       });
       setReflectionText("");
       setIsSubmitted(true);
-    } catch (error) {
-      console.error("Private vault save failed", error);
+    } catch {
+      console.error("Private vault save failed");
       setSaveError("Your check-in was not saved. Keep this page open and try again.");
     } finally {
       setIsSaving(false);

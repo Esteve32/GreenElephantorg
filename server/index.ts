@@ -10,8 +10,11 @@ import { startDailyPulseScheduler } from "./daily-pulse";
 import { createApiRequestLogger } from "./api-request-logger";
 import { startMyFiveProvisionalCleanupScheduler } from "./myfive-provisional-cleanup";
 import { startMyFiveDeletionScheduler } from "./myfive-deletion-scheduler";
+import { createMyFiveErrorHandler, createMyFiveSecurityHeaders } from "./myfive-security";
 
 const app = express();
+
+app.use(createMyFiveSecurityHeaders(process.env.NODE_ENV !== "production"));
 
 // Trust proxy for secure cookies behind Replit's proxy
 app.set('trust proxy', 1);
@@ -67,6 +70,8 @@ app.use(createApiRequestLogger(log));
 (async () => {
   registerPortalRoutes(app);
   const server = await registerRoutes(app);
+
+  app.use(createMyFiveErrorHandler());
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

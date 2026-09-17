@@ -118,6 +118,65 @@ test("Stage 4.3-D migration and both deletion orders preserve authorship and sur
     assert.equal((await readExportableMyFiveAgreements(client as MyFiveExportQueryClient, "admin-user")).length, 0);
     assert.equal((await readExportableMyFiveAgreements(client as MyFiveExportQueryClient, "break-glass-user")).length, 0);
 
+    const profileVisibility = await Promise.all([
+      first.owner,
+      first.partner,
+      "unrelated-user",
+      "admin-user",
+      "break-glass-user",
+    ].map(async (actorUserId) => ({
+      actorUserId,
+      rows: (await client.query(
+        `SELECT actor_user_id, profile
+         FROM myfive_love_profile_snapshots
+         WHERE actor_user_id = $1 AND slot_id = $2
+         ORDER BY created_at DESC`,
+        [actorUserId, first.slot],
+      )).rows,
+    })));
+    assert.deepEqual(profileVisibility, [
+      { actorUserId: first.owner, rows: [{ actor_user_id: first.owner, profile: { owner: "private" } }] },
+      { actorUserId: first.partner, rows: [{ actor_user_id: first.partner, profile: { partner: "private" } }] },
+      { actorUserId: "unrelated-user", rows: [] },
+      { actorUserId: "admin-user", rows: [] },
+      { actorUserId: "break-glass-user", rows: [] },
+    ]);
+
+    const lockHolder = new pg.Client({ connectionString: databaseUrl });
+    const lockWaiter = new pg.Client({ connectionString: databaseUrl });
+    await Promise.all([lockHolder.connect(), lockWaiter.connect()]);
+    try {
+      const lockKey = `myfive-agreement:${first.slot}`;
+      await lockHolder.query("BEGIN");
+      await lockHolder.query("SELECT pg_advisory_xact_lock(hashtext($1))", [lockKey]);
+      await lockWaiter.query("BEGIN");
+      const waiterLock = lockWaiter.query("SELECT pg_advisory_xact_lock(hashtext($1))", [lockKey]);
+      const preCommit = await Promise.race([
+        waiterLock.then(() => "acquired" as const),
+        new Promise<"waiting">((resolve) => setTimeout(() => resolve("waiting"), 50)),
+      ]);
+      assert.equal(preCommit, "waiting", "a concurrent agreement mutation must wait for the slot lock");
+      await lockHolder.query(
+        `INSERT INTO myfive_consent_ledger
+          (id, actor_user_id, slot_id, consent_type, event_type, rules_version, accepted_rule_ids, accepted_at)
+         VALUES ($1, $2, $3, 'agreement-sharing', 'withdrawn', 'v1', ARRAY[]::text[], clock_timestamp())`,
+        ["first-owner-withdrawal", first.owner, first.slot],
+      );
+      await lockHolder.query("COMMIT");
+      await waiterLock;
+      const latestOwnerConsent = await lockWaiter.query(
+        `SELECT event_type
+         FROM myfive_consent_ledger
+         WHERE actor_user_id = $1 AND slot_id = $2 AND rules_version = 'v1'
+         ORDER BY accepted_at DESC LIMIT 1`,
+        [first.owner, first.slot],
+      );
+      assert.deepEqual(latestOwnerConsent.rows, [{ event_type: "withdrawn" }]);
+      await lockWaiter.query("ROLLBACK");
+    } finally {
+      await Promise.all([lockHolder.end(), lockWaiter.end()]);
+    }
+
     await client.query("BEGIN");
     await deleteMyFiveClassifiedRecords(client as MyFiveDeletionQueryClient, first.owner, "first-owner@example.test");
     await client.query("COMMIT");

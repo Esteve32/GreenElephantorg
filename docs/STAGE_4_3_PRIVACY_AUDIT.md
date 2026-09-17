@@ -1,6 +1,6 @@
 # Stage 4.3 Privacy Audit and Recovery Ledger
 
-Status date: 2026-09-15
+Status date: 2026-09-17
 Branch: `feature/seed-mvp`  
 Pull request: [#4](https://github.com/Esteve32/GreenElephantorg/pull/4) (draft)  
 Parent remediation issue: [#8](https://github.com/Esteve32/GreenElephantorg/issues/8)
@@ -33,7 +33,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
 | 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Saved on the PR branch for review at `b002365`, corrected at `fa2a497`, and recorded at `90d6548` | [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065): 28/28 tests including disposable PostgreSQL, type-check, and production build; run 19 remains recorded as the failed typing discovery | Privacy/security evidence approved by Estève on 2026-09-15; production activation still requires qualified legal/privacy validation |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | Implementation saved at `2970e7e`, fixture correction at `db0e290`, and evidence at `8f7b52f` | CI run 23 failed on parameterized multi-statement fixture setup; corrected CI runs 24 and 25 pass 31/31 tests against PostgreSQL 16, type-check, and build | Privacy/security evidence approved by Estève on 2026-09-15 |
-| 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | **Not built** | None | Final Stage 4.3 human privacy/security approval |
+| 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | Candidate saved in the commit containing Decision Log 11.4.16 | Local cross-stage suite, browser request inspection, TypeScript, build, dependency audit, secret/camera scans; clean PostgreSQL CI pending | Final Stage 4.3 human privacy/security approval remains pending |
 
 Parent Stage 4.3 remains incomplete. Production schema/data migration, deployment,
 Stripe mutation, outbound email, DNS/infrastructure work, and merge to `main` are
@@ -139,12 +139,13 @@ consent evidence.
 - #13 implementation evidence is approved and its Stage 4.3-E checklist item is
   complete. Production migration, feature activation, and live Stripe operations
   remain separately gated.
-- #14 must run the complete AC-002/003/006/016/017 suite, including disposable
-  database concurrency, browser-vault, administrator, logging, export, deletion,
-  session-revocation, and partial-failure paths.
-- Raw database error objects are still passed to some MyFive error logs. The
-  general response-body logger is already removed, but #14 must prove that
-  database error details cannot serialize private/free-text row content.
+- #14 now has an implementation candidate and local evidence in
+  `docs/STAGE_4_3_F_FINAL_PRIVACY_SECURITY_AUDIT.md`. Clean PostgreSQL CI and the
+  explicit final human privacy/security approval are still required.
+- The raw MyFive error-object finding is resolved in the candidate: operational
+  failures use allowlisted event codes, unexpected MyFive errors are intercepted
+  before the legacy generic handler, and sentinel tests prove exception and input
+  details are absent from logs and responses.
 
 ## Review result
 
@@ -173,4 +174,7 @@ not authorize the production migration, deployment, or survivor-custody
 activation. Estève separately authorized starting Stage 4.3-E on 2026-09-15;
 after corrected CI runs 24 and 25 passed, Estève explicitly approved the #13
 privacy/security evidence on 2026-09-15. This completes only Stage 4.3-E and
-does not authorize production activation or Stage 4.3-F.
+does not authorize production activation. Estève explicitly authorized the final
+Stage 4.3-F audit on 2026-09-17. Its candidate passes the locally runnable suite,
+TypeScript, build, dependency audit, and instrumented browser check-in inspection;
+clean PostgreSQL CI and final human approval remain open.

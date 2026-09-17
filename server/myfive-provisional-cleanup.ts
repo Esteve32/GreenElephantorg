@@ -1,4 +1,5 @@
 import { pool } from "./db";
+import { writeMyFiveOperationalFailure } from "./myfive-security";
 
 const CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
 let cleanupTimer: NodeJS.Timeout | null = null;
@@ -23,11 +24,11 @@ export async function purgeExpiredMyFiveProvisionalData(ownerUserId?: string): P
 export function startMyFiveProvisionalCleanupScheduler(): void {
   if (cleanupTimer) return;
   void purgeExpiredMyFiveProvisionalData().catch(() => {
-    console.error("MyFive provisional-data cleanup failed");
+    writeMyFiveOperationalFailure("provisional_cleanup_failed");
   });
   cleanupTimer = setInterval(() => {
     void purgeExpiredMyFiveProvisionalData().catch(() => {
-      console.error("MyFive provisional-data cleanup failed");
+      writeMyFiveOperationalFailure("provisional_cleanup_failed");
     });
   }, CLEANUP_INTERVAL_MS);
   cleanupTimer.unref();

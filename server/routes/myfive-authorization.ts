@@ -1,4 +1,5 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
+import { writeMyFiveOperationalFailure } from "../myfive-security";
 
 export interface MyFiveAccountAuthorizationRecord {
   id: string;
@@ -51,7 +52,7 @@ export function createRequireMyFiveAccount(findAccount: MyFiveAccountLookup): Re
       }
       return next();
     } catch {
-      console.error("MyFive account verification unavailable");
+      writeMyFiveOperationalFailure("account_verification_unavailable");
       return res.status(503).json({ error: "account_verification_unavailable" });
     }
   };
@@ -82,7 +83,7 @@ export function createRequireMyFiveAdminWriter(findAdmin: MyFiveAdminLookup): Re
       }
       return next();
     } catch {
-      console.error("MyFive administrator verification unavailable");
+      writeMyFiveOperationalFailure("administrator_verification_unavailable");
       return res.status(503).json({ error: "admin_verification_unavailable" });
     }
   };

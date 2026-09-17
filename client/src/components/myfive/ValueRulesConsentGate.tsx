@@ -61,8 +61,8 @@ export function ValueRulesConsentGate({ onAccept }: ValueRulesConsentGateProps) 
     setSubmitError(null);
     try {
       await onAccept(VALUE_RULES.map((rule) => rule.id));
-    } catch (error) {
-      console.error("ValueRules consent failed", error);
+    } catch {
+      console.error("ValueRules consent failed");
       setSubmitError("Consent was not recorded. The shared space remains locked; please try again.");
       setIsSubmitting(false);
     }
