@@ -8,9 +8,10 @@ Parent remediation issue: [#8](https://github.com/Esteve32/GreenElephantorg/issu
 This document is evidence, not a new product decision. `docs/DECISION_LOG.md`
 remains the canonical approval record and `docs/PRD.md` remains the canonical
 requirements record. GitHub issues define bounded delivery units. A checked
-implementation item means its branch implementation is saved; it does not mean
-that a planned migration was run, the feature was deployed, or Stage 4.3 received
-final human approval.
+implementation item means its branch implementation is saved; it does not by
+itself mean that a planned migration was run, the feature was deployed, or a
+human gate was approved. The final Stage 4.3 privacy/security evidence received
+separately attributable approval from Estève on 2026-09-17.
 
 ## Recovery order
 
@@ -33,11 +34,12 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
 | 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Saved on the PR branch for review at `b002365`, corrected at `fa2a497`, and recorded at `90d6548` | [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065): 28/28 tests including disposable PostgreSQL, type-check, and production build; run 19 remains recorded as the failed typing discovery | Privacy/security evidence approved by Estève on 2026-09-15; production activation still requires qualified legal/privacy validation |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | Implementation saved at `2970e7e`, fixture correction at `db0e290`, and evidence at `8f7b52f` | CI run 23 failed on parameterized multi-statement fixture setup; corrected CI runs 24 and 25 pass 31/31 tests against PostgreSQL 16, type-check, and build | Privacy/security evidence approved by Estève on 2026-09-15 |
-| 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | Candidate published at `91e42f7` | Local cross-stage suite and instrumented browser inspection; [CI run 27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939) passed 35/35 tests against PostgreSQL 16, type-check, and build; dependency and source scans passed | Final Stage 4.3 human privacy/security approval remains pending |
+| 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | Candidate `91e42f7`; passing evidence `46f7145`; approval in the commit containing Decision Log 11.4.18 | Local cross-stage suite and instrumented browser inspection; CI runs [27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939) and [28](https://github.com/Esteve32/GreenElephantorg/actions/runs/35228515985) passed 35/35 tests against PostgreSQL 16, type-check, and build; dependency and source scans passed | Final Stage 4.3 privacy/security evidence approved by Estève on 2026-09-17 |
 
-Parent Stage 4.3 remains incomplete. Production schema/data migration, deployment,
-Stripe mutation, outbound email, DNS/infrastructure work, and merge to `main` are
-not part of this audit.
+Parent Stage 4.3 is complete at the branch privacy/security implementation and
+evidence level. Production schema/data migration, deployment, Stripe mutation,
+outbound email, DNS/infrastructure work, merge to `main`, and the qualified
+survivor-custody legal/privacy gate are not part of this approval.
 
 ## 4.3-D implementation checkpoint
 
@@ -131,7 +133,7 @@ consent evidence.
    Consent writes now use `clock_timestamp()` and a monotonic per-slot floor so
    event evaluation has a deterministic order.
 
-### Explicitly pending after the branch implementation
+### Post-approval gates and unresolved work
 
 - #12 implementation evidence is approved and its Stage 4.3-D checklist item is
   complete. The qualified legal/privacy gate remains mandatory before any
@@ -139,9 +141,9 @@ consent evidence.
 - #13 implementation evidence is approved and its Stage 4.3-E checklist item is
   complete. Production migration, feature activation, and live Stripe operations
   remain separately gated.
-- #14 now has an implementation candidate and local evidence in
-  `docs/STAGE_4_3_F_FINAL_PRIVACY_SECURITY_AUDIT.md`. Clean PostgreSQL CI and the
-  explicit final human privacy/security approval are still required.
+- #14 has complete evidence in `docs/STAGE_4_3_F_FINAL_PRIVACY_SECURITY_AUDIT.md`.
+  Clean CI runs 27 and 28 passed, and Estève explicitly approved the final
+  Stage 4.3 privacy/security evidence on 2026-09-17.
 - The raw MyFive error-object finding is resolved in the candidate: operational
   failures use allowlisted event codes, unexpected MyFive errors are intercepted
   before the legacy generic handler, and sentinel tests prove exception and input
@@ -180,4 +182,6 @@ TypeScript, build, dependency audit, and instrumented browser check-in inspectio
 [CI run 27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939)
 then passed all 35/35 tests against PostgreSQL 16, `npm run check`, and the
 production build from a clean checkout. The clean-CI gate is satisfied; final
-human approval remains open.
+human approval was then explicitly granted by Estève on 2026-09-17. This completes
+4.3-F and parent Stage 4.3 at the branch implementation-evidence level without
+authorizing production activation or satisfying the separate legal/privacy gate.

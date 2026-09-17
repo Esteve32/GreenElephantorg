@@ -1,6 +1,6 @@
 # Stage 4.3-F Final Privacy and Security Audit
 
-Status: **EVIDENCE COMPLETE — explicit human approval pending**
+Status: **APPROVED — Stage 4.3 privacy/security evidence accepted**
 Status date: 2026-09-17
 Branch: `feature/seed-mvp`
 Pull request: [#4](https://github.com/Esteve32/GreenElephantorg/pull/4)
@@ -9,9 +9,10 @@ Authority: DEC-041; PRD AC-002, AC-003, AC-006, AC-016, and AC-017
 
 This is an evidence record, not a new product decision. It covers the current
 React/Vite/Express implementation and binds the same privacy invariants to the
-approved successor stack. It does not authorize a production migration,
+approved successor stack. Its explicit approval completes Stage 4.3 at the branch
+implementation-evidence level. It does not authorize a production migration,
 deployment, live Stripe action, outbound message, DNS change, merge to `main`,
-or Stage 4.3 completion.
+or satisfaction of the separate legal/privacy gate.
 
 ## Decision and evidence scaffolding
 
@@ -38,7 +39,7 @@ not interchangeable. The current state is:
 | Browser inspection | Passing for the private check-in path; details below |
 | Dependency audit | Passing — `npm audit` reports zero known vulnerabilities across production and development dependency sets |
 | Disposable PostgreSQL evidence | Passing — clean GitHub Actions run 27 passed all 35 tests against PostgreSQL 16 |
-| Human Stage 4.3 approval | Pending; it must be explicit after clean CI evidence is published |
+| Human Stage 4.3 approval | Approved explicitly by Estève on 2026-09-17 after the complete evidence packet was published |
 | Production legal/privacy gate for survivor custody | Pending and separate; see `docs/STAGE_4_3_D_PRODUCTION_LEGAL_GATE.md` |
 | Production migration/deployment/activation | Not performed and not authorized |
 
@@ -141,10 +142,13 @@ Environment snapshot:
 | Tracked-source credential-literal scan | Pass: no Stripe/GitHub/Google/private-key literal pattern found outside generated output and lockfile |
 | Compiled-source camera API scan | Pass: no `getUserMedia` or `mediaDevices.getUserMedia/getDisplayMedia` call in `client/src`, `server`, or `shared` |
 | [GitHub Actions run 27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939) | Pass from a clean checkout: `npm ci`, `npm run check`, all 35/35 tests against PostgreSQL 16, and `npm run build`; `npm ci` reported 0 vulnerabilities |
+| [GitHub Actions run 28](https://github.com/Esteve32/GreenElephantorg/actions/runs/35228515985) | Pass on evidence head `46f7145`: the same clean gate completed with 35/35 tests and no skips |
 
 The clean-checkout gate is satisfied. Its immutable summary is also attached to
 [PR #4](https://github.com/Esteve32/GreenElephantorg/pull/4#issuecomment-5715242454).
-The only remaining Stage 4.3-F gate is explicit human approval of this evidence.
+Estève explicitly approved the complete Stage 4.3 privacy/security evidence on
+2026-09-17. This satisfies the 4.3-F human gate and permits the parent Stage 4.3
+implementation-evidence checklist item to be marked complete.
 
 ## Residual risks and unbuilt work
 
@@ -175,7 +179,8 @@ The only remaining Stage 4.3-F gate is explicit human approval of this evidence.
   without weakening the assertion.
 - The candidate can be rolled back by removing the MyFive security middleware and
   query/test changes in its commit; no schema or production data rollback is needed.
-- Only after clean CI evidence is attached to #14 may Estève explicitly approve
-  the final Stage 4.3 privacy/security evidence.
-- Only that later approval may check 4.3-F and parent 4.3, record the final decision
-  version, and close #14. It still does not authorize production activation.
+- Clean CI evidence was attached to #14 and Estève explicitly approved the final
+  Stage 4.3 privacy/security evidence on 2026-09-17.
+- That approval completes 4.3-F and parent 4.3 at the branch implementation and
+  evidence level. It does not authorize production migration, deployment,
+  activation, merger to `main`, or satisfaction of the separate legal/privacy gate.
