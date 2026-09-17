@@ -1,6 +1,6 @@
 # Stage 4.3-F Final Privacy and Security Audit
 
-Status: **IMPLEMENTATION CANDIDATE — clean CI and explicit human approval pending**
+Status: **EVIDENCE COMPLETE — explicit human approval pending**
 Status date: 2026-09-17
 Branch: `feature/seed-mvp`
 Pull request: [#4](https://github.com/Esteve32/GreenElephantorg/pull/4)
@@ -37,7 +37,7 @@ not interchangeable. The current state is:
 | Local automated evidence | Passing — 33 tests passed and 2 PostgreSQL fixtures skipped only because `TEST_DATABASE_URL` is absent; TypeScript and production build pass |
 | Browser inspection | Passing for the private check-in path; details below |
 | Dependency audit | Passing — `npm audit` reports zero known vulnerabilities across production and development dependency sets |
-| Disposable PostgreSQL evidence | Pending clean GitHub Actions execution for this candidate |
+| Disposable PostgreSQL evidence | Passing — clean GitHub Actions run 27 passed all 35 tests against PostgreSQL 16 |
 | Human Stage 4.3 approval | Pending; it must be explicit after clean CI evidence is published |
 | Production legal/privacy gate for survivor custody | Pending and separate; see `docs/STAGE_4_3_D_PRODUCTION_LEGAL_GATE.md` |
 | Production migration/deployment/activation | Not performed and not authorized |
@@ -46,11 +46,11 @@ not interchangeable. The current state is:
 
 | Requirement | Actors and negative cases | Direct evidence | Candidate result |
 | :--- | :--- | :--- | :--- |
-| AC-002 private check-in isolation | Participant A, participant B, unrelated account, anonymous visitor, admin viewer, admin writer, break-glass operator | Fail-closed HTTP endpoint; source and build inspection; encrypted IndexedDB browser journey; server query/export exclusion; metadata-only request log tests | Pass locally; clean CI pending |
-| AC-003 bilateral consent | A only, B only, both, unlinked, unrelated, stale version, incomplete receipt, withdrawal, replayed receipt, concurrent mutation | Consent-policy tests, sanitized denial event inspection, common advisory-lock inspection, disposable PostgreSQL lock waiter proof | Pass locally except PostgreSQL execution pending CI |
-| AC-006 deletion | A deletes first, B deletes first, stale session replay, delayed webhook, transient Stripe failure, rejected Stripe request, database failure, retry, completed replay | Stage 4.3-D/E unit and PostgreSQL fixtures | Pass locally except PostgreSQL execution pending CI |
-| AC-016 eight-octant calibration | Explicit eight values, `Not assessed`, missing field, extra/inferred field, invalid value, A/B/unrelated/admin/break-glass reads | Exact vocabulary validator test, author-scoped route/export inspection, disposable PostgreSQL actor matrix | Pass locally except PostgreSQL execution pending CI |
-| AC-017 break-glass isolation | Admin viewer, admin writer, synthetic break-glass ID | No MyFive admin read route or bypass; account middleware; database actor matrix; schema scan excludes card fields; browser vault has no server read path | Pass locally except PostgreSQL execution pending CI |
+| AC-002 private check-in isolation | Participant A, participant B, unrelated account, anonymous visitor, admin viewer, admin writer, break-glass operator | Fail-closed HTTP endpoint; source and build inspection; encrypted IndexedDB browser journey; server query/export exclusion; metadata-only request log tests | Pass locally and in clean CI |
+| AC-003 bilateral consent | A only, B only, both, unlinked, unrelated, stale version, incomplete receipt, withdrawal, replayed receipt, concurrent mutation | Consent-policy tests, sanitized denial event inspection, common advisory-lock inspection, disposable PostgreSQL lock waiter proof | Pass locally and in clean PostgreSQL CI |
+| AC-006 deletion | A deletes first, B deletes first, stale session replay, delayed webhook, transient Stripe failure, rejected Stripe request, database failure, retry, completed replay | Stage 4.3-D/E unit and PostgreSQL fixtures | Pass locally and in clean PostgreSQL CI |
+| AC-016 eight-octant calibration | Explicit eight values, `Not assessed`, missing field, extra/inferred field, invalid value, A/B/unrelated/admin/break-glass reads | Exact vocabulary validator test, author-scoped route/export inspection, disposable PostgreSQL actor matrix | Pass locally and in clean PostgreSQL CI |
+| AC-017 break-glass isolation | Admin viewer, admin writer, synthetic break-glass ID | No MyFive admin read route or bypass; account middleware; database actor matrix; schema scan excludes card fields; browser vault has no server read path | Pass locally and in clean PostgreSQL CI |
 
 ## Negative and failure-path matrix
 
@@ -127,6 +127,8 @@ Environment snapshot:
 - Repository: `Esteve32/GreenElephantorg`
 - Branch target: `feature/seed-mvp`
 - Remote parent before this candidate: `c98ff7ecab2eeb0a7b550a87fe9b2fa547e59739`
+- Published candidate: [`91e42f7c4aabc3d525f4fb76882798a8e63803aa`](https://github.com/Esteve32/GreenElephantorg/commit/91e42f7c4aabc3d525f4fb76882798a8e63803aa)
+- Clean pull-request merge commit exercised by CI: `bfa73cdd92b7becf6eab6e88b617c16ef3fbb58c`
 - Synthetic data only
 
 | Command | Result |
@@ -138,10 +140,11 @@ Environment snapshot:
 | `npm audit --audit-level=critical --json` | Pass: 0 known vulnerabilities; 672 total dependencies including development/optional sets |
 | Tracked-source credential-literal scan | Pass: no Stripe/GitHub/Google/private-key literal pattern found outside generated output and lockfile |
 | Compiled-source camera API scan | Pass: no `getUserMedia` or `mediaDevices.getUserMedia/getDisplayMedia` call in `client/src`, `server`, or `shared` |
+| [GitHub Actions run 27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939) | Pass from a clean checkout: `npm ci`, `npm run check`, all 35/35 tests against PostgreSQL 16, and `npm run build`; `npm ci` reported 0 vulnerabilities |
 
-The clean-checkout GitHub Actions gate must still run `npm ci`, `npm run check`,
-all 35 tests against PostgreSQL 16, and `npm run build` before this evidence may be
-presented for human approval.
+The clean-checkout gate is satisfied. Its immutable summary is also attached to
+[PR #4](https://github.com/Esteve32/GreenElephantorg/pull/4#issuecomment-5715242454).
+The only remaining Stage 4.3-F gate is explicit human approval of this evidence.
 
 ## Residual risks and unbuilt work
 

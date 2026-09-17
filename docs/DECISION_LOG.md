@@ -1,4 +1,4 @@
-# 💞 MyFive — Approved Product Decision Log v11.4.16 (Δ Update) — Drift-Safe / Canonical Source
+# 💞 MyFive — Approved Product Decision Log v11.4.17 (Δ Update) — Drift-Safe / Canonical Source
 
 This log represents the official v11.4 Delta (Δ) Update to the MyFive Approved Product Decision Log, acting as the primary record of human-approved decisions and explicit scope boundaries within the `GreenElephantorg` repository [Approved Product Decision Log].
 
@@ -9,8 +9,8 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 ## 🧭 Authority & Repository Integration
 
 *   **Canonical Source of Truth:** This log is stored directly within the repository at `docs/DECISION_LOG.md` as the canonical record of human-approved decisions for MyFive and the `GreenElephantorg` platform.
-*   **Document Version:** `11.4.16`
-*   **Last Updated:** `2026-09-17T16:31:56+03:00`
+*   **Document Version:** `11.4.17`
+*   **Last Updated:** `2026-09-17T16:38:45+03:00`
 *   **Enforcement Rule:** Any capability or integration not explicitly marked as approved in Section 2 or in active Delta updates is formally prohibited from implementation [Approved Product Decision Log].
 *   **Integrated Stack Contract:** MyFive is developed as an extension and architectural upgrade of the `GreenElephantorg` platform, adhering to the stack contract:
     `approved_stack = "SvelteKit_Svelte5_Zero_NeonPG_Drizzle_Stripe_ReplitReservedVM"` [Approved Product Decision Log].
@@ -52,6 +52,7 @@ All specifications are mapped against the canonical baseline of Decision Log v10
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- DECISION_LEDGER_ROWS -->
+| 11.4.17 | 2026-09-17T16:38:45+03:00 | Estève | Recorded passing Stage 4.3-F final privacy and security evidence |
 | 11.4.16 | 2026-09-17T16:31:56+03:00 | Estève | Recorded authorized Stage 4.3-F final privacy and security audit candidate |
 | 11.4.15 | 2026-09-15T21:31:24+03:00 | Estève | Approved Stage 4.3-E privacy and security evidence and completed issue 13 |
 | 11.4.14 | 2026-09-15T20:48:17+03:00 | Estève | Recorded passing PostgreSQL evidence for Stage 4.3-E |
@@ -638,7 +639,7 @@ This index links completed checklist work to the immutable Git evidence. It reco
 | Stage 4.3-C — bilateral versioned ValueRules consent for shared agreements | 11.4.3–11.4.5 | Initial branch implementation: `3c52d20`; audit correction: `63202fe`; approval: commit containing `11.4.5` | Additive plan only: `20260911_myfive_bilateral_value_rules_consent.sql`; no production migration run; privacy/security evidence approved in #11 |
 | Stage 4.3-D — ownership, export, deletion, and joint-agreement survivor custody | 11.4.6–11.4.11 | Option C specification: commit containing `11.4.6`; implementation: `10bc4bf`; fixture batch: `b002365`; PostgreSQL typing correction: `fa2a497`; passing evidence record: `90d6548`; approval: commit containing `11.4.11` | Additive, production-unexecuted plan: `20260912_myfive_ownership_boundaries.sql`; CI run 19 exposed `42P08`; corrected CI runs 20 and 21 passed 28/28 tests against PostgreSQL 16, type-check, and build; Estève approved privacy/security evidence on 2026-09-15; qualified production legal/privacy validation remains pending |
 | Stage 4.3-E — global session revocation and resumable Stripe deletion | 11.4.12–11.4.15 | Implementation candidate: `2970e7e`; fixture correction: `db0e290`; passing evidence: `8f7b52f`; approval: commit containing `11.4.15` | Additive, production-unexecuted plan: `20260915_myfive_resumable_account_deletion.sql`; CI run 23 failed on PostgreSQL `42601` in parameterized multi-statement fixture setup; corrected CI runs 24 and 25 passed 31/31 tests against PostgreSQL 16, type-check, and build; Estève approved privacy/security evidence on 2026-09-15; production activation remains separately gated |
-| Stage 4.3-F — final cross-stage privacy/security audit | 11.4.16+ | Candidate: commit containing `11.4.16`; clean CI and approval commits pending | No migration; adds MyFive CSP/security headers, redacted error handling, allowlisted operational events, cross-stage regression coverage, and browser/dependency/source-scan evidence; 4.3-F and parent 4.3 remain unchecked until clean PostgreSQL CI and explicit final human approval |
+| Stage 4.3-F — final cross-stage privacy/security audit | 11.4.16+ | Candidate: `91e42f7`; passing evidence: commit containing `11.4.17`; approval commit pending | No migration; adds MyFive CSP/security headers, redacted error handling, allowlisted operational events, cross-stage regression coverage, and browser/dependency/source-scan evidence; CI run 27 passed 35/35 tests against PostgreSQL 16, type-check, and build; 4.3-F and parent 4.3 remain unchecked until explicit final human approval |
 
 ---
 

@@ -33,7 +33,7 @@ If work must resume without this chat history, reconstruct state in this order:
 | 4.3-C / #11 — bilateral ValueRules consent | Approved in DEC-041 | Saved at `3c52d20` and amended at `63202fe` | State, identity, version, withdrawal, denial, and lock-order tests; CI 18/18 | Approved by Estève on 2026-09-11 |
 | 4.3-D / #12 — ownership, export, and deletion | DEC-041 plus Option C survivor custody approved by Estève | Saved on the PR branch for review at `b002365`, corrected at `fa2a497`, and recorded at `90d6548` | [CI run 20](https://github.com/Esteve32/GreenElephantorg/actions/runs/34993147065): 28/28 tests including disposable PostgreSQL, type-check, and production build; run 19 remains recorded as the failed typing discovery | Privacy/security evidence approved by Estève on 2026-09-15; production activation still requires qualified legal/privacy validation |
 | 4.3-E / #13 — global session revocation and resumable Stripe deletion | Approved in DEC-041 and specified in #13 | Implementation saved at `2970e7e`, fixture correction at `db0e290`, and evidence at `8f7b52f` | CI run 23 failed on parameterized multi-statement fixture setup; corrected CI runs 24 and 25 pass 31/31 tests against PostgreSQL 16, type-check, and build | Privacy/security evidence approved by Estève on 2026-09-15 |
-| 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | Candidate saved in the commit containing Decision Log 11.4.16 | Local cross-stage suite, browser request inspection, TypeScript, build, dependency audit, secret/camera scans; clean PostgreSQL CI pending | Final Stage 4.3 human privacy/security approval remains pending |
+| 4.3-F / #14 — cross-stage privacy regression and approval | Approved in DEC-041 and specified in #14 | Candidate published at `91e42f7` | Local cross-stage suite and instrumented browser inspection; [CI run 27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939) passed 35/35 tests against PostgreSQL 16, type-check, and build; dependency and source scans passed | Final Stage 4.3 human privacy/security approval remains pending |
 
 Parent Stage 4.3 remains incomplete. Production schema/data migration, deployment,
 Stripe mutation, outbound email, DNS/infrastructure work, and merge to `main` are
@@ -177,4 +177,7 @@ privacy/security evidence on 2026-09-15. This completes only Stage 4.3-E and
 does not authorize production activation. Estève explicitly authorized the final
 Stage 4.3-F audit on 2026-09-17. Its candidate passes the locally runnable suite,
 TypeScript, build, dependency audit, and instrumented browser check-in inspection;
-clean PostgreSQL CI and final human approval remain open.
+[CI run 27](https://github.com/Esteve32/GreenElephantorg/actions/runs/35227904939)
+then passed all 35/35 tests against PostgreSQL 16, `npm run check`, and the
+production build from a clean checkout. The clean-CI gate is satisfied; final
+human approval remains open.
