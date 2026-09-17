@@ -9,7 +9,7 @@ interface PromptCardProps {
   code: string;
   name: string;
   type: "Satellite Scan Analysis" | "Quick Template";
-  role: "ACX Prompt Engineer" | "EA Executive Assistant" | "Strategic Innovation Expert";
+  role: string;
   lens: "influence" | "attitude" | "chaordic" | "flow" | "alignment" | "needs" | "ego" | "dynamics";
   howToUse: string;
   whatYouLearn?: string;
@@ -73,8 +73,8 @@ export default function PromptCard({ code, name, type, role, lens, howToUse, wha
               <Badge variant="outline" className="border-white/20">
                 {roleAbbreviations[role] || role}
               </Badge>
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={`border-white/20 ${isSatelliteScan ? 'bg-dynamics/20' : 'bg-chaordic/20'}`}
               >
                 {isSatelliteScan ? 'Satellite Scan' : 'Quick Template'}
@@ -99,7 +99,7 @@ export default function PromptCard({ code, name, type, role, lens, howToUse, wha
             {howToUse}
           </p>
         </div>
-        
+
         {whatYouLearn && (
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">What You Learn</p>
@@ -108,7 +108,7 @@ export default function PromptCard({ code, name, type, role, lens, howToUse, wha
             </p>
           </div>
         )}
-        
+
         {template && (
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Template</p>

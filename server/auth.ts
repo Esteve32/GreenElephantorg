@@ -33,9 +33,9 @@ export function requireAdminAuth(req: Request, res: Response, next: NextFunction
     }
     return next();
   }
-  
-  return res.status(401).json({ 
-    message: "Unauthorized. Please log in to access admin dashboard." 
+
+  return res.status(401).json({
+    message: "Unauthorized. Please log in to access admin dashboard."
   });
 }
 
@@ -71,14 +71,14 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
       return verifyHashedPassword(password, dbHash);
     }
   } catch {}
-  
+
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-  
+
   if (!ADMIN_PASSWORD) {
     console.error("ADMIN_PASSWORD not set in environment variables");
     return false;
   }
-  
+
   return password === ADMIN_PASSWORD;
 }
 
@@ -121,14 +121,13 @@ function redactBody(body: any): any {
 
 export function auditMiddleware(req: Request, res: Response, next: NextFunction) {
   if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method) && req.session?.adminEmail) {
-    const originalEnd = res.end;
     const email = req.session.adminEmail;
     const ip = req.ip || req.socket.remoteAddress || "unknown";
 
-    res.end = function (...args: any[]) {
+    res.once("finish", () => {
       const statusCode = res.statusCode;
       if (statusCode < 400) {
-        logAuditEvent(
+        void logAuditEvent(
           email,
           `${req.method} ${req.path}`,
           req.path,
@@ -136,8 +135,7 @@ export function auditMiddleware(req: Request, res: Response, next: NextFunction)
           ip
         );
       }
-      return originalEnd.apply(this, args);
-    } as any;
+    });
   }
   next();
 }

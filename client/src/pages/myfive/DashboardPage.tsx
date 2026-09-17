@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Compass, Users, UserCheck, Plus, Sparkles, Heart, FileText, Settings, Lock } from "lucide-react";
+import { Compass, Users, UserCheck, Plus, Sparkles, Heart, FileText, Settings, Lock, Trash2 } from "lucide-react";
 import { GreekLoveFlowProfile } from "@/components/myfive/GreekLoveFlowProfile";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -13,10 +13,15 @@ interface ConnectionSlot {
   lastCheckIn?: string;
   isSelf?: boolean;
   partnerConnected?: boolean;
+  role: "owner" | "partner";
+  lifecycleState: "active" | "survivor";
+  survivorAgreementAvailable: boolean;
+  canEdit: boolean;
 }
 
 export default function DashboardPage() {
   const [slots, setSlots] = useState<ConnectionSlot[]>([]);
+  const [linkedConnections, setLinkedConnections] = useState<ConnectionSlot[]>([]);
   const [partnerName, setPartnerName] = useState("");
   const [relationType, setRelationType] = useState("");
   const [adding, setAdding] = useState(false);
@@ -26,8 +31,9 @@ export default function DashboardPage() {
 
   const loadSlots = async () => {
     const response = await apiRequest("GET", "/api/myfive/slots");
-    const result = await response.json() as { slots: ConnectionSlot[] };
+    const result = await response.json() as { slots: ConnectionSlot[]; linkedConnections: ConnectionSlot[] };
     setSlots(result.slots);
+    setLinkedConnections(result.linkedConnections);
   };
 
   useEffect(() => { loadSlots().catch((cause: Error) => setError(cause.message)); }, []);
@@ -43,7 +49,7 @@ export default function DashboardPage() {
     } finally { setAdding(false); }
   };
 
-  const activeSeatsCount = slots.filter(s => !s.isSelf && s.status === "active").length;
+  const occupiedSeatsCount = slots.filter((slot) => !slot.isSelf && slot.status !== "empty").length;
 
   const createInvitation = async (slot: ConnectionSlot) => {
     if (!slot.id) return;
@@ -57,6 +63,20 @@ export default function DashboardPage() {
       await navigator.clipboard?.writeText(result.invitationUrl);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Invitation could not be created."); }
   };
+
+  const removeProvisionalConnection = async (slot: ConnectionSlot) => {
+    if (!slot.id || slot.role !== "owner" || slot.partnerConnected) return;
+    setError(null);
+    try {
+      await apiRequest("DELETE", `/api/myfive/slots/${encodeURIComponent(slot.id)}`);
+      setInvitationUrl(null);
+      await loadSlots();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Provisional connection could not be removed.");
+    }
+  };
+
+  const displayedConnections = [...slots, ...linkedConnections];
 
   return (
     <div className="myfive-theme min-h-screen text-slate-100 flex flex-col">
@@ -73,7 +93,7 @@ export default function DashboardPage() {
               <h1 className="font-bold text-lg text-white tracking-tight flex items-center gap-2">
                 MyFive HUD Orbit
                 <span className="px-2 py-0.5 text-xs bg-emerald-950 text-emerald-300 border border-emerald-500/30 rounded-full font-mono">
-                  {activeSeatsCount}/5 Seats Active
+                  {occupiedSeatsCount}/5 Seats Used
                 </span>
               </h1>
             </div>
@@ -112,7 +132,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {activeSeatsCount < 5 && (
+        {occupiedSeatsCount < 5 && (
           <section className="mb-6 grid gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-4 md:grid-cols-[1fr_1fr_auto]" aria-label="Add a connection seat">
             <input aria-label="Connection name" value={partnerName} onChange={(event) => setPartnerName(event.target.value)} placeholder="Connection name" maxLength={100} className="rounded-lg border border-slate-700 bg-slate-950/60 px-3 py-2 text-sm" />
             <input aria-label="Relationship type" value={relationType} onChange={(event) => setRelationType(event.target.value)} placeholder="Partner, friend, family…" maxLength={100} className="rounded-lg border border-slate-700 bg-slate-950/60 px-3 py-2 text-sm" />
@@ -124,12 +144,14 @@ export default function DashboardPage() {
 
         {/* Orbit Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {slots.map((slot) => (
+          {displayedConnections.map((slot) => (
             <div
-              key={slot.slotIndex}
+              key={`${slot.role}-${slot.id ?? slot.slotIndex}`}
               className={`myfive-biolume-edge p-6 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between ${
                 slot.isSelf
                   ? "bg-gradient-to-b from-indigo-950/40 to-slate-900 border-indigo-500/30 hover:border-indigo-500/50"
+                  : slot.lifecycleState === "survivor"
+                  ? "bg-amber-950/20 border-amber-500/30"
                   : slot.status === "active"
                   ? "myfive-glass"
                   : "bg-slate-900/20 border-dashed border-slate-800/80 hover:border-slate-700"
@@ -138,6 +160,11 @@ export default function DashboardPage() {
               {slot.isSelf && (
                 <div className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-mono font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded-full flex items-center gap-1">
                   <Lock className="w-2.5 h-2.5" /> Philautia Vault
+                </div>
+              )}
+              {slot.lifecycleState === "survivor" && (
+                <div className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-mono font-semibold bg-amber-500/10 text-amber-200 border border-amber-500/20 rounded-full flex items-center gap-1">
+                  <Lock className="w-2.5 h-2.5" /> {slot.survivorAgreementAvailable ? "Frozen survivor copy" : "Agreement deleted"}
                 </div>
               )}
 
@@ -166,7 +193,13 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {slot.status === "active" ? (
+                {slot.lifecycleState === "survivor" ? (
+                  <p className="text-xs leading-relaxed text-amber-100/80 border-t border-amber-500/20 pt-3">
+                    {slot.survivorAgreementAvailable
+                      ? "The other account has been deleted. This historical joint agreement is read-only; you may export or permanently delete it."
+                      : "The frozen joint agreement was permanently deleted. This archived connection cannot be edited or linked to another account."}
+                  </p>
+                ) : slot.status === "active" ? (
                   <div className="space-y-2 text-xs text-slate-400 border-t border-slate-800/80 pt-3">
                     <div className="flex justify-between">
                       <span>Last Check-In:</span>
@@ -183,7 +216,7 @@ export default function DashboardPage() {
                   </p>
                 )}
 
-                {slot.status === "active" && (
+                {slot.status === "active" && slot.canEdit && (
                   <GreekLoveFlowProfile
                     slotId={slot.id!}
                     connectionName={slot.name}
@@ -191,10 +224,12 @@ export default function DashboardPage() {
                   />
                 )}
 
-                {slot.status === "active" && !slot.isSelf && !slot.partnerConnected && slot.id && (
+                {slot.status === "active" && slot.role === "owner" && !slot.isSelf && !slot.partnerConnected && slot.id && (
                   <div className="mt-4 space-y-2 border-t border-slate-800/70 pt-3">
+                    <p className="text-[11px] leading-relaxed text-amber-100/80">Use a nickname or label, not a legal name. Unaccepted invitation contact data and this provisional label expire after 30 days.</p>
                     <input type="email" aria-label={`Email invitation for ${slot.name}`} value={inviteEmails[slot.id] ?? ""} onChange={(event) => setInviteEmails((current) => ({ ...current, [slot.id!]: event.target.value }))} placeholder="Partner email" className="w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 py-2 text-xs" />
                     <button onClick={() => createInvitation(slot)} className="w-full rounded-lg bg-cyan-900/60 px-3 py-2 text-xs font-medium text-cyan-200 hover:bg-cyan-900">Create secure invite link</button>
+                    <button onClick={() => removeProvisionalConnection(slot)} className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-rose-500/30 px-3 py-2 text-xs font-medium text-rose-200 hover:bg-rose-950/40"><Trash2 className="h-3.5 w-3.5" /> Remove provisional connection</button>
                   </div>
                 )}
               </div>
@@ -213,6 +248,12 @@ export default function DashboardPage() {
                       </span>
                     </Link>}
                   </>
+                ) : slot.lifecycleState === "survivor" && slot.survivorAgreementAvailable && slot.id ? (
+                  <Link href={`/myfive/agreements?slot=${encodeURIComponent(slot.id)}`}>
+                    <span className="w-full py-2 text-center text-xs text-amber-200 cursor-pointer">Read or delete frozen agreement</span>
+                  </Link>
+                ) : slot.lifecycleState === "survivor" ? (
+                  <span className="w-full py-2 text-center text-xs text-slate-500">No retained joint agreement</span>
                 ) : (
                   <span className="w-full py-2 text-center text-xs text-slate-500">Available connection seat</span>
                 )}

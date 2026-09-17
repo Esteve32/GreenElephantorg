@@ -1,13 +1,16 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { and, asc, desc, eq, or } from "drizzle-orm";
 import Stripe from "stripe";
 import { db, pool } from "../db";
 import {
+  adminUsers,
+  auditLogs,
   clientSubscriptions,
   clientUsers,
+  myfiveAgreementCustodyEvents,
   myfiveAgreements,
-  myfiveCheckIns,
+  myfiveConnectionParticipants,
   myfiveConnectionSlots,
   myfiveConsentLedger,
   myfiveEapVouchers,
@@ -20,10 +23,36 @@ import {
 import { EMPTY_LOVE_FLOW_PROFILE, isLoveFlowProfile } from "../../shared/loveFlowProfile";
 import { MYFIVE_EXPORT_SCHEMA_VERSION, renderMyFiveExportMarkdown } from "../../shared/myfiveDataExport";
 import type { MyFiveDataExport } from "../../shared/myfiveDataExport";
+import {
+  agreementCapabilities,
+  MYFIVE_INVITATION_RETENTION_DAYS,
+} from "../../shared/myfiveSurvivorCustody";
 import { includesEveryValueRule, VALUE_RULES_VERSION } from "../../shared/valueRules";
+import {
+  agreementMutationLockKey,
+  agreementConsentStateForActor,
+  evaluateBilateralValueRulesGate,
+  type MyFiveBilateralSlot,
+  type MyFiveConsentEvent,
+} from "./myfive-consent-policy";
 import { isConnectorEnabled } from "../lib/connectorGuard";
-import { requireAdminAuth } from "../auth";
-import { requirePortalAuth } from "../portal-auth";
+import { purgeExpiredMyFiveProvisionalData } from "../myfive-provisional-cleanup";
+import { deleteMyFiveClassifiedRecords } from "../myfive-ownership-deletion";
+import {
+  beginMyFiveAccountDeletion,
+  createStripeDeletionGateway,
+  isResumableMyFiveDeletionEnabled,
+  resumeMyFiveAccountDeletion,
+} from "../myfive-account-deletion";
+import { readExportableMyFiveAgreements } from "../myfive-ownership-export";
+import {
+  buildEapVoucherAuditDetails,
+  createRequireMyFiveAccount,
+  createRequireMyFiveAdminWriter,
+  getVerifiedMyFiveUserId,
+} from "./myfive-authorization";
+import { rejectServerPrivateCheckIn } from "./myfive-private-check-in";
+import { writeMyFiveOperationalFailure } from "../myfive-security";
 
 export const myfiveRouter = Router();
 
@@ -40,11 +69,27 @@ function hashVoucherCode(code: string): string {
   return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
 }
 
-function getMyFiveActorId(req: Request): string {
-  if (req.session.clientUserId) return req.session.clientUserId;
-  if (!req.session.myfiveActorId) req.session.myfiveActorId = `session:${randomUUID()}`;
-  return req.session.myfiveActorId;
-}
+const requireMyFiveAccount = createRequireMyFiveAccount(async (userId) => {
+  const [account] = await db.select({
+    id: clientUsers.id,
+    email: clientUsers.email,
+    isActive: clientUsers.isActive,
+    accountState: clientUsers.accountState,
+    authVersion: clientUsers.authVersion,
+  })
+    .from(clientUsers).where(eq(clientUsers.id, userId)).limit(1);
+  return account ?? null;
+});
+
+const requireMyFiveAdminWriter = createRequireMyFiveAdminWriter(async (adminUserId) => {
+  const [admin] = await db.select({
+    id: adminUsers.id,
+    email: adminUsers.email,
+    role: adminUsers.role,
+    isActive: adminUsers.isActive,
+  }).from(adminUsers).where(eq(adminUsers.id, adminUserId)).limit(1);
+  return admin ?? null;
+});
 
 function readSlotId(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -57,30 +102,178 @@ async function findOwnedSlot(actorUserId: string, slotId: string, allowSelf = tr
     eq(myfiveConnectionSlots.id, slotId),
     eq(myfiveConnectionSlots.userId, actorUserId),
     eq(myfiveConnectionSlots.status, "active"),
+    eq(myfiveConnectionSlots.lifecycleState, "active"),
   )).limit(1);
   return slot && (allowSelf || slot.isSelfVault !== "true") ? slot : null;
 }
 
 async function findAccessibleSlot(actorUserId: string, slotId: string, allowSelf = true) {
-  const [slot] = await db.select().from(myfiveConnectionSlots).where(and(
-    eq(myfiveConnectionSlots.id, slotId), eq(myfiveConnectionSlots.status, "active"),
-    or(eq(myfiveConnectionSlots.userId, actorUserId), eq(myfiveConnectionSlots.partnerUserId, actorUserId)),
-  )).limit(1);
-  return slot && (allowSelf || slot.isSelfVault !== "true") ? slot : null;
+  const [record] = await db.select({ slot: myfiveConnectionSlots })
+    .from(myfiveConnectionParticipants)
+    .innerJoin(myfiveConnectionSlots, eq(myfiveConnectionParticipants.connectionId, myfiveConnectionSlots.id))
+    .where(and(
+      eq(myfiveConnectionParticipants.userId, actorUserId),
+      eq(myfiveConnectionParticipants.lifecycleState, "active"),
+      eq(myfiveConnectionSlots.id, slotId),
+      eq(myfiveConnectionSlots.status, "active"),
+      eq(myfiveConnectionSlots.lifecycleState, "active"),
+    )).limit(1);
+  return record?.slot && (allowSelf || record.slot.isSelfVault !== "true") ? record.slot : null;
 }
 
-function serializeSlot(slot: typeof myfiveConnectionSlots.$inferSelect) {
+async function findReadableConnection(actorUserId: string, slotId: string) {
+  const [record] = await db.select({
+    slot: myfiveConnectionSlots,
+    participantLifecycle: myfiveConnectionParticipants.lifecycleState,
+    participantRole: myfiveConnectionParticipants.role,
+  }).from(myfiveConnectionParticipants)
+    .innerJoin(myfiveConnectionSlots, eq(myfiveConnectionParticipants.connectionId, myfiveConnectionSlots.id))
+    .where(and(
+      eq(myfiveConnectionParticipants.userId, actorUserId),
+      eq(myfiveConnectionSlots.id, slotId),
+      or(
+        and(
+          eq(myfiveConnectionParticipants.lifecycleState, "active"),
+          eq(myfiveConnectionSlots.lifecycleState, "active"),
+          eq(myfiveConnectionSlots.status, "active"),
+        ),
+        and(
+          eq(myfiveConnectionParticipants.lifecycleState, "survivor"),
+          eq(myfiveConnectionSlots.lifecycleState, "locked"),
+          eq(myfiveConnectionSlots.status, "siloed"),
+        ),
+      ),
+    )).limit(1);
+  return record ?? null;
+}
+
+async function ensureActorParticipantRelations(actorUserId: string) {
+  await pool.query(
+    `INSERT INTO myfive_connection_participants (connection_id, user_id, role)
+     SELECT id, $1, CASE WHEN user_id = $1 THEN 'owner' ELSE 'partner' END
+     FROM myfive_connection_slots
+     WHERE user_id = $1 OR partner_user_id = $1
+     ON CONFLICT (connection_id, user_id) DO NOTHING`,
+    [actorUserId],
+  );
+}
+
+function serializeSlot(
+  slot: typeof myfiveConnectionSlots.$inferSelect,
+  participant: { role: string; lifecycleState: string; survivorAgreementAvailable?: boolean } = { role: "owner", lifecycleState: "active" },
+) {
   const isSelf = slot.isSelfVault === "true";
+  const isOwner = participant.role === "owner";
+  const isSurvivor = participant.lifecycleState === "survivor";
+  const isEmpty = slot.status === "empty";
   return {
     id: slot.id, slotIndex: slot.slotIndex,
-    name: isSelf ? "Self (Philautia)" : slot.partnerName,
-    relation: isSelf ? "Self-Reflection Slot" : slot.relationType,
+    name: isSelf ? "Self (Philautia)" : isEmpty ? "Empty Slot" : isSurvivor ? "Archived shared agreement" : isOwner ? slot.partnerName : "Shared connection",
+    relation: isSelf ? "Self-Reflection Slot" : isEmpty ? "Available Seat" : isSurvivor
+      ? participant.survivorAgreementAvailable ? "Frozen survivor copy" : "Agreement deleted"
+      : isOwner ? slot.relationType : "Linked participant",
     status: slot.status, isSelf, partnerConnected: Boolean(slot.partnerUserId),
+    role: participant.role,
+    lifecycleState: participant.lifecycleState,
+    survivorAgreementAvailable: isSurvivor && Boolean(participant.survivorAgreementAvailable),
+    canEdit: participant.lifecycleState === "active" && slot.lifecycleState === "active",
   };
 }
 
 function isoString(value: Date | null): string | null {
   return value?.toISOString() ?? null;
+}
+
+function normalizeConsentEvent(row: typeof myfiveConsentLedger.$inferSelect): MyFiveConsentEvent {
+  return {
+    id: row.id,
+    actorUserId: row.actorUserId,
+    slotId: row.slotId,
+    consentType: row.consentType,
+    eventType: row.eventType === "withdrawn" ? "withdrawn" : "accepted",
+    rulesVersion: row.rulesVersion,
+    acceptedRuleIds: row.acceptedRuleIds,
+    acceptedAt: row.acceptedAt,
+  };
+}
+
+async function appendValueRulesConsentEvent(input: {
+  actorUserId: string;
+  slotId: string;
+  eventType: "accepted" | "withdrawn";
+  acceptedRuleIds: readonly string[];
+}) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [agreementMutationLockKey(input.slotId)]);
+    const slotResult = await client.query(
+      `SELECT slots.id
+       FROM myfive_connection_slots AS slots
+       INNER JOIN myfive_connection_participants AS participants
+         ON participants.connection_id = slots.id
+        AND participants.user_id = $2
+        AND participants.lifecycle_state = 'active'
+       WHERE slots.id = $1
+         AND slots.status = 'active'
+         AND slots.lifecycle_state = 'active'
+         AND slots.is_self_vault <> 'true'
+       FOR UPDATE OF slots`,
+      [input.slotId, input.actorUserId],
+    );
+    if (!slotResult.rows[0]) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const receiptResult = await client.query<{
+      id: string;
+      rules_version: string;
+      accepted_at: Date;
+    }>(
+      `INSERT INTO myfive_consent_ledger
+        (actor_user_id, slot_id, consent_type, event_type, rules_version, accepted_rule_ids, accepted_at)
+       VALUES (
+         $1, $2, 'agreement-sharing', $3, $4, $5,
+         GREATEST(
+           clock_timestamp(),
+           COALESCE(
+             (SELECT MAX(accepted_at) + interval '1 millisecond'
+              FROM myfive_consent_ledger
+              WHERE slot_id = $2 AND consent_type = 'agreement-sharing'),
+             clock_timestamp()
+           )
+         )
+       )
+       RETURNING id, rules_version, accepted_at`,
+      [input.actorUserId, input.slotId, input.eventType, VALUE_RULES_VERSION, [...input.acceptedRuleIds]],
+    );
+    await client.query("COMMIT");
+    return receiptResult.rows[0];
+  } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // The transaction may already be closed by a fail-fast branch.
+    }
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function readBilateralConsentGate(actorUserId: string, slot: MyFiveBilateralSlot) {
+  const consentRows = await db.select().from(myfiveConsentLedger).where(and(
+    eq(myfiveConsentLedger.slotId, slot.id),
+    eq(myfiveConsentLedger.consentType, "agreement-sharing"),
+    eq(myfiveConsentLedger.rulesVersion, VALUE_RULES_VERSION),
+  ));
+  return evaluateBilateralValueRulesGate({
+    actorUserId,
+    slot,
+    consentEvents: consentRows.map(normalizeConsentEvent),
+    rulesVersion: VALUE_RULES_VERSION,
+  });
 }
 
 function setDataExportPrivacyHeaders(_req: Request, res: Response, next: NextFunction) {
@@ -99,19 +292,36 @@ function setDataExportPrivacyHeaders(_req: Request, res: Response, next: NextFun
 }
 
 async function persistMyFiveSubscription(userId: string, customerId: string | null, subscriptionId: string, planStatus: string) {
-  await db.insert(myfiveSubscriptions).values({
-    userId, stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId,
-    planStatus, sponsoredSeatsAllocated: 0,
-  }).onConflictDoUpdate({ target: myfiveSubscriptions.userId, set: {
-    stripeCustomerId: customerId, stripeSubscriptionId: subscriptionId, planStatus,
-  } });
+  const result = await pool.query(
+    `INSERT INTO myfive_subscriptions
+       (user_id, stripe_customer_id, stripe_subscription_id, plan_status, sponsored_seats_allocated)
+     SELECT id, $2, $3, $4, 0
+     FROM client_users
+     WHERE id = $1 AND is_active = 'true' AND account_state = 'active'
+     ON CONFLICT (user_id) DO UPDATE SET
+       stripe_customer_id = EXCLUDED.stripe_customer_id,
+       stripe_subscription_id = EXCLUDED.stripe_subscription_id,
+       plan_status = EXCLUDED.plan_status
+     RETURNING user_id`,
+    [userId, customerId, subscriptionId, planStatus],
+  );
+  return result.rowCount === 1;
 }
 
 export async function handleMyFiveStripeEvent(event: Stripe.Event): Promise<void> {
+  const myFiveEvent = event.type === "checkout.session.completed"
+    ? (event.data.object as Stripe.Checkout.Session).metadata?.product === "myfive_primary"
+    : (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted")
+      ? (event.data.object as Stripe.Subscription).metadata?.product === "myfive_primary"
+      : false;
+  if (!myFiveEvent) return;
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    throw new Error("Verified Stripe signature required for MyFive subscription persistence");
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    if (session.metadata?.product !== "myfive_primary") return;
-    const userId = session.metadata.actorUserId;
+    const userId = session.metadata?.actorUserId;
     const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
     const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
     if (userId && subscriptionId) await persistMyFiveSubscription(userId, customerId, subscriptionId, "active");
@@ -121,8 +331,18 @@ export async function handleMyFiveStripeEvent(event: Stripe.Event): Promise<void
     const planStatus = event.type === "customer.subscription.deleted"
       ? "canceled"
       : (["active", "trialing"].includes(subscription.status) ? "active" : subscription.status);
-    await db.update(myfiveSubscriptions).set({ planStatus })
-      .where(eq(myfiveSubscriptions.stripeSubscriptionId, subscription.id));
+    await pool.query(
+      `UPDATE myfive_subscriptions AS subscriptions
+       SET plan_status = $1
+       WHERE subscriptions.stripe_subscription_id = $2
+         AND EXISTS (
+           SELECT 1 FROM client_users AS accounts
+           WHERE accounts.id = subscriptions.user_id
+             AND accounts.is_active = 'true'
+             AND accounts.account_state = 'active'
+         )`,
+      [planStatus, subscription.id],
+    );
   }
 }
 
@@ -137,26 +357,71 @@ myfiveRouter.get("/health", (_req: Request, res: Response) => {
 });
 
 // Fetch active connection slots (Dunbar limit 5 + 1 Philautia)
-myfiveRouter.get("/slots", async (req: Request, res: Response) => {
-  const actorUserId = getMyFiveActorId(req);
+myfiveRouter.get("/slots", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
   try {
+    await purgeExpiredMyFiveProvisionalData(actorUserId);
     await db.insert(myfiveConnectionSlots).values({
       userId: actorUserId, slotIndex: 0, status: "active", isSelfVault: "true",
     }).onConflictDoNothing();
-    const stored = await db.select().from(myfiveConnectionSlots)
-      .where(eq(myfiveConnectionSlots.userId, actorUserId)).orderBy(asc(myfiveConnectionSlots.slotIndex));
-    const byIndex = new Map(stored.map((slot) => [slot.slotIndex, serializeSlot(slot)]));
+    await ensureActorParticipantRelations(actorUserId);
+    const [records, frozenAgreements] = await Promise.all([
+      db.select({
+        slot: myfiveConnectionSlots,
+        participantRole: myfiveConnectionParticipants.role,
+        participantLifecycle: myfiveConnectionParticipants.lifecycleState,
+      }).from(myfiveConnectionParticipants)
+        .innerJoin(myfiveConnectionSlots, eq(myfiveConnectionParticipants.connectionId, myfiveConnectionSlots.id))
+        .where(and(
+          eq(myfiveConnectionParticipants.userId, actorUserId),
+          or(
+            and(
+              eq(myfiveConnectionParticipants.lifecycleState, "active"),
+              eq(myfiveConnectionSlots.lifecycleState, "active"),
+            ),
+            and(
+              eq(myfiveConnectionParticipants.lifecycleState, "survivor"),
+              eq(myfiveConnectionSlots.lifecycleState, "locked"),
+              eq(myfiveConnectionSlots.status, "siloed"),
+            ),
+          ),
+        )).orderBy(asc(myfiveConnectionSlots.slotIndex)),
+      db.select({ connectionId: myfiveAgreements.slotId })
+        .from(myfiveConnectionParticipants)
+        .innerJoin(myfiveAgreements, eq(myfiveConnectionParticipants.connectionId, myfiveAgreements.slotId))
+        .innerJoin(myfiveConnectionSlots, eq(myfiveConnectionParticipants.connectionId, myfiveConnectionSlots.id))
+        .where(and(
+          eq(myfiveConnectionParticipants.userId, actorUserId),
+          eq(myfiveConnectionParticipants.lifecycleState, "survivor"),
+          eq(myfiveConnectionSlots.lifecycleState, "locked"),
+          eq(myfiveConnectionSlots.status, "siloed"),
+          eq(myfiveAgreements.lifecycleState, "frozen"),
+          eq(myfiveAgreements.survivorUserId, actorUserId),
+        )),
+    ]);
+    const frozenAgreementConnectionIds = new Set(frozenAgreements.map((agreement) => agreement.connectionId));
+    const owned = records.filter((record) => record.participantRole === "owner");
+    const linked = records.filter((record) => record.participantRole === "partner" && record.slot.isSelfVault !== "true");
+    const byIndex = new Map(owned.map((record) => [record.slot.slotIndex, serializeSlot(record.slot, {
+      role: record.participantRole,
+      lifecycleState: record.participantLifecycle,
+      survivorAgreementAvailable: frozenAgreementConnectionIds.has(record.slot.id),
+    })]));
     res.json({ maxSeats: 5, selfVaultActive: true, slots: Array.from({ length: 6 }, (_, slotIndex) =>
-      byIndex.get(slotIndex) ?? { id: null, slotIndex, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false },
-    ) });
+      byIndex.get(slotIndex) ?? { id: null, slotIndex, name: "Empty Slot", relation: "Available Seat", status: "empty", isSelf: false, role: "owner", lifecycleState: "active", survivorAgreementAvailable: false, canEdit: true },
+    ), linkedConnections: linked.map((record) => serializeSlot(record.slot, {
+      role: record.participantRole,
+      lifecycleState: record.participantLifecycle,
+      survivorAgreementAvailable: frozenAgreementConnectionIds.has(record.slot.id),
+    })) });
   } catch (error) {
-    console.error("MyFive slot read failed", error);
+    writeMyFiveOperationalFailure("slot_read_failed");
     res.status(500).json({ error: "Connection seats could not be loaded" });
   }
 });
 
-myfiveRouter.post("/slots", async (req: Request, res: Response) => {
-  const actorUserId = getMyFiveActorId(req);
+myfiveRouter.post("/slots", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
   const partnerName = typeof req.body?.partnerName === "string" ? req.body.partnerName.trim() : "";
   const relationType = typeof req.body?.relationType === "string" ? req.body.relationType.trim() : "";
   if (!partnerName || partnerName.length > 100 || !relationType || relationType.length > 100) {
@@ -167,7 +432,7 @@ myfiveRouter.post("/slots", async (req: Request, res: Response) => {
     await client.query("BEGIN");
     await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-slots:${actorUserId}`]);
     const occupied = await client.query<{ slot_index: number }>(
-      "SELECT slot_index FROM myfive_connection_slots WHERE user_id = $1 AND slot_index BETWEEN 1 AND 5 AND status = 'active' ORDER BY slot_index", [actorUserId],
+      "SELECT slot_index FROM myfive_connection_slots WHERE user_id = $1 AND slot_index BETWEEN 1 AND 5 AND status <> 'empty' ORDER BY slot_index", [actorUserId],
     );
     const used = new Set(occupied.rows.map((row) => row.slot_index));
     const slotIndex = [1, 2, 3, 4, 5].find((candidate) => !used.has(candidate));
@@ -176,35 +441,46 @@ myfiveRouter.post("/slots", async (req: Request, res: Response) => {
       return res.status(409).json({ error: "All five active partner connection seats are occupied" });
     }
     const result = await client.query(
-      `INSERT INTO myfive_connection_slots (user_id, slot_index, partner_name, relation_type, status, is_self_vault)
-       VALUES ($1, $2, $3, $4, 'active', 'false')
-       ON CONFLICT (user_id, slot_index) DO UPDATE SET partner_name = EXCLUDED.partner_name, relation_type = EXCLUDED.relation_type, status = 'active'
-       RETURNING id, user_id, slot_index, partner_name, partner_user_id, relation_type, status, is_self_vault, created_at`,
+      `INSERT INTO myfive_connection_slots (user_id, slot_index, partner_name, relation_type, status, lifecycle_state, locked_at, is_self_vault)
+       VALUES ($1, $2, $3, $4, 'active', 'active', NULL, 'false')
+       ON CONFLICT (user_id, slot_index) DO UPDATE SET
+         partner_name = EXCLUDED.partner_name,
+         relation_type = EXCLUDED.relation_type,
+         status = 'active',
+         lifecycle_state = 'active',
+         locked_at = NULL
+       RETURNING id, user_id, slot_index, partner_name, partner_user_id, relation_type, status, lifecycle_state, locked_at, is_self_vault, created_at`,
       [actorUserId, slotIndex, partnerName, relationType],
     );
-    await client.query("COMMIT");
     const row = result.rows[0];
+    await client.query(
+      `INSERT INTO myfive_connection_participants (connection_id, user_id, role, lifecycle_state, revoked_at)
+       VALUES ($1, $2, 'owner', 'active', NULL)
+       ON CONFLICT (connection_id, user_id) DO UPDATE SET role = 'owner', lifecycle_state = 'active', revoked_at = NULL`,
+      [row.id, actorUserId],
+    );
+    await client.query("COMMIT");
     res.status(201).json({ slot: serializeSlot({ id: row.id, userId: row.user_id, slotIndex: row.slot_index,
       partnerName: row.partner_name, partnerUserId: row.partner_user_id ?? null, relationType: row.relation_type, status: row.status,
-      isSelfVault: row.is_self_vault, createdAt: row.created_at }) });
+      lifecycleState: row.lifecycle_state, lockedAt: row.locked_at, isSelfVault: row.is_self_vault, createdAt: row.created_at }) });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive slot creation failed", error);
+    writeMyFiveOperationalFailure("slot_creation_failed");
     res.status(500).json({ error: "Connection seat could not be created" });
   } finally {
     client.release();
   }
 });
 
-myfiveRouter.post("/slots/:slotId/invitations", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before inviting a partner" });
-  const sponsorUserId = req.session.clientUserId;
+myfiveRouter.post("/slots/:slotId/invitations", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const sponsorUserId = getVerifiedMyFiveUserId(req);
   const slotId = readSlotId(req.params.slotId);
   const inviteeEmail = typeof req.body?.inviteeEmail === "string" ? req.body.inviteeEmail.trim().toLowerCase() : "";
   if (!slotId || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteeEmail)) {
     return res.status(400).json({ error: "An active partner seat and valid invitee email are required" });
   }
   try {
+    await purgeExpiredMyFiveProvisionalData(sponsorUserId);
     const slot = await findOwnedSlot(sponsorUserId, slotId, false);
     if (!slot) return res.status(404).json({ error: "Active partner connection not found" });
     if (slot.partnerUserId) return res.status(409).json({ error: "This connection seat is already linked to a partner account" });
@@ -213,27 +489,68 @@ myfiveRouter.post("/slots/:slotId/invitations", async (req: Request, res: Respon
     )).limit(1);
     if (!membership) return res.status(402).json({ error: "An active MyFive primary membership is required to sponsor partners" });
 
-    await db.update(myfiveInvitations).set({ status: "revoked" }).where(and(
+    await db.delete(myfiveInvitations).where(and(
       eq(myfiveInvitations.slotId, slotId), eq(myfiveInvitations.sponsorUserId, sponsorUserId), eq(myfiveInvitations.status, "pending"),
     ));
     const token = randomBytes(32).toString("base64url");
     const tokenHash = createHash("sha256").update(token).digest("hex");
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + MYFIVE_INVITATION_RETENTION_DAYS * 24 * 60 * 60 * 1000);
     await db.insert(myfiveInvitations).values({ sponsorUserId, slotId, inviteeEmail, tokenHash, expiresAt });
     const origin = `${req.protocol}://${req.get("host")}`;
     res.status(201).json({ invitationUrl: `${origin}/myfive/invite/${token}`, expiresAt: expiresAt.toISOString() });
   } catch (error) {
-    console.error("MyFive invitation creation failed", error);
+    writeMyFiveOperationalFailure("invitation_creation_failed");
     res.status(500).json({ error: "Partner invitation could not be created" });
   }
 });
 
-myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId || !req.session.clientEmail) return res.status(401).json({ error: "Sign in with the invited email address to accept" });
+myfiveRouter.delete("/slots/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const ownerUserId = getVerifiedMyFiveUserId(req);
+  const slotId = readSlotId(req.params.slotId);
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await client.query(
+      `SELECT id, partner_user_id, is_self_vault
+       FROM myfive_connection_slots
+       WHERE id = $1 AND user_id = $2 AND lifecycle_state = 'active'
+       FOR UPDATE`,
+      [slotId, ownerUserId],
+    );
+    const slot = result.rows[0];
+    if (!slot) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Connection seat not found" });
+    }
+    if (slot.is_self_vault === "true" || slot.partner_user_id) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({ error: "Only an unaccepted provisional partner connection can be removed here" });
+    }
+    await client.query("DELETE FROM myfive_invitations WHERE slot_id = $1 AND sponsor_user_id = $2", [slotId, ownerUserId]);
+    await client.query(
+      `UPDATE myfive_connection_slots
+       SET partner_name = NULL, relation_type = NULL, status = 'empty'
+       WHERE id = $1 AND user_id = $2`,
+      [slotId, ownerUserId],
+    );
+    await client.query("COMMIT");
+    return res.status(204).send();
+  } catch (error) {
+    await client.query("ROLLBACK");
+    writeMyFiveOperationalFailure("provisional_connection_deletion_failed");
+    return res.status(500).json({ error: "Provisional connection could not be removed" });
+  } finally {
+    client.release();
+  }
+});
+
+myfiveRouter.post("/invitations/:token/accept", requireMyFiveAccount, async (req: Request, res: Response) => {
+  if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in with the invited email address to accept" });
   const token = typeof req.params.token === "string" ? req.params.token : "";
   if (token.length < 32 || token.length > 100) return res.status(400).json({ error: "Invalid invitation token" });
   const tokenHash = createHash("sha256").update(token).digest("hex");
-  const inviteeUserId = req.session.clientUserId;
+  const inviteeUserId = getVerifiedMyFiveUserId(req);
   const inviteeEmail = req.session.clientEmail.toLowerCase();
   const client = await pool.connect();
   try {
@@ -243,16 +560,31 @@ myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Respon
        FROM myfive_invitations WHERE token_hash = $1 FOR UPDATE`, [tokenHash],
     );
     const invitation = found.rows[0];
-    if (!invitation || invitation.status !== "pending" || new Date(invitation.expires_at) <= new Date()) {
+    if (!invitation || invitation.status !== "pending") {
       await client.query("ROLLBACK");
       return res.status(410).json({ error: "This invitation is invalid, expired, or already used" });
+    }
+    if (new Date(invitation.expires_at) <= new Date()) {
+      await client.query("DELETE FROM myfive_invitations WHERE id = $1", [invitation.id]);
+      await client.query(
+        `UPDATE myfive_connection_slots
+         SET partner_name = NULL, relation_type = NULL, status = 'empty'
+         WHERE id = $1 AND user_id = $2 AND partner_user_id IS NULL`,
+        [invitation.slot_id, invitation.sponsor_user_id],
+      );
+      await client.query("COMMIT");
+      return res.status(410).json({ error: "This invitation is invalid, expired, or already used" });
+    }
+    if (!invitation.invitee_email || invitation.sponsor_user_id === inviteeUserId) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({ error: "This invitation cannot be accepted by this account" });
     }
     if (invitation.invitee_email.toLowerCase() !== inviteeEmail) {
       await client.query("ROLLBACK");
       return res.status(403).json({ error: "Sign in with the email address that received this invitation" });
     }
     const linked = await client.query(
-      "UPDATE myfive_connection_slots SET partner_user_id = $1 WHERE id = $2 AND user_id = $3 AND slot_index BETWEEN 1 AND 5 AND status = 'active' AND partner_user_id IS NULL",
+      "UPDATE myfive_connection_slots SET partner_user_id = $1 WHERE id = $2 AND user_id = $3 AND slot_index BETWEEN 1 AND 5 AND status = 'active' AND lifecycle_state = 'active' AND partner_user_id IS NULL",
       [inviteeUserId, invitation.slot_id, invitation.sponsor_user_id],
     );
     if (linked.rowCount !== 1) {
@@ -260,8 +592,10 @@ myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Respon
       return res.status(409).json({ error: "This connection seat has already been claimed" });
     }
     await client.query(
-      "UPDATE myfive_invitations SET status = 'accepted', accepted_by_user_id = $1, accepted_at = now() WHERE id = $2",
-      [inviteeUserId, invitation.id],
+      `INSERT INTO myfive_connection_participants (connection_id, user_id, role, lifecycle_state)
+       VALUES ($1, $2, 'owner', 'active'), ($1, $3, 'partner', 'active')
+       ON CONFLICT (connection_id, user_id) DO UPDATE SET lifecycle_state = 'active', revoked_at = NULL`,
+      [invitation.slot_id, invitation.sponsor_user_id, inviteeUserId],
     );
     await client.query(
       `INSERT INTO myfive_subscriptions (user_id, plan_status, sponsor_user_id, sponsored_seats_allocated)
@@ -272,31 +606,24 @@ myfiveRouter.post("/invitations/:token/accept", async (req: Request, res: Respon
     );
     await client.query(
       `UPDATE myfive_subscriptions SET sponsored_seats_allocated = (
-         SELECT count(*)::integer FROM myfive_invitations WHERE sponsor_user_id = $1 AND status = 'accepted'
+         SELECT count(*)::integer FROM myfive_subscriptions WHERE sponsor_user_id = $1 AND plan_status = 'sponsored'
        ) WHERE user_id = $1 AND plan_status = 'active'`, [invitation.sponsor_user_id],
     );
+    await client.query("DELETE FROM myfive_invitations WHERE id = $1", [invitation.id]);
     await client.query("COMMIT");
     res.json({ status: "accepted", sponsored: true, slotId: invitation.slot_id });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive invitation acceptance failed", error);
+    writeMyFiveOperationalFailure("invitation_acceptance_failed");
     res.status(500).json({ error: "Partner invitation could not be accepted" });
   } finally { client.release(); }
 });
 
-// Create/store private check-in
-myfiveRouter.post("/check-in", (req: Request, res: Response) => {
-  const { octant, reflectionText } = req.body;
-  res.json({
-    success: true,
-    message: "Private check-in securely logged into encrypted vault",
-    octant: octant || "flow",
-    savedAt: new Date().toISOString()
-  });
-});
+// Alpha privacy boundary: this endpoint never accepts private check-in content.
+myfiveRouter.post("/check-in", rejectServerPrivateCheckIn);
 
 // Validate the unskippable consent boundary before a shared view is unlocked.
-myfiveRouter.post("/consent", async (req: Request, res: Response) => {
+myfiveRouter.post("/consent", requireMyFiveAccount, async (req: Request, res: Response) => {
   const { acceptedRuleIds, rulesVersion, consentType } = req.body ?? {};
   const slotId = readSlotId(req.body?.slotId);
   if (rulesVersion !== VALUE_RULES_VERSION || !includesEveryValueRule(acceptedRuleIds)) {
@@ -310,122 +637,340 @@ myfiveRouter.post("/consent", async (req: Request, res: Response) => {
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
-    const actorUserId = getMyFiveActorId(req);
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
-    const [receipt] = await db.insert(myfiveConsentLedger).values({
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    const receipt = await appendValueRulesConsentEvent({
       actorUserId,
       slotId,
-      consentType,
-      rulesVersion,
+      eventType: "accepted",
       acceptedRuleIds: [...acceptedRuleIds],
-    }).returning();
+    });
+    if (!receipt) return res.status(404).json({ error: "Active partner connection not found" });
 
     res.status(201).json({
       success: true,
       receiptId: receipt.id,
-      rulesVersion: receipt.rulesVersion,
-      acceptedAt: receipt.acceptedAt.toISOString(),
+      rulesVersion: receipt.rules_version,
+      acceptedAt: new Date(receipt.accepted_at).toISOString(),
       note: "Partner consent is a separate required event",
     });
   } catch (error) {
-    console.error("MyFive consent persistence failed", error);
+    writeMyFiveOperationalFailure("consent_persistence_failed");
     res.status(500).json({ error: "Consent could not be recorded" });
   }
 });
 
+myfiveRouter.post("/consent/withdraw", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const slotId = readSlotId(req.body?.slotId);
+  const consentType = typeof req.body?.consentType === "string" ? req.body.consentType : "agreement-sharing";
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  if (consentType !== "agreement-sharing") return res.status(400).json({ error: "Unsupported consent purpose" });
+
+  try {
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    const receipt = await appendValueRulesConsentEvent({
+      actorUserId,
+      slotId,
+      eventType: "withdrawn",
+      acceptedRuleIds: [],
+    });
+    if (!receipt) return res.status(404).json({ error: "Active partner connection not found" });
+    res.status(201).json({
+      success: true,
+      receiptId: receipt.id,
+      rulesVersion: receipt.rules_version,
+      withdrawnAt: new Date(receipt.accepted_at).toISOString(),
+    });
+  } catch (error) {
+    writeMyFiveOperationalFailure("consent_withdrawal_failed");
+    res.status(500).json({ error: "Consent withdrawal could not be recorded" });
+  }
+});
+
 // Read the latest immutable agreement version for this actor and connection slot.
-myfiveRouter.get("/agreements/:slotId", async (req: Request, res: Response) => {
+myfiveRouter.get("/agreements/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.params.slotId);
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
-    const actorUserId = getMyFiveActorId(req);
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    const connection = await findReadableConnection(actorUserId, slotId);
+    if (!connection || connection.slot.isSelfVault === "true") {
+      return res.status(404).json({ error: "Shared connection not found" });
+    }
+    const { slot, participantLifecycle } = connection;
     const [latest] = await db.select().from(myfiveAgreements).where(and(
       eq(myfiveAgreements.slotId, slotId),
-      eq(myfiveAgreements.creatorUserId, actorUserId),
+      participantLifecycle === "survivor"
+        ? eq(myfiveAgreements.lifecycleState, "frozen")
+        : eq(myfiveAgreements.lifecycleState, "active"),
     )).orderBy(desc(myfiveAgreements.version)).limit(1);
 
+    if (participantLifecycle === "survivor") {
+      if (!latest || latest.survivorUserId !== actorUserId) {
+        return res.status(404).json({ error: "Frozen agreement not found" });
+      }
+      await db.insert(myfiveAgreementCustodyEvents).values({
+        actorUserId,
+        connectionId: slotId,
+        eventType: "read",
+        outcome: "success",
+      });
+      const capabilities = agreementCapabilities("survivor", "frozen");
+      return res.json({
+        id: latest.id,
+        agreementText: latest.agreementText,
+        version: latest.version,
+        savedAt: latest.createdAt.toISOString(),
+        valueRulesVersion: latest.valueRulesVersion,
+        lifecycleState: "frozen",
+        consentState: "survivor_locked",
+        capabilities,
+      });
+    }
+
+    if (!slot.userId || !slot.partnerUserId) {
+      return res.status(404).json({ error: "Active partner connection not found" });
+    }
+    const activeSlot: MyFiveBilateralSlot = {
+      id: slot.id,
+      userId: slot.userId,
+      partnerUserId: slot.partnerUserId,
+      status: slot.status,
+      isSelfVault: slot.isSelfVault,
+    };
+    const consentGate = await readBilateralConsentGate(actorUserId, activeSlot);
+    let consentState = agreementConsentStateForActor(consentGate, actorUserId);
+    if (consentState === "own_consent_required") {
+      const [latestOwnConsent] = await db.select({
+        rulesVersion: myfiveConsentLedger.rulesVersion,
+        eventType: myfiveConsentLedger.eventType,
+      }).from(myfiveConsentLedger).where(and(
+        eq(myfiveConsentLedger.actorUserId, actorUserId),
+        eq(myfiveConsentLedger.slotId, slotId),
+        eq(myfiveConsentLedger.consentType, "agreement-sharing"),
+      )).orderBy(desc(myfiveConsentLedger.acceptedAt)).limit(1);
+      if (latestOwnConsent?.eventType === "accepted" && latestOwnConsent.rulesVersion !== VALUE_RULES_VERSION) {
+        consentState = "version_refresh_required";
+      }
+    }
     res.json(latest ? {
       id: latest.id,
       agreementText: latest.agreementText,
       version: latest.version,
       savedAt: latest.createdAt.toISOString(),
+      valueRulesVersion: latest.valueRulesVersion,
+      lifecycleState: "active",
+      consentState,
+      capabilities: agreementCapabilities("active", "active"),
     } : {
       agreementText: DEFAULT_AGREEMENT,
       version: 0,
       savedAt: null,
+      valueRulesVersion: VALUE_RULES_VERSION,
+      lifecycleState: "active",
+      consentState,
+      capabilities: agreementCapabilities("active", "active"),
     });
   } catch (error) {
-    console.error("MyFive agreement read failed", error);
+    writeMyFiveOperationalFailure("agreement_read_failed");
     res.status(500).json({ error: "Agreement could not be loaded" });
   }
 });
 
 // Append a new version; prior versions are never overwritten or deleted.
-myfiveRouter.post("/agreements", async (req: Request, res: Response) => {
-  const { agreementText, consentReceiptId, expectedVersion } = req.body ?? {};
+myfiveRouter.post("/agreements", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const { agreementText, expectedVersion } = req.body ?? {};
   const slotId = readSlotId(req.body?.slotId);
-  const actorUserId = getMyFiveActorId(req);
+  const actorUserId = getVerifiedMyFiveUserId(req);
   if (!slotId || typeof agreementText !== "string" || !agreementText.trim() || agreementText.length > 20_000) {
     return res.status(400).json({ error: "A connection slot and agreement text (maximum 20,000 characters) are required" });
   }
-  if (typeof consentReceiptId !== "string" || !Number.isInteger(expectedVersion) || expectedVersion < 0) {
-    return res.status(400).json({ error: "A valid consent receipt and expected version are required" });
+  if (!Number.isInteger(expectedVersion) || expectedVersion < 0) {
+    return res.status(400).json({ error: "A valid expected version is required" });
   }
 
+  const client = await pool.connect();
   try {
-    if (!await findAccessibleSlot(actorUserId, slotId, false)) return res.status(404).json({ error: "Active partner connection not found" });
-    const [consent] = await db.select({ id: myfiveConsentLedger.id }).from(myfiveConsentLedger).where(and(
-      eq(myfiveConsentLedger.id, consentReceiptId),
-      eq(myfiveConsentLedger.actorUserId, actorUserId),
-      eq(myfiveConsentLedger.slotId, slotId),
-      eq(myfiveConsentLedger.consentType, "agreement-sharing"),
-      eq(myfiveConsentLedger.rulesVersion, VALUE_RULES_VERSION),
-    )).limit(1);
-    if (!consent) return res.status(403).json({ error: "Current ValueRules™ consent is required" });
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [agreementMutationLockKey(slotId)]);
+    const slotResult = await client.query(
+      `SELECT slots.id, slots.user_id, slots.partner_user_id, slots.status, slots.is_self_vault
+       FROM myfive_connection_slots AS slots
+       INNER JOIN myfive_connection_participants AS participants
+         ON participants.connection_id = slots.id
+        AND participants.user_id = $2
+        AND participants.lifecycle_state = 'active'
+       WHERE slots.id = $1
+         AND slots.status = 'active'
+         AND slots.lifecycle_state = 'active'
+       FOR UPDATE OF slots`,
+      [slotId, actorUserId],
+    );
+    const slotRow = slotResult.rows[0];
+    if (!slotRow) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Active partner connection not found" });
+    }
 
-    const [latest] = await db.select({ version: myfiveAgreements.version }).from(myfiveAgreements).where(and(
-      eq(myfiveAgreements.slotId, slotId),
-      eq(myfiveAgreements.creatorUserId, actorUserId),
-    )).orderBy(desc(myfiveAgreements.version)).limit(1);
-    const currentVersion = latest?.version ?? 0;
+    const slot = {
+      id: slotRow.id,
+      userId: slotRow.user_id,
+      partnerUserId: slotRow.partner_user_id ?? null,
+      status: slotRow.status,
+      isSelfVault: slotRow.is_self_vault,
+    };
+    const consentResult = await client.query(
+      `SELECT id, actor_user_id, slot_id, consent_type, event_type, rules_version, accepted_rule_ids, accepted_at
+       FROM myfive_consent_ledger
+       WHERE slot_id = $1
+         AND consent_type = 'agreement-sharing'
+         AND rules_version = $2
+       ORDER BY accepted_at DESC`,
+      [slotId, VALUE_RULES_VERSION],
+    );
+    const consentGate = evaluateBilateralValueRulesGate({
+      actorUserId,
+      slot,
+      rulesVersion: VALUE_RULES_VERSION,
+      consentEvents: consentResult.rows.map((row): MyFiveConsentEvent => ({
+        id: row.id,
+        actorUserId: row.actor_user_id,
+        slotId: row.slot_id,
+        consentType: row.consent_type,
+        eventType: row.event_type === "withdrawn" ? "withdrawn" : "accepted",
+        rulesVersion: row.rules_version,
+        acceptedRuleIds: row.accepted_rule_ids ?? [],
+        acceptedAt: row.accepted_at,
+      })),
+    });
+    if (!consentGate.allowed) {
+      await client.query(
+        `INSERT INTO myfive_agreement_denied_events
+          (actor_user_id, slot_id, slot_owner_user_id, slot_partner_user_id, reason_code, rules_version)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          actorUserId,
+          slotId,
+          consentGate.ownerUserId,
+          consentGate.partnerUserId,
+          consentGate.reasonCode,
+          consentGate.rulesVersion,
+        ],
+      );
+      await client.query("COMMIT");
+      return res.status(403).json({ error: "Current bilateral ValueRules™ consent is required", reasonCode: consentGate.reasonCode });
+    }
+
+    const latest = await client.query<{ version: number }>(
+      "SELECT version FROM myfive_agreements WHERE slot_id = $1 ORDER BY version DESC LIMIT 1",
+      [slotId],
+    );
+    const currentVersion = latest.rows[0]?.version ?? 0;
     if (currentVersion !== expectedVersion) {
+      await client.query("ROLLBACK");
       return res.status(409).json({ error: "A newer agreement version exists", currentVersion });
     }
 
-    const [saved] = await db.insert(myfiveAgreements).values({
-      slotId,
-      creatorUserId: actorUserId,
-      agreementText: agreementText.trim(),
-      valueRulesConsented: consentReceiptId,
-      version: currentVersion + 1,
-    }).returning();
+    const savedResult = await client.query(
+      `INSERT INTO myfive_agreements
+        (slot_id, creator_user_id, partner_user_id, slot_owner_user_id, slot_partner_user_id, agreement_text,
+         value_rules_version, owner_consent_receipt_id, partner_consent_receipt_id, value_rules_consented, version)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING id, version, created_at`,
+      [
+        slotId,
+        actorUserId,
+        actorUserId === consentGate.ownerUserId ? consentGate.partnerUserId : consentGate.ownerUserId,
+        consentGate.ownerUserId,
+        consentGate.partnerUserId,
+        agreementText.trim(),
+        consentGate.rulesVersion,
+        consentGate.ownerConsentReceiptId,
+        consentGate.partnerConsentReceiptId,
+        `bilateral:${consentGate.ownerConsentReceiptId}:${consentGate.partnerConsentReceiptId}`,
+        currentVersion + 1,
+      ],
+    );
+    await client.query("COMMIT");
+    const saved = savedResult.rows[0];
 
     res.status(201).json({
       success: true,
       id: saved.id,
       version: saved.version,
-      savedAt: saved.createdAt.toISOString(),
+      savedAt: saved.created_at.toISOString(),
       message: "Dyadic relationship agreement version timestamped and saved",
     });
   } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // The transaction may already be closed by a fail-fast branch.
+    }
     if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {
       return res.status(409).json({ error: "A newer agreement version exists; reload before saving" });
     }
-    console.error("MyFive agreement persistence failed", error);
+    writeMyFiveOperationalFailure("agreement_persistence_failed");
     res.status(500).json({ error: "Agreement could not be saved" });
+  } finally {
+    client.release();
+  }
+});
+
+myfiveRouter.delete("/agreements/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
+  const actorUserId = getVerifiedMyFiveUserId(req);
+  const slotId = readSlotId(req.params.slotId);
+  if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [agreementMutationLockKey(slotId)]);
+    const survivor = await client.query(
+      `SELECT participants.user_id
+       FROM myfive_connection_participants AS participants
+       INNER JOIN myfive_connection_slots AS slots ON slots.id = participants.connection_id
+       WHERE participants.connection_id = $1
+         AND participants.user_id = $2
+         AND participants.lifecycle_state = 'survivor'
+         AND slots.lifecycle_state = 'locked'
+       FOR UPDATE OF participants, slots`,
+      [slotId, actorUserId],
+    );
+    if (!survivor.rows[0]) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Frozen survivor agreement not found" });
+    }
+    const deleted = await client.query(
+      `DELETE FROM myfive_agreements
+       WHERE slot_id = $1 AND lifecycle_state = 'frozen' AND survivor_user_id = $2
+       RETURNING id`,
+      [slotId, actorUserId],
+    );
+    await client.query(
+      `INSERT INTO myfive_agreement_custody_events
+        (actor_user_id, connection_id, event_type, outcome)
+       VALUES ($1, $2, 'delete', $3)`,
+      [actorUserId, slotId, (deleted.rowCount ?? 0) > 0 ? "success" : "not_found"],
+    );
+    await client.query("COMMIT");
+    return res.json({ deleted: (deleted.rowCount ?? 0) > 0 });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    writeMyFiveOperationalFailure("frozen_agreement_deletion_failed");
+    return res.status(500).json({ error: "Frozen agreement could not be deleted" });
+  } finally {
+    client.release();
   }
 });
 
 // Read only the current actor's latest private eight-dimensional profile.
-myfiveRouter.get("/love-profiles/:slotId", async (req: Request, res: Response) => {
+myfiveRouter.get("/love-profiles/:slotId", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.params.slotId);
   if (!slotId) return res.status(400).json({ error: "A valid connection slot is required" });
 
   try {
-    const actorUserId = getMyFiveActorId(req);
-    if (!await findAccessibleSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
+    const actorUserId = getVerifiedMyFiveUserId(req);
+    if (!await findReadableConnection(actorUserId, slotId)) return res.status(404).json({ error: "Connection not found" });
     const [latest] = await db.select().from(myfiveLoveProfileSnapshots).where(and(
       eq(myfiveLoveProfileSnapshots.actorUserId, actorUserId),
       eq(myfiveLoveProfileSnapshots.slotId, slotId),
@@ -440,13 +985,13 @@ myfiveRouter.get("/love-profiles/:slotId", async (req: Request, res: Response) =
       calibratedAt: null,
     });
   } catch (error) {
-    console.error("MyFive love profile read failed", error);
+    writeMyFiveOperationalFailure("connection_profile_read_failed");
     res.status(500).json({ error: "Love profile could not be loaded" });
   }
 });
 
 // Append a complete snapshot. Existing calibrations are never mutated.
-myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
+myfiveRouter.post("/love-profiles", requireMyFiveAccount, async (req: Request, res: Response) => {
   const slotId = readSlotId(req.body?.slotId);
   const profile = req.body?.profile;
   if (!slotId || !isLoveFlowProfile(profile)) {
@@ -454,7 +999,7 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
   }
 
   try {
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (!await findAccessibleSlot(actorUserId, slotId)) return res.status(404).json({ error: "Active connection not found" });
     const [snapshot] = await db.insert(myfiveLoveProfileSnapshots).values({
       actorUserId,
@@ -468,12 +1013,12 @@ myfiveRouter.post("/love-profiles", async (req: Request, res: Response) => {
       calibratedAt: snapshot.createdAt.toISOString(),
     });
   } catch (error) {
-    console.error("MyFive love profile persistence failed", error);
+    writeMyFiveOperationalFailure("connection_profile_persistence_failed");
     res.status(500).json({ error: "Love profile could not be saved" });
   }
 });
 
-myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth, async (req: Request, res: Response) => {
+myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requireMyFiveAccount, async (req: Request, res: Response) => {
   const format = req.query.format === undefined ? "json" : req.query.format;
   if (format !== "json" && format !== "markdown") {
     return res.status(400).json({ error: "Export format must be json or markdown" });
@@ -481,10 +1026,11 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
 
   const userId = req.session.clientUserId!;
   try {
+    await purgeExpiredMyFiveProvisionalData(userId);
+    await ensureActorParticipantRelations(userId);
     const [
       accountRows,
       slots,
-      serverCheckIns,
       profiles,
       agreements,
       consentReceipts,
@@ -500,18 +1046,31 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
         avatarUrl: clientUsers.avatarUrl,
         createdAt: clientUsers.createdAt,
       }).from(clientUsers).where(eq(clientUsers.id, userId)).limit(1),
-      db.select().from(myfiveConnectionSlots)
-        .where(eq(myfiveConnectionSlots.userId, userId))
+      db.select({
+        id: myfiveConnectionSlots.id,
+        slotIndex: myfiveConnectionSlots.slotIndex,
+        partnerName: myfiveConnectionSlots.partnerName,
+        relationType: myfiveConnectionSlots.relationType,
+        status: myfiveConnectionSlots.status,
+        connectionLifecycle: myfiveConnectionSlots.lifecycleState,
+        isSelfVault: myfiveConnectionSlots.isSelfVault,
+        createdAt: myfiveConnectionSlots.createdAt,
+        participantRole: myfiveConnectionParticipants.role,
+        participantLifecycle: myfiveConnectionParticipants.lifecycleState,
+      }).from(myfiveConnectionParticipants)
+        .innerJoin(myfiveConnectionSlots, eq(myfiveConnectionParticipants.connectionId, myfiveConnectionSlots.id))
+        .where(and(
+          eq(myfiveConnectionParticipants.userId, userId),
+          or(
+            eq(myfiveConnectionParticipants.lifecycleState, "active"),
+            eq(myfiveConnectionParticipants.lifecycleState, "survivor"),
+          ),
+        ))
         .orderBy(asc(myfiveConnectionSlots.slotIndex)),
-      db.select().from(myfiveCheckIns)
-        .where(eq(myfiveCheckIns.userId, userId))
-        .orderBy(asc(myfiveCheckIns.createdAt)),
       db.select().from(myfiveLoveProfileSnapshots)
         .where(eq(myfiveLoveProfileSnapshots.actorUserId, userId))
         .orderBy(asc(myfiveLoveProfileSnapshots.createdAt)),
-      db.select().from(myfiveAgreements)
-        .where(eq(myfiveAgreements.creatorUserId, userId))
-        .orderBy(asc(myfiveAgreements.createdAt)),
+      readExportableMyFiveAgreements(pool, userId),
       db.select().from(myfiveConsentLedger)
         .where(eq(myfiveConsentLedger.actorUserId, userId))
         .orderBy(asc(myfiveConsentLedger.acceptedAt)),
@@ -531,6 +1090,19 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
     const account = accountRows[0];
     if (!account) return res.status(404).json({ error: "Authenticated account was not found" });
     const myfiveMembership = myfiveMembershipRows[0];
+    const frozenConnectionIds = Array.from(new Set(
+      agreements
+        .filter((agreement) => agreement.participantLifecycle === "survivor")
+        .map((agreement) => agreement.slotId),
+    ));
+    if (frozenConnectionIds.length > 0) {
+      await db.insert(myfiveAgreementCustodyEvents).values(frozenConnectionIds.map((connectionId) => ({
+        actorUserId: userId,
+        connectionId,
+        eventType: "export",
+        outcome: "success",
+      })));
+    }
     const exportedAt = new Date().toISOString();
     const dataExport: MyFiveDataExport = {
       metadata: {
@@ -539,9 +1111,10 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
         dataSubject: { accountId: account.id, email: account.email, name: account.name },
         scope: [
           "MyFive account identity",
-          "subject-owned connection records",
-          "subject-authored agreements and consent receipts",
-          "subject-authored private profiles and check-ins",
+          "owned and linked connection metadata",
+          "active joint agreements or frozen survivor-custody copies",
+          "subject-authored consent receipts",
+          "subject-authored private profiles",
           "data-minimized membership status",
           "linked portal context and timeline",
           "current-browser encrypted vault when combined by the client",
@@ -567,20 +1140,14 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
         connectionSlots: slots.map((slot) => ({
           id: slot.id,
           slotIndex: slot.slotIndex,
-          userProvidedPartnerName: slot.partnerName,
-          userProvidedRelationType: slot.relationType,
+          role: slot.participantRole,
+          participantLifecycle: slot.participantLifecycle,
+          connectionLifecycle: slot.connectionLifecycle,
+          userProvidedPartnerName: slot.participantRole === "owner" ? slot.partnerName : null,
+          userProvidedRelationType: slot.participantRole === "owner" ? slot.relationType : null,
           status: slot.status,
           isSelfVault: slot.isSelfVault === "true",
-          partnerAccountLinked: Boolean(slot.partnerUserId),
           createdAt: slot.createdAt.toISOString(),
-        })),
-        privateServerCheckIns: serverCheckIns.map((checkIn) => ({
-          id: checkIn.id,
-          slotId: checkIn.slotId,
-          flowOctant: checkIn.flowOctant,
-          privateReflection: checkIn.privateReflection,
-          vaultEncryptedAtRest: checkIn.isVaultEncrypted === "true",
-          createdAt: checkIn.createdAt.toISOString(),
         })),
         connectionProfiles: profiles.map((profile) => ({
           id: profile.id,
@@ -592,7 +1159,10 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
           id: agreement.id,
           slotId: agreement.slotId,
           agreementText: agreement.agreementText,
-          consentReceiptId: agreement.valueRulesConsented,
+          classification: "joint-shared-record",
+          custody: agreement.participantLifecycle === "survivor" ? "frozen-survivor-copy" : "active-shared",
+          editable: agreement.lifecycleState === "active",
+          valueRulesVersion: agreement.valueRulesVersion,
           version: agreement.version,
           createdAt: agreement.createdAt.toISOString(),
           updatedAt: agreement.updatedAt.toISOString(),
@@ -601,6 +1171,7 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
           id: receipt.id,
           slotId: receipt.slotId,
           consentType: receipt.consentType,
+          eventType: receipt.eventType,
           rulesVersion: receipt.rulesVersion,
           acceptedRuleIds: receipt.acceptedRuleIds,
           acceptedAt: receipt.acceptedAt.toISOString(),
@@ -648,7 +1219,7 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
       omissions: [
         {
           category: "Partner-private data",
-          reason: "Another person's profile snapshots, reflections, consent receipts, account data, and agreement versions they authored are never queried or exported.",
+          reason: "Another person's profile snapshots, reflections, consent receipts, account data, identifiers, and secrets are never queried or exported. Joint agreement text is included only while the subject is an active participant or its sole surviving custodian.",
         },
         {
           category: "Authentication and OAuth secrets",
@@ -676,67 +1247,62 @@ myfiveRouter.get("/data-export", setDataExportPrivacyHeaders, requirePortalAuth,
     }
     return res.type("application/json; charset=utf-8").send(JSON.stringify(dataExport, null, 2));
   } catch (error) {
-    console.error("MyFive Article 20 data export failed", error);
+    writeMyFiveOperationalFailure("data_export_failed");
     return res.status(500).json({ error: "Your data export could not be created safely" });
   }
 });
 
-myfiveRouter.delete("/account", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId || !req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
+myfiveRouter.delete("/account", requireMyFiveAccount, async (req: Request, res: Response) => {
+  if (!req.session.clientEmail) return res.status(401).json({ error: "Sign in before deleting your account" });
   if (req.body?.confirmation !== "DELETE MYFIVE") return res.status(400).json({ error: "Type DELETE MYFIVE to confirm permanent deletion" });
-  const userId = req.session.clientUserId;
-  const userEmail = req.session.clientEmail.toLowerCase();
-  const client = await pool.connect();
+  const userId = getVerifiedMyFiveUserId(req);
+  if (!isResumableMyFiveDeletionEnabled()) {
+    return res.status(503).json({
+      state: "action_required",
+      accepted: false,
+      error: "Account deletion is temporarily unavailable while the protected deletion worker is disabled.",
+    });
+  }
+  let intentCommitted = false;
   try {
-    await client.query("BEGIN");
-    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`myfive-delete:${userId}`]);
-    const membership = await client.query(
-      "SELECT stripe_customer_id, stripe_subscription_id FROM myfive_subscriptions WHERE user_id = $1 FOR UPDATE", [userId],
-    );
-    const stripeCustomerId = membership.rows[0]?.stripe_customer_id as string | null | undefined;
-    const stripeSubscriptionId = membership.rows[0]?.stripe_subscription_id as string | null | undefined;
-    const stripe = getStripe();
-    if (stripeCustomerId) {
-      if (!stripe) throw new Error("Stripe must be available to remove the billing identity before account deletion");
-      await stripe.customers.del(stripeCustomerId);
-    } else if (stripeSubscriptionId?.startsWith("sub_")) {
-      if (!stripe) throw new Error("Stripe must be available to cancel billing before account deletion");
-      await stripe.subscriptions.cancel(stripeSubscriptionId);
-    }
-
-    const ownedSlotSubquery = "SELECT id FROM myfive_connection_slots WHERE user_id = $1";
-    await client.query(`DELETE FROM myfive_agreements WHERE creator_user_id = $1 OR partner_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
-    await client.query(`DELETE FROM myfive_consent_ledger WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
-    await client.query(`DELETE FROM myfive_love_profile_snapshots WHERE actor_user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
-    await client.query(`DELETE FROM myfive_check_ins WHERE user_id = $1 OR slot_id IN (${ownedSlotSubquery})`, [userId]);
-    await client.query(`DELETE FROM myfive_invitations WHERE sponsor_user_id = $1 OR accepted_by_user_id = $1 OR lower(invitee_email) = $2 OR slot_id IN (${ownedSlotSubquery})`, [userId, userEmail]);
-    await client.query("UPDATE myfive_connection_slots SET partner_user_id = NULL WHERE partner_user_id = $1", [userId]);
-    await client.query("DELETE FROM myfive_connection_slots WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM myfive_subscriptions WHERE user_id = $1 OR sponsor_user_id = $1", [userId]);
-    await client.query(`UPDATE myfive_subscriptions AS subscriptions SET sponsored_seats_allocated = (
-      SELECT count(*)::integer FROM myfive_invitations AS invitations
-      WHERE invitations.sponsor_user_id = subscriptions.user_id AND invitations.status = 'accepted'
-    ) WHERE subscriptions.plan_status = 'active'`);
-    await client.query("DELETE FROM portal_timeline_events WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM portal_user_context WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM client_subscriptions WHERE user_id = $1", [userId]);
-    await client.query("DELETE FROM audit_logs WHERE lower(user_email) = $1", [userEmail]);
-    await client.query("DELETE FROM client_users WHERE id = $1", [userId]);
-    await client.query("COMMIT");
-
+    await beginMyFiveAccountDeletion(pool, userId);
+    intentCommitted = true;
     await new Promise<void>((resolve) => req.session.destroy((sessionError) => {
-      if (sessionError) console.error("MyFive session destruction after committed account deletion failed", sessionError);
+      if (sessionError) writeMyFiveOperationalFailure("current_session_cleanup_failed");
       resolve();
     }));
-    res.json({ deleted: true, message: "MyFive account and linked personal data were permanently deleted" });
-  } catch (error) {
-    await client.query("ROLLBACK");
-    console.error("MyFive Article 17 account deletion failed", error);
-    res.status(500).json({ error: "Account deletion could not be completed safely; no database deletion was committed" });
-  } finally { client.release(); }
+    const stripe = getStripe();
+    const result = await resumeMyFiveAccountDeletion(pool, stripe ? createStripeDeletionGateway(stripe) : null, userId);
+    if (result.state === "completed") {
+      return res.json({
+        state: result.state,
+        accepted: true,
+        deleted: true,
+        message: "Your MyFive account and private data were deleted. Joint agreements retained for another participant are frozen under the disclosed survivor-custody policy.",
+      });
+    }
+    return res.status(result.state === "action_required" ? 409 : 202).json({
+      state: result.state,
+      accepted: true,
+      deleted: false,
+      message: result.state === "action_required"
+        ? "Your account is locked and signed out. Support must resolve the billing deletion before database erasure can finish."
+        : "Your account is locked and signed out. Deletion is safely queued and will resume automatically.",
+    });
+  } catch {
+    writeMyFiveOperationalFailure("account_deletion_orchestration_failed");
+    return res.status(intentCommitted ? 202 : 503).json({
+      state: intentCommitted ? "pending" : "action_required",
+      accepted: intentCommitted,
+      deleted: false,
+      message: intentCommitted
+        ? "Your account is locked and signed out. Deletion remains queued for a safe retry."
+        : "Deletion could not be accepted safely. Your account remains available and no completion is claimed.",
+    });
+  }
 });
 
-myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, res: Response) => {
+myfiveRouter.post("/admin/eap-vouchers", requireMyFiveAdminWriter, async (req: Request, res: Response) => {
   const organizationLabel = typeof req.body?.organizationLabel === "string" ? req.body.organizationLabel.trim() : "";
   const maxRedemptions = Number(req.body?.maxRedemptions);
   const expiresAt = req.body?.expiresAt ? new Date(req.body.expiresAt) : null;
@@ -748,24 +1314,39 @@ myfiveRouter.post("/admin/eap-vouchers", requireAdminAuth, async (req: Request, 
   }
   try {
     const code = `EAP-${randomBytes(9).toString("hex").toUpperCase()}`;
-    const [voucher] = await db.insert(myfiveEapVouchers).values({
-      organizationLabel, codeHash: hashVoucherCode(code), maxRedemptions, expiresAt,
-    }).returning({ id: myfiveEapVouchers.id, expiresAt: myfiveEapVouchers.expiresAt });
+    const voucher = await db.transaction(async (transaction) => {
+      const [created] = await transaction.insert(myfiveEapVouchers).values({
+        organizationLabel, codeHash: hashVoucherCode(code), maxRedemptions, expiresAt,
+      }).returning({ id: myfiveEapVouchers.id, expiresAt: myfiveEapVouchers.expiresAt });
+      await transaction.insert(auditLogs).values({
+        // Attribute by durable admin ID so a matching client-account email deletion cannot erase this record.
+        userEmail: `admin-account:${req.session.adminUserId!}`,
+        actionType: "CREATE_MYFIVE_EAP_VOUCHER",
+        resource: `myfive_eap_vouchers:${created.id}`,
+        details: buildEapVoucherAuditDetails({
+          voucherId: created.id,
+          organizationLabel,
+          maxRedemptions,
+          expiresAt: created.expiresAt,
+        }),
+        ipAddress: req.ip || req.socket.remoteAddress || "unknown",
+      });
+      return created;
+    });
     res.status(201).type("application/json").send(JSON.stringify({
       id: voucher.id, code, expiresAt: voucher.expiresAt?.toISOString() ?? null,
       warning: "Store this code securely; only its hash is retained and the code cannot be recovered.",
     }));
   } catch (error) {
-    console.error("MyFive EAP voucher creation failed", error);
+    writeMyFiveOperationalFailure("eap_voucher_creation_failed");
     res.status(500).json({ error: "EAP voucher could not be created" });
   }
 });
 
-myfiveRouter.post("/eap-vouchers/redeem", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before redeeming an EAP voucher" });
+myfiveRouter.post("/eap-vouchers/redeem", requireMyFiveAccount, async (req: Request, res: Response) => {
   const code = typeof req.body?.code === "string" ? req.body.code.trim() : "";
   if (code.length < 12 || code.length > 100) return res.status(400).json({ error: "Enter a valid EAP voucher code" });
-  const userId = req.session.clientUserId;
+  const userId = getVerifiedMyFiveUserId(req);
   const codeHash = hashVoucherCode(code);
   const client = await pool.connect();
   try {
@@ -795,18 +1376,17 @@ myfiveRouter.post("/eap-vouchers/redeem", async (req: Request, res: Response) =>
     res.json({ status: "eap", message: "EAP access activated. Your employer cannot see your identity or MyFive activity." });
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("MyFive EAP voucher redemption failed", error);
+    writeMyFiveOperationalFailure("eap_voucher_redemption_failed");
     res.status(500).json({ error: "EAP voucher could not be redeemed" });
   } finally { client.release(); }
 });
 
-myfiveRouter.post("/subscription/checkout", async (req: Request, res: Response) => {
-  if (!req.session.clientUserId) return res.status(401).json({ error: "Sign in before starting a MyFive membership" });
+myfiveRouter.post("/subscription/checkout", requireMyFiveAccount, async (req: Request, res: Response) => {
   const stripe = getStripe();
   if (!stripe || !(await isConnectorEnabled("stripe"))) {
     return res.status(503).json({ error: "Stripe checkout is currently unavailable" });
   }
-  const actorUserId = getMyFiveActorId(req);
+  const actorUserId = getVerifiedMyFiveUserId(req);
   const customerEmail = typeof req.body?.customerEmail === "string" ? req.body.customerEmail.trim().toLowerCase() : "";
   if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
     return res.status(400).json({ error: "A valid email address is required" });
@@ -834,36 +1414,38 @@ myfiveRouter.post("/subscription/checkout", async (req: Request, res: Response) 
     if (!session.url) return res.status(502).json({ error: "Stripe did not return a checkout URL" });
     res.status(201).json({ checkoutUrl: session.url });
   } catch (error) {
-    console.error("MyFive Stripe Checkout creation failed", error);
+    writeMyFiveOperationalFailure("stripe_checkout_creation_failed");
     res.status(500).json({ error: "Checkout could not be created" });
   }
 });
 
-myfiveRouter.post("/subscription/confirm", async (req: Request, res: Response) => {
+myfiveRouter.post("/subscription/confirm", requireMyFiveAccount, async (req: Request, res: Response) => {
   const stripe = getStripe();
   const sessionId = typeof req.body?.sessionId === "string" ? req.body.sessionId : "";
   if (!stripe || !sessionId.startsWith("cs_")) return res.status(400).json({ error: "A valid Checkout Session is required" });
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    const actorUserId = getMyFiveActorId(req);
+    const actorUserId = getVerifiedMyFiveUserId(req);
     if (session.metadata?.product !== "myfive_primary" || session.metadata.actorUserId !== actorUserId || session.payment_status !== "paid") {
       return res.status(403).json({ error: "This paid MyFive Checkout Session does not belong to the current account" });
     }
     const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
     const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
     if (!subscriptionId) return res.status(409).json({ error: "Stripe subscription is not ready yet" });
-    await persistMyFiveSubscription(actorUserId, customerId, subscriptionId, "active");
+    if (!(await persistMyFiveSubscription(actorUserId, customerId, subscriptionId, "active"))) {
+      return res.status(409).json({ error: "Account deletion prevents subscription activation" });
+    }
     res.json({ status: "active", plan: "primary", priceEur: 4.99 });
   } catch (error) {
-    console.error("MyFive Stripe Checkout confirmation failed", error);
+    writeMyFiveOperationalFailure("stripe_checkout_confirmation_failed");
     res.status(500).json({ error: "Subscription could not be confirmed" });
   }
 });
 
-myfiveRouter.get("/subscription", async (req: Request, res: Response) => {
+myfiveRouter.get("/subscription", requireMyFiveAccount, async (req: Request, res: Response) => {
   try {
     const [subscription] = await db.select().from(myfiveSubscriptions)
-      .where(eq(myfiveSubscriptions.userId, getMyFiveActorId(req))).limit(1);
+      .where(eq(myfiveSubscriptions.userId, getVerifiedMyFiveUserId(req))).limit(1);
     res.json({
       plan: "B2C Primary Subscription", status: subscription?.planStatus ?? "inactive",
       priceEur: 4.99, sponsoredSeatsAllowed: 5,
@@ -871,7 +1453,7 @@ myfiveRouter.get("/subscription", async (req: Request, res: Response) => {
       stripeConnected: Boolean(process.env.STRIPE_SECRET_KEY),
     });
   } catch (error) {
-    console.error("MyFive subscription read failed", error);
+    writeMyFiveOperationalFailure("subscription_read_failed");
     res.status(500).json({ error: "Subscription status could not be loaded" });
   }
 });

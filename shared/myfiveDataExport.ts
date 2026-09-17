@@ -1,4 +1,4 @@
-export const MYFIVE_EXPORT_SCHEMA_VERSION = "myfive-gdpr-article-20.v1" as const;
+export const MYFIVE_EXPORT_SCHEMA_VERSION = "myfive-gdpr-article-20.v3" as const;
 
 export interface PortableLocalCheckIn {
   id: string;
@@ -31,7 +31,6 @@ export interface MyFiveDataExport {
   data: {
     account: Record<string, unknown>;
     connectionSlots: Array<Record<string, unknown>>;
-    privateServerCheckIns: Array<Record<string, unknown>>;
     connectionProfiles: Array<Record<string, unknown>>;
     agreementVersions: Array<Record<string, unknown>>;
     consentReceipts: Array<Record<string, unknown>>;
@@ -105,11 +104,9 @@ export function renderMyFiveExportMarkdown(dataExport: MyFiveDataExport): string
     "",
     recordSections("Connection slots", data.connectionSlots),
     "",
-    recordSections("Private server check-ins", data.privateServerCheckIns),
-    "",
     recordSections("Private connection-profile snapshots", data.connectionProfiles),
     "",
-    recordSections("Agreement versions created by you", data.agreementVersions),
+    recordSections("Joint agreement versions available to you", data.agreementVersions),
     "",
     recordSections("Consent receipts", data.consentReceipts),
     "",

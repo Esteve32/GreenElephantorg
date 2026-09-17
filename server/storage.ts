@@ -335,7 +335,7 @@ export interface IStorage {
   deleteCoachingDebrief(id: string): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
+export class MemStorage {
   private users: Map<string, User>;
   private recommendationSubmissions: Map<string, RecommendationSubmission>;
   private contacts: Map<string, Contact>;
@@ -775,7 +775,7 @@ export class MemStorage implements IStorage {
   }
   async createWebinarSession(session: InsertWebinarSession): Promise<WebinarSession> {
     const id = randomUUID();
-    const record: WebinarSession = { ...session, id, createdAt: new Date() };
+    const record: WebinarSession = { sortOrder: 0, spotsLeft: 0, ...session, id, createdAt: new Date() };
     this.webinarSessionsMap.set(id, record);
     return record;
   }
@@ -795,7 +795,7 @@ export class MemStorage implements IStorage {
   }
   async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
     const id = randomUUID();
-    const record: CalendarEvent = { ...event, id, createdAt: new Date() };
+    const record: CalendarEvent = { sortOrder: 0, ...event, id, createdAt: new Date() };
     this.calendarEventsMap.set(id, record);
     return record;
   }
@@ -839,13 +839,13 @@ export class MemStorage implements IStorage {
   }
   async isConnectorEnabled(_name: string): Promise<boolean> { return true; }
   async createConnectorToggleLog(log: InsertConnectorToggleLog): Promise<ConnectorToggleLog> {
-    return { id: randomUUID(), connectorName: log.connectorName, action: log.action, performedBy: log.performedBy || "admin", createdAt: new Date() };
+    return { id: randomUUID(), connectorName: log.connectorName, action: log.action, performedBy: log.performedBy || "admin", previousEnabled: null, newEnabled: null, triggeredBy: "admin", createdAt: new Date() };
   }
   async getConnectorToggleLogs(_limit?: number): Promise<ConnectorToggleLog[]> { return []; }
 
   async createClientUser(user: InsertClientUser): Promise<ClientUser> {
     const id = randomUUID();
-    return { id, email: user.email, name: user.name || null, googleId: user.googleId || null, avatarUrl: user.avatarUrl || null, passwordHash: user.passwordHash || null, twoFactorSecret: null, twoFactorEnabled: "false", resetToken: null, resetTokenExpiry: null, isActive: "true", createdAt: new Date(), lastLoginAt: null };
+    return { id, email: user.email, name: user.name || null, googleId: user.googleId || null, avatarUrl: user.avatarUrl || null, passwordHash: user.passwordHash || null, twoFactorSecret: null, twoFactorEnabled: "false", resetToken: null, resetTokenExpiry: null, isActive: "true", createdAt: new Date(), lastLoginAt: null } as any;
   }
   async getClientUserById(_id: string): Promise<ClientUser | undefined> { return undefined; }
   async getClientUserByEmail(_email: string): Promise<ClientUser | undefined> { return undefined; }
@@ -900,7 +900,7 @@ export class MemStorage implements IStorage {
   }
   async deleteAllPortalTimelineEvents(userId: string): Promise<number> {
     let count = 0;
-    for (const [id, event] of this.portalTimelineEvents.entries()) {
+    for (const [id, event] of Array.from(this.portalTimelineEvents.entries())) {
       if (event.userId === userId) {
         this.portalTimelineEvents.delete(id);
         count++;
@@ -930,7 +930,7 @@ export class MemStorage implements IStorage {
   }
   async deleteAllPortalUserContext(userId: string): Promise<number> {
     let count = 0;
-    for (const [id, ctx] of this.portalUserContextMap.entries()) {
+    for (const [id, ctx] of Array.from(this.portalUserContextMap.entries())) {
       if (ctx.userId === userId) {
         this.portalUserContextMap.delete(id);
         count++;
@@ -972,7 +972,7 @@ export class MemStorage implements IStorage {
   }
   async deleteQrScansByCodeId(qrCodeId: string): Promise<number> {
     let count = 0;
-    for (const [id, scan] of this.qrScansMap.entries()) {
+    for (const [id, scan] of Array.from(this.qrScansMap.entries())) {
       if (scan.qrCodeId === qrCodeId) { this.qrScansMap.delete(id); count++; }
     }
     return count;

@@ -9,43 +9,61 @@ import { Search } from "lucide-react";
 //todo: remove mock functionality
 const prompts = [
   {
-    title: "Empathetic Listening Check-in",
-    prompt: "Before I respond, I want to make sure I understand your perspective. What I'm hearing is... Is that accurate?",
+    code: "PROMPT-001",
+    name: "Empathetic Listening Check-in",
+    type: "Quick Template" as const,
+    template: "Before I respond, I want to make sure I understand your perspective. What I'm hearing is... Is that accurate?",
+    howToUse: "Use this template during conflict resolution to check your understanding before responding.",
     lens: "needs" as const,
     role: "Executive Assistant",
     scenario: "Conflict Resolution",
   },
   {
-    title: "Trust Building in Teams",
-    prompt: "I appreciate your willingness to share this challenge. What support would be most helpful to you right now?",
+    code: "PROMPT-002",
+    name: "Trust Building in Teams",
+    type: "Quick Template" as const,
+    template: "I appreciate your willingness to share this challenge. What support would be most helpful to you right now?",
+    howToUse: "Use this template in a team meeting to invite a clear request for support.",
     lens: "dynamics" as const,
     role: "Startup Founder",
     scenario: "Team Meeting",
   },
   {
-    title: "Boundary Setting with Compassion",
-    prompt: "I value our connection and need to share that this doesn't work for me. Would you be open to exploring alternatives together?",
+    code: "PROMPT-003",
+    name: "Boundary Setting with Compassion",
+    type: "Quick Template" as const,
+    template: "I value our connection and need to share that this doesn't work for me. Would you be open to exploring alternatives together?",
+    howToUse: "Use this template when discussing workload boundaries and possible alternatives.",
     lens: "alignment" as const,
     role: "Executive Assistant",
     scenario: "Workload Management",
   },
   {
-    title: "Curiosity in Disagreement",
-    prompt: "I notice we see this differently. I'm curious - what's most important to you in this situation?",
+    code: "PROMPT-004",
+    name: "Curiosity in Disagreement",
+    type: "Quick Template" as const,
+    template: "I notice we see this differently. I'm curious - what's most important to you in this situation?",
+    howToUse: "Use this template during collaboration when different perspectives need exploration.",
     lens: "attitude" as const,
     role: "Design Student",
     scenario: "Collaboration",
   },
   {
-    title: "Presence in Difficult Conversations",
-    prompt: "I'm feeling [emotion] about this. Can we pause for a moment before continuing?",
+    code: "PROMPT-005",
+    name: "Presence in Difficult Conversations",
+    type: "Quick Template" as const,
+    template: "I'm feeling [emotion] about this. Can we pause for a moment before continuing?",
+    howToUse: "Use this template in a feedback session when a short pause would support presence.",
     lens: "flow" as const,
     role: "Startup Founder",
     scenario: "Feedback Session",
   },
   {
-    title: "Clarity in Requests",
-    prompt: "To ensure we're aligned, I'd like to be specific about what I'm requesting: [specific ask]. Does this feel doable?",
+    code: "PROMPT-006",
+    name: "Clarity in Requests",
+    type: "Quick Template" as const,
+    template: "To ensure we're aligned, I'd like to be specific about what I'm requesting: [specific ask]. Does this feel doable?",
+    howToUse: "Use this template when delegating work to make a request explicit and check feasibility.",
     lens: "influence" as const,
     role: "Executive Assistant",
     scenario: "Delegation",
@@ -66,9 +84,9 @@ export default function PromptsPage() {
     const lensMatch = selectedLens === "all" || prompt.lens === selectedLens;
     const roleMatch = selectedRole === "all" || prompt.role === selectedRole;
     const scenarioMatch = selectedScenario === "all" || prompt.scenario === selectedScenario;
-    const searchMatch = searchQuery === "" || 
-      prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchMatch = searchQuery === "" ||
+      prompt.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      prompt.template.toLowerCase().includes(searchQuery.toLowerCase());
     return lensMatch && roleMatch && scenarioMatch && searchMatch;
   });
 
@@ -148,8 +166,8 @@ export default function PromptsPage() {
         </div>
 
         <div className="grid gap-6">
-          {filteredPrompts.map((prompt, index) => (
-            <PromptCard key={index} {...prompt} />
+          {filteredPrompts.map((prompt) => (
+            <PromptCard key={prompt.code} {...prompt} />
           ))}
         </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { CheckCircle2, HeartHandshake, ShieldCheck } from "lucide-react";
 import { VALUE_RULES, VALUE_RULES_VERSION, type ValueRuleId } from "@shared/valueRules";
+import { JOINT_AGREEMENT_CREATION_DISCLOSURE } from "@shared/myfiveSurvivorCustody";
 
 interface ValueRulesConsentGateProps {
   onAccept: (acceptedRuleIds: readonly ValueRuleId[]) => Promise<void>;
@@ -60,8 +61,8 @@ export function ValueRulesConsentGate({ onAccept }: ValueRulesConsentGateProps) 
     setSubmitError(null);
     try {
       await onAccept(VALUE_RULES.map((rule) => rule.id));
-    } catch (error) {
-      console.error("ValueRules consent failed", error);
+    } catch {
+      console.error("ValueRules consent failed");
       setSubmitError("Consent was not recorded. The shared space remains locked; please try again.");
       setIsSubmitting(false);
     }
@@ -102,6 +103,10 @@ export function ValueRulesConsentGate({ onAccept }: ValueRulesConsentGateProps) 
 
         <p id={descriptionId} className="mb-5 text-sm leading-relaxed text-slate-300">
           This shared relationship space stays locked until you explicitly accept all nine rules. Your partner must provide their own consent separately.
+        </p>
+
+        <p className="mb-5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-xs leading-relaxed text-amber-100">
+          {JOINT_AGREEMENT_CREATION_DISCLOSURE}
         </p>
 
         <fieldset className="space-y-2">
