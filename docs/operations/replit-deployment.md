@@ -96,6 +96,13 @@ npm ci
 npm run repo:check
 npm run build
 test "$(git rev-parse HEAD)" = "$expected_sha"
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "STOP: verification changed tracked or untracked files"
+  git status --short --branch
+  exit 1
+fi
+
 git status --short --branch
 
 echo "READY: ask the human to review Replit Publishing and click Republish"
