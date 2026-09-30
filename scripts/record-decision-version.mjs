@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const DECISION_LOG = resolve(process.cwd(), "docs/DECISION_LOG.md");
-const LEDGER_MARKER = "<!-- DECISION_LEDGER_ROWS -->";
+const LEDGER_MARKER = "<!-- PROJECT_DECISION_LEDGER_ROWS -->";
 
 function readArgument(name) {
   const index = process.argv.indexOf(`--${name}`);
@@ -63,8 +63,8 @@ const ledgerRow = `| ${nextVersion} | ${timestamp} | ${safeCell(approvedBy)} | $
 
 document = document
   .replace(
-    /^(# 💞 MyFive — Approved Product Decision Log v)\d+\.\d+\.\d+( \(Δ Update\) — Drift-Safe \/ Canonical Source)$/m,
-    `$1${nextVersion}$2`,
+    /^(# Green Elephant — Project Decision Log v)\d+\.\d+\.\d+$/m,
+    `$1${nextVersion}`,
   )
   .replace(/\*\*Document Version:\*\* `\d+\.\d+\.\d+`/, `**Document Version:** \`${nextVersion}\``)
   .replace(/\*\*Last Updated:\*\* `[^`]+`/, `**Last Updated:** \`${timestamp}\``)

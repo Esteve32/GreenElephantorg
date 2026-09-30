@@ -4,3 +4,9 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Private source exports are evidence, never public repository content.
+.local-sources/
+.env
+.env.*
+!.env.example

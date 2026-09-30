@@ -1,4 +1,198 @@
-# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.4 - Proof Gate, Deadline, and Stabilization Baseline
+---
+document_id: GE-PRD
+document_type: product_requirements
+canonical_path: docs/PRD.md
+decision_authority: docs/DECISION_LOG.md
+project_index: docs/project-index.json
+---
+
+# Green Elephant — Product Requirements
+
+One PRD, two independent project sections. Version: **2.0.0**.
+Owner: Estève Pannetier. Reconciled: 2026-09-30.
+
+The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
+GitHub owns this PRD and the single decision log. Notion holds derived mirrors.
+These changes are a local documentation candidate until published and merged;
+the GitHub `main` URLs do not yet contain this arrangement.
+
+| Project ID | Project | State | Entry |
+| --- | --- | --- | --- |
+| AI-LIT | AI Literacy Training Portal and website findability | Active discovery; implementation not approved | [AI literacy](#ai-literacy) |
+| MY5 | MyFive relationship application and former unified refactor | Paused; no resumption date | [MyFive](#my5) |
+
+The [project index](project-index.json) is a machine-readable router and source
+inventory, not a second specification. Stable IDs below are the query keys.
+Use `Fact`, `Approved direction`, `Proposal`, `TBD`, or `Historical` explicitly.
+An imported approval is attributed to its source; it is not a new approval by this
+migration. A requirement is not proof of implementation.
+
+<a id="ai-literacy"></a>
+## AI-LIT — AI Literacy Training Portal
+
+**State:** active discovery. **Source:** SRC-AI-LIT, Notion draft v0.3 exported
+2026-09-30. **Owner:** Estève Pannetier. **Implementation gate:** open.
+Current authorization covers documentation consolidation and discovery only.
+
+### Purpose and audience
+
+Simplify greenelephant.org so a suitable visitor can understand the AI literacy
+training offer and take one clear, approved next step. Clarity, search findability,
+maintainability and real delivery capacity come before a platform rebuild.
+
+| ID | Status | Requirement / direction | Evidence |
+| --- | --- | --- | --- |
+| AI-LIT-REQ-001 | Approved direction | Serve engineers and other professionals in teams, plus solopreneurs and independent professionals. | SRC-AI-LIT, Audience and learner needs; DEC-AIL-002 |
+| AI-LIT-REQ-002 | Approved direction | Support English- and French-speaking reach in Finland, the UK, France and wider Northern Europe. Launch order and simultaneous bilingual release remain undecided. | SRC-AI-LIT, Audience and learner needs; DEC-AIL-003 |
+| AI-LIT-REQ-003 | Proposal | Help visitors understand practical, safe AI use in their work, offer fit, preparation, delivery, follow-up and access to approved materials. Validate these needs. | SRC-AI-LIT, sections 2–4 |
+| AI-LIT-REQ-004 | TBD | Select one searchable first-release niche and priority problem, then one offer and primary conversion action. | SRC-AI-LIT, sections 2–3 and 10 |
+| AI-LIT-REQ-005 | Proposal | Discover training → understand an offer → enquire or enrol → access materials. Compare this with simpler existing routes. | SRC-AI-LIT, section 4 |
+| AI-LIT-REQ-006 | Proposal | Consider home, offer detail, facilitator/method, enquiry/enrolment, materials and privacy/accessibility/legal content. Exact pages, URLs and navigation await inventory. | SRC-AI-LIT, section 5 |
+| AI-LIT-REQ-007 | Discovery requirement | Classify existing content, components and integrations as reuse, hide/retire, replace, or awaiting Estève. | SRC-AI-LIT, architecture distinction |
+| AI-LIT-REQ-008 | Discovery requirement | Compare laptop, GitHub and Replit evidence; select a recoverable application baseline before implementation. Do not infer deployed code from main. | SRC-AI-LIT, sections 8–10 |
+| AI-LIT-REQ-009 | Draft requirement | Provide keyboard access, semantic structure and readable contrast; define the eventual accessibility acceptance tests. | SRC-AI-LIT, section 9 |
+| AI-LIT-REQ-010 | Draft requirement | Any enquiry/enrolment data needs a purpose, owner, retention approach and understandable privacy/consent information. | SRC-AI-LIT, section 9 |
+| AI-LIT-REQ-011 | Draft requirement | Assign human ownership for offer content, enquiries and materials, and require validation evidence and a rollback path for later implementation changes. | SRC-AI-LIT, section 9 |
+| AI-LIT-REQ-012 | Draft requirement | Keep secrets out of source and evidence; runtime secrets remain in Replit and human-held credentials in 1Password. | SRC-AI-LIT, section 9; current user workflow |
+
+Source reference personas include engineering/team, legal and documentary/video
+professions. Named examples and client commercial terms remain in the restricted
+source. Their inclusion is product-learning evidence, not permission to publish
+names, testimonials, outcomes, case studies or training materials.
+
+### Offer and launch decisions still needed
+
+| ID | Decision needed | Status / owner |
+| --- | --- | --- |
+| AI-LIT-TBD-001 | Narrow SEO niche, highest-value problem and first priority market | TBD — Estève |
+| AI-LIT-TBD-002 | Offer name, 1:1/group balance, mode, duration, schedule, capacity and price | TBD — Estève |
+| AI-LIT-TBD-003 | Single primary conversion action and its human follow-up | TBD — Estève |
+| AI-LIT-TBD-004 | Bilingual launch or staged English/French release | TBD — Estève |
+| AI-LIT-TBD-005 | Public materials or human-operated access; any role for Satellite Scan | TBD — Estève |
+| AI-LIT-TBD-006 | Retained pages/navigation and first-release journey | TBD after inventory — Estève |
+| AI-LIT-TBD-007 | Keep/refactor/replace architecture; application base branch and commit | TBD after recovery — Estève |
+| AI-LIT-TBD-008 | Replit workspace/deployment relationship, deployed commit and environment | Unverified current state |
+| AI-LIT-TBD-009 | Measurable SEO, performance, accessibility and conversion acceptance criteria | Proposal review needed — Estève |
+
+### Search and growth evidence
+
+SRC-GROWTH is a March–April 2026 strategy source. It is retained as historical
+evidence, not a third project or an additional PRD. The portal's September audience
+direction governs AI-LIT. The following are **proposals for review**, not an
+approved backlog or verified findings about today's website:
+
+| ID | Candidate to assess | Boundary |
+| --- | --- | --- |
+| AI-LIT-PROP-SEO-001 | Audit page titles/descriptions, meaningful headings, descriptive image text, sitemap, robots configuration and social previews. | Choose search terms after AI-LIT-TBD-001; do not copy old EA/VA keywords automatically. |
+| AI-LIT-PROP-SEO-002 | Make audience, offer and primary action clear early on the page; simplify navigation. | Old Scan/Coaching/About navigation and purchase CTA are historical choices. |
+| AI-LIT-PROP-SEO-003 | Check mobile speed, image sizes, script loading and public-page dependencies. | March timeouts and old performance targets are not current measurements or approved release thresholds. |
+| AI-LIT-PROP-SEO-004 | Consider useful FAQs, educational content and an appropriate landing page for each approved search intent. | Content cadence and channel allocation remain undecided. |
+| AI-LIT-PROP-GROWTH-001 | Compare a human enquiry/discovery-call route with enrolment and other conversion options. | No selected booking provider, automatic outreach or new integration. |
+| AI-LIT-PROP-GROWTH-002 | Consider permission-backed evidence of facilitator credibility and actual service outcomes. | Never manufacture testimonials, popularity counts, urgency or results. |
+| AI-LIT-PROP-GROWTH-003 | Assess whether lead capture, webinars or follow-up would support the chosen offer. | No newsletter, assessment scoring, consent model or email sending approved by this import. |
+| AI-LIT-PROP-GROWTH-004 | Decide a small measurement plan after choosing the offer and conversion action. | Historical revenue, beta usage, capacity and funnel numbers are source claims, not current facts. |
+
+Historical growth hypotheses about coaching payment plans, quarterly membership,
+EA/VA targeting with CEO sponsorship, webinar cadence, pricing and outbound/inbound
+allocation remain in SRC-GROWTH. None is adopted into AI-LIT by this migration.
+The source contains inconsistent workload and revenue contexts; preserve those
+distinctions instead of combining them into a new target.
+
+### Scope, exclusions and architecture
+
+Discovery includes inventory, a simple visitor journey, reusable capabilities,
+first-release acceptance criteria and baseline recovery.
+
+Excluded unless separately approved: MyFive work or stack migration, private
+relationship vaults/schema, a new LMS, authentication, payments, certificates,
+AI chat or learner agents, progress tracking, production migration and deployment.
+
+The existing repository implementation is React/Vite/Express with TypeScript,
+Neon PostgreSQL, Drizzle, Stripe, Resend and Notion integrations. This is a code
+checkpoint, not verification of production or a selected portal architecture.
+MyFive's SvelteKit/Svelte 5/Zero target is specific to the paused project.
+
+A documentation branch is authorized by the current consolidation request. It is
+not the portal's implementation branch or the choice of application baseline.
+Assess which existing admin/auth/payment features remain dormant or hidden before
+proposing changes.
+
+### Brand, learning materials and linked references
+
+The supplied source identifies these references; linked page contents were not
+included in the three exports and are not claimed reviewed here:
+
+- [Green Elephant Timeless Brand](https://app.notion.com/p/b2e418c47fff4cbfafbdba650778f83d): visual/verbal source; palette choices may remain open.
+- [Service-design reference](https://app.notion.com/p/4cef8759c1154723b9f4932b53ad8ad2): client-specific delivery example, not the public offer.
+- [Proposal reference](https://app.notion.com/p/a10b43aee0b54a099c7513b6747c4de6): positioning/journey evidence; commercial details are restricted.
+- [Agreement reference](https://app.notion.com/p/c713ebbd8b8140e4b59c6ebbbbb89e5c): operational/legal reference, not public copy.
+- [Development research folder](https://drive.google.com/drive/folders/1p7vI1KjEQ84lfQ3oTSnMcnWhKMunsiK2): further evidence, not automatic scope.
+- [Historical website-builder prompt](https://app.notion.com/p/33541c855f3380f190accd67d8e746d3): historical instructions only.
+
+Periodic Table explanations, facilitator biographies, training evidence and existing
+legal/privacy/accessibility text require relevance and permission review before reuse.
+The original archives retain the complete source links and contextual wording.
+
+### Discovery acceptance and progress
+
+| ID | Acceptance | State |
+| --- | --- | --- |
+| AI-LIT-AC-001 | Broad audience, reference contexts, languages and reach recorded | Source-recorded approval; DEC-AIL-002/003 |
+| AI-LIT-AC-002 | Current capabilities classified as reuse / hide-retire / replace / awaiting Estève | Open |
+| AI-LIT-AC-003 | Laptop/GitHub/Replit comparison completed without losing work | Open |
+| AI-LIT-AC-004 | Niche, problem, first offer, primary conversion and language rollout approved | Open |
+| AI-LIT-AC-005 | Journey/pages and acceptance criteria approved | Open |
+| AI-LIT-AC-006 | Architecture and baseline decision supported by evidence | Open |
+| AI-LIT-AC-007 | Implementation backlog records project, repository/branch, acceptance, validation, blocker and last verification | Open; implementation not authorized |
+
+Existing Notion task references remain operational pointers, not extra decision logs:
+[recovery](https://app.notion.com/p/c4839f0c47964b828ac7c19298a1ab21),
+[site inventory](https://app.notion.com/p/aa9553aa5c084028bb84eea9ec6f4adf),
+[offer workshop](https://app.notion.com/p/6b7ed9d1a0c442afb526d41a7b08721b),
+[Replit verification](https://app.notion.com/p/6eb3cb8245f24142acec982259e9f281).
+
+<a id="my5"></a>
+## MY5 — MyFive, paused
+
+**My5 is an alias; MyFive remains the product/technical name.**
+Paused by Estève on 2026-09-30 according to SRC-MY5 and reaffirmed in the current
+request. No resumption date. Preserve research, attachments, history and draft PR #4.
+The portal does not inherit the relationship product's requirements.
+
+The detailed baseline below comes from GitHub commit
+`3e9b050cc1b133496087ff4e2c87c125131a9bac`, PRD v1.7.5.
+It supersedes the older v1.7.4 document previously on main for historical reference.
+Only documentation is carried into this branch; the MyFive implementation is not
+merged. Completed-work statements refer to their recorded branch evidence.
+
+Source reconciliation:
+
+- The Notion page contains old build prompts, a 48-hour sprint, pricing experiments,
+  early failed audits and links to prior PRD/decision versions. Preserve these as
+  history; they do not restart work.
+- Early September failed Stage 4.3 checks are followed by the v11.4.18 decision
+  record of reviewed remediation. That does not establish production activation.
+- Notion pricing experiments differ from the GitHub baseline. Do not turn them into
+  a price change; the paused baseline and its decision IDs remain the reference.
+- The former whole-site refactor and September deadline are paused history, not
+  current AI-LIT scope or a current delivery commitment.
+- Resume only after an explicit decision, recovery comparison, and review of open
+  legal, privacy, production-migration and release gates.
+
+<a id="my5-baseline"></a>
+### Preserved MyFive requirements baseline
+
+The following bounded section preserves the prior document verbatim. Its
+references to "canonical", "active", "in scope", commands, deadlines and unified
+website migration are scoped to the **paused MyFive baseline**. Current authority
+and project state above take precedence. Its historical Notion-sync section is
+superseded by the mirror contract in README and AGENTS.
+
+<details>
+<summary>MyFive baseline v1.7.5 — preserved for future resumption</summary>
+
+<!-- BEGIN PRESERVED MY5 PRD -->
+# MyFive + Green Elephant - Unified Refactor PRD - Master v1.7.5 - Stage 4.3-D Survivor-Custody Baseline
 
 ## 1. Authority and Scope
 
@@ -249,9 +443,10 @@ Every requirement must map from user journey to implementation and verification.
 | DAT-001 | Trust | Private and shared data are structurally isolated | M2 | schema boundaries + query guards | data-boundary test pack |
 | DAT-002 | Consent | Shared agreement requires bilateral explicit consent | M2 | consent gating + ledger | consent gate integration tests |
 | DAT-003 | Sovereignty | User can export account data | M2 | export pipeline | export contract tests |
-| DAT-004 | Sovereignty | User can delete account with cascade wipe | M2 | deletion pipeline | deletion integrity tests |
+| DAT-004 | Sovereignty | Account deletion removes the subject's account and author-owned data without erasing another participant's independently authored data; shared records follow their explicit lifecycle policy | M2 | classified deletion pipeline | two-participant, both-order deletion integrity tests |
 | DAT-005 | Ontology | Eight Lenses and Eight Loves remain independent while sharing the approved visual taxonomy | M1/M2 | design tokens + separate schemas | schema independence and token mapping tests |
 | DAT-006 | Shared consent | Both participants individually accept the same version of all nine ValueRules™ before shared-agreement access without blocking private use | M1/M2 | consent gate + append-only ledger | nine-item, bilateral, version, reconsent, withdrawal, and private-use tests |
+| DAT-007 | Shared-record custody | After one participant deletes their account, the surviving participant retains read, export, and delete access to a frozen joint agreement until they delete it or their account, subject to the recorded production legal gate | M2 | participant lifecycle + frozen agreement state | survivor access, identifier removal, no-edit, final-erasure, and rights-request tests |
 | PAY-001 | Monetization | Primary membership is €4.99/month and supports five sponsored partner connections; no annual plan is offered without separate approval | M1/M5 | Stripe checkout + subscription APIs + entitlement model | price, interval, sponsorship, and annual-plan absence tests |
 | ADM-001 | Operations | Roles are least-privilege and enforce boundaries | M3 | RBAC and admin endpoints | role access matrix tests |
 | ADM-002 | Operations | Scoped provider/workflow switches and a global emergency stop safely pause outbound work and support controlled restart | M3 | control plane toggles + queues | isolation, pause, backlog, duplicate-suppression, and recommissioning tests |
@@ -317,10 +512,44 @@ And the user shall retain access to manual reminders only.
 
 ### AC-006 Account deletion
 
-Given a user confirms account deletion with required confirmation steps  
-When deletion is executed  
-Then user-linked records shall be removed according to policy  
-And subsequent authenticated fetches shall return no active account profile.
+Given participant A confirms account deletion while participant B has independently authored records and a bilateral joint agreement
+
+When deletion is executed
+
+Then A's account access, participant relation, author-owned records, direct agreement identifiers, and consent-receipt links shall be removed according to the classified deletion policy
+
+And B's independently authored records shall remain intact
+
+And the joint agreement shall become permanently frozen while remaining readable, exportable, and deletable only by B
+
+And subsequent authenticated fetches shall return no active account profile for A
+
+And the frozen agreement shall be erased when B deletes it or B's account, whichever occurs first
+
+And accepting A's deletion request shall atomically persist a durable request,
+set A's account to `deletion_pending`, rotate A's auth version, and revoke every
+stored session before external billing work begins
+
+And every password, OAuth, profile, and protected-resource path shall reject a
+pending account or stale auth version, while delayed Stripe webhooks shall not
+restore an entitlement for that account
+
+And Stripe customer deletion or subscription cancellation shall run outside the
+PostgreSQL transaction with idempotent handling for an already-absent resource,
+bounded retry for timeouts, rate limits, and provider 5xx responses, and an
+`action_required` state for a non-retryable provider or configuration rejection
+
+And database erasure shall begin only after billing completion is durably
+recorded, shall be idempotent, and shall resume without repeating confirmed
+billing work after a database failure
+
+And the user-visible response shall distinguish `pending`, `completed`, and
+`action_required`, shall say when the account is already locked and signed out,
+and shall never claim a cross-system atomic rollback
+
+And deletion operations shall record only allowlisted state, phase, attempt,
+timestamp, and error-code evidence without Stripe identifiers, tokens, email
+addresses, card data, agreement text, private profiles, or check-in content.
 
 ### AC-007 Human-led non-verbal expression
 
@@ -573,6 +802,46 @@ Then it shall complete a continuous 15-minute static/read-only, 30-minute authen
 And the highest-risk class shall include a fully reconciled synthetic success with no unresolved critical error
 
 And the verified legacy rollback path shall remain recoverable for at least 24 hours after cutover.
+
+### AC-031 Surviving-participant agreement custody
+
+Given two verified participants accepted the current ValueRules™ and created a joint agreement under the disclosed survivor-custody terms
+
+When either participant deletes their account
+
+Then the deleted account shall lose all agreement access immediately and permanently
+
+And the agreement shall be immutable and unavailable to new partners, relinking, search, analytics, training, or administrative browsing
+
+And the deleted account ID, cross-subject consent receipt IDs, invitation contact data, and unnecessary linkage metadata shall be erased or de-identified
+
+And the remaining participant alone may read, export, or delete the frozen text
+
+And free text shall be treated as potentially identifying both participants even after direct identifiers are removed
+
+And an erasure, restriction, or objection request concerning retained text shall enter a documented human review rather than be automatically denied
+
+And the last participant's deletion shall erase the text and remove the final relationship shell
+
+And production activation shall fail closed until qualified privacy review records the purpose, lawful basis, retention criterion, rights process, notices, and backup-erasure procedure.
+
+### Stage 4.3-D survivor-custody specification
+
+The approved product purpose is to preserve the surviving participant's access to a joint record they co-created or relied upon. That purpose does not, by itself, establish a lawful basis. Before production activation, Green Elephant shall record the applicable Article 6 lawful basis and obtain qualified privacy review. If Article 6(1)(f) legitimate interests is proposed, the record shall identify a lawful, present, and precisely articulated interest, prove that continued processing is necessary, balance it against the deleted participant's rights and reasonable expectations, and document how objections will be assessed. If agreement text may contain special-category data, the review shall also identify an applicable Article 9 condition or prevent that processing.
+
+The retention criterion is: keep the frozen agreement until the surviving participant explicitly deletes it or the surviving participant's account is deleted, whichever occurs first. A record shall never remain after the last participant is gone. The survivor may read, export, and delete it, but may not edit it, reopen it for collaboration, connect it to another person, or expose it through a shared or administrator view. The service shall not use frozen text for search, recommendations, analytics, model training, or any new purpose.
+
+At agreement creation, both participants shall see this text before giving the consent that unlocks shared writing:
+
+> This is a joint record. If either participant deletes their account, that account immediately loses access. The remaining participant may continue to read, export, and delete the frozen agreement until they delete it or their account. Green Elephant removes the deleted account's direct identifiers, does not permit further editing or sharing through MyFive, and handles any erasure or objection request under the published privacy process.
+
+At account deletion, the deleting participant shall see this text before final confirmation:
+
+> Deleting your account removes your private and account data and permanently revokes your access. A frozen copy of each joint agreement may remain available only to the other participant until they delete it or their account, subject to Green Elephant's published lawful-basis and rights-request process. Free text may still refer to you. Export anything you need before deleting.
+
+The UI shall discourage legal names and highly sensitive details in agreement text, keep the field purpose narrow, and explain that de-identifying database columns cannot remove references written into free text. Access logs shall record survivor reads, exports, and deletion without copying agreement content. Erasure shall propagate through live stores and the documented backup lifecycle, and restored backups shall reapply completed erasure requests before serving data.
+
+The production-readiness record shall link the lawful-basis assessment, privacy notice, rights-request runbook, retention/deletion matrix, backup procedure, security controls, and accountable approver. This specification authorizes implementation and disposable-fixture proof. It does not authorize a production migration, deployment, or claim that Option C is legally sufficient without the recorded review.
 
 ---
 
@@ -876,3 +1145,6 @@ Definition of done for sync:
 - confirm whether any missing follow-on book section still needs inclusion
 - complete full RTM expansion for all active requirement IDs
 - attach automated tests to each acceptance criterion in the delivery backlog
+<!-- END PRESERVED MY5 PRD -->
+
+</details>
