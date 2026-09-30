@@ -32,6 +32,7 @@ app, or move the deployment to a platform with a documented GitHub deployment ho
 
 ## Replit commands
 
+- Runtime: Node.js `24.x` (`nodejs-24` in `.replit`)
 - Development: `npm run dev`
 - Clean dependency install: `npm ci`
 - Production build: `npm run build`
