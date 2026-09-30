@@ -1,0 +1,10 @@
+run = "npm run dev"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+build = "npm ci && npm run build"
+run = "npm start"
+

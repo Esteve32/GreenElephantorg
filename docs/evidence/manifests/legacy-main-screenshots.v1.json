@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "source_commit": "31f299c047d3d0fab80b8f33c7e049bc9fbbb2a4",
+  "status": "Historical visual captures; unverified; not release acceptance evidence.",
+  "screenshots": [
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/admin-hero-banner.png",
+      "bytes": 15862,
+      "sha256": "7e261404257eda4abfd26facfafb7fe4c89126f0e28b84b139c85a058c702cc8"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/bottom-section.png",
+      "bytes": 16937,
+      "sha256": "fb2a4d6966b5deb405196dd29331fd28650751603f6360ae8a7917a1be496a23"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/contact-fullpage.png",
+      "bytes": 162821,
+      "sha256": "e6ca515892b0dc2762b38f04a7eabadcf2dc6e7ad3f055911646f35411a579a9"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/footer-region.png",
+      "bytes": 71913,
+      "sha256": "97da39bcdd3c85ae3e4bbb68def90528a8c8864f5c855aec04c19ca14b3a1ff1"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/home-h1.png",
+      "bytes": 659169,
+      "sha256": "ee57ca57103b638f2ec071b31d58a20b76b5639fd89555f86922f50ed503858c"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/home-h2.png",
+      "bytes": 183506,
+      "sha256": "8e99510055ac36b8fc12a959fb3d4ea0ef0ae099e31baf147e94e2acfeb3c3ea"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/home-viewport.png",
+      "bytes": 654913,
+      "sha256": "e0e23e1174225a585a3b25c7bbe5a8bbd2851c20e467624a45e1a2442303ea62"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/home_page.png",
+      "bytes": 1916552,
+      "sha256": "78e162e92962e1fad74875bf210a7cd4e7a9ae41791d8ba658472ff757544fdd"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/hud.png",
+      "bytes": 5604,
+      "sha256": "1fb0d7229f01794e19ab4abd7582f4f30c4e04a93c6c209981fb3895df3826cf"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/lab-viewport.png",
+      "bytes": 363741,
+      "sha256": "5b726fee350080e3375c07665923e84846833e6131377942888b7e5b128abe5a"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/references-aalto-hover.png",
+      "bytes": 55970,
+      "sha256": "010f137540eab940a0ccc4029e2a314f0a77a50340cab4b108192a8b08e65bf9"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/references-ctas.png",
+      "bytes": 47289,
+      "sha256": "559ccd28bc89bf81050d869cd6eafff24812d864ad0ce1c4971614662f182285"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/references-supercell-hover.png",
+      "bytes": 55828,
+      "sha256": "af51362f399d045a185c6bb13006156d6870a2558510e319040a2d4fdfdd317c"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/references-viewport.png",
+      "bytes": 55235,
+      "sha256": "316a77c84bffca2e433240fbe26c4b838750145272669ff90a770a157c003a31"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/resources_page.png",
+      "bytes": 1402627,
+      "sha256": "a8f4da4f2255b80099c78e4855b21e7642d485566d1f7382e735e95e77ced28d"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/scan-features-list.png",
+      "bytes": 29583,
+      "sha256": "00414db35bc67a1cfcca3b953bbb7d5c2ae226ca59c0a6afddf1afbe71276692"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/scan-fullpage.png",
+      "bytes": 2237970,
+      "sha256": "b8bee57e835efccedce8858c32a106b2fae1e1a408811b7812ac99511481d9b1"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/signals-results-1762908318980.png",
+      "bytes": 142101,
+      "sha256": "52b55512fd1cc4d52c086aa151412ab4e5dbba548af5735e0ceb5945499dc55c"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/signals-results.png",
+      "bytes": 171679,
+      "sha256": "2d9a441b1d3628e25ece6ce4f9cdb9b727acd1f640b9d4e832ff424b3b9c9577"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/signals_results.png",
+      "bytes": 60009,
+      "sha256": "110917cb51b7e5c80f0f6cfd3f056b14c299e7437b00ab13036af26f991fc464"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/smart_and_transformation.png",
+      "bytes": 121036,
+      "sha256": "89393165f9ffc665fb884ec6c8305e92c76981e3d7280ddcbb856de1b1c40e23"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/team-viewport.png",
+      "bytes": 95338,
+      "sha256": "a3ff04f482f29e5e22fa60012717989756752902d3cb4f005caa5230deed5628"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/transition-area.png",
+      "bytes": 519639,
+      "sha256": "ae9c989b62a4cd63474fbda20615a62d57d504deb97749ac9b8cbc19052f812f"
+    },
+    {
+      "path": "docs/evidence/screenshots/legacy-main-2026-09-02/value-prop-editor.png",
+      "bytes": 8644,
+      "sha256": "6418a367cea05a5111dbd29dfc9e2f36d59ec3ed5718ec14005a826e78d79a65"
+    }
+  ]
+}

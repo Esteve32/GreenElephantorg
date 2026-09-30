@@ -11,6 +11,11 @@ Start from this repository; Green Elephant and Arbora are separate projects.
    before the preserved baseline. For AI-LIT, do not inherit MY5's requirements.
 4. Consult supporting documents and source exports only as evidence.
 
+For Replit, CI, deployment or integration work, also read
+`docs/operations/replit-deployment.md` and `docs/operations/secrets.md`. GitHub is
+the source authority; Replit must consume a reviewed commit and must never replace
+or force-update `main`.
+
 There is exactly one canonical PRD (`docs/PRD.md`) and one canonical decision log
 (`docs/DECISION_LOG.md`). README is navigation; JSON is routing/provenance.
 Notion is a derived mirror. Do not create another PRD, decision log, Wiki authority

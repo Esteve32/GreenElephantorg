@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "source_repository": "Esteve32/GreenElephantorg",
+  "recovery_branch": "replit/reconcile-20260930",
+  "recovery_commit": "87ea3c3b8a99e6581c064cc7dad972c43bdb26c7",
+  "treatment": "Recovered build inputs only; no paused MY5 code was merged.",
+  "rights_status": "REVIEW_REQUIRED: repository presence and existing runtime use do not establish redistribution or reuse rights.",
+  "assets": [
+    {
+      "path": "attached_assets/1103_1105GBR_BASICS_Roasberg_vers11_Colour_Decoded_Examples_of_1772233445546.png",
+      "bytes": 3206036,
+      "sha256": "ea927558c6526fec74d45e312e1606b6755449cc7ac26f7742c4d38a73343af4",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/2101_Attitude_to_Change_1764793285029.png",
+      "bytes": 6363074,
+      "sha256": "94e84f560dbbeb76fda3c30faa2015db8da70e87899bc3ed68634690c24536c1",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/2103_Micro-Habit_1772233445546.png",
+      "bytes": 4389274,
+      "sha256": "c3fa1b7590d85ccfd3cfc68f3fb0b992dabc1c0ea9b1dd8141caf055d66f348c",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/4101_Measuring_Flow_1764793076760.png",
+      "bytes": 5943079,
+      "sha256": "0b6bfbd927d45bcf8f4f28e00fc143309e31312e8ce2fc5e7f01131798262506",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/4102_Conscious_Feedback_1764793116577.png",
+      "bytes": 6806276,
+      "sha256": "454510baff6d0230ba4324f3158dfdfb9f5059678c52f18fd99876a70070009e",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/5102_Congruence_of_the_3_Levels_of_Communication_1764793387005.png",
+      "bytes": 5848827,
+      "sha256": "ff685f28ed30055fdf272afbf0545c4b1e99ef3445bbadba410e32394e035298",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/8104_Relationship_Map_How_to_Cultivate_Relations_1764793161248.png",
+      "bytes": 6688757,
+      "sha256": "53f83e62aab7c7c3ca1ee62c9b2fcf78ef64bc11795d7b67b459f7ecd2442adc",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/8104_Relationship_Map_How_to_Cultivate_Relations_1764793449236.png",
+      "bytes": 6688757,
+      "sha256": "53f83e62aab7c7c3ca1ee62c9b2fcf78ef64bc11795d7b67b459f7ecd2442adc",
+      "used_by": [
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/Anu upscaled with pruple fal-ai topaz_1764339012644.jpeg",
+      "bytes": 3383967,
+      "sha256": "f906a9cbf695c42cc0e0132cd09b5774bc8ae695bda2654c8daf0d2f7530f683",
+      "used_by": [
+        "client/src/pages/ConnectPage.tsx",
+        "client/src/pages/TeamPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/Celestial_calendar🔥2022_extrenal_no_planets_with_legend_no_ik_1764793584893.png",
+      "bytes": 9778569,
+      "sha256": "33efd958ae1a6e37bdd61f5238f74fd9ad38a4ce5b5e49d50c5982d7e4bc033a",
+      "used_by": [
+        "client/src/pages/CalendarPage.tsx",
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/Esteve profile fal-ai-topaz upscaled_1764338940532.jpeg",
+      "bytes": 774404,
+      "sha256": "dd91b6b0b2d31c2ade92ec55752b51602f04815abf64b19d4f0d6d5929b35b33",
+      "used_by": [
+        "client/src/pages/ConnectPage.tsx",
+        "client/src/pages/TeamPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/GE logo 512x512 transparent BG 2023 _1764343412596.png",
+      "bytes": 47038,
+      "sha256": "87f6b1615e7d0f7cf65c9fdfa6785117b12f48e93e7ce9986ae6fc645be66e50",
+      "used_by": [
+        "client/src/pages/AdminSubmissionsPage.tsx",
+        "client/src/pages/DashboardPage.tsx",
+        "client/src/pages/ResourcesPromptsPage.tsx",
+        "client/src/pages/admin/IntegrationsAdmin.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/GE logo 512x512 transparent BG 2023 _1764350733090.png",
+      "bytes": 47038,
+      "sha256": "87f6b1615e7d0f7cf65c9fdfa6785117b12f48e93e7ce9986ae6fc645be66e50",
+      "used_by": [
+        "client/src/pages/ConnectPage.tsx",
+        "client/src/pages/HomePage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/Jonas purple upscaled with Jal-ai topaz._1764338940533.jpeg",
+      "bytes": 3277718,
+      "sha256": "dc5f4943e25b8f249e04bb2623bfb3411f0e16686199dcb5d8f61700a8ad20fe",
+      "used_by": [
+        "client/src/pages/ConnectPage.tsx",
+        "client/src/pages/TeamPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_Athens_Greece_HUD_oidhLnW8K6kzdXSJsHvAC_OWG31uWM_1773364160224.png",
+      "bytes": 5086506,
+      "sha256": "5890ae4304fd6a81f79e957a6e4b81c18efac75bfd007f800c18e8a020863dfd",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_Espoo_Forest_Finland_HUD_Did03uX38tkWRogHdq3XM_Hhp78OH_1773364160225.png",
+      "bytes": 5263041,
+      "sha256": "7ed47d0fba540d95e6eeace092e3def3aebeeaa8f51e8e7d9ad41a94c9080a7e",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_Luzern_Switzerland_HUD_k11A0FIvbOh1bwRNhCHJF_7WYK5Wtj_1773364160225.png",
+      "bytes": 5027330,
+      "sha256": "73df0def58e06ab0e9d482a36139f7950787f3040f3653eb653a98347adaa45c",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_Paris_France_HUD_HkBjwridBx9t7stFtmDTv_6em6lPeD_1773364160225.png",
+      "bytes": 5627552,
+      "sha256": "4ddee4e069b4b7131322ce1bffc0e1026abe2ed10f67459586146e888a309cf1",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_Seaview_cave_Norway_HUD_AmZ-kuERQSTfRUo6YchFA_BFPSbonF_1773364160226.jpg",
+      "bytes": 71526,
+      "sha256": "25ba75a8f68a16eadd1063939c4e08d161a094da5e26060af1ebb7bcca0820c1",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_Soho_England_HUD_cAG65eRWqXj1D2DB-9Z5G_JlyQmSJu_1773364160226.jpg",
+      "bytes": 86984,
+      "sha256": "8cbdcaa85f23772bd279bb4d281a51a38ff1f143a353cdad2ea7ab5e852c4115",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/TakeOff_The_Hague_Netherlands_HUD_v3ADuk1nw0_mNqzEXHGlF_ZonOp1_1773364160226.png",
+      "bytes": 7550552,
+      "sha256": "05ec5cadb663c41ee397c0f3b3e244ab7685fc1e9dee21bb31796efec1219481",
+      "used_by": [
+        "client/src/components/portal/ScanLocationCarousel.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/The-Periodic-Table-of-Conscious-Communication@2x_1764712887674.png",
+      "bytes": 2307081,
+      "sha256": "07d4df182b2364c13d6ff54e785f6b7015f64b72745cbc437789a678e380e311",
+      "used_by": [
+        "client/src/pages/PeriodicTablePage.tsx",
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4",
+      "bytes": 25199857,
+      "sha256": "922ede9d776c446b7805700a0625c7dc33af90460767c42a97903a1d47e3b3d5",
+      "used_by": [
+        "client/src/pages/ExecutiveCoachingAssessmentPage.tsx",
+        "client/src/pages/ForCEOsPage.tsx",
+        "client/src/pages/ForExecutiveAssistantsPage.tsx",
+        "client/src/pages/HomePage.tsx",
+        "client/src/pages/ScanPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/finnish_archipelago_landscape_aerial_view_1764797904449.png",
+      "bytes": 1623658,
+      "sha256": "ac5a61c4ec6af885e8bbec5b15eaaf8cf29921fe50a400026e13a9b11a71e66c",
+      "used_by": [
+        "client/src/pages/ConnectPage.tsx",
+        "client/src/pages/PeriodicTablePage.tsx",
+        "client/src/pages/ProgramsPage.tsx",
+        "client/src/pages/WebinarsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/generated_images/before_after_coaching_journey.png",
+      "bytes": 750615,
+      "sha256": "cf36ab0e7711d5e8373a4fee013329f35592e8029a5188fd46bdcea0545942bd",
+      "used_by": [
+        "client/src/pages/ScanPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/generated_images/earth_from_space_without_aurora.png",
+      "bytes": 1098675,
+      "sha256": "f7c6dd93436e8fbf78b9a8f0e0c8a4e9736cd6094c51791614bc7ee8345aafe7",
+      "used_by": [
+        "client/src/pages/AdminLoginPage.tsx",
+        "client/src/pages/ResourcesPromptsPage.tsx",
+        "client/src/pages/portal/PortalDashboard.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/generated_images/earth_orbit_aurora_view.png",
+      "bytes": 1285430,
+      "sha256": "30f6c49c28ffb50bfe61a94a4b651a98f1e5fb6b43f2ca85cfedeab12fe27210",
+      "used_by": [
+        "client/src/components/portal/PortalLayout.tsx",
+        "client/src/pages/ConnectPage.tsx",
+        "client/src/pages/ExecutiveCoachingAssessmentPage.tsx",
+        "client/src/pages/ForCEOsPage.tsx",
+        "client/src/pages/ForExecutiveAssistantsPage.tsx",
+        "client/src/pages/ForVirtualAssistantsPage.tsx",
+        "client/src/pages/HomePage.tsx",
+        "client/src/pages/ScanPage.tsx",
+        "client/src/pages/WebinarPage.tsx",
+        "client/src/pages/admin/AnalyticsAdmin.tsx",
+        "client/src/pages/admin/CalendlySetupAdmin.tsx",
+        "client/src/pages/admin/SaaSSettingsAdmin.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/generated_images/mont_ventoux_provence_lavender_landscape.png",
+      "bytes": 1908245,
+      "sha256": "337ecf7cd6995b72e4a1ebf9df00fd02c5a434658b9c039d9695350cf5b5e3fb",
+      "used_by": [
+        "client/src/pages/ResourcesPage.tsx",
+        "client/src/pages/ResourcesPromptsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/generated_images/multi_device_dashboard_mockup.png",
+      "bytes": 891995,
+      "sha256": "f31ef93e43ad881c89a695f00a9eed68c474c586cc8f4c116d5295bedc2e2423",
+      "used_by": [
+        "client/src/components/DashboardPreview.tsx",
+        "client/src/pages/ScanPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/generated_images/program_comparison_paths.png",
+      "bytes": 1181232,
+      "sha256": "fd75ed687b151b8a413dd727d41c0e7613e025cdf104a8bc24008f0611100c4c",
+      "used_by": [
+        "client/src/pages/ProgramsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/lapland_winter_night_aurora_1773358495605.png",
+      "bytes": 1325052,
+      "sha256": "e94e39e0d06ce095accb47ae4f63354600d504d60f91ec0fcf07c45e636f7cbd",
+      "used_by": [
+        "client/src/pages/AdminSubmissionsPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/mont_ventoux_provence_lavender_landscape_1764783871280.png",
+      "bytes": 1908245,
+      "sha256": "337ecf7cd6995b72e4a1ebf9df00fd02c5a434658b9c039d9695350cf5b5e3fb",
+      "used_by": [
+        "client/src/pages/InterviewCoachingPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/stock_images/helsinki_finland_aer_3c2036cc.jpg",
+      "bytes": 238773,
+      "sha256": "c1af602aa497eb855b061eb73737f1b5ff1c6f705089b6644d6f314e20544d0f",
+      "used_by": [
+        "client/src/pages/ReferencesPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/stock_images/luzern_switzerland_l_1930ad9b.jpg",
+      "bytes": 446447,
+      "sha256": "dd314c0db6587e11c004f4f5db30cd8fd0c68f15ec3b43f2b7e0e993d89566b4",
+      "used_by": [
+        "client/src/pages/ConsultingPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/stock_images/zurich_switzerland_l_1db6a83f.jpg",
+      "bytes": 446447,
+      "sha256": "dd314c0db6587e11c004f4f5db30cd8fd0c68f15ec3b43f2b7e0e993d89566b4",
+      "used_by": [
+        "client/src/pages/CoachingPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/upscaled Jal-ai earth from space with northern lights_1764356069634.jpeg",
+      "bytes": 668267,
+      "sha256": "7b02e259903b20813de5fb100301bf0c1372222da3d0987277cac97557769ef9",
+      "used_by": [
+        "client/src/pages/AIPolicyPage.tsx"
+      ]
+    },
+    {
+      "path": "attached_assets/🔥2022_full_transparent_BG_with_interconnexion_linesFull_Resea_1772234144810.png",
+      "bytes": 7511906,
+      "sha256": "0eecb10c6b9fcc8d70d0e4f45f2347fa17e8ef5a66016e20863182d76baed6da",
+      "used_by": [
+        "client/src/pages/PeriodicTablePage.tsx"
+      ]
+    }
+  ]
+}

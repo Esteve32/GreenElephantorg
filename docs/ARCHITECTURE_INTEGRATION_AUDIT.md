@@ -60,7 +60,7 @@ The next update should begin by defining explicit trust zones and integration ow
 | Analytics | Google Analytics 4 Data API and Fathom |
 | AI generation | Thesys API using the OpenAI SDK compatibility layer |
 | Hosting/development | Replit-oriented development and deployment |
-| Source continuity | Public GitHub repository plus a custom Replit-to-GitHub push implementation |
+| Source continuity | Public GitHub repository; the former custom Replit-to-GitHub force-push implementation is retired on the migration branch |
 | Scheduling | In-process `setInterval`/startup schedulers |
 | Build | Vite client build plus esbuild server bundle |
 
@@ -253,7 +253,7 @@ No values should be added to this document or committed to the repository. Add a
 | System | Bridge type | Direction | Authentication owner | Data crossing boundary | Current code |
 |---|---|---|---|---|---|
 | Neon PostgreSQL | Direct database connection | Read/write | Deployment secret | Nearly all operational and identity data | `server/db.ts`, `server/storage.ts` |
-| GitHub | Replit connector → Octokit | Outbound write/read | Replit-connected account | Entire workspace source tree and commit metadata | `server/github-client.ts`, `server/github-push.ts` |
+| GitHub | Replit connector → Octokit | Retired outbound write/read path | Replit-connected account | Entire workspace source tree and commit metadata | Historical evidence; client and force-push utility removed during GitHub-authority migration |
 | Notion CRM | Replit connector → Notion SDK | Bidirectional | Replit-connected workspace | Contacts, channels, CRM fields, research and campaign activity | `server/lib/notionClient.ts`, `notionSync.ts` |
 | Notion per-user | Direct OAuth and REST | Bidirectional | Each portal client | Workspace identity, pages and scan export data | `server/portal-auth.ts` |
 | Google Sheets | Replit connector → Google API | Mainly inbound; research export outbound | Replit-connected Google identity | Satellite Scan/source data and research output | `server/lib/googleSheets.ts`, routes |
@@ -296,7 +296,7 @@ Consequences:
 
 ### 6.3 GitHub bridge risk
 
-`server/github-push.ts` is not a normal Git workflow. It scans `/home/runner/workspace`, creates blobs and a new tree, then force-updates `main`. The tree is created without a base tree and the ref update uses `force: true`.
+The removed `server/github-push.ts` was not a normal Git workflow. It scanned `/home/runner/workspace`, created blobs and a new tree, then force-updated `main`. The tree was created without a base tree and the ref update used `force: true`.
 
 Risks include:
 
@@ -306,7 +306,7 @@ Risks include:
 - accidentally committing generated output, screenshots, local artifacts or sensitive files not present in the exclusion list;
 - treating public GitHub as a mirror while also editing it as a collaboration source.
 
-**Recommendation:** retire this push path. Use ordinary Git commits and pull requests, protect `main`, require status checks, and define whether GitHub or Replit is the authoritative source. GitHub should be authoritative for the refactor.
+**Disposition:** the push path is retired on the GitHub-authority migration branch. Use ordinary Git commits and pull requests, protect `main`, require status checks, and keep GitHub authoritative.
 
 ### 6.4 Google bridge split
 
@@ -460,7 +460,7 @@ In-process scheduling creates duplicate-run risk during restarts, horizontal sca
 ### 9.1 Critical/high priorities
 
 1. **OAuth tokens stored as plaintext text fields.** Encrypt and isolate them.
-2. **Custom GitHub force-push to `main).** Retire it and protect the branch.
+2. **Custom GitHub force-push to `main`.** Retired on the migration branch; protect the branch after CI is established.
 3. **Sensitive logging.** API response bodies and customer email/payment metadata can reach logs. Adopt structured logging with allowlisted fields.
 4. **No evident global rate limiting/security headers/CSRF layer.** Add and test them.
 5. **Large unauthenticated webhook/body limits.** Reduce limits and verify signatures.
@@ -718,8 +718,7 @@ Record these in a restricted operational inventory. Do not commit secret values,
 - `server/routes.ts`
 - `server/storage.ts`
 - `server/db.ts`
-- `server/github-client.ts`
-- `server/github-push.ts`
+- Removed historical paths: `server/github-client.ts`, `server/github-push.ts`
 - `server/resend-client.ts`
 - `server/lib/ga4Client.ts`
 - `server/lib/gmailClient.ts`
@@ -738,8 +737,8 @@ Record these in a restricted operational inventory. Do not commit secret values,
 - `docs/FUTURE_PLANS.md`
 - `.agents/skills/`
 - `replit.md`
-- `DEPLOY_NOW.md`
-- `SUBDOMAIN_SETUP_GUIDE.md`
+- `docs/archive/legacy-runbooks/deploy-interview-coaching.md`
+- `docs/archive/legacy-runbooks/interview-coaching-subdomain.md`
 
 ## Appendix B — Terminology
 
@@ -907,7 +906,7 @@ Express route and validation
 | TypeScript | Current | Shared typing across browser, API and database |
 | npm/package lock | Current | Dependency installation and version resolution |
 | GitHub | Current | Public repository, collaboration surface and continuity layer |
-| Custom GitHub push utility | Current; retire | Creates blobs/tree/commit from Replit workspace and force-updates `main` |
+| Custom GitHub push utility | Retired on migration branch | Previously created blobs/tree/commit from Replit workspace and force-updated `main` |
 | GreenElephant domains | Current/documented | Customer entry points and OAuth/webhook callback origins |
 | Static files in Express | Current | Serves the built SPA from `dist/public` |
 
@@ -1172,4 +1171,3 @@ When transferring this catalog into a project-management or configuration-manage
 - last access review;
 - last recovery test;
 - operational runbook link.
-
