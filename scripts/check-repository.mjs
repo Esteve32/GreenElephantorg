@@ -7,6 +7,7 @@ const failures = [];
 for (const required of [
   "AGENTS.md",
   "README.md",
+  ".replit",
   "docs/PRD.md",
   "docs/DECISION_LOG.md",
   "docs/project-index.json",

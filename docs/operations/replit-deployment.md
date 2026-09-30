@@ -6,8 +6,9 @@ GitHub `main` is the intended source of truth. Replit is the build and deploymen
 runtime. The recovery branch `replit/reconcile-20260930` preserves the Replit
 workspace checkpoint at `87ea3c3b8a99e6581c064cc7dad972c43bdb26c7`.
 
-As of 2026-09-30, source recovery and reproducible production builds are established.
-The automatic publish trigger is **not yet established**. An active Replit GitHub
+As of 2026-09-30, source recovery, a secret-free `.replit` configuration and
+reproducible production builds are established. The automatic publish trigger is
+**not yet established**. An active Replit GitHub
 connector proves API access; it does not by itself prove source synchronization or
 automatic publication.
 
@@ -31,6 +32,7 @@ supported Replit deployment trigger is available.
 - Clean dependency install: `npm ci`
 - Production build: `npm run build`
 - Production start: `npm start`
+- Port mapping: local `5000` to external `80`
 
 Generated `dist/` output is not tracked. Every deployment must build it from the
 selected source commit.
@@ -50,4 +52,3 @@ selected source commit.
 Record the previous deployed GitHub commit before publication. Roll back by selecting
 that known-good commit in the supported Replit deployment interface and rebuilding;
 do not rewrite GitHub history.
-
