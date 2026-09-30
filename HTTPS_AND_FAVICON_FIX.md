@@ -1,5 +1,12 @@
 # HTTPS & Favicon - Setup Complete ✅
 
+> ⚠️ **URGENT: SSL CERTIFICATE EXPIRED (Feb 2026)**  
+> If you're seeing `ERR_CERT_DATE_INVALID`, the SSL certificate has expired.  
+> **→ See `SSL_QUICK_FIX.md` for immediate steps (15 min fix)**  
+> **→ See `SSL_CERTIFICATE_RENEWAL_GUIDE.md` for detailed troubleshooting**
+
+---
+
 ## ✅ What I Just Fixed
 
 ### 1. **Favicon Updated**
