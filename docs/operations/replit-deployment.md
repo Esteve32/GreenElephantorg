@@ -56,10 +56,12 @@ selected source commit.
 
 ## Safety gates
 
-- Protect `main` before merging changes: require a pull request and the `Source build`
-  check, enforce the rule for administrators, and disable force-pushes and branch
-  deletion. Keep required approvals at zero while Esteve is the only reviewer; add
-  an independent reviewer if that changes.
+As of 2026-09-30, GitHub `main` is protected. It requires a pull request and the
+strict `Source build` check, requires conversation resolution, enforces the rule
+for administrators, and blocks force-pushes and branch deletion. Required approvals
+are set to zero for the current single-maintainer workflow. Add an independent
+reviewer and revisit the approval count if repository ownership changes.
+
 - Keep production builds and repository/runtime configuration checks blocking.
 - Keep the critical-vulnerability audit blocking; review and reduce existing high
   findings in focused dependency-update pull requests.
