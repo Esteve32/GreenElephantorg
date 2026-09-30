@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.4.19
+# Green Elephant — Project Decision Log v11.4.21
 
-**Document Version:** `11.4.19`
-**Last Updated:** `2026-09-30T20:29:16+03:00`
+**Document Version:** `11.4.21`
+**Last Updated:** `2026-09-30T21:29:06+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,8 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.4.21 | 2026-09-30T21:29:06+03:00 | Estève Pannetier | DEC-AIL-007: approve human-centred AI literacy positioning and Periodic Table method |
+| 11.4.20 | 2026-09-30T21:13:26+03:00 | Estève Pannetier | AI-LIT: correct publication status and record read-only live-site audit |
 | 11.4.19 | 2026-09-30T20:29:16+03:00 | Estève Pannetier | DEC-GE-PRD-001: consolidate one PRD and decision log with separate AI-LIT discovery and paused MY5 scopes; preserve branch history and source provenance |
 
 <a id="shared-decisions"></a>
@@ -52,16 +54,17 @@ A recording command does not grant approval. Do not change historical rows.
   `docs/DECISION_LOG.md` is the single decision authority. Both distinguish AI-LIT
   and MY5. Notion holds derived mirrors. README and the machine-readable index
   route readers to these documents; they do not contain alternate requirements.
-- **Organization selected for this local candidate:** sections in the existing pair
+- **Organization published on GitHub main:** sections in the existing pair
   of files, stable project/requirement/decision IDs, and a reference-only JSON index.
   This fulfills the requested one-pair structure without additional project logs.
 - **Supersedes:** SRC-AI-LIT's 2026-09-30 Notion-as-canonical SSOT and governance
   entries, its cross-platform handoff protocol, and conflicting repository-wide
   authority language in the legacy MyFive baseline. History remains preserved.
-- **Scope limit:** local documentation consolidation. Does not resume MyFive,
-  select the portal's stack, authorize a feature build, merge, push or deploy.
+- **Scope limit:** documentation governance and discovery. Does not resume MyFive,
+  select the portal's stack, authorize a feature build or deploy the application.
 - **Affected requirements:** GE-PRD authority; AI-LIT and MY5 sections.
-- **Delivery status:** local candidate; mirrors and GitHub main await publication.
+- **Delivery status:** published to GitHub `main` in signed commit `99b846f` on
+  2026-09-30; Notion mirrors await refresh from that commit.
 
 <a id="ai-literacy-decisions"></a>
 ## AI-LIT decisions and pending choices
@@ -73,7 +76,8 @@ A recording command does not grant approval. Do not change historical rows.
 | DEC-AIL-003 | approved_imported | 2026-09-30 | Estève, as recorded in SRC-AI-LIT | English/French reach across Finland, UK, France and wider Northern Europe; launch order remains open. | SRC-AI-LIT, Decisions; AI-LIT-REQ-002 |
 | DEC-AIL-004 | approved_imported | 2026-09-30 | Estève, as recorded in SRC-AI-LIT | Keep MyFive separate and paused; do not inherit its architecture or tasks. | SRC-AI-LIT, Decisions and Architecture distinction; AI-LIT exclusions |
 | DEC-AIL-005 | superseded | 2026-09-30 | Historical attribution in SRC-AI-LIT | Notion owns the portal PRD and decisions; GitHub owns technical evidence. Superseded by DEC-GE-PRD-001. | SRC-AI-LIT, Approved SSOT / Approved governance |
-| DEC-AIL-006 | pending | 2026-09-30 | None | Niche, priority problem, offer, conversion, language rollout, access model, architecture and baseline remain undecided. | AI-LIT-TBD-001 through AI-LIT-TBD-009 |
+| DEC-AIL-006 | pending | 2026-09-30 | None | Niche, priority problem, offer, conversion, language rollout, access model, architecture and baseline remain undecided. | AI-LIT-TBD-001 through AI-LIT-TBD-010 |
+| DEC-AIL-007 | approved | 2026-09-30 | Estève Pannetier, current workshop | Green Elephant remains a communication expert positioned toward human-centred AI literacy. Human agency is the top-level principle: AI augments communication without replacing human judgment, voice or responsibility. The Periodic Table—especially its white Think & Understand mental-model layer—is the differentiating method. Satellite Scan, the Periodic Table, Prompt Library and coaching support the AI literacy journey rather than competing as headline offers. | AI-LIT-REQ-013 through AI-LIT-REQ-015; positioning hierarchy |
 
 Discovery progress is in the PRD acceptance table. Proposed SEO/growth ideas are
 `AI-LIT-PROP-*` requirements candidates, not approved decisions. Add an attributable
@@ -114,6 +118,7 @@ decision here when Estève selects one; do not silently change its status.
 | GE-CONFLICT-007 | Linked brand/client/research pages and older PRD versions are links, not included page bodies | Record as references; no claim of complete ingestion of those pages |
 | GE-CONFLICT-008 | MyFive Notion pricing/referral brainstorming differs from its GitHub requirements | Historical proposal only; no price or subscription change |
 | GE-CONFLICT-009 | Local documentation baseline and deployed application baseline are different questions | Main is the documentation starting point; application recovery/deployed commit remain unresolved |
+| GE-CONFLICT-010 | Live navigation, routes and built asset do not match GitHub main or the known MyFive branch | Preserve production; recover the deployed source and select a baseline before rebase, feature implementation or CI/CD cutover |
 
 ### Technical evidence checkpoints
 
@@ -132,6 +137,11 @@ decision here when Estève selects one; do not silently change its status.
   is incomplete. Other checkouts, stashes and unpushed work remain unreconciled.
 - No deployment equivalence, production health, or current legal/privacy clearance
   is inferred from a document, old checklist or passing branch CI.
+- A read-only live audit on 2026-09-30 found desktop navigation `Scan / Coaching /
+  About`, deployed asset `index-57VkaKnx.js`, several live-only route strings, mobile
+  horizontal clipping, and HTTP 404 responses for `robots.txt` and `sitemap.xml`.
+  GitHub main references `index-DHRBtPG_.js`; the known MyFive branch references
+  `index-3Q1Q0GTU.js`. The exact deployed source remains unresolved.
 
 <a id="my5-history"></a>
 ## Preserved MyFive decision history — v11.4.18

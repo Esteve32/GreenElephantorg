@@ -8,13 +8,14 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two independent project sections. Version: **2.0.0**.
+One PRD, two independent project sections. Version: **2.0.1**.
 Owner: Estève Pannetier. Reconciled: 2026-09-30.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
 GitHub owns this PRD and the single decision log. Notion holds derived mirrors.
-These changes are a local documentation candidate until published and merged;
-the GitHub `main` URLs do not yet contain this arrangement.
+This arrangement was published to GitHub `main` in signed commit
+[`99b846f`](https://github.com/Esteve32/GreenElephantorg/commit/99b846fbe9276dda0f4d8b5394e6cba1cde5846d).
+Notion mirrors have not yet been refreshed from that commit.
 
 | Project ID | Project | State | Entry |
 | --- | --- | --- | --- |
@@ -36,9 +37,13 @@ Current authorization covers documentation consolidation and discovery only.
 
 ### Purpose and audience
 
-Simplify greenelephant.org so a suitable visitor can understand the AI literacy
-training offer and take one clear, approved next step. Clarity, search findability,
-maintainability and real delivery capacity come before a platform rebuild.
+Green Elephant remains a communication expert. The new positioning applies that
+expertise to AI literacy: helping people use AI to augment human communication
+without handing over their judgment, voice, relationships or responsibility.
+Simplify greenelephant.org so a suitable visitor can understand this human-centred
+AI literacy offer and take one clear, approved next step. Clarity, search
+findability, maintainability and real delivery capacity come before a platform
+rebuild.
 
 | ID | Status | Requirement / direction | Evidence |
 | --- | --- | --- | --- |
@@ -54,6 +59,9 @@ maintainability and real delivery capacity come before a platform rebuild.
 | AI-LIT-REQ-010 | Draft requirement | Any enquiry/enrolment data needs a purpose, owner, retention approach and understandable privacy/consent information. | SRC-AI-LIT, section 9 |
 | AI-LIT-REQ-011 | Draft requirement | Assign human ownership for offer content, enquiries and materials, and require validation evidence and a rollback path for later implementation changes. | SRC-AI-LIT, section 9 |
 | AI-LIT-REQ-012 | Draft requirement | Keep secrets out of source and evidence; runtime secrets remain in Replit and human-held credentials in 1Password. | SRC-AI-LIT, section 9; current user workflow |
+| AI-LIT-REQ-013 | Approved direction | Keep human agency at the top of the product and message hierarchy. AI supports human thinking and communication; it does not replace the person, speak as them without control, or become the authority for their relationships and decisions. | DEC-AIL-007 |
+| AI-LIT-REQ-014 | Approved direction | Position the Periodic Table of Conscious Communication—especially its white **Think & Understand** mental-model layer—as Green Elephant's differentiating method for understanding prompts, AI outputs and human communication choices. | DEC-AIL-007; supplied legacy diagram |
+| AI-LIT-REQ-015 | Approved direction | Treat Satellite Scan, the full Periodic Table, Prompt Library and coaching as supporting tools and services for the AI literacy journey, rather than separate competing headline propositions. | DEC-AIL-007 |
 
 Source reference personas include engineering/team, legal and documentary/video
 professions. Named examples and client commercial terms remain in the restricted
@@ -73,6 +81,27 @@ names, testimonials, outcomes, case studies or training materials.
 | AI-LIT-TBD-007 | Keep/refactor/replace architecture; application base branch and commit | TBD after recovery — Estève |
 | AI-LIT-TBD-008 | Replit workspace/deployment relationship, deployed commit and environment | Unverified current state |
 | AI-LIT-TBD-009 | Measurable SEO, performance, accessibility and conversion acceptance criteria | Proposal review needed — Estève |
+| AI-LIT-TBD-010 | Canonical Periodic Table version, element count and attribution for the new website | Verify before new public copy or visual adaptation |
+
+### Positioning hierarchy
+
+| Level | Role in the new website |
+| --- | --- |
+| **Human agency** | The human chooses the purpose, supplies context, interprets output, keeps their voice and remains accountable. |
+| **AI literacy** | Practical capability to prompt, question, evaluate and collaborate with AI critically and confidently. |
+| **Green Elephant method** | Communication expertise and the Periodic Table's mental models help people see what good prompting and human communication require. |
+| **Supporting paths** | Satellite Scan reveals patterns; the Periodic Table supplies the map; the Prompt Library turns models into practice; coaching helps people integrate the learning. |
+
+The Periodic Table is both differentiating evidence and a supporting method. It
+should be visible early enough to explain why Green Elephant's AI literacy training
+is distinct, without becoming the website's primary product or conversion goal.
+
+**Recommended draft message, pending copy review:**
+
+> **Use AI. Keep your voice.**
+>
+> Human-centred AI literacy for professionals and teams, grounded in Green
+> Elephant's Periodic Table of Conscious Communication.
 
 ### Search and growth evidence
 
@@ -112,10 +141,110 @@ Neon PostgreSQL, Drizzle, Stripe, Resend and Notion integrations. This is a code
 checkpoint, not verification of production or a selected portal architecture.
 MyFive's SvelteKit/Svelte 5/Zero target is specific to the paused project.
 
-A documentation branch is authorized by the current consolidation request. It is
+Documentation branches and pull requests may record the current discovery. They are
 not the portal's implementation branch or the choice of application baseline.
 Assess which existing admin/auth/payment features remain dormant or hidden before
 proposing changes.
+
+### Current website audit — 2026-09-30
+
+This is a bounded, read-only snapshot of GitHub `main` at `99b846f`, the known
+MyFive branch at `3e9b050`, and the public domain. It is evidence for the workshop,
+not authorization to rebase, replace or deploy the application.
+
+#### Confirmed public behavior
+
+- The desktop visitor experience uses a compact **Scan / Coaching / About**
+  navigation, an English selector and a **Take the Scan** action. The homepage
+  identifies the product as Satellite Scan and addresses Executive Assistants and
+  professionals who lead without hierarchy.
+- A headless Chrome capture at 390 × 844 showed horizontal clipping of hero copy
+  and the primary action. The cookie panel also extended beyond the viewport, with
+  controls partly inaccessible. Mobile layout repair is a release blocker for any
+  candidate based on this deployment.
+- Search-facing requests returned HTTP 200 for the homepage, Scan, Coaching,
+  Programs, Flow Check, Periodic Table, Speech Lab, Webinars, Calendar, Resources,
+  Connect, Retreats and the three role-specific landing pages checked. These
+  responses establish availability only; they are not a performance or content
+  approval.
+- `robots.txt` and `sitemap.xml` returned HTTP 404. Search metadata therefore
+  advertises indexability without these two basic discovery resources.
+- Search-facing `/myfive` and `/portal/login` requests returned HTTP 404, while the
+  public configuration endpoint reported portal login enabled and SaaS disabled.
+  Browser-only routes and search behavior need deliberate reconciliation.
+- Root responses included CSP, HSTS, frame, content-type, referrer and permissions
+  headers. This is a positive transport/browser-control observation, not a complete
+  security or privacy audit.
+
+#### GitHub-to-production mismatch
+
+| Evidence | GitHub `main` | Public deployment | Meaning |
+| --- | --- | --- | --- |
+| Desktop navigation | `Discover / Scan / Learn / Programs / Connect` in `Header.tsx` | `Scan / Coaching / About` | Live visitor UI is not represented by current main source. |
+| Visitor routes | Main router lacks `/drift-check`, `/welcome`, `/blog`, `/micro-habit`, `/ai-transparency` and `/celestial-calendar` | These strings exist in the deployed JavaScript; `/drift-check` has a search-facing page | Live-only work may be uncommitted or stored in another checkout/branch. |
+| Main JavaScript asset | `dist/public/index.html` references `index-DHRBtPG_.js` | Live HTML references `index-57VkaKnx.js` | Main is not the exact deployed build. |
+| MyFive branch asset | Known branch references `index-3Q1Q0GTU.js` | Live HTML references `index-57VkaKnx.js` | The known MyFive branch is also not the exact deployed build. |
+| Delivery automation | No deployment workflow is present on `main`; a baseline-check workflow exists only on the paused feature branch | No verified GitHub-to-production commit mapping | Automatic GitHub → Replit delivery is not established. |
+
+The public response passed through Cloudflare and an Express application, with a
+Google proxy visible in headers. Those headers do not identify the deployment's
+source commit or prove the current Replit workspace is its build source.
+
+#### Product, brand and copy evaluation
+
+| Area | What works now | What blocks the AI literacy direction |
+| --- | --- | --- |
+| Visual identity | Aurora/space imagery is distinctive, calm and memorable; the dark teal palette supports the exploration metaphor. | The homepage brands the experience as **Satellite Scan**, not Green Elephant's human-centred AI literacy training. Mobile overflow damages trust. |
+| Promise | “You already change the room when you walk in” is emotionally strong and audience-specific. | It promises communication self-awareness without explaining how Green Elephant's communication expertise and mental models help people use AI while retaining agency. |
+| Navigation | Three desktop groups are much clearer than the five groups in GitHub main. | Search-facing navigation still exposes ten destinations. The visual UI, crawler view and source disagree. |
+| Conversion | A free first action and paid Scan action are visible. | The first AI literacy offer and primary conversion remain undecided; old Scan/coaching actions cannot be assumed to be the new funnel. |
+| Content depth | Existing Scan, coaching, framework, resource and role content provides substantial reusable material. | Multiple overlapping pages compete for the same visitor intent. Old EA/VA, coaching, retreat and diagnostic positioning may confuse the new audience. |
+| Search/AI readability | Pages expose descriptive titles, headings, structured data and a search-friendly HTML fallback. | Fallback content differs from the browser experience; missing sitemap/robots reduce discovery; claims, prices, named-client references and AI/legal wording require current evidence and permission review. |
+| Technical shape | React/Vite/Express already delivers public pages and integrations. | The repository contains 78 TSX page files, a 7,059-line route module and public, portal, admin and paused MyFive surfaces in one runtime. A whole-stack rewrite would add risk before the public journey is settled. |
+
+#### Recommended first-release information architecture — proposal
+
+This proposal deliberately keeps the public choice small while retaining old URLs
+until redirects, search value and operational dependencies are verified:
+
+1. **Home** — human-agency promise, AI literacy audience fit, outcomes and one
+   primary action. The logo provides the Home link; it need not consume a menu item.
+2. **AI Literacy Training** — one new offer page covering the problem, format,
+   facilitator, safety approach, expectations and the approved next step.
+3. **Our Method** — communication expertise and the Periodic Table, with the white
+   **Think & Understand** mental models clearly connected to prompting, evaluating
+   AI output and making human communication choices.
+4. **Resources** — the Prompt Library and selected AI literacy material; Satellite
+   Scan and coaching appear as supporting routes when relevant to the learner.
+5. **About** — Green Elephant, facilitators, philosophy, evidence and contact route.
+
+Recommended primary navigation: **AI Literacy / Our Method / Resources / About**,
+plus one action for the approved training journey. Satellite Scan and Coaching may
+remain discoverable within content and secondary navigation without competing with
+the AI literacy promise.
+
+Privacy, terms, cookies and AI policy remain in the footer. Satellite Scan,
+Coaching, Programs, role pages, retreats, Flow Check, Speech Lab, webinars,
+calendar, portal and MyFive require individual **retain / redirect / unlist / pause**
+decisions. Do not delete an old route merely because it leaves primary navigation.
+
+#### Safe baseline-recovery gate
+
+Before a rebase, implementation branch, CI/CD connection or production release:
+
+1. Record the Replit workspace branch, HEAD, working-tree changes and build command.
+2. Identify the source of deployed asset `index-57VkaKnx.js` or archive the live
+   build and route inventory as rollback evidence.
+3. Recover and compare any laptop/work-account commits, stashes and untracked work.
+4. Choose the application baseline explicitly: recovered live source, GitHub main,
+   or a reconciled branch. Preserve the current production rollback point.
+5. Add CI for install, type-check, tests/build and a preview deployment before any
+   production synchronization. Connect production only after preview acceptance.
+
+**Senior recommendation:** evolve the current React/Vite/Express application in
+small route/content changes after recovery. Do not adopt the paused MyFive stack or
+rebuild the whole application merely to simplify navigation and publish one new
+offer page.
 
 ### Brand, learning materials and linked references
 
@@ -132,14 +261,19 @@ included in the three exports and are not claimed reviewed here:
 Periodic Table explanations, facilitator biographies, training evidence and existing
 legal/privacy/accessibility text require relevance and permission review before reuse.
 The original archives retain the complete source links and contextual wording.
+The legacy diagram inspected for this workshop labels the white lower layer
+**Think & Understand** and displays a Creative Commons BY-NC-ND mark. Existing
+website sources also disagree between 129 and 146 elements. Confirm the canonical
+version, count, attribution and permitted form of web use before adapting the visual
+or making a precise numerical claim.
 
 ### Discovery acceptance and progress
 
 | ID | Acceptance | State |
 | --- | --- | --- |
 | AI-LIT-AC-001 | Broad audience, reference contexts, languages and reach recorded | Source-recorded approval; DEC-AIL-002/003 |
-| AI-LIT-AC-002 | Current capabilities classified as reuse / hide-retire / replace / awaiting Estève | Open |
-| AI-LIT-AC-003 | Laptop/GitHub/Replit comparison completed without losing work | Open |
+| AI-LIT-AC-002 | Current capabilities classified as reuse / hide-retire / replace / awaiting Estève | Partial — current website audit recorded; route decisions remain open |
+| AI-LIT-AC-003 | Laptop/GitHub/Replit comparison completed without losing work | Partial — live/GitHub mismatch proved; exact deployed source and laptop work remain unresolved |
 | AI-LIT-AC-004 | Niche, problem, first offer, primary conversion and language rollout approved | Open |
 | AI-LIT-AC-005 | Journey/pages and acceptance criteria approved | Open |
 | AI-LIT-AC-006 | Architecture and baseline decision supported by evidence | Open |

@@ -127,10 +127,11 @@ The newest MyFive requirements and ledger were recovered from feature commit
 canonical documents. All original ledger rows remain. This imports documentation
 only: main's application code has not gained the feature branch's security changes.
 
-The documentation branch begins at main commit
-`31f299c047d3d0fab80b8f33c7e049bc9fbbb2a4`.
-Until publication/merge, GitHub main and Notion still contain their previous docs.
-See [source reconciliation](docs/DECISION_LOG.md#source-reconciliation).
+The documentation consolidation began at main commit
+`31f299c047d3d0fab80b8f33c7e049bc9fbbb2a4` and was published to main in signed
+commit `99b846fbe9276dda0f4d8b5394e6cba1cde5846d`. Notion mirrors still await a
+refresh from that commit. See
+[source reconciliation](docs/DECISION_LOG.md#source-reconciliation).
 
 ## Desktop and laptop workflow
 
