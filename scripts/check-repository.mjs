@@ -13,6 +13,7 @@ for (const required of [
   "flake.lock",
   "replit.nix",
   "package-lock.json",
+  ".github/workflows/replit-release-reminder.yml",
   "docs/PRD.md",
   "docs/DECISION_LOG.md",
   "docs/project-index.json",

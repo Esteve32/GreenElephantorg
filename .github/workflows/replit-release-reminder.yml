@@ -1,0 +1,115 @@
+name: Manual Replit release reminder
+
+"on":
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: replit-release-reminder
+  cancel-in-progress: true
+
+jobs:
+  remind:
+    name: Prompt human Replit release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_SHA: ${{ github.sha }}
+      REMINDER_TITLE: Manual Replit release pending
+    steps:
+      - name: Create or refresh reminder issue
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          body_file="${RUNNER_TEMP}/replit-release-reminder.md"
+          cat > "$body_file" <<'MARKDOWN'
+          <!-- manual-replit-release-reminder -->
+          # Manual Replit release pending
+
+          GitHub `main` advanced to `__RELEASE_SHA__`.
+
+          Replit does not automatically pull or republish this commit. A human must
+          authorize the workspace preparation and personally select **Republish**.
+
+          ## 1. Prepare the Replit workspace
+
+          Paste the complete block into the Replit Shell, or ask the Replit Agent to
+          run it exactly. It stops on a dirty workspace, a SHA mismatch, an existing
+          release branch, a wrong Node version, or a moved HEAD.
+
+          ```bash
+          set -euo pipefail
+
+          expected_sha="__RELEASE_SHA__"
+          git fetch origin
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "STOP: the Replit workspace is not clean"
+            git status --short --branch
+            exit 1
+          fi
+
+          test "$(git rev-parse origin/main)" = "$expected_sha"
+          release_branch="replit/release-${expected_sha:0:8}"
+
+          if git show-ref --verify --quiet "refs/heads/$release_branch"; then
+            echo "STOP: $release_branch already exists; inspect it instead of rewriting it"
+            exit 1
+          fi
+
+          git switch --create "$release_branch" "$expected_sha"
+          case "$(node --version)" in
+            v24.*) ;;
+            *) echo "STOP: Node.js 24 is required"; exit 1 ;;
+          esac
+
+          npm ci
+          npm run repo:check
+          npm run build
+          test "$(git rev-parse HEAD)" = "$expected_sha"
+          git status --short --branch
+
+          echo "READY: ask the human to review Replit Publishing and click Republish"
+          ```
+
+          Do not run `npm start`; application startup activates schedulers. Do not
+          push, reset, rebase, modify secrets, copy databases, publish or republish.
+
+          ## 2. Human Republish checklist
+
+          - Open Replit **Publishing**.
+          - Keep production secrets unchanged.
+          - Leave **Copy development database to production database** disabled.
+          - Keep the existing deployment type and domains.
+          - Select **Republish** and wait for **Live**.
+
+          ## 3. Verify and close
+
+          Verify the Replit URL, all custom domains and `/api/ping`. Record the exact
+          SHA as a successful GitHub production deployment, then close this issue.
+          MARKDOWN
+
+          sed -i "s/__RELEASE_SHA__/${RELEASE_SHA}/g" "$body_file"
+
+          issue_number="$(
+            gh issue list --state open --limit 100 --json number,title \
+              --jq '[.[] | select(.title == "Manual Replit release pending")] | first | .number // empty'
+          )"
+
+          if [ -z "$issue_number" ]; then
+            gh issue create --title "$REMINDER_TITLE" --body-file "$body_file"
+          else
+            gh issue edit "$issue_number" --body-file "$body_file"
+            gh issue comment "$issue_number" \
+              --body "Reminder updated for GitHub main at \`${RELEASE_SHA}\`."
+          fi
+
+          cat "$body_file" >> "$GITHUB_STEP_SUMMARY"
