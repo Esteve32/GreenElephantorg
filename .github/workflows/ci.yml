@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Source build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate repository structure
+        run: npm run repo:check
+
+      # Existing TypeScript debt is visible but does not block the first reproducible
+      # source build. Remove continue-on-error when the baseline errors are fixed.
+      - name: Type-check baseline
+        continue-on-error: true
+        run: npm run check
+
+      - name: Build production bundle
+        run: npm run build
+
+      # Dependabot is enabled separately. Keep current audit debt visible without
+      # allowing npm to apply breaking dependency upgrades automatically.
+      - name: Audit dependencies
+        continue-on-error: true
+        run: npm audit --audit-level=high
+

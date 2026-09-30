@@ -32,9 +32,13 @@ location and is unnecessary for this arrangement.
 AGENTS.md                  Agent read order, authority and query rules
 README.md                  Navigation and mirror workflow
 docs/
+  README.md                Documentation map
   PRD.md                   AI-LIT section + paused MY5 baseline
   DECISION_LOG.md          Shared decisions + AI-LIT + paused MY5 history
   project-index.json       Machine-readable routing and source provenance
+  operations/              Current deployment and secret-management procedures
+  archive/                 Historical material; never current instructions
+attached_assets/           Source assets required by the Vite build
 client/                    Existing React/Vite website
 server/                    Existing Express application
 shared/                    Shared types and Drizzle schema
@@ -161,9 +165,10 @@ approval or scope changes, then record its revision:
 npm run decision:record -- --summary "PROJECT-ID: approved change" --approved-by "Estève Pannetier"
 ```
 
-No automatic GitHub-to-Replit synchronization is established here. Baseline
-recovery, deployment selection, Nix/runtime portability and feature activation
-remain separate work. Do not use the documentation branch as a deployment choice.
+The intended delivery direction is GitHub `main` to Replit. The recovered source now
+builds without relying on committed `dist/` output, but the supported automatic
+publish trigger still requires verification in this app's Replit Publishing settings.
+See [the Replit deployment procedure](docs/operations/replit-deployment.md).
 
 ## Existing application tooling
 
@@ -175,5 +180,7 @@ for this documentation-only change.
 
 Before running the app, verify a suitable runtime and use isolated development
 services. The application needs environment configuration such as database and
-session credentials; use Replit Secrets or a private local environment. No Nix
-configuration or new runtime baseline is selected by this documentation work.
+session credentials; use Replit deployment secrets or a private local environment.
+Use [`.env.example`](.env.example) for names only and read the
+[secret inventory](docs/operations/secrets.md). Never copy secret values into GitHub
+issues, pull requests, agent prompts or logs.
