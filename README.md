@@ -195,8 +195,9 @@ See [the Replit deployment procedure](docs/operations/replit-deployment.md).
 
 The repository contains React/Vite/Express/TypeScript and a locked npm dependency
 tree. Node.js 24 is the shared runtime baseline: `.nvmrc` configures local version
-managers and GitHub Actions, `flake.nix` plus `flake.lock` give both computers the
-same Nix development shell, and `replit.nix` configures Replit. Commands are defined in
+managers, GitHub Actions pins Node 24 and the repository check verifies it matches
+`.nvmrc`, `flake.nix` plus `flake.lock` give both computers the same Nix development
+shell, and `replit.nix` configures Replit. Commands are defined in
 `package.json`: `npm ci`, `npm run check`, `npm run repo:check`, `npm run build`,
 `npm run dev` and `npm start`. CI blocks repository/configuration errors, production
 build failures and critical dependency vulnerabilities. Existing TypeScript errors

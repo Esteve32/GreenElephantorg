@@ -33,6 +33,10 @@ const nodeVersion = readFileSync(".nvmrc", "utf8").trim();
 if (!/^\d+$/.test(nodeVersion)) {
   failures.push(".nvmrc must contain one Node.js major version number");
 } else {
+  const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
+  if (!new RegExp(`node-version:\\s*${nodeVersion}\\s*(?:#.*)?$`, "m").test(workflow)) {
+    failures.push(`GitHub Actions must use the Node.js ${nodeVersion} major from .nvmrc`);
+  }
   const replitNix = readFileSync("replit.nix", "utf8");
   if (!new RegExp(`pkgs\\.nodejs-${nodeVersion}_x\\b`).test(replitNix)) {
     failures.push(`replit.nix must install Node.js ${nodeVersion}.x from .nvmrc`);
@@ -82,17 +86,12 @@ function sourceFiles(root) {
   return files;
 }
 
-function markdownFiles(root) {
-  const ignored = new Set([".git", "node_modules", "dist", ".local-sources"]);
-  if (!existsSync(root)) return [];
-  const files = [];
-  for (const name of readdirSync(root)) {
-    if (ignored.has(name)) continue;
-    const path = join(root, name);
-    if (statSync(path).isDirectory()) files.push(...markdownFiles(path));
-    else if (extname(path) === ".md") files.push(path);
-  }
-  return files;
+function trackedMarkdownFiles() {
+  return execFileSync("git", ["ls-files", "-z", "--", "*.md"], {
+    encoding: "utf8",
+  })
+    .split("\0")
+    .filter(Boolean);
 }
 
 const assetPattern = /["']@assets\/(.+?)["']/g;
@@ -105,7 +104,7 @@ for (const sourcePath of sourceFiles("client")) {
 }
 
 const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
-for (const markdownPath of markdownFiles(".")) {
+for (const markdownPath of trackedMarkdownFiles()) {
   const markdown = readFileSync(markdownPath, "utf8");
   for (const match of markdown.matchAll(linkPattern)) {
     const target = match[1].trim().replace(/^<|>$/g, "");

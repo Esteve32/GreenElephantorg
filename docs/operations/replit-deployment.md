@@ -13,11 +13,11 @@ not expose a source branch, deployed Git commit or automatic GitHub publish trig
 An active Replit GitHub connector proves API access; it does not by itself prove
 source synchronization or automatic publication.
 
-The runtime baseline is Node.js 24: `.nvmrc` is used by GitHub Actions and local
-version managers, `flake.nix`/`flake.lock` provide a shared Nix shell for both
-computers, and `replit.nix` installs the matching Node 24 package in Replit. The
-repository check fails if those major versions drift or if the Replit build/start
-commands no longer match the npm scripts.
+The runtime baseline is Node.js 24: `.nvmrc` configures local version managers,
+GitHub Actions pins Node 24 and the repository check verifies it matches `.nvmrc`,
+`flake.nix`/`flake.lock` provide a shared Nix shell for both computers, and
+`replit.nix` installs the matching Node 24 package in Replit. The repository check
+also verifies the Replit build/start commands against the npm scripts.
 
 The Nix flake pins Nixpkgs 26.05 for repeatable local setup. Refresh `flake.lock`
 and the Replit Nix channel together during a planned runtime update; the 26.05
@@ -45,6 +45,7 @@ app, or move the deployment to a platform with a documented GitHub deployment ho
 
 ## Replit commands
 
+- Runtime: Node.js `24.x` (`nodejs-24` in `.replit`)
 - Development: `npm run dev`
 - Clean dependency install: `npm ci`
 - Production build: `npm run build`
