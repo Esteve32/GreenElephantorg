@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.4.19
+# Green Elephant — Project Decision Log v11.4.20
 
-**Document Version:** `11.4.19`
-**Last Updated:** `2026-09-30T20:29:16+03:00`
+**Document Version:** `11.4.20`
+**Last Updated:** `2026-09-30T21:13:26+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.4.20 | 2026-09-30T21:13:26+03:00 | Estève Pannetier | AI-LIT: correct publication status and record read-only live-site audit |
 | 11.4.19 | 2026-09-30T20:29:16+03:00 | Estève Pannetier | DEC-GE-PRD-001: consolidate one PRD and decision log with separate AI-LIT discovery and paused MY5 scopes; preserve branch history and source provenance |
 
 <a id="shared-decisions"></a>
@@ -52,16 +53,17 @@ A recording command does not grant approval. Do not change historical rows.
   `docs/DECISION_LOG.md` is the single decision authority. Both distinguish AI-LIT
   and MY5. Notion holds derived mirrors. README and the machine-readable index
   route readers to these documents; they do not contain alternate requirements.
-- **Organization selected for this local candidate:** sections in the existing pair
+- **Organization published on GitHub main:** sections in the existing pair
   of files, stable project/requirement/decision IDs, and a reference-only JSON index.
   This fulfills the requested one-pair structure without additional project logs.
 - **Supersedes:** SRC-AI-LIT's 2026-09-30 Notion-as-canonical SSOT and governance
   entries, its cross-platform handoff protocol, and conflicting repository-wide
   authority language in the legacy MyFive baseline. History remains preserved.
-- **Scope limit:** local documentation consolidation. Does not resume MyFive,
-  select the portal's stack, authorize a feature build, merge, push or deploy.
+- **Scope limit:** documentation governance and discovery. Does not resume MyFive,
+  select the portal's stack, authorize a feature build or deploy the application.
 - **Affected requirements:** GE-PRD authority; AI-LIT and MY5 sections.
-- **Delivery status:** local candidate; mirrors and GitHub main await publication.
+- **Delivery status:** published to GitHub `main` in signed commit `99b846f` on
+  2026-09-30; Notion mirrors await refresh from that commit.
 
 <a id="ai-literacy-decisions"></a>
 ## AI-LIT decisions and pending choices
@@ -114,6 +116,7 @@ decision here when Estève selects one; do not silently change its status.
 | GE-CONFLICT-007 | Linked brand/client/research pages and older PRD versions are links, not included page bodies | Record as references; no claim of complete ingestion of those pages |
 | GE-CONFLICT-008 | MyFive Notion pricing/referral brainstorming differs from its GitHub requirements | Historical proposal only; no price or subscription change |
 | GE-CONFLICT-009 | Local documentation baseline and deployed application baseline are different questions | Main is the documentation starting point; application recovery/deployed commit remain unresolved |
+| GE-CONFLICT-010 | Live navigation, routes and built asset do not match GitHub main or the known MyFive branch | Preserve production; recover the deployed source and select a baseline before rebase, feature implementation or CI/CD cutover |
 
 ### Technical evidence checkpoints
 
@@ -132,6 +135,11 @@ decision here when Estève selects one; do not silently change its status.
   is incomplete. Other checkouts, stashes and unpushed work remain unreconciled.
 - No deployment equivalence, production health, or current legal/privacy clearance
   is inferred from a document, old checklist or passing branch CI.
+- A read-only live audit on 2026-09-30 found desktop navigation `Scan / Coaching /
+  About`, deployed asset `index-57VkaKnx.js`, several live-only route strings, mobile
+  horizontal clipping, and HTTP 404 responses for `robots.txt` and `sitemap.xml`.
+  GitHub main references `index-DHRBtPG_.js`; the known MyFive branch references
+  `index-3Q1Q0GTU.js`. The exact deployed source remains unresolved.
 
 <a id="my5-history"></a>
 ## Preserved MyFive decision history — v11.4.18
