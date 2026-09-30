@@ -41,17 +41,12 @@ function sourceFiles(root) {
   return files;
 }
 
-function markdownFiles(root) {
-  const ignored = new Set([".git", "node_modules", "dist", ".local-sources"]);
-  if (!existsSync(root)) return [];
-  const files = [];
-  for (const name of readdirSync(root)) {
-    if (ignored.has(name)) continue;
-    const path = join(root, name);
-    if (statSync(path).isDirectory()) files.push(...markdownFiles(path));
-    else if (extname(path) === ".md") files.push(path);
-  }
-  return files;
+function trackedMarkdownFiles() {
+  return execFileSync("git", ["ls-files", "-z", "--", "*.md"], {
+    encoding: "utf8",
+  })
+    .split("\0")
+    .filter(Boolean);
 }
 
 const assetPattern = /["']@assets\/(.+?)["']/g;
@@ -64,7 +59,7 @@ for (const sourcePath of sourceFiles("client")) {
 }
 
 const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
-for (const markdownPath of markdownFiles(".")) {
+for (const markdownPath of trackedMarkdownFiles()) {
   const markdown = readFileSync(markdownPath, "utf8");
   for (const match of markdown.matchAll(linkPattern)) {
     const target = match[1].trim().replace(/^<|>$/g, "");
