@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.4.20
+# Green Elephant — Project Decision Log v11.4.21
 
-**Document Version:** `11.4.20`
-**Last Updated:** `2026-09-30T21:13:26+03:00`
+**Document Version:** `11.4.21`
+**Last Updated:** `2026-09-30T21:29:06+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.4.21 | 2026-09-30T21:29:06+03:00 | Estève Pannetier | DEC-AIL-007: approve human-centred AI literacy positioning and Periodic Table method |
 | 11.4.20 | 2026-09-30T21:13:26+03:00 | Estève Pannetier | AI-LIT: correct publication status and record read-only live-site audit |
 | 11.4.19 | 2026-09-30T20:29:16+03:00 | Estève Pannetier | DEC-GE-PRD-001: consolidate one PRD and decision log with separate AI-LIT discovery and paused MY5 scopes; preserve branch history and source provenance |
 
@@ -75,7 +76,8 @@ A recording command does not grant approval. Do not change historical rows.
 | DEC-AIL-003 | approved_imported | 2026-09-30 | Estève, as recorded in SRC-AI-LIT | English/French reach across Finland, UK, France and wider Northern Europe; launch order remains open. | SRC-AI-LIT, Decisions; AI-LIT-REQ-002 |
 | DEC-AIL-004 | approved_imported | 2026-09-30 | Estève, as recorded in SRC-AI-LIT | Keep MyFive separate and paused; do not inherit its architecture or tasks. | SRC-AI-LIT, Decisions and Architecture distinction; AI-LIT exclusions |
 | DEC-AIL-005 | superseded | 2026-09-30 | Historical attribution in SRC-AI-LIT | Notion owns the portal PRD and decisions; GitHub owns technical evidence. Superseded by DEC-GE-PRD-001. | SRC-AI-LIT, Approved SSOT / Approved governance |
-| DEC-AIL-006 | pending | 2026-09-30 | None | Niche, priority problem, offer, conversion, language rollout, access model, architecture and baseline remain undecided. | AI-LIT-TBD-001 through AI-LIT-TBD-009 |
+| DEC-AIL-006 | pending | 2026-09-30 | None | Niche, priority problem, offer, conversion, language rollout, access model, architecture and baseline remain undecided. | AI-LIT-TBD-001 through AI-LIT-TBD-010 |
+| DEC-AIL-007 | approved | 2026-09-30 | Estève Pannetier, current workshop | Green Elephant remains a communication expert positioned toward human-centred AI literacy. Human agency is the top-level principle: AI augments communication without replacing human judgment, voice or responsibility. The Periodic Table—especially its white Think & Understand mental-model layer—is the differentiating method. Satellite Scan, the Periodic Table, Prompt Library and coaching support the AI literacy journey rather than competing as headline offers. | AI-LIT-REQ-013 through AI-LIT-REQ-015; positioning hierarchy |
 
 Discovery progress is in the PRD acceptance table. Proposed SEO/growth ideas are
 `AI-LIT-PROP-*` requirements candidates, not approved decisions. Add an attributable

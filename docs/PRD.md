@@ -37,9 +37,13 @@ Current authorization covers documentation consolidation and discovery only.
 
 ### Purpose and audience
 
-Simplify greenelephant.org so a suitable visitor can understand the AI literacy
-training offer and take one clear, approved next step. Clarity, search findability,
-maintainability and real delivery capacity come before a platform rebuild.
+Green Elephant remains a communication expert. The new positioning applies that
+expertise to AI literacy: helping people use AI to augment human communication
+without handing over their judgment, voice, relationships or responsibility.
+Simplify greenelephant.org so a suitable visitor can understand this human-centred
+AI literacy offer and take one clear, approved next step. Clarity, search
+findability, maintainability and real delivery capacity come before a platform
+rebuild.
 
 | ID | Status | Requirement / direction | Evidence |
 | --- | --- | --- | --- |
@@ -55,6 +59,9 @@ maintainability and real delivery capacity come before a platform rebuild.
 | AI-LIT-REQ-010 | Draft requirement | Any enquiry/enrolment data needs a purpose, owner, retention approach and understandable privacy/consent information. | SRC-AI-LIT, section 9 |
 | AI-LIT-REQ-011 | Draft requirement | Assign human ownership for offer content, enquiries and materials, and require validation evidence and a rollback path for later implementation changes. | SRC-AI-LIT, section 9 |
 | AI-LIT-REQ-012 | Draft requirement | Keep secrets out of source and evidence; runtime secrets remain in Replit and human-held credentials in 1Password. | SRC-AI-LIT, section 9; current user workflow |
+| AI-LIT-REQ-013 | Approved direction | Keep human agency at the top of the product and message hierarchy. AI supports human thinking and communication; it does not replace the person, speak as them without control, or become the authority for their relationships and decisions. | DEC-AIL-007 |
+| AI-LIT-REQ-014 | Approved direction | Position the Periodic Table of Conscious Communication—especially its white **Think & Understand** mental-model layer—as Green Elephant's differentiating method for understanding prompts, AI outputs and human communication choices. | DEC-AIL-007; supplied legacy diagram |
+| AI-LIT-REQ-015 | Approved direction | Treat Satellite Scan, the full Periodic Table, Prompt Library and coaching as supporting tools and services for the AI literacy journey, rather than separate competing headline propositions. | DEC-AIL-007 |
 
 Source reference personas include engineering/team, legal and documentary/video
 professions. Named examples and client commercial terms remain in the restricted
@@ -74,6 +81,27 @@ names, testimonials, outcomes, case studies or training materials.
 | AI-LIT-TBD-007 | Keep/refactor/replace architecture; application base branch and commit | TBD after recovery — Estève |
 | AI-LIT-TBD-008 | Replit workspace/deployment relationship, deployed commit and environment | Unverified current state |
 | AI-LIT-TBD-009 | Measurable SEO, performance, accessibility and conversion acceptance criteria | Proposal review needed — Estève |
+| AI-LIT-TBD-010 | Canonical Periodic Table version, element count and attribution for the new website | Verify before new public copy or visual adaptation |
+
+### Positioning hierarchy
+
+| Level | Role in the new website |
+| --- | --- |
+| **Human agency** | The human chooses the purpose, supplies context, interprets output, keeps their voice and remains accountable. |
+| **AI literacy** | Practical capability to prompt, question, evaluate and collaborate with AI critically and confidently. |
+| **Green Elephant method** | Communication expertise and the Periodic Table's mental models help people see what good prompting and human communication require. |
+| **Supporting paths** | Satellite Scan reveals patterns; the Periodic Table supplies the map; the Prompt Library turns models into practice; coaching helps people integrate the learning. |
+
+The Periodic Table is both differentiating evidence and a supporting method. It
+should be visible early enough to explain why Green Elephant's AI literacy training
+is distinct, without becoming the website's primary product or conversion goal.
+
+**Recommended draft message, pending copy review:**
+
+> **Use AI. Keep your voice.**
+>
+> Human-centred AI literacy for professionals and teams, grounded in Green
+> Elephant's Periodic Table of Conscious Communication.
 
 ### Search and growth evidence
 
@@ -166,8 +194,8 @@ source commit or prove the current Replit workspace is its build source.
 
 | Area | What works now | What blocks the AI literacy direction |
 | --- | --- | --- |
-| Visual identity | Aurora/space imagery is distinctive, calm and memorable; the dark teal palette supports the exploration metaphor. | The homepage brands the experience as **Satellite Scan**, not Green Elephant's AI literacy training. Mobile overflow damages trust. |
-| Promise | “You already change the room when you walk in” is emotionally strong and audience-specific. | It promises communication self-awareness, while the approved new direction is practical AI literacy. Visitors cannot tell what AI literacy training is offered. |
+| Visual identity | Aurora/space imagery is distinctive, calm and memorable; the dark teal palette supports the exploration metaphor. | The homepage brands the experience as **Satellite Scan**, not Green Elephant's human-centred AI literacy training. Mobile overflow damages trust. |
+| Promise | “You already change the room when you walk in” is emotionally strong and audience-specific. | It promises communication self-awareness without explaining how Green Elephant's communication expertise and mental models help people use AI while retaining agency. |
 | Navigation | Three desktop groups are much clearer than the five groups in GitHub main. | Search-facing navigation still exposes ten destinations. The visual UI, crawler view and source disagree. |
 | Conversion | A free first action and paid Scan action are visible. | The first AI literacy offer and primary conversion remain undecided; old Scan/coaching actions cannot be assumed to be the new funnel. |
 | Content depth | Existing Scan, coaching, framework, resource and role content provides substantial reusable material. | Multiple overlapping pages compete for the same visitor intent. Old EA/VA, coaching, retreat and diagnostic positioning may confuse the new audience. |
@@ -179,13 +207,21 @@ source commit or prove the current Replit workspace is its build source.
 This proposal deliberately keeps the public choice small while retaining old URLs
 until redirects, search value and operational dependencies are verified:
 
-1. **Home** — plain-language AI literacy promise, audience fit, outcomes and one
-   primary action.
+1. **Home** — human-agency promise, AI literacy audience fit, outcomes and one
+   primary action. The logo provides the Home link; it need not consume a menu item.
 2. **AI Literacy Training** — one new offer page covering the problem, format,
    facilitator, safety approach, expectations and the approved next step.
-3. **Resources** — selected AI literacy material and approved reusable Green
-   Elephant intellectual property.
-4. **About** — Green Elephant, facilitators, method, evidence and contact route.
+3. **Our Method** — communication expertise and the Periodic Table, with the white
+   **Think & Understand** mental models clearly connected to prompting, evaluating
+   AI output and making human communication choices.
+4. **Resources** — the Prompt Library and selected AI literacy material; Satellite
+   Scan and coaching appear as supporting routes when relevant to the learner.
+5. **About** — Green Elephant, facilitators, philosophy, evidence and contact route.
+
+Recommended primary navigation: **AI Literacy / Our Method / Resources / About**,
+plus one action for the approved training journey. Satellite Scan and Coaching may
+remain discoverable within content and secondary navigation without competing with
+the AI literacy promise.
 
 Privacy, terms, cookies and AI policy remain in the footer. Satellite Scan,
 Coaching, Programs, role pages, retreats, Flow Check, Speech Lab, webinars,
@@ -225,6 +261,11 @@ included in the three exports and are not claimed reviewed here:
 Periodic Table explanations, facilitator biographies, training evidence and existing
 legal/privacy/accessibility text require relevance and permission review before reuse.
 The original archives retain the complete source links and contextual wording.
+The legacy diagram inspected for this workshop labels the white lower layer
+**Think & Understand** and displays a Creative Commons BY-NC-ND mark. Existing
+website sources also disagree between 129 and 146 elements. Confirm the canonical
+version, count, attribution and permitted form of web use before adapting the visual
+or making a precise numerical claim.
 
 ### Discovery acceptance and progress
 
