@@ -1,6 +1,9 @@
 run = "npm run dev"
 modules = ["nodejs-24"]
 
+[nix]
+channel = "stable-26_05"
+
 [[ports]]
 localPort = 5000
 externalPort = 80

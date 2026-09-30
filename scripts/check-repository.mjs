@@ -8,6 +8,11 @@ for (const required of [
   "AGENTS.md",
   "README.md",
   ".replit",
+  ".nvmrc",
+  "flake.nix",
+  "flake.lock",
+  "replit.nix",
+  "package-lock.json",
   "docs/PRD.md",
   "docs/DECISION_LOG.md",
   "docs/project-index.json",
@@ -21,6 +26,46 @@ const projectIndex = JSON.parse(readFileSync("docs/project-index.json", "utf8"))
 for (const pathWithAnchor of Object.values(projectIndex.canonical_documents ?? {})) {
   const path = String(pathWithAnchor).split("#", 1)[0];
   if (!existsSync(path)) failures.push(`Project index points to missing file: ${path}`);
+}
+
+const replitConfig = readFileSync(".replit", "utf8");
+const nodeVersion = readFileSync(".nvmrc", "utf8").trim();
+if (!/^\d+$/.test(nodeVersion)) {
+  failures.push(".nvmrc must contain one Node.js major version number");
+} else {
+  const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
+  if (!new RegExp(`node-version:\\s*${nodeVersion}\\s*(?:#.*)?$`, "m").test(workflow)) {
+    failures.push(`GitHub Actions must use the Node.js ${nodeVersion} major from .nvmrc`);
+  }
+  const replitNix = readFileSync("replit.nix", "utf8");
+  if (!new RegExp(`pkgs\\.nodejs-${nodeVersion}_x\\b`).test(replitNix)) {
+    failures.push(`replit.nix must install Node.js ${nodeVersion}.x from .nvmrc`);
+  }
+  const flake = readFileSync("flake.nix", "utf8");
+  if (!new RegExp(`pkgs\\.nodejs_${nodeVersion}\\b`).test(flake)) {
+    failures.push(`flake.nix must provide Node.js ${nodeVersion}.x for local development`);
+  }
+  const release = flake.match(/nixpkgs\.url\s*=\s*["']github:NixOS\/nixpkgs\/nixos-(\d{2})\.(\d{2})["']/);
+  if (!release) {
+    failures.push("flake.nix must pin a NixOS release branch");
+  } else {
+    const channel = `stable-${release[1]}_${release[2]}`;
+    if (!new RegExp(`channel\\s*=\\s*["']${channel}["']`).test(replitConfig)) {
+      failures.push(`.replit Nix channel must match flake.nix (${channel})`);
+    }
+    const lock = JSON.parse(readFileSync("flake.lock", "utf8"));
+    if (lock.nodes?.nixpkgs?.original?.ref !== `nixos-${release[1]}.${release[2]}`) {
+      failures.push("flake.lock must pin the Nixpkgs release selected by flake.nix");
+    }
+  }
+}
+
+for (const [label, pattern] of [
+  ["development command", /^run\s*=\s*["']npm run dev["']\s*$/m],
+  ["deployment build command", /^build\s*=\s*["']npm ci && npm run build["']\s*$/m],
+  ["deployment start command", /^run\s*=\s*["']npm start["']\s*$/m],
+]) {
+  if (!pattern.test(replitConfig)) failures.push(`.replit is missing the expected ${label}`);
 }
 
 const trackedDist = execFileSync("git", ["ls-files", "dist"], { encoding: "utf8" }).trim();
