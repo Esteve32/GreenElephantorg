@@ -13,10 +13,23 @@ not expose a source branch, deployed Git commit or automatic GitHub publish trig
 An active Replit GitHub connector proves API access; it does not by itself prove
 source synchronization or automatic publication.
 
+The runtime baseline is Node.js 24: `.nvmrc` is used by GitHub Actions and local
+version managers, `flake.nix`/`flake.lock` provide a shared Nix shell for both
+computers, and `replit.nix` installs the matching Node 24 package in Replit. The
+repository check fails if those major versions drift or if the Replit build/start
+commands no longer match the npm scripts.
+
+The Nix flake pins Nixpkgs 26.05 for repeatable local setup. Refresh `flake.lock`
+and the Replit Nix channel together during a planned runtime update; the 26.05
+Nixpkgs release receives security updates through 2026-12-31.
+
 ## Supported flow today
 
 1. A change is reviewed in a GitHub pull request.
-2. Required GitHub checks install from the lockfile and build from source.
+2. Required GitHub checks install from the lockfile, validate repository/runtime
+   configuration, build from source, and block critical dependency vulnerabilities.
+   TypeScript errors and existing high-severity dependency findings remain visible
+   but non-blocking until their separate remediation work is reviewed.
 3. The pull request is merged to protected `main`.
 4. The Replit workspace checks out `main`, pulls the merge commit and verifies the
    exact Git SHA without creating Replit-only changes.
@@ -43,6 +56,15 @@ selected source commit.
 
 ## Safety gates
 
+- Protect `main` before merging changes: require a pull request and the `Source build`
+  check, enforce the rule for administrators, and disable force-pushes and branch
+  deletion. Keep required approvals at zero while Esteve is the only reviewer; add
+  an independent reviewer if that changes.
+- Keep production builds and repository/runtime configuration checks blocking.
+- Keep the critical-vulnerability audit blocking; review and reduce existing high
+  findings in focused dependency-update pull requests.
+- Remove the TypeScript `continue-on-error` exception after the existing baseline
+  errors are repaired.
 - Never force-push GitHub from the deployed application.
 - Never deploy from an unreviewed Replit-only commit.
 - Never run `scripts/post-merge.sh` as an automatic deployment hook: it contains a

@@ -26,7 +26,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install locked dependencies
@@ -44,8 +44,13 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
+      # The current dependency tree has known high-severity findings, but no
+      # critical findings. Keep critical vulnerabilities as a blocking gate.
+      - name: Block critical dependency vulnerabilities
+        run: npm audit --audit-level=critical
+
       # Dependabot is enabled separately. Keep current audit debt visible without
       # allowing npm to apply breaking dependency upgrades automatically.
-      - name: Audit dependencies
+      - name: Report high-severity dependency baseline
         continue-on-error: true
         run: npm audit --audit-level=high
