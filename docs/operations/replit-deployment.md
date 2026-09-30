@@ -43,6 +43,63 @@ steps 4 or 5 with a Replit browser-session cookie or an undocumented private API
 Keep publication manual until Replit exposes a supported deployment trigger for this
 app, or move the deployment to a platform with a documented GitHub deployment hook.
 
+## Automatic human reminder
+
+Every push to GitHub `main` runs `.github/workflows/replit-release-reminder.yml`.
+The workflow creates or refreshes one open issue titled **Manual Replit release
+pending**. The issue names the exact `main` SHA and provides a ready-to-paste Bash
+block. If another merge lands before publication, the same issue is updated to the
+newest SHA instead of creating a queue of stale release issues.
+
+Agents must surface the open issue during GitHub/Replit work and stop at the human
+boundary. The preparation block fetches GitHub, refuses a dirty workspace, creates
+a new local-only release branch at the exact SHA, verifies Node.js 24, installs from
+the lockfile, validates the repository, builds, and checks that HEAD did not move.
+It intentionally does not start the application because startup activates schedulers.
+It never pushes or publishes.
+
+After the block passes, the human leaves database copying disabled and selects
+**Republish**. Close the reminder issue only after the public domains and `/api/ping`
+pass and the exact SHA has a successful GitHub production deployment record.
+
+If the workflow is unavailable, replace `<GITHUB_MAIN_SHA>` below with the reviewed
+SHA and provide this whole block to the human:
+
+```bash
+set -euo pipefail
+
+expected_sha="<GITHUB_MAIN_SHA>"
+git fetch origin
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "STOP: the Replit workspace is not clean"
+  git status --short --branch
+  exit 1
+fi
+
+test "$(git rev-parse origin/main)" = "$expected_sha"
+release_branch="replit/release-${expected_sha:0:8}"
+
+if git show-ref --verify --quiet "refs/heads/$release_branch"; then
+  echo "STOP: $release_branch already exists; inspect it instead of rewriting it"
+  exit 1
+fi
+
+git switch --create "$release_branch" "$expected_sha"
+case "$(node --version)" in
+  v24.*) ;;
+  *) echo "STOP: Node.js 24 is required"; exit 1 ;;
+esac
+
+npm ci
+npm run repo:check
+npm run build
+test "$(git rev-parse HEAD)" = "$expected_sha"
+git status --short --branch
+
+echo "READY: ask the human to review Replit Publishing and click Republish"
+```
+
 ## Replit commands
 
 - Runtime: Node.js `24.x` (`nodejs-24` in `.replit`)

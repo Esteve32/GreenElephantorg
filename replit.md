@@ -19,3 +19,9 @@ Never force-push `main`, manufacture a replacement Git tree, commit secrets, or
 publish automatically because a connector is active. Use a branch and pull request
 for source changes. A deployment must identify the exact GitHub commit it uses.
 
+At the start of deployment work, check for the open GitHub issue titled **Manual
+Replit release pending**. If it exists, show the human its target SHA and copy-paste
+Bash. If GitHub `main` is newer than the deployed SHA, explicitly say that a manual
+workspace sync and human **Republish** are required. You may run the preparation
+commands after the human asks, but stop before `npm start`, pushing, database work,
+publishing or republishing. Never click **Republish** for the human.
