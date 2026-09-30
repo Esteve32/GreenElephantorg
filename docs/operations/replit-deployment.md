@@ -66,6 +66,7 @@ If the workflow is unavailable, replace `<GITHUB_MAIN_SHA>` below with the revie
 SHA and provide this whole block to the human:
 
 ```bash
+bash <<'REPLIT_RELEASE'
 set -euo pipefail
 
 expected_sha="<GITHUB_MAIN_SHA>"
@@ -98,6 +99,7 @@ test "$(git rev-parse HEAD)" = "$expected_sha"
 git status --short --branch
 
 echo "READY: ask the human to review Replit Publishing and click Republish"
+REPLIT_RELEASE
 ```
 
 ## Replit commands

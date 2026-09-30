@@ -46,6 +46,7 @@ jobs:
           release branch, a wrong Node version, or a moved HEAD.
 
           ```bash
+          bash <<'REPLIT_RELEASE'
           set -euo pipefail
 
           expected_sha="__RELEASE_SHA__"
@@ -78,6 +79,7 @@ jobs:
           git status --short --branch
 
           echo "READY: ask the human to review Replit Publishing and click Republish"
+          REPLIT_RELEASE
           ```
 
           Do not run `npm start`; application startup activates schedulers. Do not
