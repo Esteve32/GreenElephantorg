@@ -23,6 +23,13 @@
 - Do not push, migrate a production database, contact live providers, or select
   Replit Republish unless the user explicitly requests that operation.
 
+## Agent instruction switch
+
+The supplemental training seed is enabled by default. A developer can disable it
+by setting seed_instructions.enabled to false in docs/agent-settings.yml. This
+does not switch off this repository's own instructions or safety rules. Personal
+setup answers are not stored in Git.
+
 ## Green Elephant OS boundary
 
 GreenElephantOS has its own environment guide and controls Notion/Google OS
