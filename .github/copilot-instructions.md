@@ -1,5 +1,10 @@
 # Repository instructions
 
+Check docs/agent-settings.yml. Apply the pinned supplemental seed at
+docs/agent-instructions/esteve-ai-literacy-training-seed.md only when
+seed_instructions.enabled is true. If false, skip that layer; continue to follow
+AGENTS.md and all repository-specific safety, authority and approval rules.
+
 Read [AGENTS.md](../AGENTS.md) before working in this repository. It defines the
 canonical documentation, project boundaries and evidence/query protocol.
 
