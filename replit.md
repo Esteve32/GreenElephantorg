@@ -5,6 +5,11 @@ runtime, not an independent source of truth.
 
 Read in this order:
 
+Before applying any supplemental training instructions, check
+`docs/agent-settings.yml`. Follow the pinned seed snapshot only when
+`seed_instructions.enabled` is `true`; a developer can set it to `false`.
+Repository-specific safety, authority and deployment rules remain active.
+
 1. `AGENTS.md`
 2. `docs/project-index.json`
 3. `docs/DECISION_LOG.md#shared-decisions`
