@@ -16,6 +16,35 @@ For Replit, CI, deployment or integration work, also read
 the source authority; Replit must consume a reviewed commit and must never replace
 or force-update `main`.
 
+## Credential-safe Git and terminal use
+
+Git network commands can reveal credentials when a token has been embedded in an HTTPS
+remote URL. In Replit, a failed `replit-git-askpass` request can cause Git to print
+the credential-bearing URL in its authentication prompt. A GitHub token appearing in
+a prompt, terminal output, screenshot or chat is exposed and must be revoked.
+
+- Never put a personal access token in a remote URL, shell command, environment
+  variable shown in output, repository file, issue, pull request, prompt or log.
+  Use the platform's GitHub connection or a secure credential manager.
+- Never print raw remote URLs or credential/configuration state. Do not run or ask a
+  human to run `git remote -v`, `git remote get-url`, `git config --list`,
+  `env`, `printenv`, `set -x`, or commands that display `.env` or credential
+  files. Do not use verbose HTTP tracing. These can expose credentials.
+- Before a scripted GitHub fetch, verify that `origin` exists and contains no
+  HTTPS user-info, without printing the URL. Stop with a generic warning if it
+  contains user-info. Never enable shell tracing around credential handling.
+- If Git, Replit or an agent displays a password/token prompt, do not type a token
+  and do not paste the prompt or surrounding output into chat. Cancel with Ctrl+C.
+  If Replit's Shell does not respond, stop/close that Shell session in the Replit UI.
+  Resume only after using the trusted GitHub connection and checking that the remote
+  no longer contains credentials.
+- If any credential appears in output or is shared, stop network operations and
+  tell the human to revoke that exact credential at its provider before continuing.
+  Do not repeat the value or rely on deleting the message as remediation.
+- When asking for terminal output, request only the minimum relevant lines and tell
+  the human to redact tokens, passwords, cookies, connection strings and private keys
+  before sharing. Agents must inspect their own proposed commands for secret output.
+
 ## Manual Replit release reminder
 
 Replit does not automatically pull or republish GitHub `main`. After every merge to
