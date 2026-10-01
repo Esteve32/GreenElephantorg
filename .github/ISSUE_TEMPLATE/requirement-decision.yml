@@ -1,0 +1,60 @@
+name: Requirement or decision
+description: Propose or track a product requirement, cross-repository impact, or human decision.
+title: "[PRD] "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to record a proposal or question. An agent cannot approve it.
+        Read AGENTS.md, docs/PRD.md and docs/DECISION_LOG.md first.
+  - type: dropdown
+    id: project
+    attributes:
+      label: Scope
+      options:
+        - AI-LIT website
+        - MY5 (paused; documentation only unless explicitly resumed)
+        - Green Elephant OS cross-repo boundary
+        - Shared documentation process
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Requirement or decision to consider
+      description: State one concrete change or unresolved question.
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why this matters
+      description: Include evidence, source links and the outcome you need.
+    validations:
+      required: true
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected IDs and files
+      description: List current PRD requirement IDs, decision IDs and file paths. Use TBD if unknown.
+  - type: dropdown
+    id: workshop
+    attributes:
+      label: Human workshop status
+      options:
+        - Proposal — human choice still needed
+        - Approved by human — add evidence/link below
+        - Deferred — record as TBD
+    validations:
+      required: true
+  - type: input
+    id: approval
+    attributes:
+      label: Human approval evidence
+      description: Link or quote the explicit human selection. Leave blank while proposed.
+  - type: textarea
+    id: cross_repo
+    attributes:
+      label: Green Elephant OS impact
+      description: State affected OS IDs, source commit, paired PR, or why there is no OS impact.
