@@ -1,3 +1,4 @@
+import { registerPublicHttp, apiNotFound, publicErrorHandler } from "./public-http";
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
@@ -9,6 +10,7 @@ import { startOnboardingScheduler } from "./onboarding-scheduler";
 import { startDailyPulseScheduler } from "./daily-pulse";
 
 const app = express();
+registerPublicHttp(app);
 
 // Trust proxy for secure cookies behind Replit's proxy
 app.set('trust proxy', 1);
@@ -62,28 +64,8 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
   res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
+    if (path.startsWith("/api")) log(`${req.method} ${path} ${res.statusCode} in ${Date.now() - start}ms`);
   });
 
   next();
@@ -92,14 +74,9 @@ app.use((req, res, next) => {
 (async () => {
   registerPortalRoutes(app);
   const server = await registerRoutes(app);
+  app.use("/api", apiNotFound);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
+  app.use(publicErrorHandler);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
@@ -157,7 +134,7 @@ async function checkAndSendReminders() {
     
     // Import storage and email functions
     const { storage } = await import('./storage');
-    const { sendSatellitescanReminderEmail } = await import('./email-notifications');
+    const { remindScanOnce } = await import('./scan-purchase-service');
     
     // Find purchases older than 72 hours with no typeform completion and no reminders sent
     const hoursThreshold = 72;
@@ -175,22 +152,14 @@ async function checkAndSendReminders() {
     
     for (const purchase of overduePurchases) {
       try {
-        // Increment reminder count BEFORE sending to prevent double-sends
-        const currentCount = parseInt(purchase.remindersCount);
-        await storage.updateSatellitescanReminderCount(purchase.id, currentCount + 1);
-        
-        // Now attempt to send email
-        const emailSent = await sendSatellitescanReminderEmail(
-          purchase.customerEmail,
-          purchase.customerName
-        );
+        const emailSent = await remindScanOnce(purchase);
         
         if (emailSent) {
           sent++;
           console.log(`✅ Reminder sent to: ${purchase.customerEmail}`);
         } else {
           failed++;
-          console.log(`⚠️ Email failed for ${purchase.customerEmail} (count incremented to prevent retry)`);
+          console.log(`⚠️ Email failed for ${purchase.customerEmail} (reconcile acceptance before retry)`);
         }
       } catch (error: any) {
         failed++;

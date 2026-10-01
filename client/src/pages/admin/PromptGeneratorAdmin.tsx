@@ -219,7 +219,7 @@ export default function PromptGeneratorAdmin() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Prompt saved", description: "Added to the Prompt Library. Visible on /resources/prompts." });
+      toast({ title: "Prompt saved", description: "Added to the Prompt Library. Visible on /resources." });
       queryClient.invalidateQueries({ queryKey: ["/api/prompts"] });
       setGeneratedPrompt(null);
       setEditedPrompt(null);
@@ -258,7 +258,7 @@ export default function PromptGeneratorAdmin() {
                 what="AI-powered generator that creates Prompt Library entries from Periodic Table elements. Pick an element, let AI craft a full prompt, review and edit, then save to the library."
                 how="Select a lens to browse elements, pick one, optionally set audience and custom instructions, then hit Generate. The AI uses the element's name, description, and example prompt as context. You review everything before it goes live."
                 debug={[
-                  { label: "Prompt Library", href: "/resources/prompts" },
+                  { label: "Prompt Library", href: "/resources" },
                   { label: "Periodic Table", href: "/periodic-table" },
                   { label: "Thesys API", href: "/admin/integrations" },
                 ]}
@@ -421,7 +421,7 @@ export default function PromptGeneratorAdmin() {
                         how="The AI reads the element data and crafts a full Prompt Library entry with title, description, what-it-does bullets, perfect-for scenario, and a copy-paste prompt template."
                         debug={[
                           { label: "View on table", href: "/periodic-table" },
-                          { label: "Prompt Library", href: "/resources/prompts" },
+                          { label: "Prompt Library", href: "/resources" },
                         ]}
                       />
                     </CardTitle>
@@ -506,7 +506,7 @@ export default function PromptGeneratorAdmin() {
                             what="Human-in-the-loop: Review what the AI generated, edit any field, then save to the Prompt Library or discard."
                             how="Every field is editable. The whatItDoes bullets can be added or removed. Nothing goes live until you click Save."
                             debug={[
-                              { label: "Prompt Library", href: "/resources/prompts" },
+                              { label: "Prompt Library", href: "/resources" },
                             ]}
                           />
                         </CardTitle>
@@ -721,7 +721,7 @@ export default function PromptGeneratorAdmin() {
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2 flex-wrap">
-                  <a href="/resources/prompts" target="_blank" rel="noopener noreferrer">
+                  <a href="/resources" target="_blank" rel="noopener noreferrer">
                     <Tooltip><TooltipTrigger asChild><Button variant="outline" size="sm" data-testid="link-prompt-library">
                       <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> View Prompt Library
                     </Button></TooltipTrigger><TooltipContent>Open the public Prompt Library page</TooltipContent></Tooltip>

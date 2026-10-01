@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
@@ -149,11 +150,8 @@ export default function CoachingPage() {
 
   return (
     <div className="min-h-screen">
-      <SEO 
-        title="Executive Coaching & Leadership Communication | 1:1 & Team Sessions"
-        description="Executive coaching for CEOs, Executive Assistants, and leaders. From €295 single sessions to 6-month Coaching Journeys. Build executive presence, team alignment, and conscious communication habits."
-        keywords="emotional intelligence coaching, self-awareness coaching, personal development coach, career change coaching, career transition support, CEO executive coaching, executive assistant coaching, leadership coaching, executive presence communication, team alignment coaching, communication habit coaching, conflict resolution for leaders, EQ coach, future-proof career, resilience coaching, social intelligence development, personal growth coaching, leadership development, ethical personal development, AI-assisted communication coaching"
-        canonicalPath="/coaching"
+      <SEO
+        {...PAGE_METADATA["/coaching"]}
         structuredData={PRODUCT_STRUCTURED_DATA.coachingJourney}
         faqItems={COACHING_FAQ_ITEMS}
         breadcrumbs={[

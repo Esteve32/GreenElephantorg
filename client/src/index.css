@@ -656,3 +656,22 @@
   z-index: 60;
   border-radius: 12px;
 }
+
+/* Site navigation: visible keyboard focus and a disclosure panel whose hidden
+   state remains authoritative at every responsive breakpoint. */
+[data-site-navigation] a:focus-visible,
+[data-site-navigation] button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+#mobile-navigation[hidden] {
+  display: none;
+}
+
+/* Scan controls: depth belongs to the surface, not the lettering. */
+.scan-raised-button{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:linear-gradient(180deg,#00a3a3,#007c7c);color:#fff;border:1px solid #49c2c2;border-bottom-color:#005858;border-radius:6px;box-shadow:0 2px 0 #004b4b,0 8px 18px #0006,inset 0 1px 0 #ffffff24;text-shadow:none!important;filter:none;font-weight:700;line-height:1.4;min-height:50px;white-space:normal;text-align:center;transition:box-shadow .15s,transform .15s}
+.scan-raised-button:hover{background:linear-gradient(180deg,#00aaaa,#008383);box-shadow:0 3px 0 #004b4b,0 10px 22px #0007;transform:translateY(-1px)}
+.scan-raised-button:active{transform:translateY(1px);box-shadow:0 1px 0 #004b4b,0 3px 8px #0006}
+.scan-scroll-cue{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-shadow:none;text-decoration:none}
+.scan-scroll-cue svg{display:block;flex:none;width:24px;height:24px}
+@media(prefers-reduced-motion:reduce){.scan-raised-button{transition:none}.scan-raised-button:hover,.scan-raised-button:active{transform:none}}

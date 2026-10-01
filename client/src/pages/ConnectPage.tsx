@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -340,10 +341,7 @@ export default function ConnectPage() {
   return (
     <div className="min-h-screen" data-testid="page-connect">
       <SEO
-        title="Contact & Connect | GreenElephant"
-        description="Connect with the GreenElephant team for coaching, consulting, or collaboration. Meet our coaches, explore client references, and send us a message. We respond within 24 hours with genuine human presence."
-        canonicalPath="/connect"
-        keywords="contact GreenElephant, communication coaching contact, consulting inquiry, connect with coaches, client references"
+        {...PAGE_METADATA["/connect"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Connect", url: "/connect" }

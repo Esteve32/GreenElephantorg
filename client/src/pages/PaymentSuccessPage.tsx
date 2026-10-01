@@ -1,112 +1,49 @@
-import { useEffect, useMemo } from "react";
-import { useLocation, useSearch } from "wouter";
-import { SEO } from "@/components/SEO";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, FileText, Mail, Gift } from "lucide-react";
+import { useSiteLanguage } from "@/hooks/use-site-language";
+import { useEffect, useState } from 'react';
+import { Link, useSearch } from 'wouter';
+import { SEO } from '@/components/SEO';
+import { stripePromise } from '@/lib/stripe-client';
+import { checkoutLanguage, paymentOutcome, scanCheckoutUrl } from '@shared/scan-checkout';
 
 export default function PaymentSuccessPage() {
-  useEffect(() => { document.title = "Payment Successful | GreenElephant"; }, []);
-  const [, setLocation] = useLocation();
-  const searchString = useSearch();
-  
-  const isFreeActivation = useMemo(() => {
-    const params = new URLSearchParams(searchString);
-    return params.get('free') === 'true';
-  }, [searchString]);
-
+  const search = useSearch();
+  const language = useSiteLanguage();
+  const fr = language === 'fr';
+  const [outcome, setOutcome] = useState<ReturnType<typeof paymentOutcome>>('unknown');
+  const [checking, setChecking] = useState(true);
   useEffect(() => {
-    console.log('Payment successful - conversion tracked', { isFreeActivation });
-  }, [isFreeActivation]);
-
-  return (
-    <>
-    <SEO
-      title="Payment Confirmed | GreenElephant"
-      description="Your GreenElephant purchase is confirmed. Check your email for next steps."
-      noIndex={true}
-    />
-    <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4">
-      <Card className="max-w-2xl w-full backdrop-blur-sm bg-card/95 text-center">
-        <CardHeader>
-          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-alignment/20 flex items-center justify-center">
-            {isFreeActivation ? (
-              <Gift className="h-8 w-8 text-alignment" />
-            ) : (
-              <CheckCircle2 className="h-8 w-8 text-alignment" />
-            )}
-          </div>
-          <CardTitle className="text-3xl mb-2">
-            {isFreeActivation ? "Scan Activated!" : "Payment Successful!"}
-          </CardTitle>
-          <p className="text-muted-foreground">
-            Welcome to your conscious communication transformation journey
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4 text-left max-w-md mx-auto">
-            <div className="flex items-start gap-3">
-              <Mail className="h-5 w-5 text-needs shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold mb-1">Check your email</div>
-                <p className="text-sm text-muted-foreground">
-                  {isFreeActivation 
-                    ? "A welcome email from GreenElephant.org is on its way with your scan link and resources. Check your spam folder if you don't see it within a few minutes."
-                    : "You'll receive a confirmation email with next steps and scheduling details within 5 minutes."
-                  }
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <FileText className="h-5 w-5 text-alignment shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold mb-1">Start Your Satellite Scan Now</div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Click below to begin your 90-minute self-assessment. Take your time and answer honestly for the best results.
-                </p>
-                <Button
-                  asChild
-                  size="sm"
-                  className="bg-alignment hover:bg-alignment/90 text-white"
-                  data-testid="button-start-scan"
-                >
-                  <a 
-                    href="https://greenelephantorg.typeform.com/individualscan" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    Start Satellite Scan
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 space-y-3">
-            <Button
-              onClick={() => setLocation('/')}
-              className="w-full bg-alignment text-white hover:opacity-90"
-              data-testid="button-return-home"
-            >
-              Return to Home
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setLocation('/periodic-table')}
-              className="w-full"
-              data-testid="button-explore-framework"
-            >
-              Explore the Framework
-            </Button>
-          </div>
-
-          <p className="text-sm text-muted-foreground pt-4">
-            Questions? We're here to help at esteve@greenelephant.org
-          </p>
-        </CardContent>
-      </Card>
-    </div>
-    </>
-  );
+    let active = true;
+    setChecking(true); setOutcome('unknown');
+    const secret = new URLSearchParams(search).get('payment_intent_client_secret');
+    (async () => {
+      try {
+        const stripe = await stripePromise;
+        if (stripe && secret) {
+          const result = await stripe.retrievePaymentIntent(secret);
+          if (active) setOutcome(paymentOutcome(result.paymentIntent?.status));
+        }
+      } catch { /* Keep the honest unknown state if status cannot be checked. */ }
+      finally { if (active) setChecking(false); }
+    })();
+    return () => { active = false; };
+  }, [search]);
+  const title = checking ? (fr ? 'Vérification du paiement…' : 'Checking your payment…')
+    : outcome === 'success' ? (fr ? 'Paiement confirmé' : 'Payment confirmed')
+    : outcome === 'pending' ? (fr ? 'Paiement en cours' : 'Payment processing')
+    : outcome === 'retry' ? (fr ? 'Le paiement n’a pas abouti' : 'Payment was not completed')
+    : (fr ? 'Consultez votre boîte mail' : 'Check your email');
+  return <div lang={language} className="min-h-screen pt-32 pb-20 px-4 bg-background">
+    <SEO title={`${title} | Green Elephant`} description={fr ? 'Les prochaines étapes de votre achat.' : 'Next steps for your purchase.'} noIndex />
+    <section className="max-w-xl mx-auto space-y-6" aria-live="polite">
+      <h1 className="text-3xl font-bold">{title}</h1>
+      {!checking && <p>{outcome === 'unknown'
+        ? (fr ? 'Cette page ne permet pas de confirmer votre achat. Si votre commande ou votre bon a été accepté, le message de confirmation vous indiquera la suite. Contactez-nous si vous ne le trouvez pas.' : 'This page cannot confirm your purchase. If your order or voucher was accepted, your confirmation message will explain the next steps. Contact us if you cannot find it.')
+        : outcome === 'pending' ? (fr ? 'Attendez la confirmation avant de réessayer. Certains moyens de paiement prennent plus de temps.' : 'Wait for confirmation before trying again. Some payment methods take longer.')
+        : outcome === 'retry' ? (fr ? 'Vous pouvez revenir à votre commande pour réessayer.' : 'You can return to your order to try again.')
+        : (fr ? 'Merci. Consultez votre boîte mail pour le reçu et les prochaines étapes. Pensez aussi au dossier des courriers indésirables.' : 'Thank you. Check your email for the receipt and next steps, including your spam folder.')}</p>}
+      {outcome === 'retry' && <Link href={new URLSearchParams(search).get('product') === 'satellitescan' ? scanCheckoutUrl(language) : '/checkout'} className="block underline">{fr ? 'Revenir à la commande' : 'Return to checkout'}</Link>}
+      <p>{fr ? 'Besoin d’aide ?' : 'Need help?'} <a className="underline" href="mailto:esteve@greenelephant.org">esteve@greenelephant.org</a></p>
+      <Link href={fr ? "/fr/scan" : "/scan"} className="block underline">{fr ? 'Retour au Satellite Scan' : 'Back to Satellite Scan'}</Link>
+    </section>
+  </div>;
 }

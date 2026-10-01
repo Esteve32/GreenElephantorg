@@ -1,3 +1,13 @@
+import { eq } from 'drizzle-orm';
+import { contacts } from '@shared/schema';
+import { redeemFreeScan, recordPaidScan, notifyScanPurchase, remindScanOnce } from './scan-purchase-service';
+import { validScanPayment } from './scan-purchase-validation';
+import { eligibleMarketingContacts, marketingFooter } from "./marketing-email";
+import { escapeEmailHtml } from "./scan-results-email";
+import { verifyTypeformSignature, operationKey, OPERATION_PREFIX, normalizeEmail, emailLanguage, publicSiteOrigin, verifiedEmailToken, verifyEmailToken } from "./delivery-security";
+import { claimEmailOperation, finishEmailOperation, savePurchaseLanguage, purchaseLanguage, isMarketingSuppressed, suppressMarketing } from "./email-operations";
+import { appendScanAnswer, typeformAnswerValue } from "../shared/scan-answers";
+import { SCAN_PRICE } from "../shared/scan-checkout";
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { db } from "./db";
@@ -138,14 +148,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: `Webhook signature verification failed: ${err.message}` });
         }
       } else {
-        // No signature verification (development/testing only)
-        console.warn('⚠️ STRIPE_WEBHOOK_SECRET not set - signature verification disabled (NOT SECURE FOR PRODUCTION)');
-        event = req.body;
+        return res.status(503).json({ message: "Stripe webhook verification is not configured" });
       }
 
       // Handle successful payment
       if (event.type === 'payment_intent.succeeded') {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        if(paymentIntent.metadata.product==='satellitescan') {
+          if(!validScanPayment(paymentIntent.amount_received,paymentIntent.currency)) return res.status(400).json({message:'Unexpected Scan payment amount or currency'});
+          const {purchase,notifyAllowed}=await recordPaidScan(paymentIntent.id,normalizeEmail(paymentIntent.metadata.customerEmail||paymentIntent.receipt_email),paymentIntent.metadata.customerName||null,emailLanguage(paymentIntent.metadata.language));
+          if(!notifyAllowed) return res.json({received:true,emailReconciliationRequired:true,emailDelivery:'unverified'});
+          const accepted=await notifyScanPurchase(purchase);
+          return res.json({received:true,emailAccepted:accepted,emailDelivery:'unverified'});
+        }
+
         
         // Extract metadata with fallback to receipt_email
         const { packageId, packageName, customerName } = paymentIntent.metadata;
@@ -250,7 +266,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Typeform webhook endpoint - receives scan completion data and sends email with results
   // Note: This route uses express.raw() middleware with 50mb limit defined in index.ts
   app.post("/api/typeform-webhook", async (req, res) => {
+    let claimedEvent: string | undefined;
     try {
+      const secret = process.env.TYPEFORM_WEBHOOK_SECRET;
+      if (!secret) return res.status(503).json({ message: "Typeform webhook verification is not configured" });
+      if (!Buffer.isBuffer(req.body) || !verifyTypeformSignature(req.body, req.headers['typeform-signature'], secret)) {
+        return res.status(401).json({ message: "Invalid Typeform signature" });
+      }
+
       if (!(await isConnectorEnabled("typeform"))) {
         console.log('⏸️ Typeform connector disabled — rejecting webhook');
         return res.status(503).json({ message: "Typeform integration is currently disabled" });
@@ -276,17 +299,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { answers, definition, submitted_at } = form_response;
+      if (typeof form_response.token !== 'string' || !form_response.token || typeof form_response.form_id !== 'string') {
+        return res.status(400).json({ message: "Missing Typeform response identity" });
+      }
+      if (process.env.TYPEFORM_FORM_ID && form_response.form_id !== process.env.TYPEFORM_FORM_ID) {
+        return res.status(400).json({ message: "Unexpected Typeform form" });
+      }
+      const eventIdentity = `${form_response.form_id}:${form_response.token}`;
+
       
-      if (!answers || !definition) {
+      if (!Array.isArray(answers) || !definition || !answers.every((answer: unknown) => answer && typeof answer === "object")) {
         console.error('❌ Invalid Typeform webhook payload - missing answers or definition');
         return res.status(400).json({ message: 'Invalid webhook payload structure' });
       }
 
       // Build a map of field IDs to field titles
-      const fieldTitles: Record<string, string> = {};
-      if (definition.fields) {
+      const fieldTitles: Record<string, string> = Object.create(null);
+      if (Array.isArray(definition.fields)) {
         for (const field of definition.fields) {
-          fieldTitles[field.id] = field.title || field.id;
+          if (field && typeof field.id === 'string') fieldTitles[field.id] = typeof field.title === 'string' ? field.title : field.id;
         }
       }
 
@@ -304,52 +335,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let experience = '';
       let communicationSituations = '';
 
-      for (const answer of answers) {
+      for (let answerIndex = 0; answerIndex < answers.length; answerIndex++) {
+        const answer = answers[answerIndex];
         const fieldId = answer.field?.id;
-        const fieldTitle = fieldTitles[fieldId] || fieldId;
-        
-        // Get the answer value based on type
-        let answerValue = '';
-        
-        switch (answer.type) {
-          case 'text':
-          case 'short_text':
-          case 'long_text':
-            answerValue = answer.text || '';
-            break;
-          case 'email':
-            answerValue = answer.email || '';
-            customerEmail = answerValue;
-            break;
-          case 'number':
-            answerValue = answer.number?.toString() || '';
-            break;
-          case 'boolean':
-            answerValue = answer.boolean ? 'Yes' : 'No';
-            break;
-          case 'choice':
-            answerValue = answer.choice?.label || answer.choice?.other || '';
-            break;
-          case 'choices':
-            answerValue = answer.choices?.labels?.join(', ') || answer.choices?.other || '';
-            break;
-          case 'date':
-            answerValue = answer.date || '';
-            break;
-          case 'url':
-            answerValue = answer.url || '';
-            break;
-          case 'file_url':
-            answerValue = answer.file_url || '';
-            break;
-          case 'payment':
-            answerValue = `${answer.payment?.amount} ${answer.payment?.currency}`;
-            break;
-          default:
-            answerValue = JSON.stringify(answer) || '';
-        }
-
-        rawData[fieldTitle] = answerValue;
+        const fieldTitle = fieldTitles[fieldId] || (typeof fieldId === "string" ? fieldId : `Question ${answerIndex + 1}`);
+        const answerValue = typeformAnswerValue(answer);
+        if (answer.type === "email") customerEmail = answerValue;
+        appendScanAnswer(rawData, fieldTitle, answerValue);
 
         // Extract specific fields for summary based on common patterns in field titles
         const lowerTitle = fieldTitle.toLowerCase();
@@ -386,23 +378,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Format submission date
-      const submittedAt = submitted_at 
-        ? new Date(submitted_at).toLocaleString('en-GB', { 
-            dateStyle: 'medium', 
-            timeStyle: 'short',
-            timeZone: 'Europe/Helsinki'
-          })
-        : new Date().toLocaleString('en-GB', { 
-            dateStyle: 'medium', 
-            timeStyle: 'short',
-            timeZone: 'Europe/Helsinki'
-          });
-
-      console.log('📊 Scan data received for:', firstName, lastName);
-      console.log('📧 Customer email:', customerEmail || 'Not provided');
-      console.log('📝 Total answers:', Object.keys(rawData).length);
-
+      try { customerEmail = normalizeEmail(customerEmail); }
+      catch { return res.status(400).json({ message: "A valid respondent email is required" }); }
+      const rawLanguage = form_response.hidden?.language || form_response.hidden?.lang;
+      let language: 'en'|'fr';
+      try { language = emailLanguage(rawLanguage); }
+      catch { return res.status(400).json({ message: "Unsupported response language" }); }
+      const submittedDate = new Date(submitted_at);
+      if (!submitted_at || Number.isNaN(submittedDate.getTime())) return res.status(400).json({ message: "Invalid submission date" });
+      const submittedAt = submittedDate.toLocaleString(language === 'fr' ? 'fr-FR' : 'en-GB', {dateStyle:'medium',timeStyle:'short',timeZone:'Europe/Helsinki'});
+      if (!(await isConnectorEnabled("resend"))) return res.status(503).json({message:"Result email sending is disabled"});
+      const claim = await claimEmailOperation('typeform-result', eventIdentity);
+      if (claim === 'accepted') return res.json({ received: true, duplicate: true, emailDelivery: "unverified" });
+      if (claim !== 'claimed') return res.status(409).json({ message: "Previous send requires reconciliation; no duplicate email sent" });
+      claimedEvent = eventIdentity;
+      // Persist completion before notification. This does not claim the raw answers are stored here.
+      await storage.markTypeformCompletedByEmail(customerEmail);
       // Send the email with scan data
       if (customerEmail) {
         const emailSent = await sendTypeformScanCompletionEmail({
@@ -422,23 +413,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           rawData,
           submittedAt,
+          language,
+          idempotencyKey: operationKey("typeform-result", eventIdentity),
         });
 
-        if (emailSent) {
-          console.log('✅ Scan completion email sent successfully');
-        } else {
-          console.error('❌ Failed to send scan completion email');
-        }
-        
-        // Mark Satellitescan purchase as typeform completed (updates "Typeform: Pending" to "Done")
-        try {
-          const updatedCount = await storage.markTypeformCompletedByEmail(customerEmail);
-          if (updatedCount > 0) {
-            console.log(`✅ Marked ${updatedCount} Satellitescan purchase(s) as Typeform completed for:`, customerEmail);
-          }
-        } catch (purchaseError: any) {
-          console.error('⚠️ Purchase update error (non-blocking):', purchaseError.message);
-        }
+        await finishEmailOperation('typeform-result', eventIdentity, emailSent);
+        claimedEvent = undefined;
+        if (!emailSent) return res.status(503).json({ received: true, message: "Email acceptance unknown; operator reconciliation required" });
 
         // Save self-reported role to satellitescan purchase record
         if (role) {
@@ -461,8 +442,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             contact = await storage.createContact({
               email: customerEmail,
               name: customerName || undefined,
-              consentGiven: 'true',
-              consentText: 'Satellite Scan completion via Typeform',
+              consentGiven: 'false',
+              consentText: 'Service record only: Satellite Scan completion; no marketing consent collected',
               source: 'quiz' as any, // Using quiz as source type for scans
               channelsReached: ['Quiz'],
             });
@@ -496,7 +477,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Always respond 200 to acknowledge receipt
       res.json({ received: true, message: 'Typeform webhook processed' });
     } catch (error: any) {
-      console.error("Typeform webhook error:", error);
+      if (claimedEvent) await finishEmailOperation('typeform-result', claimedEvent, false).catch(() => undefined);
+      console.error("Typeform webhook failed; reconcile operation metadata before retry");
       // Still return 200 to prevent Typeform from retrying
       res.json({ received: true, error: error.message });
     }
@@ -697,10 +679,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/email/unsubscribe", (req, res) => {
+    const { contact, token } = req.query;
+    if (!verifyEmailToken(contact, token, process.env.EMAIL_UNSUBSCRIBE_SECRET || '')) return res.status(400).type('text').send('Invalid unsubscribe link / Lien invalide');
+    res.setHeader('Cache-Control','no-store');
+    res.type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Unsubscribe / Se désinscrire</title><body><h1>Stop marketing emails / Arrêter les e-mails marketing</h1><form method="post"><button type="submit">Confirm / Confirmer</button></form></body></html>`);
+  });
+  app.post("/api/email/unsubscribe", async (req, res) => {
+    const { contact, token } = req.query;
+    if (!verifyEmailToken(contact, token, process.env.EMAIL_UNSUBSCRIBE_SECRET || '')) return res.status(400).type('text').send('Invalid unsubscribe link / Lien invalide');
+    try {
+      await suppressMarketing(contact);
+      res.setHeader('Cache-Control','no-store');
+      res.type('text').send('Marketing emails stopped. Service emails are unchanged. / E-mails marketing arrêtés. Les e-mails liés à votre service restent actifs.');
+    } catch { res.status(503).type('text').send('Please try again / Veuillez réessayer'); }
+  });
+
   // Newsletter subscription endpoint
   app.post("/api/newsletter", async (req, res) => {
     try {
-      const { email, name, consentText } = req.body;
+      const { name, consentText } = req.body;
+      const email = normalizeEmail(req.body.email);
+      if (typeof consentText !== 'string' || !consentText.trim()) return res.status(400).json({message:'Newsletter agreement is required'});
 
       const contactValidation = insertContactSchema.safeParse({
         email,
@@ -723,6 +723,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isNewContact = true;
       }
 
+      if (await isMarketingSuppressed(contact.id)) return res.status(409).json({message:'This address is unsubscribed. Contact us to confirm a new subscription.'});
+      await db.update(contacts).set({consentGiven:'true',consentText,consentedAt:new Date()}).where(eq(contacts.id,contact.id));
       // Add newsletter channel to contact's channels reached
       await storage.addChannelToContact(email, 'Newsletter');
 
@@ -1994,27 +1996,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { customerEmail, customerName } = req.body;
-      console.log("📧 Customer:", customerEmail, customerName);
+      const customerEmail=normalizeEmail(req.body.customerEmail);
+      const customerName=typeof req.body.customerName==='string'?req.body.customerName.trim().slice(0,200):'';
+      const language=emailLanguage(req.body.language);
       
       // Satellite Scan pricing: €99.95 (server-side validation)
-      const SATELLITE_SCAN_PRICE = 99.95;
+      const SATELLITE_SCAN_PRICE = SCAN_PRICE;
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(SATELLITE_SCAN_PRICE * 100), // Convert to cents
         currency: "eur",
         metadata: {
           product: "satellitescan",
+          language,
           customerEmail: customerEmail || '',
           customerName: customerName || '',
         },
         receipt_email: customerEmail || undefined,
       });
       
-      res.json({ clientSecret: paymentIntent.client_secret });
+      res.json({ clientSecret: paymentIntent.client_secret, amount: SATELLITE_SCAN_PRICE, currency: "eur" });
     } catch (error: any) {
       console.error("Satellitescan payment intent error:", error);
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+      res.status(error.message?.startsWith("invalid_")?400:500).json({ message: "Unable to create the Scan payment" });
     }
   });
 
@@ -2163,113 +2167,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Free purchase endpoint for 100% discount coupons
-  app.post("/api/satellitescan/free-purchase", async (req, res) => {
+  app.post("/api/satellitescan/free-purchase", async (req,res)=>{
     try {
-      const { customerEmail, customerName, couponCode } = req.body;
-
-      if (!customerEmail || !couponCode) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Email and coupon code are required" 
-        });
-      }
-
-      // Validate coupon and ensure it provides full discount
-      const coupon = await storage.getCouponByCode(couponCode);
-      if (!coupon) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Invalid coupon code" 
-        });
-      }
-
-      // Check if coupon is active
-      if (coupon.isActive !== "true") {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Coupon is inactive" 
-        });
-      }
-
-      // Check if coupon has remaining uses
-      if (coupon.maxUses && parseInt(coupon.usedCount) >= parseInt(coupon.maxUses)) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Coupon usage limit reached" 
-        });
-      }
-
-      // Check if coupon covers full price (€99.95)
-      const SATELLITE_SCAN_PRICE = 99.95;
-      if (parseFloat(coupon.discountAmount) < SATELLITE_SCAN_PRICE) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Coupon does not cover full purchase price" 
-        });
-      }
-
-      // Generate a free purchase ID
-      const freePurchaseId = `FREE-${crypto.randomUUID()}`;
-
-      // Create the purchase record
-      await storage.createSatellitescanPurchase({
-        customerEmail,
-        customerName: customerName || null,
-        amount: "0.00",
-        stripePaymentIntentId: freePurchaseId,
-        status: "succeeded",
-      });
-
-      // Increment coupon usage
-      await storage.incrementCouponUsage(coupon.id);
-
-      // Send confirmation email using existing notification system
-      console.log('📧 Attempting to send free purchase email to:', customerEmail);
-      try {
-        const emailSent = await sendSatellitescanPurchaseEmail({
-          customerEmail,
-          customerName: customerName || '',
-          amount: "0.00 (FREE - Coupon: " + couponCode + ")",
-          paymentIntentId: freePurchaseId,
-          purchaseId: freePurchaseId,
-        });
-        if (emailSent) {
-          console.log('✅ Free purchase notification emails sent successfully to:', customerEmail);
-        } else {
-          console.error('⚠️ Free purchase email function returned false - email may not have been sent to:', customerEmail);
-        }
-      } catch (emailError: any) {
-        console.error('❌ CRITICAL: Email notification failed for free purchase:', emailError?.message || emailError);
-        console.error('❌ Customer email was:', customerEmail);
-      }
-
-      console.log(`✅ Free Satellite Scan activated for ${customerEmail} using coupon ${couponCode}`);
-
-      // Sync purchase to Notion CRM first (creates contact if doesn't exist)
-      try {
-        await markContactAsCustomer(customerEmail, {
-          productName: 'Satellite Scan (Free - ' + couponCode + ')',
-          amount: '0.00',
-          customerName: customerName || undefined
-        });
-        // Add purchase channel to contact's channels reached (after contact is created)
-        await storage.addChannelToContact(customerEmail, 'Purchase');
-        console.log(`✓ Purchase channel added for: ${customerEmail}`);
-      } catch (err: any) {
-        console.log('Notion sync for free purchase error:', err.message);
-      }
-      
-      res.json({ 
-        success: true, 
-        message: "Free Satellite Scan activated!",
-        purchaseId: freePurchaseId 
-      });
-    } catch (error: any) {
-      console.error("Free purchase error:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Error processing free purchase: " + error.message 
-      });
+      const email=normalizeEmail(req.body.customerEmail),language=emailLanguage(req.body.language);
+      const name=typeof req.body.customerName==='string'?req.body.customerName.trim().slice(0,200):null;
+      if(typeof req.body.couponCode!=='string'||!req.body.couponCode.trim()||req.body.couponCode.length>100) return res.status(400).json({success:false,message:'Invalid voucher'});
+      const purchase=await redeemFreeScan(email,name,req.body.couponCode.trim().toUpperCase(),language);
+      let emailAccepted=false;
+      try {emailAccepted=await notifyScanPurchase(purchase);} catch {console.error('Scan purchase recorded; email needs reconciliation');}
+      res.json({success:true,purchaseId:purchase.stripePaymentIntentId,emailAccepted,emailDelivery:'unverified'});
+    } catch(error:any) {
+      const invalid=error.message?.startsWith('invalid_');
+      console.error('Scan voucher activation failed', {type:invalid?'validation':'processing'});
+      res.status(invalid?400:500).json({success:false,message:invalid?'Check your email, language and voucher':'Unable to confirm activation; contact Esteve before trying again'});
     }
   });
 
@@ -2279,7 +2189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(503).json({ message: "Stripe not configured" });
     }
 
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const webhookSecret = process.env.STRIPE_SATELLITESCAN_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SECRET;
     
     try {
       let event: Stripe.Event;
@@ -2303,80 +2213,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: `Webhook signature verification failed: ${err.message}` });
         }
       } else {
-        console.warn('⚠️ STRIPE_WEBHOOK_SECRET not set - signature verification disabled');
-        event = req.body;
+        return res.status(503).json({ message: "Stripe webhook verification is not configured" });
       }
 
       if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        
-        const { product, customerName } = paymentIntent.metadata;
-        // Use metadata customerEmail first, then fall back to receipt_email
-        const customerEmail = paymentIntent.metadata.customerEmail || paymentIntent.receipt_email || '';
-        const amount = (paymentIntent.amount / 100).toString();
-        
-        console.log('📧 Satellitescan Payment Intent customer email sources:');
-        console.log('  - metadata.customerEmail:', paymentIntent.metadata.customerEmail || 'NOT SET');
-        console.log('  - receipt_email:', paymentIntent.receipt_email || 'NOT SET');
-        console.log('  - Final customerEmail:', customerEmail || 'EMPTY!');
-
-        if (product === 'satellitescan' && customerEmail) {
-          const existingPurchase = await storage.getSatellitescanPurchaseByPaymentIntent(paymentIntent.id);
-          
-          if (!existingPurchase) {
-            const purchase = await storage.createSatellitescanPurchase({
-              customerEmail: customerEmail,
-              customerName: customerName || undefined,
-              amount: amount,
-              stripePaymentIntentId: paymentIntent.id,
-              status: 'succeeded',
-            });
-
-            console.log('🎉 NEW SATELLITESCAN PURCHASE! 🎉');
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log(`Customer: ${customerName || 'Not provided'}`);
-            console.log(`Email: ${customerEmail}`);
-            console.log(`Amount: €${amount}`);
-            console.log(`Payment ID: ${paymentIntent.id}`);
-            console.log(`Purchase ID: ${purchase.id}`);
-            console.log(`Time: ${new Date().toISOString()}`);
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-            const emailSent = await sendSatellitescanPurchaseEmail({
-              customerEmail,
-              customerName: customerName || null,
-              amount,
-              paymentIntentId: paymentIntent.id,
-              purchaseId: purchase.id,
-            });
-
-            if (!emailSent) {
-              console.log('⚠️ Email notification failed - manual follow-up required');
-              console.log('👉 ACTION REQUIRED: Email customer at:', customerEmail);
-              console.log('👉 Include Typeform link: https://greenelephantorg.typeform.com/individualscan');
-            }
-
-            // Sync purchase to Notion CRM first (creates contact if doesn't exist)
-            try {
-              await markContactAsCustomer(customerEmail, {
-                productName: 'Satellite Scan',
-                amount: amount,
-                customerName: customerName || undefined
-              });
-              // Add purchase channel to contact's channels reached (after contact is created)
-              await storage.addChannelToContact(customerEmail, 'Purchase');
-              console.log(`✓ Purchase channel added for: ${customerEmail}`);
-            } catch (err: any) {
-              console.log('Notion sync for satellitescan error:', err.message);
-            }
-          } else {
-            console.log('ℹ️ Duplicate webhook event received for satellitescan payment:', paymentIntent.id);
-          }
-        } else if (product === 'satellitescan' && !customerEmail) {
-          // LOUD ERROR: Customer email is missing
-          console.error('❌ CRITICAL: Satellitescan payment received WITHOUT customer email!');
-          console.error('❌ Payment Intent ID:', paymentIntent.id);
-          console.error('❌ This purchase cannot be processed - manual intervention required');
+        const intent=event.data.object as Stripe.PaymentIntent;
+        if(intent.metadata.product==='satellitescan') {
+          if(!validScanPayment(intent.amount_received,intent.currency)) return res.status(400).json({message:'Unexpected Scan payment amount or currency'});
+          const email=normalizeEmail(intent.metadata.customerEmail||intent.receipt_email);
+          const {purchase,notifyAllowed}=await recordPaidScan(intent.id,email,intent.metadata.customerName||null,emailLanguage(intent.metadata.language));
+          if(!notifyAllowed) return res.json({received:true,emailReconciliationRequired:true,emailDelivery:'unverified'});
+          const accepted=await notifyScanPurchase(purchase);
+          if(!accepted) console.error('Scan payment recorded; email acceptance requires reconciliation');
         }
       }
 
@@ -2546,6 +2394,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!key || typeof key !== "string" || !key.startsWith("ai_tools_")) {
         return res.status(400).json({ message: "Key must start with ai_tools_" });
       }
+      if (typeof key !== "string" || key.startsWith(OPERATION_PREFIX)) return res.status(400).json({message:"Reserved setting key"});
       await storage.setAdminSetting(key, String(value));
       res.json({ success: true });
     } catch (error) {
@@ -3003,28 +2852,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Send reminder emails with idempotency protection
-      // Increment count BEFORE sending to prevent double-sends on network failures
+      // A durable claim prevents duplicates; count records provider acceptance only.
       for (const purchase of overduePurchases) {
         try {
-          // Increment reminder count BEFORE sending to prevent double-sends
-          const currentCount = parseInt(purchase.remindersCount);
-          await storage.updateSatellitescanReminderCount(purchase.id, currentCount + 1);
-          
-          // Now attempt to send email
-          const emailSent = await sendSatellitescanReminderEmail(
-            purchase.customerEmail,
-            purchase.customerName
-          );
+          const emailSent = await remindScanOnce(purchase);
 
           if (emailSent) {
             results.sent++;
             results.details.push({ email: purchase.customerEmail, success: true });
             console.log(`✅ Reminder sent to: ${purchase.customerEmail}`);
           } else {
-            // Email failed to send, but count is already incremented (prevents retry spam)
+            // Unknown or prior attempt: reconcile acceptance before retrying.
             results.failed++;
-            results.details.push({ email: purchase.customerEmail, success: false, error: 'Email send failed (count incremented to prevent retry)' });
-            console.log(`⚠️ Email failed for ${purchase.customerEmail}, but count incremented to prevent future retries`);
+            results.details.push({ email: purchase.customerEmail, success: false, error: 'Email not accepted or already attempted; reconcile before retry' });
+            console.log(`⚠️ Email failed for ${purchase.customerEmail}, acceptance needs reconciliation`);
           }
         } catch (error: any) {
           // Error during processing - count may or may not be incremented depending on where failure occurred
@@ -3445,7 +3286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard API - Get lens data from Google Sheets
-  app.get("/api/dashboard/lens-data", async (req, res) => {
+  app.get("/api/dashboard/lens-data", requireAdminAuth, async (req, res) => {
     try {
       const spreadsheetId = req.query.spreadsheetId as string;
       const range = (req.query.range as string) || 'Sheet1!A1:Z100';
@@ -3463,7 +3304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard API - Generate UI with Thesys
-  app.post("/api/dashboard/generate-ui", async (req, res) => {
+  app.post("/api/dashboard/generate-ui", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
       const { prompt, data } = req.body;
       
@@ -4853,12 +4694,15 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
         return res.status(400).json({ message: "Subject and body are required" });
       }
 
+      if (!process.env.EMAIL_UNSUBSCRIBE_SECRET || process.env.EMAIL_UNSUBSCRIBE_SECRET.length < 32) return res.status(503).json({message:'Marketing unsubscribe handling is not configured'});
+      const eligible = new Set((await eligibleMarketingContacts()).map(contact=>contact.id));
       // Get filtered contacts
-      const contacts = await storage.getContactsWithFilters(
+      const filteredContacts = await storage.getContactsWithFilters(
         includeChannels || [],
         excludeChannels || []
       );
 
+      const contacts = filteredContacts.filter(contact=>eligible.has(contact.id));
       if (contacts.length === 0) {
         return res.status(400).json({ message: "No contacts match the filter criteria" });
       }
@@ -4874,8 +4718,8 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       if (!(await isConnectorEnabled("resend"))) {
         return res.status(503).json({ message: "Email sending is currently disabled. Enable Resend in Connected Tools." });
       }
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
+      const { getUncachableResendClient } = await import('./resend-client');
+      const { client: resend } = await getUncachableResendClient();
 
       let successCount = 0;
       let failedCount = 0;
@@ -4894,17 +4738,22 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
         try {
           // Replace variables in body
           let personalizedBody = body
-            .replace(/\{\{firstName\}\}/g, contact.name?.split(' ')[0] || 'there')
-            .replace(/\{\{name\}\}/g, contact.name || 'there')
-            .replace(/\{\{email\}\}/g, contact.email);
+            .replace(/\{\{firstName\}\}/g, escapeEmailHtml(contact.name?.split(' ')[0] || 'there'))
+            .replace(/\{\{name\}\}/g, escapeEmailHtml(contact.name || 'there'))
+            .replace(/\{\{email\}\}/g, escapeEmailHtml(contact.email));
 
+          if (await isMarketingSuppressed(contact.id)) continue;
+          const footer = marketingFooter(contact.id);
           await resend.emails.send({
             from: 'GreenElephant <hello@greenelephant.org>',
             to: contact.email,
             subject: subject,
+            replyTo: "esteve@greenelephant.org",
+            headers: footer.headers,
             html: `
               <div style="font-family: 'Lato', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
                 ${personalizedBody}
+                ${footer.html}
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
                 <p style="font-size: 12px; color: #6b7280; text-align: center;">
                   You received this email because you signed up at GreenElephant.org<br/>
@@ -5100,7 +4949,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       }
       
       // Get all contacts
-      const contacts = await storage.getAllContacts();
+      const contacts = await eligibleMarketingContacts();
       
       // Check existing recipients to avoid duplicates
       const existingRecipients = await storage.getNewsletterRecipientsByCampaign(req.params.id);
@@ -5163,12 +5012,14 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
         return res.status(400).json({ message: "Campaign already sent" });
       }
       
+      if (!process.env.EMAIL_UNSUBSCRIBE_SECRET || process.env.EMAIL_UNSUBSCRIBE_SECRET.length < 32) return res.status(503).json({message:'Marketing unsubscribe handling is not configured'});
+      const eligible = new Set((await eligibleMarketingContacts()).map(contact=>contact.id));
       // Update status to sending
       await storage.updateNewsletterCampaign(req.params.id, { status: "sending" });
       
       // Get non-excluded recipients
       const recipients = await storage.getNewsletterRecipientsByCampaign(req.params.id);
-      const toSend = recipients.filter(r => r.excluded === "false" && r.status === "pending");
+      const toSend = recipients.filter(r => r.excluded === "false" && r.status === "pending" && eligible.has(r.contactId));
       
       if (toSend.length === 0) {
         return res.status(400).json({ message: "No recipients to send to" });
@@ -5188,17 +5039,30 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       let failedCount = 0;
       
       for (const recipient of toSend) {
+        let claimed=false;
+        const operationId=campaign.id+':'+recipient.id;
         try {
-          // Build email with open tracking pixel
-          const trackingPixel = `<img src="https://greenelephant.org/api/newsletter/track/${campaign.id}/${recipient.contactId}/open.gif" width="1" height="1" style="display:none" alt="" />`;
-          const htmlWithTracking = campaign.htmlContent + trackingPixel;
-          
+          if (await isMarketingSuppressed(recipient.contactId)) continue;
+          const state=await claimEmailOperation('newsletter',operationId);
+          if(state!=='claimed') {
+            if(state==='accepted') {
+              await storage.updateNewsletterRecipient(recipient.id,{status:'sent',sentAt:new Date()});successCount++;
+            } else {failedCount++;}
+            continue;
+          }
+          claimed=true;
+          const footer = marketingFooter(recipient.contactId);
+          const htmlWithTracking = campaign.htmlContent + footer.html;
           await resend.emails.send({
             from: formattedFrom,
             to: recipient.email,
             subject: campaign.subject,
             html: htmlWithTracking,
-          });
+            replyTo: "esteve@greenelephant.org",
+            headers: footer.headers,
+          }, {idempotencyKey:operationKey('newsletter',operationId)});
+          await finishEmailOperation('newsletter',operationId,true);
+          claimed=false;
           
           await storage.updateNewsletterRecipient(recipient.id, {
             status: "sent",
@@ -5207,6 +5071,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
           
           successCount++;
         } catch (emailError: any) {
+          if(claimed) await finishEmailOperation('newsletter',operationId,false).catch(()=>undefined);
           console.error(`Failed to send to ${recipient.email}:`, emailError.message);
           await storage.updateNewsletterRecipient(recipient.id, {
             status: "failed",
@@ -5218,8 +5083,8 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       
       // Update campaign status
       await storage.updateNewsletterCampaign(req.params.id, {
-        status: "sent",
-        sentAt: new Date()
+        status: failedCount === 0 ? "sent" : "draft",
+        ...(successCount > 0 ? { sentAt: new Date() } : {})
       });
       
       // Trigger Notion sync for sent recipients
@@ -5313,16 +5178,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
   // Open tracking endpoint (returns 1x1 transparent GIF)
   app.get("/api/newsletter/track/:campaignId/:contactId/open.gif", async (req, res) => {
     try {
-      const { campaignId, contactId } = req.params;
-      
-      // Record the open
-      await storage.recordNewsletterOpen(campaignId, contactId);
-      
-      // Trigger Notion sync for this recipient
-      syncNewsletterToNotion(campaignId, contactId).catch(err => 
-        console.error("Failed to sync open to Notion:", err)
-      );
-      
+      // Open tracking is disabled; existing image links still render.
       // Return 1x1 transparent GIF
       const gif = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
       res.setHeader('Content-Type', 'image/gif');
@@ -5859,15 +5715,16 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     }
   });
 
-  app.post("/api/admin/coaching/send-raw-data-email", requireAdminAuth, async (req, res) => {
+  app.post("/api/admin/coaching/send-raw-data-email", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
-      const { coacheeEmail, coacheeName, rawData } = req.body;
+      const { coacheeEmail, coacheeName, rawData, language = "en" } = req.body;
+      if (language !== "en" && language !== "fr") return res.status(400).json({ error: "Unsupported email language" });
       if (!coacheeEmail || !rawData || typeof rawData !== 'object') {
         return res.status(400).json({ error: "coacheeEmail and rawData are required" });
       }
-      const sent = await sendCoachingRawDataEmail({ coacheeEmail, coacheeName: coacheeName || null, rawData });
+      const sent = await sendCoachingRawDataEmail({ coacheeEmail, coacheeName: coacheeName || null, rawData, language });
       if (sent) {
-        res.json({ success: true, message: `Raw data email sent to ${coacheeEmail}` });
+        res.json({ success: true, message: "Email accepted for sending; delivery unverified" });
       } else {
         res.status(500).json({ error: "Failed to send raw data email" });
       }
@@ -5877,15 +5734,16 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     }
   });
 
-  app.post("/api/admin/coaching/send-doc-link-email", requireAdminAuth, async (req, res) => {
+  app.post("/api/admin/coaching/send-doc-link-email", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
-      const { coacheeEmail, coacheeName, docUrl, reportText } = req.body;
+      const { coacheeEmail, coacheeName, docUrl, reportText, language = "en" } = req.body;
+      if (language !== "en" && language !== "fr") return res.status(400).json({ error: "Unsupported email language" });
       if (!coacheeEmail || !docUrl) {
         return res.status(400).json({ error: "coacheeEmail and docUrl are required" });
       }
-      const sent = await sendCoachingDocLinkEmail({ coacheeEmail, coacheeName: coacheeName || null, docUrl, reportText: reportText || '' });
+      const sent = await sendCoachingDocLinkEmail({ coacheeEmail, coacheeName: coacheeName || null, docUrl, reportText: reportText || '', language });
       if (sent) {
-        res.json({ success: true, message: `Doc link email sent to ${coacheeEmail}` });
+        res.json({ success: true, message: "Email accepted for sending; delivery unverified" });
       } else {
         res.status(500).json({ error: "Failed to send doc link email" });
       }
@@ -5895,7 +5753,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     }
   });
 
-  app.post("/api/admin/coaching/send-coach-only-email", requireAdminAuth, async (req, res) => {
+  app.post("/api/admin/coaching/send-coach-only-email", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
       const { coacheeName, rawData, notes } = req.body;
       if (!rawData || typeof rawData !== 'object') {
@@ -6323,7 +6181,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
     }
     try {
       const userId = req.session.clientUserId as string;
-      const user = await storage.getClientUser(userId);
+      const user = await storage.getClientUserById(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const [timeline, context] = await Promise.all([
@@ -6333,7 +6191,7 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
       const contextMap: Record<string, string> = {};
       context.forEach((c) => { contextMap[c.key] = c.value; });
 
-      const sent = await sendPortalDataExportEmail(user.email, user.name, { timeline, context: contextMap });
+      const sent = await sendPortalDataExportEmail(user.email, user.name, { timeline, context: contextMap }, emailLanguage(req.body.language));
       if (sent) {
         res.json({ message: "Export email sent" });
       } else {

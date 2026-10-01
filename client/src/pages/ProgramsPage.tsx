@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -645,11 +646,8 @@ export default function ProgramsPage() {
   return (
     <>
     <div className="min-h-screen" data-testid="page-programs">
-      <SEO 
-        title="Coaching Programs for EAs, CEOs & Leaders | GreenElephant"
-        description="Executive communication programs for Executive Assistants, CEOs, and leaders. EA coaching, interview preparation, and leadership development. Find your path to communication mastery."
-        keywords="personal development coaching, career change coaching, career transition program, emotional intelligence training, self-awareness coaching, executive assistant coaching program, CEO leadership program, EA training, interview coaching, executive presence training, leadership communication development, future-proof career skills"
-        canonicalPath="/programs"
+      <SEO
+        {...PAGE_METADATA["/programs"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Programs", url: "/programs" }

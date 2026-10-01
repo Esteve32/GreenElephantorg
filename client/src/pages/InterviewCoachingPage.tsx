@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,11 +53,8 @@ const sectionGradientDeep = `linear-gradient(180deg,
 export default function InterviewCoachingPage() {
   return (
     <div className="min-h-screen">
-      <SEO 
-        title="Interview Mastery Bundle | Data-Driven Interview Coaching"
-        description="Ace your next interview with personalized coaching combining Satellite Scan diagnostics and expert guidance. For professionals 40+ seeking to communicate confidence in high-stakes career conversations."
-        keywords="career change interview coaching, career pivot communication, career transition preparation, interview coaching, career coaching, communication skills, executive interview preparation, job interview confidence, communication patterns, self-awareness for interviews, emotional intelligence in interviews, career reinvention"
-        canonicalPath="/interview-coaching"
+      <SEO
+        {...PAGE_METADATA["/interview-coaching"]}
         structuredData={PRODUCT_STRUCTURED_DATA.interviewMastery}
         breadcrumbs={[
           { name: "Home", url: "/" },

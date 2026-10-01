@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -91,10 +92,7 @@ export default function WebinarsPage() {
   return (
     <>
       <SEO
-        title="Monthly Lens Webinars | GreenElephant"
-        description="One lens. One hour. Real conversations. Join our monthly live webinars on conscious communication. Free guest access. Mic-and-camera access for Satellite Scan holders."
-        canonicalPath="/webinars"
-        keywords="conscious communication webinar, GreenBlueRed webinar, communication training online, live communication coaching"
+        {...PAGE_METADATA["/webinars"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Live Webinars", url: "/webinars" },

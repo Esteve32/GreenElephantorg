@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.4.19
+# Green Elephant — Project Decision Log v11.20.2
 
-**Document Version:** `11.4.19`
-**Last Updated:** `2026-09-30T20:29:16+03:00`
+**Document Version:** `11.20.2`
+**Last Updated:** `2026-10-01T05:21:13+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,34 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.20.2 | 2026-10-01T05:21:13+03:00 | Estève Pannetier | AI-LIT: authorised release preparation and Maeva blur approval; core EN/FR app, guarded email/payment flow, dependency and privacy repairs; full French and live provider gates remain explicit |
+| 11.20.1 | 2026-10-01T04:30:19+03:00 | Estève Pannetier | AI-LIT: visual review accepted; homepage review controller and provider-isolated email checks; acceptance, Scan answers and export attachment repaired locally; live delivery and security/privacy gates open |
+| 11.20.0 | 2026-10-01T04:13:49+03:00 | Estève Pannetier | AI-LIT: dark purple ACX navigation, Scan control polish, bilingual language notice and local result-email repair; live delivery and remaining privacy checks open |
+| 11.19.0 | 2026-10-01T03:50:53+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-031 through 034 record version B, restored teal icons, bilingual Scan checkout and brand drafts; local tests pass, live free-order test returns 403 and email/privacy gates remain open |
+| 11.18.0 | 2026-10-01T03:10:46+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-030 records Scan buying links, ordered ACX contents, research philosophy and two illustrated article options; originals preserved and local checks pass |
+| 11.17.0 | 2026-10-01T03:00:19+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-029 records authentic AI writing, conscious prompting, communication rhythm, Arbora attribution and full French scope; homepage/article translation batch prepared and locally checked |
+| 11.16.1 | 2026-10-01T02:40:48+03:00 | Estève Pannetier | AI-LIT: ACX draft build and eight HTTP checks pass; unchanged TypeScript baseline, retained footer links and pending browser review recorded |
+| 11.16.0 | 2026-10-01T02:38:20+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-028 records Speech Lab styled ACX guide, communication icons, original wordmark font and Scan learning support; local drafts await review |
+| 11.15.0 | 2026-10-01T02:14:44+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-027 approves 1–5 coaching capacity, distinct offers, portrait and coach titles; practical communication examples and bios prepared in concept 05 |
+| 11.14.2 | 2026-10-01T02:01:24+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-026 records smooth gradients, plain-language direction and two private Maeva image variants; final copy and image approval remain open |
+| 11.14.1 | 2026-10-01T01:47:30+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-025 restores retained footer sitemap links in concept 03 and adds the missing public Signals URL to the XML sitemap |
+| 11.14.0 | 2026-10-01T01:43:36+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-024 approves dark-only brand continuity and content direction; concept 02 remains a local visual review candidate |
+| 11.13.3 | 2026-10-01T01:30:15+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-023 records Maeva source choice and private design preview; SEO handoff remains research with crawler and publication gates open |
+| 11.13.2 | 2026-10-01T01:15:54+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-022 records bounded header accessibility repair, passing local checks and open browser acceptance; PR boundaries remain proposed |
+| 11.13.1 | 2026-10-01T01:06:26+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-021 local parking validated with production build and seven HTTP tests; baseline TypeScript/audit debt and browser review remain explicit |
+| 11.13.0 | 2026-10-01T01:01:54+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-021 approves parking webinar, webinars and calendar pages while preserving their sources and data |
+| 11.12.2 | 2026-10-01T00:49:47+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-020 approves training-page copy and Maeva homepage placement; replacement image and Drive source link pending |
+| 11.12.1 | 2026-10-01T00:45:31+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-019 approves EUR 100 extra-participant pricing and conditional VAT wording; authorises short training-page draft for review |
+| 11.12.0 | 2026-10-01T00:42:08+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-018 approves discovery workshop duration, group size, base price, inclusions and English-first release; surcharge amount and conditional VAT wording remain open |
+| 11.11.0 | 2026-10-01T00:31:00+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-017 approves five-section homepage and complete communication-layer coverage; reconciles incoming navigation handoff without adopting conflicting audience, menu, prices or release language |
+| 11.10.0 | 2026-10-01T00:25:53+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-016 approves AI Literacy Training, Our Approach and About main navigation, Calendly CTA and logo-to-Home link; page outlines and URLs remain open |
+| 11.9.2 | 2026-10-01T00:21:02+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-015 confirms optional Fathom recording with explicit agreement before starting; Esteve will apply replacement Calendly copy manually |
+| 11.9.1 | 2026-10-01T00:18:28+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-014 records Esteve-confirmed Calendly URL and public page/host verification; event copy and recording policy remain open while the event is being revised |
+| 11.9.0 | 2026-10-01T00:06:54+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-014 selects Discuss your training needs as the homepage CTA linking to a Calendly discovery call with Esteve; exact event URL remains pending |
+| 11.8.0 | 2026-10-01T00:02:55+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-013 corrects ACX 4 to team members within an organisation; approves four-day practice depth and limits discovery workshops to mapping plus ACX 1-2 practical takeaways |
+| 11.7.0 | 2026-09-30T23:57:22+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-011 approves training/main-menu and supporting-service/footer placement; DEC-AIL-012 adopts author-supplied ACX pedagogy with distinct source provenance and open curriculum-depth gates |
+| 11.6.0 | 2026-09-30T23:43:44+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-008/009/010 record confidence-first human-centred positioning, retained coaches and supporting services, four-day beginner journey and existing-stack boundary; detailed curriculum and placement gates remain open |
+| 11.5.0 | 2026-09-30T23:28:24+03:00 | Estève Pannetier | AI-LIT: DEC-AIL-007 approves independent-professional message priority with team, entrepreneur, intrapreneur and HR/union-funded training compatibility; offer and implementation gates remain open |
 | 11.4.19 | 2026-09-30T20:29:16+03:00 | Estève Pannetier | DEC-GE-PRD-001: consolidate one PRD and decision log with separate AI-LIT discovery and paused MY5 scopes; preserve branch history and source provenance |
 
 <a id="shared-decisions"></a>
@@ -75,11 +103,852 @@ A recording command does not grant approval. Do not change historical rows.
 | DEC-AIL-005 | superseded | 2026-09-30 | Historical attribution in SRC-AI-LIT | Notion owns the portal PRD and decisions; GitHub owns technical evidence. Superseded by DEC-GE-PRD-001. | SRC-AI-LIT, Approved SSOT / Approved governance |
 | DEC-AIL-006 | pending | 2026-09-30 | None | Niche, priority problem, offer, conversion, language rollout, access model, architecture and baseline remain undecided. | AI-LIT-TBD-001 through AI-LIT-TBD-009 |
 
+
+<a id="dec-ail-007"></a>
+### DEC-AIL-007 — Independent-professional priority with organisational compatibility
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-09-30
+- **Approver:** Estève Pannetier
+- **Approval evidence:** workshop response: "independent professionals, yes";
+  includes lawyers, therapists, coaches, creatives, engineers, fractional EAs,
+  consultants and teachers; "I want to be able to cater for both audiences."
+  Estève also explicitly includes teams, independent entrepreneurs and
+  intrapreneurs, with employer/HR budgets or union training as funding contexts.
+- **Decision:** independent professionals lead the public message. The training
+  offer must also be compatible with teams and people working inside organisations,
+  including intrapreneurs. Support both individual enquiries and enquiries involving
+  an employer/HR budget or union training programme. Do not restrict the offer to
+  lawyers or infer a single profession from Maeva's testimonial.
+- **Affected PRD IDs:** AI-LIT-REQ-001, AI-LIT-REQ-013, AI-LIT-TBD-001,
+  AI-LIT-AC-001.
+- **Refines / supersedes:** refines the broad audience direction in DEC-AIL-002;
+  supersedes only the unresolved audience-priority aspect of DEC-AIL-006.
+  Preserve both earlier rows as history; their other open choices remain open.
+- **Open gates:** priority problem, search niche/market, offer format and price,
+  primary conversion, language rollout, page/navigation structure, organisational
+  purchasing process and funder-specific requirements. No claim of funding
+  eligibility or accreditation is approved by this audience decision.
+- **Delivery status:** recorded in the local working tree; not yet committed,
+  pushed or merged. Website implementation and production release are not
+  authorised by this record. MY5 remains paused and unchanged.
+
+<a id="dec-ail-008"></a>
+### DEC-AIL-008 — Human-centred AI literacy and confidence-first positioning
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-09-30
+- **Approver / evidence:** Estève's initial brand/project boundaries and subsequent
+  explicit selection of option A, confidence and independence with AI.
+- **Decision:** lead with confidence and independence using AI, while retaining
+  human judgement. Green Elephant remains a communication expert. AI augments
+  people's communication skills; the white Think & Understand mental-model layer
+  of the Periodic Table is a key differentiator. Scan, prompts and coaching support
+  this journey. Preserve React/Vite/Express by default; any technical restructuring
+  needs a clear reason and separate approval. Navigation choices are separate.
+- **Affected PRD IDs:** AI-LIT-REQ-014, AI-LIT-REQ-018, AI-LIT-TBD-005/007.
+- **Refines / supersedes:** refines DEC-AIL-001 and resolves only the positioning
+  and default-stack aspects of DEC-AIL-006; other pending choices remain open.
+- **Open gates:** exact public copy, implementation baseline, delivery and release.
+
+<a id="dec-ail-009"></a>
+### DEC-AIL-009 — Retain coaches and supporting communication services
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-09-30
+- **Approver / evidence:** Estève explicitly requests Anu and Jonas in About as
+  coaches and lists the retained bootcamp and coaching services with footer links.
+- **Decision:** keep Anu and Jonas as coaches with distinct skills connected to
+  AI literacy. Retain Conflict Bootcamp training with Jonas and Estève in French
+  or English, and Coaching Journeys for EAs, executives and B2B teams with Anu,
+  Jonas or Estève. Both use Satellite Scan as a base. Their links belong in
+  discoverable footer navigation; lower prominence does not mean inaccessible.
+- **Affected PRD IDs:** AI-LIT-REQ-015/016, AI-LIT-TBD-005/006.
+- **Refines / supersedes:** partly resolves retained-service and About choices
+  under DEC-AIL-006. Does not revive historical offers, prices or MY5 scope.
+- **Open gates:** final coach biographies, evidenced skills and AI-literacy
+  connections, service copy, availability, pricing and exact footer label.
+
+<a id="dec-ail-010"></a>
+### DEC-AIL-010 — Four-day part-time beginner AI learning journey
+
+- **Project:** AI-LIT
+- **Status:** approved direction
+- **Decision date:** 2026-09-30
+- **Approver / evidence:** Estève explicitly requests a four-day, part-time,
+  hands-on action-learning journey for beginners covering AI safety, prompting
+  and autonomy, based on the attached training model.
+- **Decision:** include this service in the website plan. Adapt the reusable
+  training model in SRC-AI-LIT-TRAINING-01; do not import the customer's package,
+  identity, commercial terms or instructions as public offer requirements.
+- **Affected PRD IDs:** AI-LIT-REQ-017, AI-LIT-TBD-002/005/006.
+- **Refines / supersedes:** partly resolves the offer-format question in
+  DEC-AIL-006; does not approve a complete syllabus or commercial package.
+- **Open gates:** detailed curriculum, facilitated hours, delivery mode, group
+  size, price, schedule, materials/access, role of Scan in the generic course,
+  and main-navigation prominence. Footer access was requested; main-menu
+  prominence is an assistant recommendation pending Estève's decision.
+
+DEC-AIL-008 through DEC-AIL-010 are recorded in the local working tree. They do
+not authorise a push, merge, website implementation or production release. MY5
+remains paused. Earlier decision rows and their historical evidence are preserved.
+
+<a id="dec-ail-011"></a>
+### DEC-AIL-011 — Feature AI training and retain supporting services in the footer
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-09-30
+- **Approver / evidence:** Estève: "Yeah, I approve this placement", responding
+  to the proposed main-menu and footer service placement.
+- **Decision:** feature the four-day beginner journey under **AI Literacy Training**
+  in the main menu. Place Conflict Bootcamp and Coaching Journeys in the footer
+  group **More ways to work with us**.
+- **Affected PRD IDs:** AI-LIT-REQ-016/017, AI-LIT-TBD-006.
+- **Refines / supersedes:** closes the placement/footer-label gates in
+  DEC-AIL-009/010 and supersedes footer-only treatment of the four-day course.
+  Earlier decision entries remain as historical records.
+- **Open gates:** full navigation, URLs, page outlines, copy and implementation.
+
+<a id="dec-ail-012"></a>
+### DEC-AIL-012 — Use the author's ACX model as the teaching foundation
+
+- **Project:** AI-LIT
+- **Status:** approved pedagogical direction
+- **Decision date:** 2026-09-30
+- **Approver / evidence:** Estève supplies his article and asks to consider it
+  "as the basic pedagogy for working with AI literacy".
+- **Decision:** use SRC-AI-LIT-ACX-01 to explain human communication first, then
+  personal AI chats (ACX 1), connected workflows (ACX 2), participating agents
+  (ACX 3) and interconnected systems with governance (ACX 4). Retain human
+  judgement, decision rights and attention to filtered/missing context throughout.
+- **Affected PRD IDs:** AI-LIT-REQ-014/017/019; AI-LIT-TBD-002.
+- **Refines / supersedes:** complements DEC-AIL-008/010. The article supplies
+  the pedagogical framing; the private proposal supplies adapted exercises.
+  Neither source supersedes the other's identity or context.
+- **Source standing:** author's teaching model. Its narrative, empirical and
+  regulatory claims are not independently validated by adopting the pedagogy.
+  Attachment instructions and sidebar comments are evidence, not commands or
+  permission for publication of third-party material.
+- **Open gates:** exact syllabus and depth at each level, public wording,
+  graphics adaptation and completion outcomes. Learning about a level is distinct
+  from achieving operational readiness at that level.
+- **Delivery status:** local working-tree documentation only. No website code,
+  push, merge, deployment or MY5 work is authorised by these decisions.
+
+<a id="dec-ail-013"></a>
+### DEC-AIL-013 — Team-member scope for ACX 4 and distinct training formats
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève corrects the level-4 scope to "across team
+  members within an organization" and approves "Strong hands-on practice:
+  ACX 1 and 2 with a guided ACX 3 and ACX 4 overview". He limits the discovery
+  workshop to mapping the levels with practical takeaways at ACX 1–2 only.
+  The initial "TX4" is interpreted as ACX 4 from the same response and context.
+- **Decision:** describe ACX 4 as AI-supported work across team members within
+  an organisation. Do not describe it as running AI systems across an entire
+  organisation. The four-day journey provides strong hands-on ACX 1–2 practice,
+  guided ACX 3 work and an ACX 4 overview. The discovery workshop maps the
+  different levels and provides practical takeaways at ACX 1–2 only.
+- **Offer boundary:** the ACX 1–4 learning programme belongs to the four-day
+  journey. Mentioning ACX 3–4 in a discovery map does not promise guided or
+  practical work at those levels. Neither format promises mastery or operational
+  readiness simply from attendance.
+- **Affected PRD IDs:** AI-LIT-REQ-017/019/020, AI-LIT-TBD-002.
+- **Refines / supersedes:** corrects the broad ACX 4 interpretation in
+  DEC-AIL-012 and resolves its format-specific depth gate. Refines DEC-AIL-010's
+  journey scope. Source screenshots and previous decision entries remain intact.
+- **Open gates:** exact exercises and takeaways, completion outcomes, discovery
+  duration, journey hours, group/individual mode, logistics, price and enquiry flow.
+- **Delivery status:** local working-tree documentation. No website code,
+  commit, push, merge or deployment follows from this record; MY5 stays paused.
+
+<a id="dec-ail-014"></a>
+### DEC-AIL-014 — Primary homepage action books a discovery call with Estève
+
+- **Project:** AI-LIT
+- **Status:** approved direction and user-confirmed destination; public page/host verified, full booking flow untested
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève: "a with Calendly link to book easily a
+  discovery call with Esteve", selecting the proposed Discuss your training needs
+  homepage action.
+- **Decision:** label the primary homepage button **Discuss your training needs**
+  and link directly to the Calendly event for a discovery call with Estève.
+  Estève is the human contact for discussing training fit. This conversation is
+  separate from the discovery workshop and the four-day training journey.
+- **Affected PRD IDs:** AI-LIT-REQ-004/021, AI-LIT-TBD-003,
+  AI-LIT-PROP-GROWTH-001.
+- **Refines / supersedes:** resolves the primary-conversion/provider choice in
+  DEC-AIL-006 and the enquiry-flow choice left open in DEC-AIL-013; does not
+  change either training format's scope.
+- **Initial evidence gap (resolved by the URL follow-up below):** repository inspection found Scan, feedback and another
+  coach's Calendly events. Existing discovery-call buttons route to contact
+  pages. None establishes the exact Estève discovery event; await its URL.
+- **Open gates:** final event-copy alignment and recording policy, slot
+  availability and complete booking-path verification. The supplied URL and host
+  are verified as described below; old site copy is not the source for event details.
+- **Scope:** direct booking link only. No new API integration, embedded scheduler,
+  automatic outreach, website implementation, push, merge or release is approved
+  by this documentation record. MY5 remains paused.
+
+#### DEC-AIL-014 follow-up — confirmed booking destination, 2026-10-01
+
+- **Approver / evidence:** Estève supplies the exact event URL and states that
+  the existing Calendly event is being tweaked.
+- **Approved URL:** [Free AI Literacy Discovery Call](https://calendly.com/greenelephant/free-ai-literacy-discovery-call).
+- **Live verification:** a read-only public request on 2026-10-01 returned HTTP
+  200 at the same URL. Page metadata identifies Free AI Literacy Discovery Call
+  and Estève Pannetier's Calendar. No booking was made or personal data submitted.
+- **Observed event copy, not a new website-copy approval:** the description says
+  free, 30-minute, recorded conversation and leads with team leads, HR managers
+  and leaders. Align the audience wording with DEC-AIL-007's independent
+  professionals plus teams. Recording policy and final duration/cost wording
+  remain for confirmation while the event is being edited.
+- **Remaining verification:** available slots, complete booking flow and final
+  event wording. Public page availability does not prove booking completion.
+- **Delivery status:** destination saved in local canonical documents only;
+  no Calendly settings or website code changed, and nothing published.
+
+<a id="dec-ail-015"></a>
+### DEC-AIL-015 — Optional Fathom recording and manual Calendly copy update
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève responds yes to optional recording with explicit
+  agreement before it starts, confirms Fathom is used, and requests copy he can
+  update himself before continuing the website workshop.
+- **Decision:** recording with Fathom is optional. Ask for the participant's
+  explicit agreement before recording starts; offer the call without recording.
+  Supply draft Calendly wording that welcomes independent professionals and
+  teams and distinguishes the discovery call from training. Estève applies it.
+- **Affected PRD IDs:** AI-LIT-REQ-021, AI-LIT-TBD-003.
+- **Refines / supersedes:** closes the recording-choice gate in DEC-AIL-014.
+  Its prior page observation remains historical evidence. This decision does not
+  treat a booking as recording consent or assert that tool settings enforce consent.
+- **Delivery status:** decision recorded locally and replacement copy supplied
+  in chat for Estève's review/manual update. No Calendly or Fathom settings changed;
+  no recording, website implementation, push, merge or deployment performed.
+- **Remaining work:** Estève applies the copy and ensures the actual call setup
+  follows the agreed recording choice. Final event wording/booking checks remain.
+
+<a id="dec-ail-016"></a>
+### DEC-AIL-016 — Approve the main-menu structure
+
+- **Project:** AI-LIT
+- **Status:** approved
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève answers "yes" to the proposed main menu,
+  Calendly button, logo-to-Home link and retained footer service group.
+- **Decision:** main navigation is **AI Literacy Training** (discovery workshop
+  and four-day journey), **Our Approach** (ACX and the Periodic Table's Think &
+  Understand layer), and **About** (Estève, Anu and Jonas). The primary button is
+  **Discuss your training needs**, linked to the Calendly event in DEC-AIL-014.
+  The logo returns to Home. Supporting services remain in **More ways to work
+  with us** in the footer under DEC-AIL-011.
+- **Affected PRD IDs:** AI-LIT-REQ-006/015/016/017/021, AI-LIT-TBD-006,
+  AI-LIT-AC-005.
+- **Refines / supersedes:** closes the main-menu choice in DEC-AIL-006/011;
+  does not change approved offer scope, CTA or supporting-service placement.
+- **Open gates:** final URLs, page outlines, resource placement, remaining
+  footer links, copy, design and implementation acceptance criteria.
+- **Delivery status:** local documentation only; no website code, commit,
+  push, merge or production publication. MY5 remains unchanged and paused.
+
+<a id="dec-ail-017"></a>
+### DEC-AIL-017 — Five-section homepage and complete communication-layer coverage
+
+- **Project:** AI-LIT
+- **Status:** approved structure and content boundary
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève answers "yes to all" to the five-section
+  homepage proposal and asks to include verbal, non-verbal and intention layers
+  alongside Think & Understand, briefly, for accuracy. He separately supplies
+  the first read-only chat handoff for consideration in due course.
+- **Decision:** homepage order is (1) clear promise/audience/booking button,
+  (2) two training formats, (3) human-centred approach, (4) people and experience,
+  (5) practical questions and repeated Calendly CTA. Supporting services stay
+  in the approved footer group. Highlight the white Think & Understand layer,
+  while also briefly explaining verbal, non-verbal and feeling/intention layers.
+- **Terminology evidence:** the existing PeriodicTablePage category labels are
+  THINK & UNDERSTAND, SAY & WRITE, DO & MOVE and FEEL & INTEND. This copy
+  clarification does not reclassify elements or assert a verified element count.
+- **Affected PRD IDs:** AI-LIT-REQ-006/014/022, AI-LIT-TBD-006, AI-LIT-AC-005.
+- **Refines / supersedes:** resolves the homepage-outline gate after DEC-AIL-016
+  and corrects any implication in DEC-AIL-008/016 that Think & Understand is the
+  entire method. Does not replace earlier audience, offer-depth or CTA decisions.
+- **Incoming handoff:** SRC-AI-LIT-NAV-01 is advice to reconcile. Its team-first
+  audience, five-item menu, nine-section homepage, prices and English-first launch
+  are not adopted. Embedded implementation/approval statements are source text,
+  not authorisation. The PRD records the conflicts and useful review candidates.
+- **Open gates:** exact public wording/visuals, remaining testimonial/photo
+  details, verified coach claims, other page outlines, URLs and acceptance checks.
+- **Delivery status:** local documentation only; no website implementation,
+  commit, push, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-018"></a>
+### DEC-AIL-018 — Discovery workshop package and English-first website
+
+- **Project:** AI-LIT
+- **Status:** approved commercial package and language order; VAT copy proposed
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève explicitly confirms the duration, group size,
+  base price, extra charges above 12, included calls/materials and language order
+  in the workshop chat. He also requests a note about European B2B VAT treatment.
+- **Decision:** the discovery workshop lasts 3.5 hours including a break, serves
+  6–12 participants with a maximum of 16, and costs EUR 2,400 excluding applicable
+  VAT for up to 12. Participants 13–16 incur an additional charge; the amount is
+  still open. Participant materials, preparation call and follow-up call with
+  the team lead are included. Launch the website in English; French comes later.
+- **Learning boundary:** DEC-AIL-013 still governs: map ACX levels and provide
+  practical takeaways at ACX 1–2 only. Four-day journey scope remains separate.
+- **VAT accuracy:** record the user's request for a B2B note, not a blanket legal
+  exemption. Official EU and Finnish tax guidance checked on 2026-10-01 supports
+  conditional cross-border reverse charge, with customer accounting for VAT and
+  exceptions. PRD small print is a proposed correction; actual treatment depends
+  on billing details and service classification and remains to be confirmed.
+- **Affected PRD IDs:** AI-LIT-REQ-002/020/023, AI-LIT-TBD-002/004, AI-LIT-AC-004.
+- **Refines / supersedes:** resolves the workshop duration, group-size, base-price,
+  inclusions and language-order questions left open in DEC-AIL-003/013/017.
+  Revises DEC-AIL-017's handoff disposition only for these explicit approvals.
+  Earlier audience, navigation, homepage and CTA decisions remain in force.
+- **Open details:** surcharge amount (handoff proposes EUR 100 per participant),
+  call lengths, specific material formats, delivery mode, travel/venue terms,
+  VAT copy/treatment, French-release timing and remaining four-day journey terms.
+  The handoff's readiness poll is not adopted by this approval.
+- **Delivery status:** local documentation only; no website implementation,
+  commit, push, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-019"></a>
+### DEC-AIL-019 — Extra-participant price, conditional VAT copy and page drafting
+
+- **Project:** AI-LIT
+- **Status:** approved pricing and conditional VAT wording; drafting authorised
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève explicitly approves EUR 100 plus applicable VAT
+  per extra participant for participants 13–16, EUR 2,800 before VAT for 16,
+  the proposed final VAT wording/applicable-treatment approach, and preparation
+  of a short training-page draft.
+- **Decision:** supplement the approved EUR 2,400 package for up to 12 with
+  EUR 100 per participant above 12, maximum 16. Use the PRD's approved conditional
+  VAT wording: VAT where applicable, reverse charge for eligible cross-border
+  EU business purchases, treatment confirmed using billing details and service.
+- **Boundary:** this approval closes the VAT wording and treatment-policy choice,
+  not the factual determination of tax on a particular invoice. It does not
+  adopt a blanket European B2B exemption. Existing learning scopes remain intact.
+- **Drafting scope:** prepare concise English training-page copy in the existing
+  PRD and workshop chat for review. Approval to draft is not approval of the
+  resulting wording, website implementation or production publication.
+- **Affected PRD IDs:** AI-LIT-REQ-023, AI-LIT-TBD-002, AI-LIT-AC-004.
+- **Refines / supersedes:** closes DEC-AIL-018's surcharge amount and VAT-copy
+  questions. Maeva placement and other visual-handoff questions remain open.
+- **Delivery status:** local documentation and copy draft only; no website code,
+  commit, push, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-020"></a>
+### DEC-AIL-020 — Approve training copy and retain Maeva on the homepage
+
+- **Project:** AI-LIT
+- **Status:** approved copy and testimonial placement
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève states "yes this copy is good" and "Keep Maeva
+  on the home page". He says he is preparing the image and will supply it through
+  Google Drive so it can be available for the Replit handoff.
+- **Decision:** approve the short English training-page copy presented in the
+  workshop after DEC-AIL-019. Retain Maeva in the homepage people/experience
+  section. Do not move or duplicate her testimonial onto the training page.
+- **Source handoff:** replacement image and Google Drive link are pending;
+  no file receipt, inspection, transfer or automatic Replit synchronisation is
+  claimed. A versioned repository web asset is the assistant's recommended
+  handoff; the original and provenance should be preserved.
+- **Affected PRD IDs:** AI-LIT-REQ-022/024, AI-LIT-TBD-006.
+- **Refines / supersedes:** approves DEC-AIL-019's resulting copy and confirms
+  DEC-AIL-017's homepage placement over the later visual handoff's conflicting
+  training-page-only proposal. Other visual questions remain separate.
+- **Open details:** receive and inspect the replacement image, confirm final
+  testimonial wording/translation, public attribution and crop; complete the
+  remaining visual and implementation review.
+- **Delivery status:** local documentation only; no website code, image edit,
+  commit, push, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-021"></a>
+### DEC-AIL-021 — Park webinars and calendar without deleting their material
+
+- **Project:** AI-LIT
+- **Status:** approved bounded UI and indexing change
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève requests removing webinar promotion while
+  parking the material for later. In the focused follow-up he explicitly selects
+  "Park all three pages (Recommended)", covering /webinar, /webinars and /calendar.
+- **Decision:** keep the original pages and data, replace the active public
+  experience with a simple paused page, remove public navigation/promotional
+  entry points and sitemap entries, and use noindex. Do not display signup forms
+  or fetch webinar data from the parked page. No relaunch date is promised.
+- **Boundaries:** no data deletion, provider changes, scheduler changes, email
+  action, migration or production release. Noindex is not access control.
+  Preserve backend/admin material for later review; this does not disable any
+  existing production job or API.
+- **Affected PRD IDs:** AI-LIT-REQ-025, AI-LIT-TBD-006.
+- **Refines / supersedes:** decides the current webinar/calendar disposition;
+  does not change the agreed AI-literacy menu or the other workshop decisions.
+- **Delivery status:** local parking implementation complete alongside the
+  bounded Checkpoint 1 technical repair. Node 24 production build, repository
+  checks and seven isolated HTTP tests (including the built output) pass.
+  Type checking retains 35 baseline diagnostic locations/codes; dependency
+  audit reports zero critical and 16 high findings on the unchanged lockfile.
+  Browser/mobile verification remains unavailable and human checkpoint review
+  remains open. No commit, push, merge or publication. MY5 is unchanged and paused.
+
+<a id="dec-ail-022"></a>
+### DEC-AIL-022 — Continue bounded accessibility repair; design readiness remains separate
+
+- **Project:** AI-LIT
+- **Status:** bounded continuation authorised; local code verified within stated limits
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève says "Let's continue" after the Checkpoint 1
+  handoff, and asks for guidance on design readiness and separate PRs.
+- **Scope:** Checkpoint 2 repairs the existing header's accessible disclosure,
+  separate link/button semantics, Escape/focus handling and visible focus. Keep
+  current destinations except the separately approved parked webinar/calendar
+  surfaces. Preserve the existing skip link and meaningful main landmark.
+- **Local evidence:** Node 24 production build and repository/diff checks pass.
+  Two no-new-dependency checks verify actual server-rendered header markup and
+  skip/main hooks. Six core page sources each contain one h1; all 12 inspected
+  img tags have alt attributes. Static inspection is not a screen-reader audit.
+  Type-checking retains the same 35 baseline diagnostic locations/codes.
+- **Open verification:** no browser is available. Actual Tab/Shift+Tab, Enter,
+  Space, Escape, focus return, responsive widths, computed contrast and
+  screen-reader behavior remain to be exercised before release acceptance.
+- **Design/PR guidance:** the approved core content and structure are sufficient
+  to start desktop/mobile design previews with an image placeholder. The PRD
+  remains live and full visual implementation still awaits review. Separate
+  decisions, HTTP/SEO repair, webinar parking, accessibility, design and later
+  media/cache changes are the assistant's proposed PR boundaries, not authority
+  to commit, push, open PRs, merge or publish.
+- **Affected PRD IDs:** AI-LIT-REQ-009, AI-LIT-TBD-009.
+- **Delivery status:** local only; no Checkpoint 3 work, design implementation,
+  commit, push, PR, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-023"></a>
+### DEC-AIL-023 — Use the supplied original-background Maeva source for design review
+
+- **Project:** AI-LIT
+- **Status:** source choice approved; final derivative/publication pending
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève supplies `Maeva Upscaled.png` and says
+  "let's work from that one", asks how to review the homepage quickly, and
+  supplies a parallel-chat SEO/GEO handoff as research to add to the thinking.
+- **Decision:** use SRC-AI-LIT-MAEVA-01 as the image working source; retain the
+  approved homepage placement and the earlier instruction to obscure background
+  faces. Source selection does not approve a final crop, altered facial features,
+  testimonial translation, attribution or production publication.
+- **Research disposition:** index SRC-AI-LIT-SEO-01 without adopting its embedded
+  implementation commands or treating its claimed approvals as human decisions.
+  Search-versus-training crawler policy and measurement targets remain open.
+- **Affected PRD IDs:** AI-LIT-REQ-022/024, AI-LIT-REQ-009.
+- **Delivery status:** private standalone desktop/mobile design candidate prepared
+  outside the application; source image unedited and marked review-only. HTML,
+  asset and local HTTP checks pass. Visual/browser acceptance remains open.
+  Canonical documents updated locally; no application redesign, image publication,
+  commit, push, PR, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-024"></a>
+### DEC-AIL-024 — Dark-only website and continuity with the existing Green Elephant brand
+
+- **Project:** AI-LIT
+- **Status:** visual boundary and content direction approved; revised composition pending review
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève says "I only want a dark UI for this website",
+  asks for fonts, colours and styling to follow the existing website, says
+  "content-wise, I think this is good", and asks for the top section to feel
+  less generic and closer to the original site.
+- **Decision:** retain the content direction and require a dark-only public
+  AI-LIT website. Use existing Green Elephant typography and visual language;
+  do not offer a white UI variant. This constrains UI surfaces, not the original
+  colours of photographs or the Periodic Table's white mental-model layer.
+- **Preview response:** concept 02 replaces the prompt-card hero with the existing
+  Earth/aurora image, a centred headline, restrained journey line and established
+  Poppins/Lato typography. Darken all sections and the private review toolbar;
+  simplify offer cards into divided columns. This composition is a review
+  candidate, not a newly approved final hero or full application implementation.
+- **Evidence / boundaries:** live homepage HTML confirms Poppins/Lato loading;
+  repo styles supply weights, dark surfaces, teal and atmospheric palette.
+  Retain accessible contrast and reduced-motion support. No new imagery needed.
+  Content-direction acceptance does not approve final testimonial wording,
+  attribution/crop, coach details or production publication.
+- **Affected PRD IDs:** AI-LIT-REQ-026, AI-LIT-REQ-022, AI-LIT-REQ-009.
+- **Refines / supersedes:** replaces concept 01's light surfaces, system-font
+  styling and generic decorative hero; preserves offer, audience, navigation,
+  complete Periodic Table and homepage-section decisions.
+- **Delivery status:** canonical documents and private local preview updated;
+  rendered browser acceptance pending. No application design changes, commit,
+  push, PR, merge or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-025"></a>
+### DEC-AIL-025 — Restore retained links in the visitor footer sitemap
+
+- **Project:** AI-LIT
+- **Status:** approved coverage; local preview updated
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève flags the missing AI Policy and other footer
+  links and asks that all previously working links to retained pages remain
+  available when visitors cannot find them in the top menu.
+- **Decision:** provide complete grouped footer navigation, preserving policies,
+  retained services/tools/audience pages, working section links, contact/social
+  links and existing login entry points. Keep webinar/calendar parking and
+  My5 separation intact. The reduced top menu does not justify dropping these
+  destinations. Group labels are a reviewable presentation choice.
+- **Evidence / implementation:** the application Footer.tsx still contains all
+  four policies; their omission was in the design preview. Concept 03 restores
+  its non-parked destinations and adds other retained public pages. Existing
+  Programs/Connect/Resources fragments are present in source. The XML sitemap
+  already contains policy pages; add the missing registered, indexable /signals
+  route, without fabricating a modification date. Footer login links do not
+  belong in the XML sitemap, and no private dashboard link is introduced.
+- **Affected PRD IDs:** AI-LIT-REQ-027, AI-LIT-REQ-006/016/022/025.
+- **Refines / supersedes:** closes retained-footer coverage after DEC-AIL-016;
+  preserves the approved main menu, footer supporting-service placement and
+  parked-page scope. Does not revive webinars or My5.
+- **Delivery status:** local preview, XML sitemap and canonical documents only;
+  application footer redesign remains for the approved design implementation.
+  Browser navigation/account-flow verification remains open. No commit, push,
+  PR, merge or deployment; paused My5 sections preserved unchanged.
+
+<a id="dec-ail-026"></a>
+### DEC-AIL-026 — Smooth gradients, simpler copy and a private Maeva image trial
+
+- **Project:** AI-LIT
+- **Status:** refinement direction approved; preview and alternate image pending review
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève requests no hard gradient transitions, a similar
+  background around the Periodic Table, less text, jargon explanations including
+  ACX, eighth-grade English, and a full preview testing the new supplied image.
+- **Decision:** refine the private full-page design accordingly. Use matching
+  section colours at every boundary, preserve original artwork, shorten the
+  visible copy and make deeper explanations optional. Keep the approved
+  pricing, workshop/programme scope, human-centred layers and retained links.
+- **Image scope:** SRC-AI-LIT-MAEVA-02 is an alternate private trial, not a final
+  replacement. Preserve the previous portrait as a fallback. The supplied scene
+  is not verified as documentary evidence; final origin, use permission and
+  suitability must be resolved before any publication. Do not alter Maeva's
+  appearance or silently edit her quote to simplify it.
+- **Affected PRD IDs:** AI-LIT-REQ-028, AI-LIT-REQ-019/020/022/026/027.
+- **Delivery status:** concept 04 has two full-page image variants and review
+  controls. Native disclosures explain ACX, included items and VAT. Canonical
+  documents/provenance updated locally; new copy and visual acceptance pending.
+  No image editing, application design implementation, commit, push, PR, merge
+  or deployment. MY5 remains unchanged and paused.
+
+<a id="dec-ail-027"></a>
+### DEC-AIL-027 — Distinguish the offers; select the portrait and coach titles
+
+- **Project:** AI-LIT
+- **Status:** format capacity, titles and portrait selection approved; requested
+  content refinements prepared as a local review candidate
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève specifies a four-day hands-on coaching journey
+  for 1–5 people, requests visible participant counts and clearer offer distinction,
+  practical human/AI connections across the skills and ACX explanations, selects
+  the original Maeva portrait over the pool scene, and supplies exact coach titles.
+- **Decision:** retain workshop 6–12 standard/16 maximum, 3.5 hours and approved
+  pricing; present the four-day journey as part-time hands-on coaching for 1–5,
+  with feedback and real work. Avoid action-learning wording on the public page.
+  Do not expand practical discovery scope beyond ACX 1–2 or promise ACX 4 mastery.
+- **Communication clarification:** connect human self-reflection before a prompt,
+  human/AI exchange, AI-tool handoffs and human discussion to concrete examples.
+  The four connections can span ACX levels; they are not a one-to-one relabelling
+  of the learning model. Retain all four Periodic Table layers and human judgement.
+- **People:** select SRC-AI-LIT-MAEVA-01; SRC-AI-LIT-MAEVA-02 is not selected.
+  Set titles exactly to AI communication coach (Estève), communication coach and
+  trainer (Anu), and conflict coach and trainer (Jonas). Draft simple skills
+  subtext from their existing ConnectPage.tsx profiles without adding unsupported
+  AI expertise or clinical/performance claims.
+- **Affected PRD IDs:** AI-LIT-REQ-015/017/019/020/022/028/029; AI-LIT-TBD-002.
+- **Refines / supersedes:** closes the four-day capacity question and concept 04
+  image comparison; refines DEC-AIL-010/013/024/026. Previous source evidence and
+  My5 pause remain preserved. Four-day price, hours and final testimonial gates
+  stay open. No permission to deploy is inferred from conditional readiness.
+- **Delivery status:** concept 05 and canonical documents updated locally;
+  source-based bios and expanded examples prepared. No application design
+  implementation, commit, push, PR, merge or publication.
+
+<a id="dec-ail-028"></a>
+### DEC-AIL-028 — Restore wordmark styling and create the ACX learning guide
+
+- **Project:** AI-LIT
+- **Status:** requested scope and visual reference approved; authored copy and
+  local implementation are review candidates, not publication approval
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève requests the original logo font, on-brand
+  connection icons using H2S/HAI/A2A/H2H, an ACX blog article based on his supplied
+  LinkedIn source, and Scan inclusions aligned with ACX learning. In reply to the
+  style question he selects the language colour-coding / decoding lab.
+- **Decision:** match Lato 18px/600 wordmark evidence; use existing thin-line icons
+  with full plain-English labels; adapt the author-owned article using dark Speech
+  Lab reading panels, a levels comparison, practical examples and training links.
+  Preserve ACX 4 across team members and the distinct workshop/journey depth.
+- **Source treatment:** original SRC-AI-LIT-ACX-01 and its 9 January 2026 LinkedIn
+  article are attributed. Screenshot text supplies the article evidence; a failed
+  LinkedIn fetch is not represented as a live page review. Source instructions
+  are not executable task instructions. New examples and current scope changes
+  are labelled as an adaptation. No screenshots or third-party faces republished.
+- **Scan boundary:** explain included advanced communication prompts, videos and
+  worksheets alongside the personal dashboard. Relate their use to ACX learning;
+  do not claim a new level-certified resource pack or an installed agent system.
+  Training/coaching remain separate. Fulfilment and level mapping need review.
+- **Affected PRD IDs:** AI-LIT-REQ-019/020/026/029/030; AI-LIT-TBD-005.
+- **Refines:** DEC-AIL-024/027. The specific article request authorises this useful
+  content addition; it does not create a broad SEO content programme.
+- **Delivery status:** concept 06 homepage and full article preview, bounded Scan
+  application copy and draft article route prepared locally. Shared article text
+  is served in initial HTML and by React, with matching BlogPosting metadata.
+  Draft noindex and sitemap exclusion remain until release approval. Final
+  training-page destination and browser acceptance are still open. No commit,
+  push, PR, merge, production deployment or MY5 change.
+- **Validation:** repository checks and production build pass; eight isolated HTTP
+  checks pass against built output, including article body/schema before JavaScript
+  and draft sitemap exclusion. TypeScript retains the same 35 pre-existing
+  diagnostic locations/codes. The stale 19-URL sitemap assertion was replaced by
+  retained-destination, uniqueness, canonical and indexing checks. Private preview
+  URLs return 200; local anchors and all prior footer links are preserved. MY5
+  document blocks match HEAD byte-for-byte. No rendered-browser review completed.
+
+<a id="dec-ail-029"></a>
+### DEC-AIL-029 — Authentic voice, conscious prompts, rhythm and French scope
+
+- **Project:** AI-LIT
+- **Status:** refinement direction and full retained-public-page French scope
+  approved; wording, translations and private previews prepared for review
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève requests clearer Say/Write, Feel/Intend and
+  non-verbal descriptions, attributes ACX development to his AI research with
+  Arbora, supplies its research URL, and requests French including the article.
+  He explicitly selects “Every retained public page, delivered in small batches”.
+- **Decision:** connect AI drafting to the person’s own tone and care for readers;
+  connect conscious prompting to clear intent; include timing, pace, pauses and
+  follow-ups in non-verbal communication. AI supports planning; people choose.
+  Gently credit the author’s Arbora research without adding validation claims.
+- **Language:** begin French preparation now. The English-first launch baseline
+  is not silently replaced by simultaneous publication. Use reviewable batches
+  for every retained public page; keep paused/private work outside this scope.
+- **Current implementation:** English article source and homepage preview updated.
+  French homepage and article editorial assets prepared with full private previews,
+  language links and unchanged offer boundaries. App-wide bilingual navigation,
+  French routes, paired metadata and remaining page translations are later batches.
+  Private previews clearly identify still-English destination pages.
+- **Evidence:** research origin is the author’s current statement. The supplied
+  Arbora research URL responds with HTTP 200, but its rendered research body was
+  not independently reviewed. No private Arbora source or scientific-validity
+  assertion is imported. Maeva’s French excerpt is source-verbatim.
+- **Affected PRD IDs:** AI-LIT-REQ-002/029/030/031/032; AI-LIT-TBD-004.
+- **Refines:** DEC-AIL-018/027/028. French timing changes from unstarted future
+  work to authorised preparation; launch approval remains separate.
+- **Open gates:** current copy/translation and visual review; subsequent batches;
+  final training-page URLs; original-image/testimonial clearance; PR review and
+  explicit production release. No commit, push, merge or deployment performed.
+- **Validation:** repository checks, production build and eight isolated built-page
+  HTTP checks pass. TypeScript retains the same 35 pre-existing errors. All four
+  private homepage/article variants have checked language attributes, one H1,
+  working local anchors/images and noindex; French preview URLs return HTTP 200.
+  Maeva’s French excerpt matches the user source; paused MY5 blocks match HEAD.
+  Rendered-browser, responsive and human translation review remain open.
+
+<a id="dec-ail-030"></a>
+### DEC-AIL-030 — Scan buying link and an illustrated ACX reading experience
+
+- **Project:** AI-LIT
+- **Status:** requested fixes, source use for local comparison and research stance
+  approved; final A/B visual treatment remains a user choice
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève asks for a Scan landing-page link with buying
+  options, levels 1–4 together in the contents, stronger Arbora provenance and
+  human agency/sovereignty, his own drawings framed in Green Elephant style,
+  and two visual options including possible code-generated level icons.
+- **Decision:** prepare both options; recommend simple SVG level cues with
+  expandable originals for readability. Keep original drawings intact, framed
+  in dark navy/teal with subtle depth and readable captions/enlargement links.
+  Reflect the same content and structure in the French draft.
+- **Source boundary:** SRC-AI-LIT-ACX-VISUALS-01 records six exact originals and
+  their hashes. Do not silently replace older H2A or governance/infrastructure
+  labels. Explain differences beside the drawings and retain the current HAI
+  and team-member ACX 4 scope. Tall pencil scroll and opportunity slide remain
+  source material rather than main article illustrations.
+- **Research wording:** use practical synthesis and an explicit philosophical
+  position. Author-provided research provenance is not statistical-validation,
+  certification or published-meta-analysis evidence. No private Arbora content
+  is imported from the separate product repository.
+- **Affected PRD IDs:** AI-LIT-REQ-019/020/030/031/032/033.
+- **Refines:** DEC-AIL-028/029. No change to training depth, prices, Maeva gates,
+  MY5 pause, release process or the wider French batch list.
+- **Delivery:** English and French local content updated, six unedited assets
+  copied, two full article alternatives prepared, homepage Scan links corrected.
+  A is the local review candidate, not recorded as the user's final selection.
+  No commit, push, PR, merge or deployment.
+- **Validation:** repository checks, production build and eight isolated built-page
+  HTTP checks pass. Structural checks cover all six private pages: one H1, unique
+  anchors, working local links, six available drawings per article and levels 1–4
+  kept together. A/B preview URLs and the original drawing return HTTP 200.
+  All six copied originals match their recorded SHA-256 hashes; MY5 document
+  blocks match HEAD. Browser inventory has no enabled browser, so rendered visual,
+  responsive and accessibility acceptance remains open. No dependency changes.
+
+<a id="dec-ail-031"></a>
+### DEC-AIL-031 — Keep version B and explore purple sketch-derived level symbols
+
+- **Project:** AI-LIT
+- **Status:** version B selected in both languages; purple icon direction approved;
+  B1/B2 refinement choice remains open
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève explicitly says to keep version B, asks for
+  ACX icons based on his drawings in the correct Green Elephant purple, and
+  requests another distinctive treatment in both blog and website descriptions.
+- **Decision:** keep all four original level diagrams fully visible. Add four
+  language-neutral SVG interpretations of the original robot, thought-cloud,
+  agent/person and circular people-connection motifs. Preserve source artwork.
+- **Brand:** canonical `LENS_HEX.dynamics` is #5C4E99; use it for the requested
+  icon ink. Do not silently substitute a generic purple or migrate the whole
+  site's older HSL palette. This accent does not map ACX to a communication lens.
+- **Candidates:** B1 uses compact ink badges. B2 adds sketchbook ribbons, margin
+  marks and numbered tabs. Recommend B2; do not record it as user-selected yet.
+  Both treatments carry across homepage and article, in English and French.
+- **Refines / supersedes:** closes the A/B selection under DEC-AIL-030 in favour
+  of B. Keeps its original-label note, team-member ACX 4 boundary and open release
+  gates. B1/B2 are styling refinements of B, not a return to optional originals.
+- **Affected PRD IDs:** AI-LIT-REQ-026/030/032/033/034.
+- **Delivery:** local article sources now use B with four purple SVG symbols;
+  eight homepage/article/language/treatment previews prepared. No new packages,
+  raster alteration, commit, push, PR, merge, deployment or MY5 changes.
+
+<a id="dec-ail-032"></a>
+### DEC-AIL-032 — Scan support for AI learning and private client-story drafts
+
+- **Project:** AI-LIT
+- **Status:** direction and local implementation approved; copy review and release open
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève requests a plain-language Scan hero, ACX links,
+  bilingual sales buttons and checkout checks; explicitly selects story drafts
+  for client review instead of fabricated quotes. Later requests original hero
+  graphics and elevator treatment.
+- **Decision:** connect personal communication awareness to guiding AI, especially
+  ACX 1–2. Preserve original Scan imagery and legacy testimonials. Prepare new
+  coaching stories privately, including Maeva's supplied words, with permission
+  and attribution gates intact. Do not claim Scan results train AI automatically.
+- **Affected PRD IDs:** AI-LIT-REQ-030/032/035 (Concept 10).
+- **Delivery:** local English hero/ACX implementation, paired French review copy,
+  bilingual checkout and isolated payment checks. Full French legacy-page and
+  email-template translations are still open. No new stories published.
+
+<a id="dec-ail-033"></a>
+### DEC-AIL-033 — Coherent human-first promise and bounded email testing
+
+- **Project:** AI-LIT
+- **Status:** brand direction approved; exact slogan candidates pending review;
+  exact existing test email templates approved; live tests blocked by HTTP 403
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève asks to reuse the warm footer, connect Scan,
+  workshops/coaching/training around humane technology and human agency, retain
+  conflict transformation as a benefit, and provide bilingual review links each
+  workshop turn. Estève subsequently reviews customer/admin previews and explicitly
+  approves the test emails. The supplied voucher and recipients stay in private
+  test artifacts rather than this published decision log.
+- **Decision:** short promise plus supporting benefit and offer connection; avoid
+  replacing human judgment or promoting AI at any cost. Prepare paired EN/FR
+  copy. Run only bounded, zero-cost approved test orders; no paid card transaction
+  or production deployment authorized by this test request.
+- **Test evidence:** coupon validation succeeds; first approved free-order request
+  returns HTTP 403, no successful purchase ID, no retry or remaining-recipient
+  requests. Delivery is unverified and this flow bypasses Stripe. Local Resend
+  acceptance/error handling repaired with five isolated passing tests; templates
+  unchanged. See PRD for consent and marketing findings, not compliance assurance.
+- **Affected PRD IDs:** AI-LIT-REQ-032/035/036 (Concept 10).
+
+<a id="dec-ail-034"></a>
+### DEC-AIL-034 — Restore clean teal outline icons
+
+- **Project:** AI-LIT
+- **Status:** approved styling correction; rendered review open
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève explicitly rejects hand-drawn icons and asks to
+  return to the style used for the teal icons; requests familiar menu icons too.
+- **Decision:** use clean Lucide outline chat/workflow/agent/people symbols with
+  teal #009999, visible labels and ACX numbers. Use the same line style for new
+  navigation icons in English and French. Preserve the selected version B original
+  article drawings and the original Scan hero graphics/scroll effect.
+- **Supersedes:** DEC-AIL-031's purple sketch badge/ribbon candidates only. Version
+  B selection and original artwork preservation remain approved.
+- **Affected PRD IDs:** AI-LIT-REQ-033/034/037 (Concept 10).
+
+<a id="dec-ail-035"></a>
+### DEC-AIL-035 — Dark ACX navigation, Scan controls and result-email review
+
+- **Project:** AI-LIT
+- **Status:** approved direction; local implementation and private bilingual previews; rendered acceptance and live email delivery open
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève requests matching purple icons, numbers and level names, rejects pale boxes, and retains dark backgrounds. Click targets navigate between the overview and level sections. Latest feedback requests a raised Scan button, a separate downward arrow and clearer elevator graphics.
+- **Decision:** keep clean outline icons; remove pale label backing. Use one readable purple tint (#B7A6E8) on dark surfaces for ACX identity, derived from the unchanged brand base #5C4E99. The exact tint is an implementation choice for visual review. Navigation outside ACX keeps its established teal. Preserve version B and original drawings. Add overview links and return links. Button depth comes from the surface shadow, not text shadow; scroll arrow is stacked below its label; narrow CSS track uses crisp lines. Original Earth image remains 1408 × 768; deploy alone cannot improve its resolution.
+- **Scan language:** disclose before purchase, in English and French, that the questionnaire and videos are currently English and that translation-tool accuracy is not guaranteed.
+- **Results emails:** retain Estève and Anu in Typeform completion CC, per explicit workshop answer. This records owner choice; participant disclosure and lawful processing remain separate review items. Three result-email templates have local English/French rendering, escaped selectable text, complete text attachments, HTTPS dashboard links and checked provider acceptance. Admin raw-data/dashboard sends now select English or French and require write access. No new result emails sent; automatic Typeform completion still defaults to English.
+- **Client stories:** first-person drafts stay private. Temporary attribution approved: “Miko and a fellow developer, Finland.” Do not invent the second developer's identity or treat drafted words as client-confirmed quotations. Maeva's supplied French words remain unchanged.
+- **Supersedes:** DEC-AIL-034 ACX colour only; clean outline shapes and original artwork remain. Rejected pale-box intermediate preview is not the accepted design.
+- **Affected PRD IDs:** AI-LIT-REQ-035/037/038.
+- **Open gates:** full French public routing, rendered desktop/mobile review, complete remaining Resend repairs, webhook authenticity/deduplication, answer-preservation audit, purpose-specific consent/marketing separation, inbox delivery and customer dashboard access. No deployment or compliance assurance follows from local tests.
+
+<a id="dec-ail-036"></a>
+### DEC-AIL-036 — Accept visual review and finish bounded email checks
+
+- **Project:** AI-LIT
+- **Status:** design accepted; local email repairs under review; live delivery blocked
+- **Decision date:** 2026-10-01
+- **Approver / evidence:** Estève says the reviewed changes are good and requests email checks and a main-homepage review page. This is not production publication approval.
+- **Decision:** retain DEC-AIL-035 visual treatment. Provide a homepage-first English/French review controller and separate email previews. Continue provider-isolated tests and bounded repairs without starting the full application or provider jobs.
+- **Implementation evidence:** central Resend acceptance guard covers all shared-client sends, including direct newsletter/batch routes; rejected provider responses cannot reach success counters. Typeform extraction preserves repeated titles, all choice values, zero/false/blank and multiline answers. Full JSON export attachment replaces the previous missing attachment. Three result templates have explicit Estève Reply-To. Actual sender payloads are exercised with a fake provider, not just renderer snapshots.
+- **Open findings:** dashboard sending is coach-triggered, not an automatic dashboard-created event; Typeform authentication/deduplication and durable delivery, reminder failure/retry handling, reset-link origin, remaining HTML interpolation, participant disclosure and marketing permission/suppression remain open. Credentials and browser connection are unavailable for this session; no live send attempted after the prior shop HTTP 403.
+- **Approval boundary:** changed outgoing copy, headers and attachments still require exact final-message review before live sending under the repository email rule. Visual acceptance does not certify GDPR compliance or authorize deployment.
+- **Affected PRD IDs:** AI-LIT-REQ-035/036/038; bounded implementation evidence only.
+
 Discovery progress is in the PRD acceptance table. Proposed SEO/growth ideas are
 `AI-LIT-PROP-*` requirements candidates, not approved decisions. Add an attributable
 decision here when Estève selects one; do not silently change its status.
 
 <a id="my5-decisions"></a>
+### DEC-AIL-037 — Release preparation and approved Maeva derivative
+
+- **Project:** AI-LIT
+- **Status:** implementation and GitHub PR/merge authorised; Replit publication and
+  live delivery verification remain separate
+- **Decision date:** 2026-10-01
+- **Approver/evidence:** Estève’s request to finish email, bilingual, privacy,
+  search and security checks, create the PR and merge to GitHub main; latest explicit
+  approval of Maeva’s blurred-background portrait.
+- **Affected requirements:** AI-LIT-REQ-018, 025, 030–038; full French scope in
+  AI-LIT-REQ-032 remains required and is not reduced by this checkpoint.
+- **Decision:** carry the approved dark designs into the existing application,
+  prepare the release through the protected-main workflow, and give the human the
+  exact Replit release handoff. Retain the current scan questionnaire/video language
+  notice and the original approved portrait rather than the pool illustration.
+- **Implementation evidence:** actual core EN/FR application routes and early HTML
+  content, reciprocal translated-page metadata, public/private cache controls,
+  redacted HTTP errors, safer Scan email/payment handling, disabled analytics and
+  unconsented promotional automation. Dependency updates remove high and critical
+  audit findings; moderate transitive findings and pre-existing TypeScript debt are
+  recorded separately from the passing build and focused release tests.
+- **Open gates:** retained legacy French pages and email families; production
+  credentials/provider configuration; exact final email review and inbox/attachment
+  checks; real payment and coupon recording; provider/data-retention/legal details.
+  No successful live transaction or complete GDPR compliance is claimed.
+- **Operational exception:** automatic approval review rejected restoring the new
+  Scan purchase-to-Notion copy because email, name and amount would leave the app
+  without specific transfer approval. That copy was not restored and no data was
+  sent. Existing unrelated integration paths were not newly authorised.
+- **Supersedes:** earlier implementation-not-approved status for the authorised
+  website scope only. Preserves DEC-MY5-001, current publication boundaries and
+  the existing canonical-document process.
+
 ## MY5 pause and historical decisions
 
 <a id="dec-my5-001"></a>

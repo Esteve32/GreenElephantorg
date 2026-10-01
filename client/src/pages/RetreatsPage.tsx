@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 
 import RetreatCard from "@/components/RetreatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,10 +52,7 @@ export default function RetreatsPage() {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Equinoxe Communication Retreats | Finland & Provence | GreenElephant"
-        description="Transform how you see conflict in 5-day immersive retreats in Levi, Finland or Provence, France. Practice microhabits, build trust, and return home with a personalized playbook. Limited to 12-14 participants."
-        canonicalPath="/retreats"
-        keywords="communication retreat, equinoxe retreat, Finland retreat, Provence retreat, conflict resolution retreat, conscious communication immersive, microhabit retreat"
+        {...PAGE_METADATA["/retreats"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Retreats", url: "/retreats" }

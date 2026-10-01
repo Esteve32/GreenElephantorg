@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +10,7 @@ export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO
-        title="Terms of Service | GreenElephant"
-        description="GreenElephant's terms of service covering coaching, retreats, and consulting agreements. Clear terms for conscious relationships."
-        canonicalPath="/terms"
-        keywords="terms of service, GreenElephant terms, coaching terms, retreat terms"
+        {...PAGE_METADATA["/terms"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Terms of Service", url: "/terms" }

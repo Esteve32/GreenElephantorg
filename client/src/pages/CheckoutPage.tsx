@@ -1,21 +1,17 @@
 import { SEO } from "@/components/SEO";
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { stripePromise } from '@/lib/stripe-client';
+import SatelliteCheckoutPage from './SatelliteCheckoutPage';
 import { useState, useCallback, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation, Link } from "wouter";
+import { useLocation, useSearch, Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, ArrowLeft, CreditCard, User, AlertCircle, Loader2, Repeat } from "lucide-react";
-
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 type CheckoutStep = 'details' | 'payment';
 
@@ -106,14 +102,7 @@ const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/payment-success`,
-        payment_method_data: {
-          billing_details: {
-            address: {
-              country: 'FI', // Default to Finland for EU compliance
-              postal_code: '00100'
-            }
-          }
-        }
+
       },
     });
 
@@ -132,14 +121,7 @@ const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
       <PaymentElement 
         options={{
           layout: 'tabs',
-          fields: {
-            billingDetails: {
-              address: {
-                country: 'never',
-                postalCode: 'never'
-              }
-            }
-          }
+
         }}
       />
       <Button 
@@ -161,7 +143,7 @@ const CheckoutForm = ({ packageInfo, finalPrice }: CheckoutFormProps) => {
   );
 };
 
-export default function CheckoutPage() {
+function LegacyCheckoutPage() {
   useEffect(() => { document.title = "Checkout | GreenElephant"; }, []);
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('details');
   const [clientSecret, setClientSecret] = useState("");
@@ -269,7 +251,7 @@ export default function CheckoutPage() {
   };
 
   const selectedPackage = isSubscription ? packages['subscription'] : isSatellitescan ? packages['satellitescan'] : packages[packageType];
-  const finalPrice = Math.max(0, selectedPackage.price - discountAmount);
+  const finalPrice = Math.max(0, (selectedPackage?.price ?? 0) - discountAmount);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -666,12 +648,12 @@ export default function CheckoutPage() {
         <div className="mt-12 space-y-6">
           <Card className="bg-ego/5 border-ego/20 p-4">
             <p className="text-xs text-muted-foreground">
-              <strong className="text-foreground">Your Privacy Matters:</strong> We collect your email and name to send your receipt, deliver your service, and follow up on your transformation. We'll never share your data. Learn more in our <Link to="/privacy" className="text-primary hover:underline">privacy policy</Link>.
+              <strong className="text-foreground">Your Privacy Matters:</strong> We collect your email and name to send your receipt, deliver your service, and follow up on your transformation. Payment and service providers process the information needed to deliver your order. Learn more in our <Link to="/privacy" className="text-primary hover:underline">privacy policy</Link>.
             </p>
           </Card>
           <div className="text-center text-sm text-muted-foreground space-y-2">
             <p><strong className="text-foreground">After Payment:</strong> You'll receive a confirmation email within seconds with next steps</p>
-            <p className="text-xs">Secure payment by Stripe · EU AI Act compliant · GDPR protected</p>
+            <p className="text-xs">Secure payment by Stripe · Privacy policy available below</p>
             <p>Questions? Email esteve@greenelephant.org</p>
           </div>
         </div>
@@ -679,4 +661,10 @@ export default function CheckoutPage() {
     </div>
     </>
   );
+}
+
+export default function CheckoutPage() {
+  const search = useSearch();
+  return new URLSearchParams(search).get('product') === 'satellitescan'
+    ? <SatelliteCheckoutPage /> : <LegacyCheckoutPage />;
 }

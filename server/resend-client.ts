@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { checkedEmailSend } from './email-acceptance';
 
 let connectionSettings: any;
 
@@ -48,8 +49,11 @@ async function getCredentials() {
 
 export async function getUncachableResendClient() {
   const {apiKey, fromEmail} = await getCredentials();
+  const client = new Resend(apiKey);
+  const send = client.emails.send.bind(client.emails);
+  client.emails.send = checkedEmailSend((payload, options) => send({replyTo:'esteve@greenelephant.org',...payload},options));
   return {
-    client: new Resend(apiKey),
+    client,
     fromEmail: fromEmail
   };
 }

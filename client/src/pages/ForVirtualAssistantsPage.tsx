@@ -1,3 +1,5 @@
+import { WEBINARS_PARKED } from "@shared/site-features";
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,11 +68,8 @@ const FAQ_ITEMS = [
 export default function ForVirtualAssistantsPage() {
   return (
     <div className="min-h-screen">
-      <SEO 
-        title="Communication Training for Virtual Assistants | Satellite Scan"
-        description="Communication assessment designed for Virtual Assistants. Map your async communication patterns, client boundary-setting, and remote relationship building across 8 lenses. €99.95 with personalized insights."
-        keywords="virtual assistant communication training, VA professional development, remote communication skills, virtual assistant coaching, freelance VA training, online assistant skills, async communication mastery"
-        canonicalPath="/for-virtual-assistants"
+      <SEO
+        {...PAGE_METADATA["/for-virtual-assistants"]}
         faqItems={FAQ_ITEMS}
         breadcrumbs={[
           { name: "Home", url: "/" },
@@ -301,12 +300,12 @@ export default function ForVirtualAssistantsPage() {
                   Free 2-Min Quick Check
                 </Button>
               </Link>
-              <Link href="/webinar">
+              {!WEBINARS_PARKED && (<Link href="/webinar">
                 <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-va-webinar">
                   <Zap className="mr-2 h-4 w-4" />
                   Join Free Monthly Webinar
                 </Button>
-              </Link>
+              </Link>)}
             </div>
           </motion.div>
         </div>

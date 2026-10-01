@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +10,7 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO
-        title="Privacy Policy | GreenElephant"
-        description="GreenElephant's privacy policy. Learn how we collect, use, and protect your personal data in compliance with GDPR. Guided by ACX100 AI-Human Experience principles."
-        canonicalPath="/privacy"
-        keywords="privacy policy, GDPR, data protection, GreenElephant privacy, ACX100, AI ethics"
+        {...PAGE_METADATA["/privacy"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Privacy Policy", url: "/privacy" }
@@ -28,7 +26,7 @@ export default function PrivacyPolicyPage() {
             Thank you for taking this moment to review our privacy practices. We believe in transparency, kindness and mutual respect — in data handling as in dialogue.
           </p>
           <p className="text-sm text-muted-foreground">
-            Last updated: March 12, 2026
+            Last updated: October 1, 2026
           </p>
         </div>
 
@@ -135,7 +133,7 @@ export default function PrivacyPolicyPage() {
                 <li>Deliver newsletter content (newsletter subscribers only)</li>
                 <li>Process payments securely via Stripe</li>
                 <li>Respond to inquiries and support requests</li>
-                <li>Improve our services based on anonymised assessment data</li>
+                <li>Maintain the service and investigate technical problems using only the information needed</li>
                 <li>Push data to your connected Notion workspace (only when you initiate it)</li>
                 <li>Comply with legal obligations (tax, accounting)</li>
               </ul>
@@ -150,13 +148,15 @@ export default function PrivacyPolicyPage() {
               <p>We share your data only with trusted service providers:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li><strong>Stripe:</strong> Payment processing (subject to Stripe's Privacy Policy and Standard Contractual Clauses)</li>
-                <li><strong>Replit:</strong> Website hosting (EEA-compliant infrastructure)</li>
-                <li><strong>Resend:</strong> Transactional and onboarding email delivery</li>
+                <li><strong>Replit:</strong> Website hosting. Replit documents US hosting by default; EU hosting requires an agreed Enterprise arrangement.</li>
+                <li><strong>Resend:</strong> Purchase, assessment-results and dashboard email delivery. Results emails include your answers and copy Estève and Anu as the coaches supporting the service.</li>
+                <li><strong>Typeform:</strong> Hosts the Scan questionnaire and passes submitted answers to our service.</li>
+                <li><strong>Cloudflare:</strong> Delivers and protects the website; technical request data may be processed for security.</li>
                 <li><strong>Calendly:</strong> Booking and scheduling (when you book sessions)</li>
                 <li><strong>Google:</strong> OAuth authentication (when you choose Google sign-in)</li>
                 <li><strong>LinkedIn:</strong> OpenID Connect authentication (when you choose LinkedIn sign-in)</li>
-                <li><strong>Notion:</strong> Workspace integration (only when you voluntarily connect your workspace)</li>
-                <li><strong>Thesys.dev:</strong> AI-powered communication visualisations (no personal data shared — only anonymised queries)</li>
+                <li><strong>Notion:</strong> Contact and service records in our team workspace where the relevant integration is enabled; optional exports to a workspace you connect</li>
+                <li><strong>Thesys.dev:</strong> AI-powered communication visualisations; the prompt and data supplied for a visualisation are processed by this provider</li>
               </ul>
               <p className="mt-4">
                 We do not sell, rent, or share your data with third parties for marketing purposes.
@@ -214,9 +214,9 @@ export default function PrivacyPolicyPage() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                Your data is stored within the European Economic Area (EEA). If we use processors outside the EEA,
-                we ensure adequate protection through Standard Contractual Clauses (SCCs) or other approved mechanisms
-                under GDPR Article 46.
+                Our providers may process data outside the European Economic Area, including in the United States.
+                The safeguards depend on the provider and service agreement. Contact us for details about
+                the providers, transfer safeguards and service settings used for your data.
               </p>
             </CardContent>
           </Card>
@@ -230,13 +230,13 @@ export default function PrivacyPolicyPage() {
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li><strong>Contact & Marketing Data:</strong> 24 months from last interaction (unless you withdraw consent earlier)</li>
                 <li><strong>Retreat Waitlists:</strong> Until retreat cycle ends + 12 months</li>
-                <li><strong>Assessment Data:</strong> 12 months for benchmarking (anonymised after 6 months)</li>
+                <li><strong>Assessment Data:</strong> Contact us about the retention period for your assessment and to request deletion. Automatic anonymisation is not currently provided by this application.</li>
                 <li><strong>OAuth Tokens:</strong> Until you disconnect the service or delete your account</li>
                 <li><strong>Portal Account Data:</strong> Until you request deletion</li>
                 <li><strong>Contracts & Payments:</strong> 6–10 years per EU tax and accounting regulations</li>
               </ul>
               <p className="mt-4">
-                After retention periods expire, we securely delete or anonymise your data.
+                Retention and deletion requests are handled by the team. Contact us to confirm the schedule that applies to your service and any records we must retain by law.
               </p>
             </CardContent>
           </Card>
@@ -300,94 +300,21 @@ export default function PrivacyPolicyPage() {
                 <li>OAuth tokens stored server-side only (never exposed to the browser)</li>
                 <li>Access controls and session-based authentication</li>
                 <li>Regular security updates and monitoring</li>
-                <li>Data Processing Agreements with all processors</li>
+                <li>Contact us for details of the processor agreements and safeguards that apply to your service</li>
               </ul>
             </CardContent>
           </Card>
 
-          <Card className="backdrop-blur-sm bg-card/50 border-white/10 border-l-4 border-l-needs/50">
-            <CardHeader>
-              <div className="flex items-center gap-3 flex-wrap">
-                <CardTitle>12. AI Ethics & the ACX100 Framework</CardTitle>
-                <Badge variant="outline" className="text-xs border-needs/30 text-needs">Care by Design</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6 text-muted-foreground">
-              <p>
-                GreenElephant.org uses AI-powered tools to enhance communication coaching and assessments.
-                We are committed to responsible AI use, guided by the{" "}
-                <a href="https://arbora.partners" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline font-semibold">
-                  ACX100 AI-Human Experience Framework
-                </a>{" "}
-                developed by Arbora Partners — an 8-pillar framework for ethical AI deployment.
-              </p>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <Users className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">I. Human Agency & Oversight</h4>
-                    <p className="text-xs">Every AI-generated insight includes human-in-the-loop review. You always see when AI is involved, and a human coach validates all assessment outcomes.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <Eye className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">II. Transparency & Explainability</h4>
-                    <p className="text-xs">AI-generated content is clearly labelled. Our Satellite Scan and Flow assessments explain how results are derived. See our <a href="/ai-policy" className="text-needs hover:underline">AI Policy</a> for details.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <Shield className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">III. Accountability</h4>
-                    <p className="text-xs">Clear responsibility is assigned for all AI outputs. Estève Pannetier is accountable for AI system decisions, with defined incident response procedures.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <Scale className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">IV. Data Governance</h4>
-                    <p className="text-xs">Formal data governance for all AI training data. Access is role-based, processing complies with GDPR, and data lineage is documented.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <Users className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">V. Fairness & Non-Discrimination</h4>
-                    <p className="text-xs">Our assessments are designed to respect all communication styles equally. We actively test for bias and welcome feedback on perceived unfairness.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <Cpu className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">VI. Technical Robustness</h4>
-                    <p className="text-xs">Safety-by-design principles with graceful fallbacks when AI services are unavailable. Regular monitoring for drift and emerging risks.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <AlertTriangle className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">VII. Risk-Based Approach</h4>
-                    <p className="text-xs">Our AI systems are classified as minimal/limited risk under the EU AI Act. We maintain a risk register and "red line" policy for unacceptable AI applications.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <RefreshCw className="h-5 w-5 text-needs mt-0.5 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-1">VIII. Continuous Monitoring</h4>
-                    <p className="text-xs">Post-deployment monitoring of all AI systems. We track regulatory changes (EU AI Act, OECD guidelines) and adapt our practices accordingly.</p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-xs text-muted-foreground/70 mt-4">
-                The ACX100 framework comprises 80 evaluation criteria across 8 sections, rated on a 1–5 scale.
-                We conduct self-audits after every major platform update. Full framework details at{" "}
-                <a href="https://arbora.partners" target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">
-                  arbora.partners
-                </a>.
-              </p>
+          <Card className="backdrop-blur-sm bg-card/50 border-white/10">
+            <CardHeader><CardTitle>12. Human-centred AI use</CardTitle></CardHeader>
+            <CardContent className="space-y-4 text-muted-foreground">
+              <p>AI supports the work of our coaches. People remain responsible for the service
+                and for decisions about their own communication. Our ACX teaching map draws on
+                Estève’s AI and communication research with <a href="https://www.arbora.partners/research"
+                  target="_blank" rel="noopener noreferrer" className="text-needs hover:underline">Arbora</a>.</p>
+              <p>The teaching map is not a certification, a clinical diagnosis or a legal compliance
+                assessment. Read our <a href="/ai-policy" className="text-needs hover:underline">AI Policy</a>
+                {' '}for more about how we use AI, or contact Estève to discuss a concern.</p>
             </CardContent>
           </Card>
 
@@ -410,8 +337,8 @@ export default function PrivacyPolicyPage() {
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
                 We may update this Privacy Policy to reflect changes in our practices or legal requirements.
-                We will notify you of significant changes via email or website notice. Continued use of our
-                services constitutes acceptance of the updated policy.
+                We will notify you of significant changes via email or website notice. Where consent is required,
+                we will ask for it separately; continuing to browse does not provide that consent.
               </p>
             </CardContent>
           </Card>

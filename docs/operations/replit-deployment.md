@@ -27,12 +27,12 @@ Nixpkgs release receives security updates through 2026-12-31.
 
 1. A change is reviewed in a GitHub pull request.
 2. Required GitHub checks install from the lockfile, validate repository/runtime
-   configuration, build from source, and block critical dependency vulnerabilities.
-   TypeScript errors and existing high-severity dependency findings remain visible
-   but non-blocking until their separate remediation work is reviewed.
+   configuration, run the release tests, build from source, and block high and
+   critical dependency vulnerabilities. Pre-existing TypeScript errors remain
+   visible but non-blocking; moderate transitive audit findings remain to review.
 3. The pull request is merged to protected `main`.
-4. The Replit workspace checks out `main`, pulls the merge commit and verifies the
-   exact Git SHA without creating Replit-only changes.
+4. The Replit workspace fetches `main`, creates a local release branch at the exact
+   approved SHA and verifies it without creating Replit-only code changes.
 5. A human selects **Republish** in Replit Publishing. Replit runs `npm ci`,
    `npm run build`, then `npm start` from the workspace snapshot.
 6. A smoke check verifies the public deployment and records the Git commit that was
@@ -94,7 +94,9 @@ esac
 
 npm ci
 npm run repo:check
+npm run test:release
 npm run build
+npm audit --audit-level=high
 test "$(git rev-parse HEAD)" = "$expected_sha"
 
 if [ -n "$(git status --porcelain)" ]; then
@@ -105,7 +107,7 @@ fi
 
 git status --short --branch
 
-echo "READY: ask the human to review Replit Publishing and click Republish"
+echo "BUILD VERIFIED: complete the release gates in docs/operations/replit-deployment.md before human Republish"
 REPLIT_RELEASE
 ```
 
@@ -130,8 +132,8 @@ are set to zero for the current single-maintainer workflow. Add an independent
 reviewer and revisit the approval count if repository ownership changes.
 
 - Keep production builds and repository/runtime configuration checks blocking.
-- Keep the critical-vulnerability audit blocking; review and reduce existing high
-  findings in focused dependency-update pull requests.
+- Keep high and critical dependency vulnerability checks blocking. Review moderate
+  transitive findings without forcing unreviewed breaking upgrades.
 - Remove the TypeScript `continue-on-error` exception after the existing baseline
   errors are repaired.
 - Never force-push GitHub from the deployed application.
@@ -142,10 +144,105 @@ reviewer and revisit the approval count if repository ownership changes.
   logs. See [`secrets.md`](secrets.md).
 - Leave **Copy development database to production database** disabled during routine
   publication. It is a destructive data operation, not a deployment requirement.
-- AI-LIT discovery status and the MY5 pause remain unchanged by deployment work.
+- The approved AI-LIT scope and the MY5 pause remain separate; publication does not resume MY5.
 
 ## Rollback
 
 Record the previous deployed GitHub commit before publication. Roll back by selecting
 that known-good commit in the supported Replit deployment interface and rebuilding;
 do not rewrite GitHub history.
+
+## AI-literacy release checklist — 2026-10-01
+
+**Status: release candidate, not evidence of a fully bilingual or production-tested
+service.** The current local tests use synthetic data and isolated providers.
+No live payment or successful Resend inbox delivery has been demonstrated for this
+candidate. The earlier authorised free-order request returned 403 without a purchase
+identifier; do not retry blindly or attribute that response to Cloudflare without
+checking the event logs.
+
+### 1. Review the actual translated pages
+
+Review `/`, `/fr`, `/scan`, `/fr/scan`, `/blog/acx-levels-ai-literacy`,
+`/fr/blog/acx-levels-ai-literacy`, the English/French Scan checkout and confirmation.
+Use desktop and phone widths. Check all footer destinations, images and anchor links.
+
+The core pages and critical Scan email templates are bilingual. **Retained legacy
+service, resource, tool, coach and policy pages and legacy email families still need
+French batches.** Their French footer links are marked `(EN)`. Do not describe this
+release as complete French coverage or close AI-LIT-REQ-032 yet.
+
+### 2. Complete production configuration and privacy checks
+
+- Complete the required entries in [the secret inventory](secrets.md#ai-literacy-release-requirements--2026-10-01).
+  Verify Typeform/Stripe signing in both provider dashboards and Replit production
+  before publishing; unsigned webhooks are now refused. No database migration is
+  introduced by this change. Do not run `db:push` or copy the development database.
+- Confirm the Typeform participant notice describes full answers being sent via
+  Resend to the participant with Estève and Anu copied. Keep assessment information
+  out of marketing lists. The owner's instruction to copy coaches is not evidence
+  of participant notice or consent where required.
+- Confirm the legal controller, actual retention/deletion process, processor
+  agreements and international-transfer safeguards. This source review is not a
+  GDPR certification. Review the [EDPB small-business guide](https://www.edpb.europa.eu/sme/be-compliant/be-compliant_en)
+  for the organisational evidence needed alongside technical controls. The application has no automatic assessment anonymisation.
+- Replit currently documents US hosting by default, with EU hosting by Enterprise
+  arrangement; do not promise EEA-only hosting without evidence of that arrangement.
+  [Replit publishing documentation](https://docs.replit.com/learn/projects-and-artifacts/replit-deployments)
+- Analytics initialisation and automatic promotional onboarding are disabled.
+  Do not resume them until consent, withdrawal, template purpose and language have
+  been checked. Signed marketing unsubscribe requires its separate secret.
+- The new Scan purchase path does not copy purchases into Notion: restoration of
+  that transfer was rejected by automatic approval review for lack of specific
+  approval for buyer email, name and amount. Existing unrelated integration paths
+  are not removed by this change; verify their notices separately.
+
+### 3. Test the email and payment chain with synthetic data
+
+Review the **exact final sender, recipients, subject, body and attachments** with
+Estève before sending newly revised templates (AGENTS.md, Email approval safety).
+Use only the authorised test inboxes; keep the testing coupon out of this repository.
+
+| Check | Required evidence before marking it passed |
+| --- | --- |
+| EN and FR free Scan orders | Coupon produces zero total; one purchase per voucher/address; correct language; repeated request does not create another purchase or email |
+| Stripe paid branch | In Stripe test mode, correct EUR 99.95 amount, authenticated successful webhook, one purchase record; a 100% voucher alone does not test card payment |
+| Purchase email | Resend acceptance ID, delivered event and inbox receipt; working Typeform link and correct hidden language |
+| Submitted Scan email | Signed synthetic Typeform response; full answers in order, selectable results block and intact attachment; correct participant plus both coaches; no duplicate on replay |
+| Dashboard-ready email | Coach manually sends from cockpit after preparing the real report link; participant can open it with the intended access |
+| Data-export email | Logged-in user receives their complete JSON attachment; another visitor cannot request that user's data |
+| Reminder | One eligible synthetic order; counted only after Resend acceptance; completed Scan receives no reminder |
+| Marketing controls | Non-consenting/suppressed contacts excluded; signed unsubscribe works; opening an email creates no tracking record |
+
+Email clients do not reliably run JavaScript. Result blocks use selectable text and
+full attachments, not a JavaScript copy button. Verify selection and attachment
+opening in the actual receiving mail client. Resend acceptance, provider delivery,
+and inbox receipt are three separate checks.
+
+Reserved `admin_settings` keys beginning `email_ops:v1:` hold hashed send identities,
+status/time, locale and suppression. If a send is `pending` or `unknown`, reconcile
+it with the exact Resend/purchase event. **Do not delete the claim and retry blindly.**
+A partial admin/customer send requires role-specific recovery. Historical paid
+purchases without the new locale marker require reconciliation on Stripe replay;
+they do not receive a fresh purchase email automatically. The runtime database
+transaction/unique constraints have not been exercised locally.
+
+### 4. Check Cloudflare, then publish and verify
+
+- Keep the existing DNS and deployment domains. Confirm origin TLS and use
+  [Full (strict)](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full-strict/)
+  only with a valid origin certificate; do not downgrade to Flexible.
+- Confirm `/api/*`, `/admin*`, `/portal*`, `/dashboard*`, checkout and payment
+  confirmation are not cached by any custom rule. They return `Cache-Control:
+  no-store`; a broad Cache Everything rule must not override this.
+- Inspect Security events for failed checkout/provider requests. A browser challenge
+  can break server webhooks. On the free plan, **Bot Fight Mode cannot be bypassed
+  using a WAF Skip or Page Rule**. Identify the actual blocking service before
+  changing a setting; do not disable protections globally as a guess.
+  [Cloudflare Bot Fight Mode documentation](https://developers.cloudflare.com/bots/get-started/bot-fight-mode/)
+- Only after the above gates pass, the human chooses **Republish**. Keep database
+  copying off. Record the previous deployment for rollback first.
+- Verify both domains and `/api/ping`, EN/FR routes, checkout and the delivery chain.
+  The ping endpoint proves HTTP health only, not database or provider health.
+  Record the exact successful GitHub deployment SHA, then close the pending-release
+  issue. Leave it open if any required gate remains unresolved.

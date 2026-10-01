@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
@@ -473,10 +474,7 @@ export default function DecodePage() {
       style={{ background: "linear-gradient(180deg, #060810 0%, #020305 40%, #000000 100%)" }}
     >
       <SEO
-        title="Colour-Decode Famous Speeches | GreenBlueRed Communication Analysis | GreenElephant"
-        description="See how the GreenBlueRed communication model maps onto Mandela, JFK, and Obama's most famous speeches. Discover which sentences build empathy, which inform, and which unite around action — and what that tells us about conscious communication."
-        canonicalPath="/decode"
-        keywords="GreenBlueRed model, communication behaviour analysis, Mandela speech decoded, JFK Berlin speech analysis, Obama communication style, green blue red communication, conscious communication examples, behaviour vs personality"
+        {...PAGE_METADATA["/decode"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Speech Lab", url: "/decode" }

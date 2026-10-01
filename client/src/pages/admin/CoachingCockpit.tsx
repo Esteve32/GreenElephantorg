@@ -1,3 +1,4 @@
+import { appendScanAnswer } from "@shared/scan-answers";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -505,6 +506,7 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
   const [docUrl, setDocUrl] = useState("");
   const [reportText, setReportText] = useState("");
   const [notes, setNotes] = useState("");
+  const [emailLanguage, setEmailLanguage] = useState<"en" | "fr">("en");
 
   const sendMutation = useMutation({
     mutationFn: async () => {
@@ -514,9 +516,9 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
       let body: Record<string, any> = {};
       if (mode === "send_raw_data_email") {
         const parsed = parseRawDataText(rawData);
-        body = { coacheeEmail, coacheeName: coacheeName || null, rawData: parsed };
+        body = { coacheeEmail, coacheeName: coacheeName || null, rawData: parsed, language: emailLanguage };
       } else if (mode === "send_doc_link_email") {
-        body = { coacheeEmail, coacheeName: coacheeName || null, docUrl, reportText };
+        body = { coacheeEmail, coacheeName: coacheeName || null, docUrl, reportText, language: emailLanguage };
       } else if (mode === "coach_only_email") {
         const parsed = parseRawDataText(rawData);
         body = { coacheeName: coacheeName || null, rawData: parsed, notes };
@@ -526,7 +528,7 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Email sent", description: DELIVER_CONFIG[mode!].title + " was sent successfully." });
+      toast({ title: "Send request accepted", description: "Inbox delivery still needs to be checked." });
       onOpenChange(false);
       setCoacheeEmail(""); setCoacheeName(""); setRawData(""); setDocUrl(""); setReportText(""); setNotes("");
     },
@@ -560,6 +562,7 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
+          {needsCoacheeEmail && <div className="space-y-1.5"><Label htmlFor="email-language">Email language / Langue de l’e-mail</Label><select id="email-language" value={emailLanguage} onChange={(e) => setEmailLanguage(e.target.value as "en" | "fr")} className="w-full rounded-md bg-[#11111a] border border-white/20 p-2"><option value="en">English</option><option value="fr">Français</option></select></div>}
           {needsCoacheeEmail && (
             <div className="space-y-1.5">
               <Label className="text-white/60 text-xs">Coachee Email *</Label>
@@ -648,7 +651,7 @@ function DeliverDialog({ mode, open, onOpenChange }: { mode: DeliverMode | null;
             {sendMutation.isPending && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
             <SiGmail className="w-3 h-3 mr-1" />
             Send Email
-          </Button></TooltipTrigger><TooltipContent>Send this coaching email via Gmail</TooltipContent></Tooltip>
+          </Button></TooltipTrigger><TooltipContent>Send this coaching email via Resend</TooltipContent></Tooltip>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -663,9 +666,9 @@ function parseRawDataText(text: string): Record<string, string> {
     if (colonIdx > 0) {
       const key = line.substring(0, colonIdx).trim();
       const value = line.substring(colonIdx + 1).trim();
-      if (key) result[key] = value;
+      if (key) appendScanAnswer(result, key, value);
     } else {
-      result[line.trim()] = "";
+      appendScanAnswer(result, line.trim(), "");
     }
   }
   return result;

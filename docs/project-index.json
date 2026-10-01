@@ -14,19 +14,38 @@
     {
       "id": "AI-LIT",
       "name": "AI Literacy Training Portal",
-      "aliases": ["AI literacy", "website findability", "training portal"],
+      "aliases": [
+        "AI literacy",
+        "website findability",
+        "training portal"
+      ],
       "requirements": "docs/PRD.md#ai-literacy",
       "decisions": "docs/DECISION_LOG.md#ai-literacy-decisions",
       "shared_decisions": "docs/DECISION_LOG.md#shared-decisions",
       "requirement_prefix": "AI-LIT-",
       "decision_prefix": "DEC-AIL-",
       "notion_mirror_page_id": "7c6836a00c8f4d49813dc894f0db943a",
-      "sources": ["SRC-AI-LIT", "SRC-GROWTH"]
+      "sources": [
+        "SRC-AI-LIT",
+        "SRC-GROWTH",
+        "SRC-AI-LIT-TRAINING-01",
+        "SRC-AI-LIT-ACX-01",
+        "SRC-AI-LIT-NAV-01",
+        "SRC-AI-LIT-SEO-01",
+        "SRC-AI-LIT-MAEVA-01",
+        "SRC-AI-LIT-MAEVA-02",
+        "SRC-AI-LIT-ACX-VISUALS-01"
+      ]
     },
     {
       "id": "MY5",
       "name": "MyFive",
-      "aliases": ["My5", "MyFive", "relationship app", "former unified refactor"],
+      "aliases": [
+        "My5",
+        "MyFive",
+        "relationship app",
+        "former unified refactor"
+      ],
       "requirements": "docs/PRD.md#my5",
       "decisions": "docs/DECISION_LOG.md#my5-decisions",
       "historical_decisions": "docs/DECISION_LOG.md#my5-history",
@@ -35,7 +54,10 @@
       "legacy_decision_prefix": "DEC-",
       "legacy_id_rule": "Existing DEC-xxx, UX-xxx, DAT-xxx and AC-xxx identifiers in preserved blocks belong to MY5.",
       "notion_mirror_page_id": "843c6460bf934e37aad0b946f7e674ef",
-      "sources": ["SRC-MY5", "SRC-GITHUB-MY5"]
+      "sources": [
+        "SRC-MY5",
+        "SRC-GITHUB-MY5"
+      ]
     }
   ],
   "query_contract": {
@@ -66,7 +88,12 @@
       "synced_at",
       "sync_status"
     ],
-    "status_values": ["CURRENT", "STALE", "UNKNOWN", "FAILED"],
+    "status_values": [
+      "CURRENT",
+      "STALE",
+      "UNKNOWN",
+      "FAILED"
+    ],
     "comparison": "Compare source files at mirror SHA with the files at resolved canonical main SHA; unrelated code commits do not make unchanged documentation stale.",
     "conflict_behavior": "Report manual edits for reconciliation through a PR; never silently import them into canonical GitHub files.",
     "secrets": "1Password for the integration credential; least-privilege runtime injection when a sync implementation is authorized."
@@ -84,7 +111,10 @@
       "markdown_sha256": "336ef87665c31e21452e60bd7442f77e074e9cefadfc21bb3e7045bc99bbd917",
       "markdown_bytes": 23569,
       "treatment": "Sanitized consolidation; authority statements superseded by DEC-GE-PRD-001; linked external page bodies not supplied.",
-      "mapped_to": ["docs/PRD.md#ai-literacy", "docs/DECISION_LOG.md#ai-literacy-decisions"]
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#ai-literacy-decisions"
+      ]
     },
     {
       "id": "SRC-MY5",
@@ -106,7 +136,10 @@
         }
       ],
       "treatment": "Pause and source conflicts consolidated; complete research, prompts, links and attachment retained in private ZIP. Not a new active PRD.",
-      "mapped_to": ["docs/PRD.md#my5", "docs/DECISION_LOG.md#dec-my5-001"]
+      "mapped_to": [
+        "docs/PRD.md#my5",
+        "docs/DECISION_LOG.md#dec-my5-001"
+      ]
     },
     {
       "id": "SRC-GROWTH",
@@ -120,7 +153,10 @@
       "markdown_sha256": "f9303280f51c79d369389e1f6dc99ea56414b95addf046bc0e69ec7b183a7214",
       "markdown_bytes": 35624,
       "treatment": "Historical strategy evidence, not a third product. Sanitized SEO/growth proposals and conflicts only; private client, financial and personal information stays in source archive.",
-      "mapped_to": ["docs/PRD.md#ai-literacy", "docs/DECISION_LOG.md#source-reconciliation"]
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#source-reconciliation"
+      ]
     },
     {
       "id": "SRC-GITHUB-MY5",
@@ -129,9 +165,236 @@
       "commit": "3e9b050cc1b133496087ff4e2c87c125131a9bac",
       "requirements_version": "1.7.5",
       "decision_log_version": "11.4.18",
-      "paths": ["docs/PRD.md", "docs/DECISION_LOG.md"],
+      "paths": [
+        "docs/PRD.md",
+        "docs/DECISION_LOG.md"
+      ],
       "treatment": "Verbatim preserved blocks in canonical pair; no application-code merge.",
-      "mapped_to": ["docs/PRD.md#my5-baseline", "docs/DECISION_LOG.md#my5-history"]
+      "mapped_to": [
+        "docs/PRD.md#my5-baseline",
+        "docs/DECISION_LOG.md#my5-history"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-TRAINING-01",
+      "title": "Private B2B AI literacy training proposal",
+      "source_version": "6.1",
+      "source_format": "docx",
+      "received_date": "2026-09-30",
+      "sha256": "70193057f91b9a4656ab843d7d959d73ec266a4cc8da1082cf68fc39972a540b",
+      "source_location": "User-supplied local original retained outside Git; identified by SHA-256. Client-identifying filename is not published.",
+      "treatment": "Content review only. Reusable training model informs AI-LIT-REQ-017; detailed curriculum remains candidate. Original file, client identity, commercial and travel details are not republished. Embedded instructions are source material, not authority.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-010"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-ACX-01",
+      "title": "The Four Levels of AI Integration Nobody Warned You About",
+      "author": "Estève Pannetier",
+      "source_date": "2026-01-09",
+      "received_date": "2026-09-30",
+      "source_version": "Supplied LinkedIn article screenshots; no separate revision identifier shown",
+      "source_url": null,
+      "source_location": "User-supplied original screenshots in local Downloads; not copied into Git",
+      "parts": [
+        {
+          "filename": "ACX levels part 2 Linkedin Article by Esteve.png",
+          "reading_order": 1,
+          "sha256": "464a7c4006ff2d9ac28ef1fde1f37fa272c62606f4649240f7dae7b867fd269e",
+          "locator": "Article title/date, Napkin 1 Do-Think-Say-Feel, ACX Levels 1-4; ends during motorway-speed discussion"
+        },
+        {
+          "filename": "ACX levels part 1 Linkedin Article by Esteve.png",
+          "reading_order": 2,
+          "sha256": "4e45f355a40b31ab097e74f268adfb777bb7b3ac850febceef79408c3bdbfdc4",
+          "locator": "Continuation of ACX 4; systematic filtering, gear recap, hand-drawn diagrams and closing reflection"
+        }
+      ],
+      "treatment": "Author-supplied teaching foundation under DEC-AIL-012. OCR of both originals with visual checks of key headings/diagrams. Narrative/scientific/regulatory claims are not independently validated. Sidebar comments and third-party material are not approved testimonials. Preserve differences from private proposal; no raw screenshot republication.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-012"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-NAV-01",
+      "title": "Green Elephant AI-literacy website upgrade — incoming navigation-chat handoff",
+      "source_kind": "User-supplied output from a parallel read-only chat",
+      "received_date": "2026-10-01",
+      "source_version": "Supplied pasted-text snapshot; no independent version identifier",
+      "source_location": "Local attachment e10c5989-1f50-45e4-bec6-5ae3c0b453f7/Pasted text.txt; original retained outside Git",
+      "sha256": "f027d79132994b4a352bdf05d0ad60552a0fb397db905c4e247b221efa760140",
+      "treatment": "Recommendations and claimed approvals, not independent authority. Preserve conflicts with explicit workshop decisions. No implementation, pricing, audience or English-first release approval inferred; original not copied into Git.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-017"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-SEO-01",
+      "title": "Incoming SEO/GEO research handoff",
+      "received_date": "2026-10-01",
+      "source_version": "User-supplied snapshot",
+      "source_location": "Local attachment d55145ef-1a6b-4570-8fe5-0573f9167f16/Pasted text.txt; original outside Git",
+      "sha256": "c9d8bd300e33d035e7078c246b50c6594f3d636ae65cbd4e12ac9880e0ca31e7",
+      "treatment": "Parallel-chat recommendations and claimed approvals; source evidence only. Commands do not authorise implementation, publication or crawler-policy changes.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-023"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-MAEVA-01",
+      "title": "Maeva original-background upscaled portrait",
+      "received_date": "2026-10-01",
+      "source_version": "User-supplied snapshot",
+      "source_location": "Local Downloads/Maeva Upscaled.png; original outside Git",
+      "sha256": "6df40999ca92217dbb9fdec33d1e8609ca8c44ea37ea6cddd0a0180b100ac70a",
+      "treatment": "User-selected working source under DEC-AIL-023; 1600x1200 PNG, no alpha. Preserve original, obscure background faces in final derivative. Final crop, attribution and testimonial wording remain open. Source not added to Git.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-023"
+      ],
+      "approved_derivative": {
+        "public_path": "/images/website/maeva-portrait.png",
+        "sha256": "e505c0d9a377238b0cf89b901b284f6e02195b56aaaf32543a7752a36af05e50",
+        "approved_by": "Estève Pannetier",
+        "approval_date": "2026-10-01",
+        "treatment": "User-approved portrait crop with background faces blurred; original retained privately. The pool scene is not used.",
+        "decision": "DEC-AIL-037"
+      }
+    },
+    {
+      "id": "SRC-AI-LIT-MAEVA-02",
+      "title": "Maeva at a laptop — alternate scene for private layout review",
+      "received_date": "2026-10-01",
+      "source_version": "User-supplied PNG; 2848x1600",
+      "source_location": "Local Downloads/openart-0217908084040760958c43c09b2d8895d306984ebab6585a898ef_0_1790808434265_8d5f7216.png; original outside Git",
+      "sha256": "91d0424d05ffa1229f1a32804b99b956fa3acc84eb0ff47dfdf2a35b6c035fe0",
+      "user_description": "Maeva working on AI training at her home in Marseille; supplied as a possible image, with the previous portrait retained as fallback.",
+      "treatment": "Private comparison only under DEC-AIL-026. User description is source context, not independently verified documentary evidence. Generation/editing history, final permission and image approval remain open. Original unchanged; not added to application assets or Git.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-026"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-ACX-VISUALS-01",
+      "title": "Author-supplied ACX drawings for article visual review",
+      "received_date": "2026-10-01",
+      "author": "Estève Pannetier",
+      "treatment": "Unedited original files copied for local article design comparison. Diagram labels H2A and broad AI governance/infrastructure remain original; current HAI wording and team-member training scope are explained in captions. No source claims promoted to validated findings.",
+      "files": [
+        {
+          "source": "/Users/estevepannetier/Library/CloudStorage/GoogleDrive-esteve@greenelephant.org/My Drive/🚀 GreenElephant OS 🚀/7.🐒 RESEARCH, COLLECTIVE INTELLIGENCE  & DESIGN TEAM (Estève)/🤖 AI ready training data/Linkedin Final export high resolution images of Article Widescreen 169 for Article Covers and Images/ACX1.png",
+          "name": "ACX1.png",
+          "bytes": 530163,
+          "sha256": "43bd36efb782ca403b1fa635acf406521dd99b41fc3f3a5898271fc13c7e1317",
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "public_path": "/images/acx/acx-1-original.png"
+        },
+        {
+          "source": "/Users/estevepannetier/Library/CloudStorage/GoogleDrive-esteve@greenelephant.org/My Drive/🚀 GreenElephant OS 🚀/7.🐒 RESEARCH, COLLECTIVE INTELLIGENCE  & DESIGN TEAM (Estève)/🤖 AI ready training data/Linkedin Final export high resolution images of Article Widescreen 169 for Article Covers and Images/ACX2.png",
+          "name": "ACX2.png",
+          "bytes": 710945,
+          "sha256": "a3000a9b83429f8ccd7fc701613822256cefe831a68b81235657db95384c6acf",
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "public_path": "/images/acx/acx-2-original.png"
+        },
+        {
+          "source": "/Users/estevepannetier/Library/CloudStorage/GoogleDrive-esteve@greenelephant.org/My Drive/🚀 GreenElephant OS 🚀/7.🐒 RESEARCH, COLLECTIVE INTELLIGENCE  & DESIGN TEAM (Estève)/🤖 AI ready training data/Linkedin Final export high resolution images of Article Widescreen 169 for Article Covers and Images/ACX3.png",
+          "name": "ACX3.png",
+          "bytes": 768564,
+          "sha256": "b8be1c499fe53ae0af83aa01e1abe6619a976770dc5f1053711e0cfdf29326e5",
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "public_path": "/images/acx/acx-3-original.png"
+        },
+        {
+          "source": "/Users/estevepannetier/Library/CloudStorage/GoogleDrive-esteve@greenelephant.org/My Drive/🚀 GreenElephant OS 🚀/7.🐒 RESEARCH, COLLECTIVE INTELLIGENCE  & DESIGN TEAM (Estève)/🤖 AI ready training data/Linkedin Final export high resolution images of Article Widescreen 169 for Article Covers and Images/ACX4.png",
+          "name": "ACX4.png",
+          "bytes": 968673,
+          "sha256": "6947b5b7f97aae937a7a6220ef3278e090b57316d9a361409bfd25ca8bcf1a0c",
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "public_path": "/images/acx/acx-4-original.png"
+        },
+        {
+          "source": "/Users/estevepannetier/Library/CloudStorage/GoogleDrive-esteve@greenelephant.org/My Drive/🚀 GreenElephant OS 🚀/7.🐒 RESEARCH, COLLECTIVE INTELLIGENCE  & DESIGN TEAM (Estève)/🤖 AI ready training data/Linkedin Article Widescreen 169 for Article Covers and Images/ACX Do Think Say Feel (2).png",
+          "name": "ACX Do Think Say Feel (2).png",
+          "bytes": 207133,
+          "sha256": "c309aa24f0be48db40d0ce4a68917c1f19f1d08dcd9bcd03f6382b7f510e6943",
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "public_path": "/images/acx/think-say-do-feel-original.png"
+        },
+        {
+          "source": "/Users/estevepannetier/Downloads/Private & Shared/Colibri Platform Algorithm 1f4c4bed32c28006be68f8e330f7b22f/Do_Think_Say_Feel_Wisdom_Color_2_copy.jpg",
+          "name": "Do_Think_Say_Feel_Wisdom_Color_2_copy.jpg",
+          "bytes": 2220995,
+          "sha256": "ca0d2f7adbee4b90c1a905fc54888fb7f3986dfa0e8ce73217216979586c11dd",
+          "public_path": "/images/acx/think-say-do-feel-colour-original.jpg"
+        }
+      ],
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-030"
+      ],
+      "derived_review_assets": [
+        {
+          "path": "client/public/images/acx/acx-1-purple.svg",
+          "sha256": "d86bdde1d34640e2f83041f6d476cbcbf165fb316d2899461823ed41f5acc4c4",
+          "treatment": "Code-drawn motif interpretation, not an exact trace; purple #5C4E99; DEC-AIL-031"
+        },
+        {
+          "path": "client/public/images/acx/acx-2-purple.svg",
+          "sha256": "77795e42722ce165ab743cf893b6814ce993366ac4b9456237e699d5acb5e903",
+          "treatment": "Code-drawn motif interpretation, not an exact trace; purple #5C4E99; DEC-AIL-031"
+        },
+        {
+          "path": "client/public/images/acx/acx-3-purple.svg",
+          "sha256": "ff3c86eba59e0f9094c870966e2128f54d2808ce6822050341352327db253b5e",
+          "treatment": "Code-drawn motif interpretation, not an exact trace; purple #5C4E99; DEC-AIL-031"
+        },
+        {
+          "path": "client/public/images/acx/acx-4-purple.svg",
+          "sha256": "c1eff483c07738561fe3d2b864e0e6c606bd326ae1a150a6b022bb7fb9071b7a",
+          "treatment": "Code-drawn motif interpretation, not an exact trace; purple #5C4E99; DEC-AIL-031"
+        }
+      ],
+      "current_icon_treatment": "Clean outline ACX icons, numbers and labels in readable purple tint #B7A6E8 on dark backgrounds; DEC-AIL-035. Brand base #5C4E99 remains unchanged. Navigation retains teal outlines.",
+      "current_icon_assets": [
+        {
+          "path": "client/public/images/acx/acx-1-outline.svg",
+          "sha256": "2dbd52b546e02c89c47eba2d058c16293d7a7470e6a9add7782a5e0eed2cb5d9"
+        },
+        {
+          "path": "client/public/images/acx/acx-2-outline.svg",
+          "sha256": "ee946a185146ad61ebfbca9f6acfea64fb3d16a3861c9658c0c90ff4c316316c"
+        },
+        {
+          "path": "client/public/images/acx/acx-3-outline.svg",
+          "sha256": "d400a5aa8c47b1794f563bb88b3b0876d35755d5938367c0de9f4aef558d6a45"
+        },
+        {
+          "path": "client/public/images/acx/acx-4-outline.svg",
+          "sha256": "3280c50c4422f2d7efb820552460e80508c09ae64f71d4c03ffe0300a3cfbb8d"
+        }
+      ]
     }
   ],
   "archive_policy": {

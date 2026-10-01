@@ -1,3 +1,5 @@
+import { siteLanguage, basePagePath, hasFrenchPage, localPage } from "@shared/site-language";
+import { SITE_ORIGIN, DEFAULT_SOCIAL_IMAGE, fullPageTitle, isPrivatePage } from "@shared/page-metadata";
 import { useEffect } from 'react';
 
 interface FAQItem {
@@ -28,7 +30,7 @@ export function SEO({
   description,
   keywords,
   canonicalPath,
-  ogImage = '/og-image.png',
+  ogImage = DEFAULT_SOCIAL_IMAGE,
   ogType = 'website',
   structuredData,
   faqItems,
@@ -36,8 +38,17 @@ export function SEO({
   noIndex = false,
 }: SEOProps) {
   useEffect(() => {
-    const fullTitle = title.includes('GreenElephant') ? title : `${title} | GreenElephant`;
+    const fullTitle = fullPageTitle(title);
     document.title = fullTitle;
+    document.documentElement.lang = siteLanguage(window.location.pathname, window.location.search);
+    document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(node => node.remove());
+    if (canonicalPath && hasFrenchPage(canonicalPath) && !noIndex) {
+      for (const language of ['en', 'fr', 'x-default'] as const) {
+        const link = document.createElement('link'); link.rel = 'alternate'; link.hreflang = language;
+        link.href = SITE_ORIGIN + localPage(basePagePath(canonicalPath), language === 'fr' ? 'fr' : 'en');
+        document.head.appendChild(link);
+      }
+    }
 
     const updateMeta = (name: string, content: string, isProperty: boolean = false) => {
       const attr = isProperty ? 'property' : 'name';
@@ -52,24 +63,24 @@ export function SEO({
       }
     };
 
+    updateMeta('title', fullTitle);
     updateMeta('description', description);
-    if (keywords) {
-      updateMeta('keywords', keywords);
-    }
+    updateMeta('keywords', keywords ?? '');
 
-    const baseUrl = 'https://greenelephant.org';
+    const baseUrl = SITE_ORIGIN;
     const fullUrl = canonicalPath ? `${baseUrl}${canonicalPath}` : baseUrl;
 
     updateMeta('og:title', fullTitle, true);
     updateMeta('og:description', description, true);
     updateMeta('og:type', ogType, true);
     updateMeta('og:url', fullUrl, true);
-    updateMeta('og:image', `${baseUrl}${ogImage}`, true);
+    updateMeta('og:image', new URL(ogImage, baseUrl).href, true);
 
-    updateMeta('twitter:card', 'summary_large_image');
+    updateMeta('twitter:card', ogImage === DEFAULT_SOCIAL_IMAGE ? 'summary' : 'summary_large_image');
+    updateMeta('twitter:url', fullUrl);
     updateMeta('twitter:title', fullTitle);
     updateMeta('twitter:description', description);
-    updateMeta('twitter:image', `${baseUrl}${ogImage}`);
+    updateMeta('twitter:image', new URL(ogImage, baseUrl).href);
 
     let canonical = document.querySelector('link[rel="canonical"]');
     if (canonicalPath) {
@@ -81,8 +92,12 @@ export function SEO({
       canonical.setAttribute('href', fullUrl);
     }
 
+    else if (canonical) {
+      canonical.remove();
+    }
+
     // noIndex support for admin/private pages
-    updateMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
+    updateMeta('robots', (noIndex || isPrivatePage(window.location.pathname)) ? 'noindex, nofollow' : 'index, follow');
 
     // Organisation schema — injected on every page for AI agent discoverability
     if (!document.getElementById('org-structured-data')) {
@@ -101,7 +116,7 @@ export function SEO({
         "areaServed": "Worldwide",
         "knowsAbout": ["Conscious Communication", "Self-Awareness", "Emotional Intelligence", "Personal Development", "Career Transition Coaching", "Executive Coaching", "Communication Diagnostics", "Flow Theory", "Micro-habits", "Behavioural Change", "Leadership Presence", "Future-Proof Career Skills"],
         "sameAs": ["https://www.linkedin.com/company/greenelephant-org"],
-        "founder": { "@type": "Person", "name": "Esteve Camprubí", "email": "esteve@greenelephant.org" }
+        "founder": { "@type": "Person", "name": "Estève Pannetier", "email": "esteve@greenelephant.org" }
       });
       document.head.appendChild(orgScript);
     }
@@ -169,7 +184,7 @@ export function SEO({
       const breadcrumbScript = document.getElementById('breadcrumb-structured-data');
       if (breadcrumbScript) breadcrumbScript.remove();
     };
-  }, [title, description, keywords, canonicalPath, ogImage, ogType, structuredData, faqItems, breadcrumbs]);
+  }, [title, description, keywords, canonicalPath, ogImage, ogType, structuredData, faqItems, breadcrumbs, noIndex]);
 
   return null;
 }
@@ -182,7 +197,7 @@ export const ORGANIZATION_SCHEMA = {
   "alternateName": "GreenElephant.org",
   "url": "https://greenelephant.org",
   "logo": "https://greenelephant.org/ge-logo-512.png",
-  "description": "Conscious communication platform. Tools, coaching, and retreats built around the Periodic Table of Conscious Communication — 146 micro-habits across 8 behavioural lenses.",
+  "description": "Human-centred AI literacy and communication coaching. Workshops, practical learning journeys and the Satellite Scan help people use AI while keeping their judgement and voice.",
   "email": "esteve@greenelephant.org",
   "areaServed": "Worldwide",
   "foundingDate": "2022",
@@ -213,7 +228,7 @@ export const ORGANIZATION_SCHEMA = {
   ],
   "founder": {
     "@type": "Person",
-    "name": "Esteve Camprubí",
+    "name": "Estève Pannetier",
     "jobTitle": "Founder & Lead Communication Coach",
     "email": "esteve@greenelephant.org"
   }
@@ -223,12 +238,12 @@ export const PRODUCT_STRUCTURED_DATA = {
   satelliteScan: {
     "@context": "https://schema.org",
     "@type": ["Product", "Service"],
-    "name": "Satellite Scan — Communication Diagnostic",
-    "description": "Self-awareness and resilience assessment mapping your communication and social intelligence across 8 lenses (Influence, Attitude, Chaordic, Flow, Alignment, Needs, Ego, Dynamics). 129 questions. AI-assisted personal growth tool delivered as a visual dashboard. Ethical alternative to HRIS personality tests. Used as the baseline for all coaching.",
+    "name": "Satellite Scan — Personal Communication Assessment",
+    "description": "A personal communication assessment with a coach-prepared dashboard, prompts and practice materials. Use your results to guide AI in your own voice. Training and coaching are booked separately.",
     "url": "https://greenelephant.org/scan",
-    "serviceType": "Self-Awareness and Resilience Assessment",
-    "keywords": "self-awareness assessment, resilience assessment, social intelligence tool, communication diagnostic, emotional intelligence test, personal growth, AI personal growth, leadership development, ethical HR tool, HRIS alternative, self-assessment",
-    "audience": { "@type": "Audience", "audienceType": "Executive Assistants, Founders, Team Leaders, Virtual Assistants" },
+    "serviceType": "Personal Communication Assessment",
+    "keywords": "AI literacy, personal communication, conscious communication, AI prompts",
+    "audience": { "@type": "Audience", "audienceType": "Independent professionals and team members" },
     "areaServed": "Worldwide",
     "provider": { "@type": "Organization", "name": "GreenElephant", "url": "https://greenelephant.org" },
     "brand": { "@type": "Brand", "name": "GreenElephant" },

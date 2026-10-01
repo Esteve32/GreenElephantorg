@@ -14,7 +14,8 @@
     "repo:check": "node scripts/check-repository.mjs",
     "manifest:generate": "node scripts/generate-repository-manifests.mjs",
     "decision:record": "node scripts/record-decision-version.mjs",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -57,7 +58,7 @@
     "cmdk": "^1.1.1",
     "connect-pg-simple": "^10.0.0",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "^0.39.1",
+    "drizzle-orm": "^0.45.3",
     "drizzle-zod": "^0.7.0",
     "embla-carousel-react": "^8.6.0",
     "express": "^4.21.2",
@@ -113,7 +114,7 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.5",
     "typescript": "5.6.3",
-    "vite": "^5.4.20"
+    "vite": "^6.4.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

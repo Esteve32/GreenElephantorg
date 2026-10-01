@@ -1,3 +1,4 @@
+import { WEBINARS_PARKED } from "@shared/site-features";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
@@ -9,13 +10,13 @@ import Footer from "@/components/Footer";
 import FooterImage from "@/components/FooterImage";
 import { useHashScroll } from "@/hooks/useHashScroll";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { initGA } from "@/lib/analytics";
+
 import NotFound from "@/pages/not-found";
 
 const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table', '/portal', '/admin/login', '/myfive'];
 
 function shouldHideGlobalFooter(location: string): boolean {
-  return pagesWithCustomFooter.some(path => 
+  return pagesWithCustomFooter.some(path =>
     location === path || location.startsWith(path + '/') || location.startsWith(path + '#') || location.startsWith(path + '?')
   );
 }
@@ -29,6 +30,8 @@ const MyFiveSettingsPage = lazy(() => import("@/pages/myfive/SettingsPage"));
 const MyFiveSubscriptionSuccessPage = lazy(() => import("@/pages/myfive/SubscriptionSuccessPage"));
 const MyFiveInvitationPage = lazy(() => import("@/pages/myfive/InvitationPage"));
 
+const ParkedWebinarsPage = lazy(() => import("@/pages/ParkedWebinarsPage"));
+
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const SignalsQuizPage = lazy(() => import("@/pages/SignalsQuizPage"));
 const ChooseYourPathPage = lazy(() => import("@/pages/ChooseYourPathPage"));
@@ -41,7 +44,9 @@ const CalendarPage = lazy(() => import("@/pages/CalendarPage"));
 const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
 const PaymentSuccessPage = lazy(() => import("@/pages/PaymentSuccessPage"));
 const InterviewCoachingPage = lazy(() => import("@/pages/InterviewCoachingPage"));
+const FrenchScanPage = lazy(() => import("@/pages/FrenchScanPage"));
 const ScanPage = lazy(() => import("@/pages/ScanPage"));
+const AcxArticlePage = lazy(() => import("@/pages/AcxArticlePage"));
 const ProgramsPage = lazy(() => import("@/pages/ProgramsPage"));
 const PrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage"));
 const TermsOfServicePage = lazy(() => import("@/pages/TermsOfServicePage"));
@@ -107,28 +112,35 @@ function ScrollToTop() {
 function Router() {
   const [location] = useLocation();
   const hideGlobalFooter = shouldHideGlobalFooter(location);
+  const fr = location === "/fr" || location.startsWith("/fr/");
   const isPortalRoute = location.startsWith("/portal");
-  
+
   useHashScroll();
   useAnalytics();
 
   return (
     <>
       <ScrollToTop />
-      <a 
-        href="#main" 
+      <a
+        href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
         data-testid="link-skip-to-main"
       >
-        Skip to main content
+        {fr ? "Aller au contenu" : "Skip to main content"}
       </a>
       {!isPortalRoute && <Header />}
-      <main id="main" tabIndex={-1} className={isPortalRoute ? "" : "pt-[72px]"}>
+      <main id="main" tabIndex={-1} className="">
       <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
       <Switch>
         <Route path="/" component={HomePage} />
+        <Route path="/fr" component={HomePage} />
+        <Route path="/fr/scan" component={FrenchScanPage} />
+        <Route path="/fr/blog/acx-levels-ai-literacy" component={AcxArticlePage} />
+        <Route path="/fr/checkout" component={CheckoutPage} />
+        <Route path="/fr/payment-success" component={PaymentSuccessPage} />
         <Route path="/scan" component={ScanPage} />
         <Route path="/programs" component={ProgramsPage} />
+        <Route path="/blog/acx-levels-ai-literacy" component={AcxArticlePage} />
 
         {/* MyFive Extension Routes */}
         <Route path="/myfive" component={MyFiveLandingPage} />
@@ -152,7 +164,7 @@ function Router() {
         <Route path="/team">{() => <Redirect to="/connect" />}</Route>
         <Route path="/references">{() => <Redirect to="/connect" />}</Route>
         <Route path="/contact">{() => <Redirect to="/connect" />}</Route>
-        <Route path="/calendar" component={CalendarPage} />
+        <Route path="/calendar" component={WEBINARS_PARKED ? ParkedWebinarsPage : CalendarPage} />
         <Route path="/interview-coaching" component={InterviewCoachingPage} />
         <Route path="/satellitescan">{() => <Redirect to="/scan" />}</Route>
         <Route path="/checkout" component={CheckoutPage} />
@@ -169,8 +181,8 @@ function Router() {
         <Route path="/for-ceos" component={ForCEOsPage} />
         <Route path="/for-virtual-assistants" component={ForVirtualAssistantsPage} />
         <Route path="/executive-coaching-assessment" component={ExecutiveCoachingAssessmentPage} />
-        <Route path="/webinar" component={WebinarPage} />
-        <Route path="/webinars" component={WebinarsPage} />
+        <Route path="/webinar" component={WEBINARS_PARKED ? ParkedWebinarsPage : WebinarPage} />
+        <Route path="/webinars" component={WEBINARS_PARKED ? ParkedWebinarsPage : WebinarsPage} />
         <Route path="/flow-check" component={FlowCheckPage} />
         <Route path="/decode" component={DecodePage} />
         <Route path="/decoding">{() => <Redirect to="/decode" />}</Route>
@@ -208,21 +220,13 @@ function Router() {
       </Switch>
       </Suspense>
       </main>
-      {!hideGlobalFooter && <FooterImage />}
+
       {!hideGlobalFooter && <Footer />}
     </>
   );
 }
 
 function App() {
-  useEffect(() => {
-    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
-      console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
-    } else {
-      initGA();
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState } from "react";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -149,10 +150,7 @@ export default function SignalsQuizPage() {
     return (
       <div className="min-h-screen pt-24 pb-16">
         <SEO
-          title="Communication Signals Quiz — Drift Assessment"
-          description="Take GreenElephant's Communication Drift Assessment. 6 questions to reveal your unconscious communication patterns, blind spots, and disconnection signals."
-          keywords="communication quiz, communication assessment, communication drift, blind spots, ego patterns, conflict patterns, self-awareness quiz"
-          canonicalPath="/signals/quiz"
+        {...PAGE_METADATA["/signals"]}
         />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
