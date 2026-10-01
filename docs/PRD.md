@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.11.2**.
+One PRD, two product sections plus shared-system requirements. Version: **2.11.3**.
 Owner: Estève Pannetier. Reconciled: 2026-09-30. Workshop updated: 2026-10-01.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -43,6 +43,7 @@ authorize a provider write.
 | GEOS-REQ-002 | Approved process direction | Before merging a change to a shared schema, package, field, data flow, calendar label, email payload, consent rule, customer journey or deployment boundary, cross-check the paired PRD and decision log and record both source SHAs. | OS DEC-GEOS-001 |
 | GEOS-REQ-003 | Approved evidence rule | Treat integrations as active only when current code/configuration and the receiving system verify them. The OS contracts package is private and is not declared in this website's package.json; adoption is unverified. | OS DEC-GEOS-002 |
 | GEOS-REQ-004 | Approved boundary | Do not copy website purchases into Notion unless a later explicit human decision is recorded here. Preserve the boundary stated in website PR #34. | OS DEC-GEOS-003 |
+| GEOS-REQ-005 | Approved process direction | Apply the pinned canonical AI Literacy Training Seed instructions when enabled in `docs/agent-settings.yml`; a developer may disable this supplemental layer by setting `seed_instructions.enabled` to `false`. The repository's own instructions and safety boundaries always remain active. | OS DEC-GEOS-004 |
 | GEOS-TBD-001 | TBD | Confirm whether any existing website Notion fields or Scan flows match OS schemas, including direction, data fields, purpose, consent, retention, tests and deployed state. | GEOS-REQ-002/003 |
 
 Current website releases follow the
