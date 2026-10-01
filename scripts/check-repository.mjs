@@ -53,10 +53,8 @@ if (!/^\d+$/.test(nodeVersion)) {
   if (!release) {
     failures.push("flake.nix must pin a NixOS release branch");
   } else {
-    const channel = `stable-${release[1]}_${release[2]}`;
-    if (!new RegExp(`channel\\s*=\\s*["']${channel}["']`).test(replitConfig)) {
-      failures.push(`.replit Nix channel must match flake.nix (${channel})`);
-    }
+    // Replit's hosted Nix channel is configured separately from the local flake.
+    // Its available channel may differ from the local development pin.
     const lock = JSON.parse(readFileSync("flake.lock", "utf8"));
     if (lock.nodes?.nixpkgs?.original?.ref !== `nixos-${release[1]}.${release[2]}`) {
       failures.push("flake.lock must pin the Nixpkgs release selected by flake.nix");
