@@ -23,6 +23,22 @@ The Nix flake pins Nixpkgs 26.05 for repeatable local setup. Refresh `flake.lock
 and the Replit Nix channel together during a planned runtime update; the 26.05
 Nixpkgs release receives security updates through 2026-12-31.
 
+## Credential-safe Git preflight
+
+The Replit Shell may have a credential-bearing token in its local HTTPS `origin`
+URL. If Replit's `replit-git-askpass` fails, `git fetch` can print that URL in
+the password prompt. Never ask a user to type a token at that prompt or paste the
+prompt into chat.
+
+Before fetching, run the credential check in the release block below. It tests the
+configured `origin` without printing it and stops if HTTPS user-info is present.
+Do not run `git remote -v`, `git remote get-url`, `git config --list`, shell
+tracing, environment dumps, or verbose network logging to diagnose credentials.
+Use the approved GitHub connection or a secure credential manager. If a credential
+is displayed, stop and revoke it with the provider before continuing. If Replit's
+Shell is stuck at a prompt, press Ctrl+C; if that fails, stop or close the Shell
+session from Replit's UI.
+
 ## Supported flow today
 
 1. A change is reviewed in a GitHub pull request.
@@ -70,6 +86,17 @@ bash <<'REPLIT_RELEASE'
 set -euo pipefail
 
 expected_sha="<GITHUB_MAIN_SHA>"
+
+if ! git config --get remote.origin.url >/dev/null 2>&1; then
+  echo "STOP: Git remote origin is missing"
+  exit 1
+fi
+
+if git config --get remote.origin.url | grep -E '^https?://[^/]*@' >/dev/null; then
+  echo "STOP: origin contains HTTPS credentials; do not display it or enter a token"
+  exit 1
+fi
+
 git fetch origin
 
 if [ -n "$(git status --porcelain)" ]; then
