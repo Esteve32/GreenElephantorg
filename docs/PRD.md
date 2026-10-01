@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two independent project sections. Version: **2.11.1**.
+One PRD, two product sections plus shared-system requirements. Version: **2.11.2**.
 Owner: Estève Pannetier. Reconciled: 2026-09-30. Workshop updated: 2026-10-01.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -27,6 +27,32 @@ inventory, not a second specification. Stable IDs below are the query keys.
 Use `Fact`, `Approved direction`, `Proposal`, `TBD`, or `Historical` explicitly.
 An imported approval is attributed to its source; it is not a new approval by this
 migration. A requirement is not proof of implementation.
+
+<a id="green-elephant-os-and-website-boundary"></a>
+## Green Elephant OS and website boundary
+
+Green Elephant OS (Notion/Google schemas, scripts and future automation tools)
+and this website are two independently managed parts of Green Elephant. Each repo
+owns its own canonical PRD and decision log. This shared section records the
+website-facing integration requirements; it does not merge the repositories or
+authorize a provider write.
+
+| ID | Status | Requirement | OS cross-reference |
+| --- | --- | --- | --- |
+| GEOS-REQ-001 | Approved process direction | Preserve separate ownership, with one canonical PRD and decision log per repository. | OS DEC-GEOS-001 |
+| GEOS-REQ-002 | Approved process direction | Before merging a change to a shared schema, package, field, data flow, calendar label, email payload, consent rule, customer journey or deployment boundary, cross-check the paired PRD and decision log and record both source SHAs. | OS DEC-GEOS-001 |
+| GEOS-REQ-003 | Approved evidence rule | Treat integrations as active only when current code/configuration and the receiving system verify them. The OS contracts package is private and is not declared in this website's package.json; adoption is unverified. | OS DEC-GEOS-002 |
+| GEOS-REQ-004 | Approved boundary | Do not copy website purchases into Notion unless a later explicit human decision is recorded here. Preserve the boundary stated in website PR #34. | OS DEC-GEOS-003 |
+| GEOS-TBD-001 | TBD | Confirm whether any existing website Notion fields or Scan flows match OS schemas, including direction, data fields, purpose, consent, retention, tests and deployed state. | GEOS-REQ-002/003 |
+
+Current website releases follow the
+[GitHub-to-Replit deployment runbook](operations/replit-deployment.md):
+reviewed GitHub main is authoritative and a human selects Republish. Older OS
+notes that claim Replit publishes code back to GitHub are not release authority.
+
+All new proposals affecting this boundary remain proposals until the human
+explicitly selects them in workshop mode and the decision is recorded under
+[DEC-GE-PRD-002](DECISION_LOG.md#dec-ge-prd-002).
 
 <a id="ai-literacy"></a>
 ## AI-LIT — AI Literacy Training Portal
