@@ -1,6 +1,14 @@
 # GreenElephantorg — agent instructions
 
 These instructions apply to Codex, GitHub agents and agents querying from Notion.
+
+## Canonical supplemental agent instructions
+
+Read `docs/agent-settings.yml`. When `seed_instructions.enabled` is `true`, apply the pinned supplemental snapshot at `docs/agent-instructions/esteve-ai-literacy-training-seed.md` when relevant and compatible with these repository instructions. A developer can switch this layer off by setting the value to `false`. This switch never disables this file, repository safety boundaries, human approval requirements, or source-of-truth rules. Personal setup answers belong in the person's AI settings, never in Git.
+
+## Green Elephant OS cross-check
+
+For changes to shared requirements, schemas, packages, data flows, consent, customer journeys or release boundaries, also read the current `GreenElephantOS` PRD and decision log at a recorded commit. Record affected IDs and both source SHAs in the PR and link a paired PR, or document why the OS is unaffected. Verify any claimed integration in current code/configuration and the receiving system.
 Start from this repository; Green Elephant and Arbora are separate projects.
 
 ## Read order and authority

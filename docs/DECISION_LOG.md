@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.20.2
+# Green Elephant — Project Decision Log v11.20.4
 
-**Document Version:** `11.20.2`
-**Last Updated:** `2026-10-01T05:21:13+03:00`
+**Document Version:** `11.20.4`
+**Last Updated:** `2026-10-02T00:00:00+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,8 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.20.3 | 2026-10-01T22:00:00+03:00 | Estève Pannetier | DEC-GE-PRD-002: establish the Green Elephant OS / website cross-check, local environment guide, human workshop decision path and verified integration boundary; no runtime changes |
+| 11.20.4 | 2026-10-02T00:00:00+03:00 | Estève Pannetier | DEC-GE-PRD-003: adopt the pinned supplemental seed instructions in both repos with a developer switch; repository authority and human approval rules stay active |
 | 11.20.2 | 2026-10-01T05:21:13+03:00 | Estève Pannetier | AI-LIT: authorised release preparation and Maeva blur approval; core EN/FR app, guarded email/payment flow, dependency and privacy repairs; full French and live provider gates remain explicit |
 | 11.20.1 | 2026-10-01T04:30:19+03:00 | Estève Pannetier | AI-LIT: visual review accepted; homepage review controller and provider-isolated email checks; acceptance, Scan answers and export attachment repaired locally; live delivery and security/privacy gates open |
 | 11.20.0 | 2026-10-01T04:13:49+03:00 | Estève Pannetier | AI-LIT: dark purple ACX navigation, Scan control polish, bilingual language notice and local result-email repair; live delivery and remaining privacy checks open |
@@ -90,6 +92,33 @@ A recording command does not grant approval. Do not change historical rows.
   select the portal's stack, authorize a feature build, merge, push or deploy.
 - **Affected requirements:** GE-PRD authority; AI-LIT and MY5 sections.
 - **Delivery status:** local candidate; mirrors and GitHub main await publication.
+
+<a id="dec-ge-prd-002"></a>
+### DEC-GE-PRD-003 — Pinned supplemental agent instructions
+
+- **Project:** shared Green Elephant systems
+- **Status:** approved
+- **Decision date:** 2026-10-02
+- **Approver:** Estève Pannetier
+- **Approval evidence:** current instruction to use the canonical agent instructions from `esteve-ai-literacy-training-seed` in both Green Elephant repositories, with a developer-controlled off switch.
+- **Decision:** Pin the canonical seed file in each repository and apply it only when that repository's `docs/agent-settings.yml` sets `seed_instructions.enabled: true`. A developer can disable the supplemental layer by setting it to `false`. Repository-specific instructions, safety and approval rules always take precedence. Personal setup answers are not committed.
+- **Source:** `Esteve32/esteve-ai-literacy-training-seed` at `a874a4fb5ca375814c6d5faff35de574f5057c30`.
+- **Affected requirements:** GEOS-REQ-005; GreenElephantOS GEOS-REQ-006.
+- **Paired decision:** GreenElephantOS DEC-GEOS-004.
+- **Scope limit:** agent guidance only; this does not authorize feature implementation, live provider writes or deployment.
+
+### DEC-GE-PRD-002 — Green Elephant OS / website cross-repository governance
+
+- **Project:** shared Green Elephant systems
+- **Status:** approved
+- **Decision date:** 2026-10-01
+- **Approver:** Estève Pannetier
+- **Approval evidence:** current request to independently manage the Notion/Google OS and website, with a cross-check of how work in either affects the other.
+- **Decision:** Keep GreenElephantOS and GreenElephantorg as separate repositories and product surfaces. Each repository owns one canonical PRD and decision log, agent instructions, environment guidance and README navigation. Any change that touches their shared boundary must read both current PRDs/logs, record affected IDs and source SHAs, and link paired PRs or explain why the other side is unchanged. Agents may recommend decisions but only the human can approve them; workshop proposals remain proposed/TBD until explicitly selected.
+- **Verified boundary:** The OS contracts package is private and absent from the website package dependencies, so active package adoption is unverified. Website purchase-to-Notion copying remains absent per PR #34 unless a later explicit website decision changes it. Website release authority is reviewed GitHub main with human Replit Republish.
+- **Affected requirements:** GEOS-REQ-001 through GEOS-REQ-004; GEOS-TBD-001.
+- **Paired decision:** GreenElephantOS DEC-GEOS-001 through DEC-GEOS-003.
+- **Scope limit:** documentation and workflow governance only; no website feature, live provider transfer, deployment, or publication authorized.
 
 <a id="ai-literacy-decisions"></a>
 ## AI-LIT decisions and pending choices
