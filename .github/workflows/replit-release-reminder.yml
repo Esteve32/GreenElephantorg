@@ -50,6 +50,17 @@ jobs:
           set -euo pipefail
 
           expected_sha="__RELEASE_SHA__"
+
+          if ! git config --get remote.origin.url >/dev/null 2>&1; then
+            echo "STOP: Git remote origin is missing"
+            exit 1
+          fi
+
+          if git config --get remote.origin.url | grep -E '^https?://[^/]*@' >/dev/null; then
+            echo "STOP: origin contains HTTPS credentials; do not display it or enter a token"
+            exit 1
+          fi
+
           git fetch origin
 
           if [ -n "$(git status --porcelain)" ]; then
