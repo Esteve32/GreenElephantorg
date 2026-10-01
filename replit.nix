@@ -1,5 +1,5 @@
 { pkgs }: {
   deps = [
-    pkgs.nodejs-24_x
+    pkgs.nodejs_24
   ];
 }

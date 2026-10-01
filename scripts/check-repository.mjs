@@ -42,7 +42,7 @@ if (!/^\d+$/.test(nodeVersion)) {
     failures.push(`GitHub Actions must use the Node.js ${nodeVersion} major from .nvmrc`);
   }
   const replitNix = readFileSync("replit.nix", "utf8");
-  if (!new RegExp(`pkgs\\.nodejs-${nodeVersion}_x\\b`).test(replitNix)) {
+  if (!new RegExp(`pkgs\\.nodejs_${nodeVersion}\\b`).test(replitNix)) {
     failures.push(`replit.nix must install Node.js ${nodeVersion}.x from .nvmrc`);
   }
   const flake = readFileSync("flake.nix", "utf8");
