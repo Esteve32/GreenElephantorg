@@ -15,6 +15,16 @@ Read in this order:
 AI-LIT remains in active discovery. MY5 remains paused. Pulling, building or
 deploying this repository does not approve either project's open product decisions.
 
+## Credential-safe Shell and Git use
+
+Follow the **Credential-safe Git and terminal use** rules in `AGENTS.md`. Replit's
+`replit-git-askpass` can fail while Git prints a credential-bearing HTTPS remote in
+its password prompt. Never display the raw remote URL or ask the user to paste a full
+authentication prompt. If a token/password prompt appears, do not type a token:
+press Ctrl+C; if the Shell is stuck, stop or close that Shell session in Replit.
+Use the connected GitHub integration or another secure credential manager. If a
+credential is exposed, stop and revoke it before further Git network operations.
+
 Never force-push `main`, manufacture a replacement Git tree, commit secrets, or
 publish automatically because a connector is active. Use a branch and pull request
 for source changes. A deployment must identify the exact GitHub commit it uses.
