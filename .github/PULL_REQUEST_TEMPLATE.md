@@ -26,6 +26,11 @@
 - [ ] The human explicitly approved the recorded decision (link/evidence):
 - [ ] This remains a proposal/TBD for workshop review:
 
+## Supplemental agent instructions
+
+- [ ] I checked docs/agent-settings.yml and did not change its switch unintentionally.
+- [ ] If the seed snapshot changed, I verified it against the pinned canonical source revision.
+
 ## Verification and release
 
 - [ ] Relevant tests and repository checks passed, or the limitation is recorded.
