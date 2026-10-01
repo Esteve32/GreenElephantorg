@@ -74,7 +74,9 @@ jobs:
 
           npm ci
           npm run repo:check
+          npm run test:release
           npm run build
+          npm audit --audit-level=high
           test "$(git rev-parse HEAD)" = "$expected_sha"
 
           if [ -n "$(git status --porcelain)" ]; then
@@ -85,7 +87,7 @@ jobs:
 
           git status --short --branch
 
-          echo "READY: ask the human to review Replit Publishing and click Republish"
+          echo "BUILD VERIFIED: complete docs/operations/replit-deployment.md release gates before human Republish"
           REPLIT_RELEASE
           ```
 
@@ -95,7 +97,8 @@ jobs:
           ## 2. Human Republish checklist
 
           - Open Replit **Publishing**.
-          - Keep production secrets unchanged.
+          - Preserve existing secrets and complete the required production configuration in `docs/operations/secrets.md`.
+          - Complete the release checklist in `docs/operations/replit-deployment.md`, including translation scope and live delivery evidence. A passing build is not launch approval.
           - Leave **Copy development database to production database** disabled.
           - Keep the existing deployment type and domains.
           - Select **Republish** and wait for **Live**.

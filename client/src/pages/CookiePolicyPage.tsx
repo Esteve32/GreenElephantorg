@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +10,7 @@ export default function CookiePolicyPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <SEO
-        title="Cookie Policy | GreenElephant"
-        description="GreenElephant's cookie policy. Learn which cookies we use and how to manage your preferences. Only essential cookies by default."
-        canonicalPath="/cookies"
-        keywords="cookie policy, cookies, GreenElephant cookies, cookie management"
+        {...PAGE_METADATA["/cookies"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Cookie Policy", url: "/cookies" }
@@ -28,7 +26,7 @@ export default function CookiePolicyPage() {
             We keep things simple. Thank you for reviewing how we use cookies—only what's essential for your experience.
           </p>
           <p className="text-sm text-muted-foreground">
-            Last updated: November 26, 2025
+            Last updated: October 1, 2026
           </p>
         </div>
 
@@ -75,7 +73,7 @@ export default function CookiePolicyPage() {
                       <tr>
                         <td className="py-2 font-mono text-xs">connect.sid</td>
                         <td className="py-2">Session management (keeps you logged in)</td>
-                        <td className="py-2">Session (deleted when browser closes)</td>
+                        <td className="py-2">Up to 7 days</td>
                       </tr>
                     </tbody>
                   </table>

@@ -1,3 +1,5 @@
+import { WEBINARS_PARKED } from "@shared/site-features";
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
@@ -1759,14 +1761,11 @@ export default function ResourcesPromptsPage() {
   return (
     <div className="min-h-screen bg-black">
       <SEO
-        title="Communication Resources & AI Prompts | GreenElephant"
-        description="Access free AI-powered communication prompts, infographics, videos, and downloadable resources structured by the 8 lenses of conscious communication. Explore tools for self-awareness, leadership, and team dynamics."
-        canonicalPath="/resources/prompts"
-        keywords="communication prompts, AI coaching prompts, conscious communication resources, communication infographics, leadership prompts, team communication tools"
+        {...PAGE_METADATA["/resources"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Resources", url: "/resources" },
-          { name: "Prompts & Resources", url: "/resources/prompts" }
+          { name: "Prompts & Resources", url: "/resources" }
         ]}
       />
       <ScrollProgressLine />
@@ -1903,7 +1902,7 @@ export default function ResourcesPromptsPage() {
               { label: "Videos",    href: "#understanding-data", id: "understanding-data" },
               { label: "Downloads", href: "#science",            id: "science" },
               { label: "Calendar",  href: "#calendar",           id: "calendar" },
-            ].map((tab) => (
+            ].filter(tab => !WEBINARS_PARKED || tab.id !== "calendar").map((tab) => (
               <a
                 key={tab.href}
                 href={tab.href}
@@ -2312,6 +2311,7 @@ export default function ResourcesPromptsPage() {
               </div>
             </motion.div>
             
+            {!WEBINARS_PARKED && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -2360,6 +2360,7 @@ export default function ResourcesPromptsPage() {
                 </div>
               </div>
             </motion.div>
+            )}
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}

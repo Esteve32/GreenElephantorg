@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,11 +66,8 @@ const FAQ_ITEMS = [
 export default function ExecutiveCoachingAssessmentPage() {
   return (
     <div className="min-h-screen">
-      <SEO 
-        title="Executive Coaching Assessment | Communication Diagnostic for Leaders"
-        description="Data-driven communication assessment for executive coaching. Establish a baseline, track progress, and accelerate your coaching journey. 8 lenses, 129 questions. €99.95."
-        keywords="executive coaching assessment, leadership coaching tool, communication diagnostic for coaches, executive development assessment, coaching baseline assessment, leadership communication evaluation"
-        canonicalPath="/executive-coaching-assessment"
+      <SEO
+        {...PAGE_METADATA["/executive-coaching-assessment"]}
         faqItems={FAQ_ITEMS}
         breadcrumbs={[
           { name: "Home", url: "/" },
@@ -456,7 +454,7 @@ export default function ExecutiveCoachingAssessmentPage() {
       <StickyMobileCTA
         price="Free Assessment"
         label="Start Now"
-        href="/flowcheck"
+        href="/flow-check"
         sublabel="Check your communication flow"
       />
     </div>

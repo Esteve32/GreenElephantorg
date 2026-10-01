@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,10 +22,7 @@ export default function AIPolicyPage() {
   return (
     <div className="min-h-screen relative">
       <SEO
-        title="AI Ethics & Transparency Policy | GreenElephant"
-        description="GreenElephant's AI ethics and transparency policy. Learn how we use AI to augment human connection while maintaining data privacy, consent, and ethical standards."
-        canonicalPath="/ai-policy"
-        keywords="AI policy, AI ethics, AI transparency, responsible AI, GreenElephant AI policy"
+        {...PAGE_METADATA["/ai-policy"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "AI Policy", url: "/ai-policy" }
@@ -63,7 +61,7 @@ export default function AIPolicyPage() {
       <div style={invertedEarthToSpaceGradient} className="pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
           <p className="text-sm text-white/60 text-center mb-12">
-            Last updated: November 28, 2025
+            Last updated: October 1, 2026
           </p>
 
           <div className="space-y-8">
@@ -81,8 +79,8 @@ export default function AIPolicyPage() {
                     Our use of AI technology is guided by principles of transparency, human oversight, and ethical responsibility.
                   </p>
                   <p>
-                    We are committed to full compliance with the EU AI Act (Regulation 2024/1689) and align our practices 
-                    with the highest standards of responsible AI development and deployment.
+                    We use the EU AI Act as part of our review of responsible AI use. This teaching
+                    approach is not a legal certification or a guarantee of compliance.
                   </p>
                 </CardContent>
               </Card>
@@ -143,7 +141,7 @@ export default function AIPolicyPage() {
                   <ul className="list-disc list-inside space-y-2 ml-4">
                     <li><strong className="text-white">Transparency:</strong> Clear disclosure when AI is involved in any process</li>
                     <li><strong className="text-white">Human Oversight:</strong> All significant decisions involve human review</li>
-                    <li><strong className="text-white">Data Protection:</strong> Full GDPR compliance for all data processing</li>
+                    <li><strong className="text-white">Data Protection:</strong> Clear information about data use, service providers and your privacy rights</li>
                     <li><strong className="text-white">No Profiling:</strong> We do not use AI for automated decision-making that affects your rights</li>
                     <li><strong className="text-white">No Manipulation:</strong> AI is never used for subliminal techniques or exploitation of vulnerabilities</li>
                   </ul>

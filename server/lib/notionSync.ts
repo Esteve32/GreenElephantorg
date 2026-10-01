@@ -434,8 +434,8 @@ export async function markContactAsCustomer(
       const [newContact] = await db.insert(contacts).values({
         email,
         name: purchaseDetails.customerName || null,
-        consentGiven: 'true',
-        consentText: `Purchase consent for ${purchaseDetails.productName}`,
+        consentGiven: 'false',
+        consentText: `Service record for ${purchaseDetails.productName}; no marketing consent collected`,
         source: 'recommendation' as any,
       }).returning();
       contact = newContact;

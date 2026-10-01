@@ -1,16 +1,13 @@
+import { publicSiteOrigin } from './delivery-security';
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { sendPasswordResetEmail } from "./email-notifications";
 
-export function getBaseUrl(req: Request): string {
-  if (process.env.REPLIT_DEV_DOMAIN) {
-    return `https://${process.env.REPLIT_DEV_DOMAIN}`;
-  }
-  const proto = req.get('x-forwarded-proto') || req.protocol || 'https';
-  const host = req.get('x-forwarded-host') || req.get('host') || 'greenelephant.org';
-  return `${proto}://${host}`;
+// Email/OAuth origins never come from untrusted request or forwarded headers.
+export function getBaseUrl(_req: Request): string {
+  return publicSiteOrigin(process.env.PUBLIC_SITE_URL);
 }
 
 async function isAdminUser(email: string): Promise<boolean> {

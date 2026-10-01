@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -131,10 +132,7 @@ export default function CalendarPage() {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Events & Calendar | GreenElephant"
-        description="Explore the GreenElephant online coaching calendar with monthly and seasonal themed webinars following the 8 lenses of conscious communication. Join live practice sessions and community events."
-        canonicalPath="/calendar"
-        keywords="communication webinars, online coaching calendar, seasonal practice, 8 lenses calendar, communication events, live practice sessions"
+        {...PAGE_METADATA["/calendar"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Calendar", url: "/calendar" }

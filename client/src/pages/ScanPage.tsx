@@ -1,3 +1,6 @@
+import { scanLiteracy } from "@shared/scan-literacy";
+import { ScanAcxSection } from "@/components/ScanAcxSection";
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -116,7 +119,7 @@ const STEPS = [
   {
     id: 3,
     title: "3. Explore Your Patterns",
-    description: "Unlock multiple times the value from your raw data by prompting your results in our custom GPT, the Conscious Communicator.",
+    description: "Use the included advanced communication prompts to reflect on your results, prepare conversations and practise careful AI use through the ACX learning journey.",
     icon: Sparkles
   },
   {
@@ -178,7 +181,7 @@ const FAQ_ITEMS = [
   {
     id: "what-get",
     question: "What do I get?",
-    answer: "You receive a personalized visual dashboard mapping your patterns across all 8 lenses, crafted by our coaching team. Unlock multiple times the value from your raw data by prompting your results in our custom GPT, the Conscious Communicator."
+    answer: "You receive a personal communication dashboard across 8 lenses, advanced communication prompts, coaching videos and worksheets. These support the ACX learning journey: start with personal reflection and checked AI chats, then use what you learn when exploring shared work. Training and coaching are booked separately."
   },
   {
     id: "how-use",
@@ -428,14 +431,14 @@ function HeroSection() {
         >
           <Badge className="mb-6 bg-white/10 border-white/20 text-white backdrop-blur-sm">
             <Gift className="w-3 h-3 mr-1" />
-            Trusted by 500+ Early Adopters
+            Satellite Scan · AI literacy
           </Badge>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-white drop-shadow-lg" data-testid="text-scan-hero-title">
-            The Satellite Scan
+            {scanLiteracy.en.title}
           </h1>
           <p className="text-xl md:text-2xl text-white font-medium mb-8 max-w-4xl mx-auto leading-relaxed" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
-            You can't change what you can't see. In 90 minutes, the Satellite Scan maps your behavioral patterns across 8 dimensions — surfacing the tendencies, blind spots, and strengths that shape how you show up in every conversation.
+            {scanLiteracy.en.intro}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
@@ -444,16 +447,19 @@ function HeroSection() {
             </div>
           </div>
 
-          <Link href="/checkout?product=satellitescan">
+          <p className="text-sm text-white max-w-2xl mx-auto mb-5">{scanLiteracy.en.languageNotice}</p>
+          <p lang="fr" className="text-sm text-white/80 max-w-2xl mx-auto mb-5">{scanLiteracy.fr.languageNotice}</p>
+          <Link href="/checkout?product=satellitescan&lang=en">
             <Button 
               size="lg" 
-              className="bg-needs hover:bg-needs/90 text-white min-w-[280px]"
+              className="scan-raised-button w-full sm:w-auto max-w-full sm:min-w-[280px]"
               data-testid="button-get-scan-hero"
             >
-              Get Your Scan - €99.95
+              Get your Satellite Scan — €99.95
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
+          <p className="mt-4 text-sm"><Link href="/checkout?product=satellitescan&lang=fr" className="underline" lang="fr">Acheter en français →</Link></p>
           {saasEnabled && (
             <Link href="/checkout?product=subscription">
               <Button 
@@ -468,14 +474,14 @@ function HeroSection() {
             </Link>
           )}
           <p className="text-xs text-white/50 mt-4 max-w-md mx-auto">
-            For personal development and coaching only. Not for hiring, selection, or performance evaluation.
+            {scanLiteracy.en.small} {scanLiteracy.en.boundary}
           </p>
         </motion.div>
         
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-white/60 mt-16"
+          className="scan-scroll-cue text-white/60 mt-16"
         >
           <p className="text-sm mb-2">Scroll to explore</p>
           <ArrowDown className="h-6 w-6 mx-auto" />
@@ -556,7 +562,7 @@ function WhatYouReceiveSection() {
     {
       icon: Bot,
       title: "10+ AI Coaching Prompts",
-      description: "Query your results with our Conscious Communicator GPT. Prepare for conversations, explore blind spots, build micro-habits.",
+      description: "Advanced communication prompts for your Scan results. Reflect, prepare conversations and check AI replies as you practise ACX levels 1–2.",
       color: "#e8c840"
     },
     {
@@ -620,7 +626,7 @@ function WhatYouReceiveSection() {
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row items-start gap-4">
-              <Link href="/checkout?product=satellitescan">
+              <Link href="/checkout?product=satellitescan&lang=en">
                 <Button size="lg" className="bg-needs text-white" data-testid="button-get-scan-deliverables">
                   Get Your Dashboard — €99.95
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -791,7 +797,7 @@ function GuaranteeSection() {
                 If after receiving your personalized dashboard you feel the Satellite Scan didn't provide valuable insight, contact us within 14 days for a full refund. No questions asked.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/checkout?product=satellitescan">
+                <Link href="/checkout?product=satellitescan&lang=en">
                   <Button size="lg" className="bg-needs text-white min-w-[260px]" data-testid="button-get-scan-guarantee">
                     Get Your Scan — €99.95
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -1197,9 +1203,9 @@ function WhatIsItSection() {
                 <span className="text-4xl font-bold text-white">€99.95</span>
               </div>
               <p className="text-sm text-white/50 italic">Early adopter pricing</p>
-              <Link href="/checkout?product=satellitescan">
+              <Link href="/checkout?product=satellitescan&lang=en">
                 <Button className="bg-needs text-white hover:bg-needs/90" data-testid="button-get-scan-what">
-                  Get Your Scan - €99.95
+                  Get your Satellite Scan — €99.95
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
@@ -1293,7 +1299,8 @@ function WhatIsItSection() {
                 <Bot className="w-12 h-12 text-white/80" strokeWidth={1} />
               </motion.div>
               <h4 className="font-semibold mb-1 text-white">10+ AI Prompts</h4>
-              <p className="text-sm text-muted-foreground mb-4">Query your data with the Conscious Communicator GPT</p>
+              <p className="text-sm text-muted-foreground mb-4">Advanced communication prompts to explore your results and practise checked AI chats</p>
+              <a href="/blog/acx-levels-ai-literacy#acx-scan" className="text-sm text-primary underline underline-offset-4 mb-4">How the Scan supports ACX learning</a>
               
               <div className="w-full max-w-[200px] space-y-2">
                 {[
@@ -1376,7 +1383,7 @@ function WhatIsItSection() {
                 <FileText className="w-12 h-12 text-white/80" strokeWidth={1} />
               </motion.div>
               <h4 className="font-semibold mb-1 text-white">Resources</h4>
-              <p className="text-sm text-muted-foreground mb-4">High-res visuals, worksheets, micro-habit templates</p>
+              <p className="text-sm text-muted-foreground mb-4">Visual guides, worksheets and small practice steps for your communication and AI learning</p>
               
               <div className="w-full max-w-[200px] space-y-2">
                 {[
@@ -2125,9 +2132,9 @@ function HowItWorksSection() {
             <div className="flex items-baseline gap-3">
               <span className="text-5xl font-bold text-white">€99.95</span>
             </div>
-            <Link href="/checkout?product=satellitescan">
+            <Link href="/checkout?product=satellitescan&lang=en">
               <Button size="lg" className="bg-needs hover:bg-needs/90 text-white px-8" data-testid="button-get-scan-bottom">
-                Get Your Scan - €99.95
+                Get your Satellite Scan — €99.95
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -2451,11 +2458,8 @@ export default function ScanPage() {
 
   return (
     <div className="min-h-screen" data-testid="page-scan">
-      <SEO 
-        title="Satellite Scan | Self-Awareness & Resilience Assessment for Leaders & EAs"
-        description="90-minute self-assessment mapping your communication, resilience, and social intelligence across 8 lenses. AI-assisted personal growth tool for EAs, leaders, and career changers. Ethical alternative to HRIS personality tests. €99.95 with personalized insights in 48-72 hours."
-        keywords="self-awareness assessment, communication self-assessment, emotional intelligence test, personal development diagnostic, career change assessment, future-proof career skills, executive assistant communication assessment, CEO communication diagnostic, leadership communication tool, executive coaching assessment, communication patterns analysis, EA training, managing up communication, self-reflection tool, EQ assessment, behavioral assessment, resilience assessment, social intelligence tool, personal growth assessment, ethical personal development, AI personal growth, AI-assisted communication, ethical HR tool alternative, HRIS alternative self-awareness, leadership development assessment, self-assessment tool"
-        canonicalPath="/scan"
+      <SEO
+        {...PAGE_METADATA["/scan"]}
         structuredData={PRODUCT_STRUCTURED_DATA.satelliteScan}
         faqItems={FAQ_ITEMS.map(item => ({ question: item.question, answer: item.answer }))}
         breadcrumbs={[
@@ -2466,6 +2470,7 @@ export default function ScanPage() {
       {/* Page content */}
       <div style={{ background: "#0a0a0a" }}>
         <HeroSection />
+        <ScanAcxSection />
         <TestimonialMarquee />
         
         {/* Content sections with vertical teal train track line */}
@@ -2477,7 +2482,7 @@ export default function ScanPage() {
             aria-hidden="true"
           >
             {/* Animated pulse that travels downward — scroll direction signal */}
-            <div className="absolute inset-x-0 top-0 h-[90px] bg-gradient-to-b from-transparent via-needs/70 to-transparent animate-beacon" />
+            <div className="absolute inset-x-0 top-0 h-[60px] rounded-full bg-needs animate-beacon" />
           </div>
           {/* Hollow terminus ring */}
           <div
@@ -2492,7 +2497,7 @@ export default function ScanPage() {
             badgeText="See It In Action"
             headline="Watch the Full Scan Experience"
             subheadline="A 5-minute silent walkthrough — see exactly how the assessment works and what your personalized dashboard looks like."
-            ctaLink="/checkout?product=satellitescan"
+            ctaLink="/checkout?product=satellitescan&lang=en"
             ctaText="Start Your Scan — €99.95"
             testIdPrefix="scan"
             videoSrc={scanWalkthroughUrl}
@@ -2517,7 +2522,7 @@ export default function ScanPage() {
       <StickyMobileCTA
         price="€99.95"
         label="Get Your Scan"
-        href="/checkout?product=satellitescan"
+        href="/checkout?product=satellitescan&lang=en"
         sublabel="Personal dashboard in 48–72h"
       />
     </div>

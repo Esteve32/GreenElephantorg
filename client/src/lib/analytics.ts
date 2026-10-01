@@ -5,31 +5,13 @@ declare global {
   }
 }
 
-export const initGA = () => {
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-
-  if (!measurementId) {
-    console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
-    return;
-  }
-
-  const script1 = document.createElement('script');
-  script1.async = true;
-  script1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(script1);
-
-  const script2 = document.createElement('script');
-  script2.textContent = `
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '${measurementId}');
-  `;
-  document.head.appendChild(script2);
-};
+// Optional analytics stay off until an audited opt-in and withdrawal control exists.
+// Merely configuring a GA key is not consent.
+export const initGA = () => {};
+const hasAnalyticsConsent = () => false;
 
 export const trackPageView = (url: string) => {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (!hasAnalyticsConsent() || typeof window === 'undefined' || !window.gtag) return;
   
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
   if (!measurementId) return;
@@ -45,7 +27,7 @@ export const trackEvent = (
   label?: string, 
   value?: number
 ) => {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (!hasAnalyticsConsent() || typeof window === 'undefined' || !window.gtag) return;
   
   window.gtag('event', action, {
     event_category: category,
@@ -60,7 +42,7 @@ export const trackPurchase = (
   amount: number,
   currency: string = 'EUR'
 ) => {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (!hasAnalyticsConsent() || typeof window === 'undefined' || !window.gtag) return;
   
   window.gtag('event', 'purchase', {
     transaction_id: transactionId,
@@ -75,7 +57,7 @@ export const trackPurchase = (
 };
 
 export const trackScanStart = (email: string) => {
-  trackEvent('begin_checkout', 'Satellite Scan', email);
+  trackEvent('begin_checkout', 'Satellite Scan');
 };
 
 export const trackCalendlyClick = (productName: string) => {
@@ -83,11 +65,11 @@ export const trackCalendlyClick = (productName: string) => {
 };
 
 export const trackTypeformStart = (purchaseId: string) => {
-  trackEvent('typeform_start', 'Satellite Scan', purchaseId);
+  trackEvent('typeform_start', 'Satellite Scan');
 };
 
 export const trackReferrer = () => {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (!hasAnalyticsConsent() || typeof window === 'undefined' || !window.gtag) return;
   
   const referrer = document.referrer;
   const urlParams = new URLSearchParams(window.location.search);

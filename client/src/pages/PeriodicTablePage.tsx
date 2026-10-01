@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import PeriodicElement from "@/components/PeriodicElement";
@@ -267,10 +268,7 @@ export default function PeriodicTablePage() {
     <>
     <div className="min-h-screen pt-24 pb-16 relative">
       <SEO
-        title="Periodic Table of Conscious Communication | 146 Elements | GreenElephant"
-        description="Explore the Periodic Table of Conscious Communication — 146 micro-habits across 8 lenses mapping the full spectrum of human connection. A research-backed framework for transforming how you communicate."
-        canonicalPath="/periodic-table"
-        keywords="periodic table of communication, conscious communication framework, emotional intelligence framework, personal development tools, self-awareness micro-habits, 146 communication elements, 8 lenses, communication micro-habits, NVC, nonviolent communication, behavioural change tools, communication self-improvement"
+        {...PAGE_METADATA["/periodic-table"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Periodic Table", url: "/periodic-table" }

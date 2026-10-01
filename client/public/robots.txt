@@ -1,29 +1,94 @@
+# Crawler guidance only; these rules do not provide access control.
+
 User-agent: *
 Allow: /
-
-Disallow: /admin/
 Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
 Disallow: /checkout
 Disallow: /payment-success
-Disallow: /api/
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
-# AI crawlers — allow full indexing for Generative Engine Optimisation
 User-agent: GPTBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
 User-agent: anthropic-ai
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /fr/checkout
+Disallow: /fr/payment-success
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /portal
+Disallow: /portal/
+Disallow: /dashboard
 
 Sitemap: https://greenelephant.org/sitemap.xml

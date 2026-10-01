@@ -1,5 +1,10 @@
+import { scanServiceEmail } from './scan-service-email';
+import { escapeEmailHtml } from './scan-results-email';
 import { getUncachableResendClient } from './resend-client';
 import { isConnectorEnabled } from './lib/connectorGuard';
+import { attemptPurchaseEmails } from './purchase-email-delivery';
+import { renderScanResultDraft, acceptScanResultEmail, type ScanEmailLanguage } from './scan-results-email';
+import { renderDataExportEmail } from './data-export-email';
 
 interface EmailVerificationData {
   email: string;
@@ -57,6 +62,8 @@ interface PurchaseNotificationData {
 }
 
 interface SatellitescanPurchaseData {
+  language?: 'en'|'fr';
+  idempotencyKey?: string;
   customerEmail: string;
   customerName: string | null;
   amount: string;
@@ -102,7 +109,7 @@ export async function sendPurchaseNotification(data: PurchaseNotificationData) {
           
           <div style="padding: 30px;">
             <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-              Hi ${data.customerName || 'there'},
+              Hi ${escapeEmailHtml(data.customerName || 'there')},
             </p>
             
             <p style="font-size: 16px; line-height: 1.6; color: #374151;">
@@ -178,7 +185,7 @@ export async function sendPurchaseNotification(data: PurchaseNotificationData) {
         <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0; color: #1e40af;">Action Required</h3>
           <ol style="line-height: 1.8;">
-            <li>Email the customer at <a href="mailto:${data.customerEmail}">${data.customerEmail}</a></li>
+            <li>Email the customer at <a href="mailto:${escapeEmailHtml(data.customerEmail)}">${escapeEmailHtml(data.customerEmail)}</a></li>
             <li>Welcome them to the program</li>
             <li>Include the Typeform scan link: <a href="https://greenelephantorg.typeform.com/individualscan">Start Satellite Scan</a></li>
             <li>Provide any onboarding materials</li>
@@ -198,17 +205,17 @@ export async function sendPurchaseNotification(data: PurchaseNotificationData) {
           
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Customer Details</h3>
-            <p><strong>Name:</strong> ${data.customerName || 'Not provided'}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.customerEmail}">${data.customerEmail}</a></p>
+            <p><strong>Name:</strong> ${escapeEmailHtml(data.customerName || 'Not provided')}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeEmailHtml(data.customerEmail)}">${escapeEmailHtml(data.customerEmail)}</a></p>
           </div>
           
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Purchase Details</h3>
-            <p><strong>Package:</strong> ${data.packageName}</p>
-            <p><strong>Package ID:</strong> ${data.packageId}</p>
-            <p><strong>Amount:</strong> €${data.amount}</p>
-            <p><strong>Payment ID:</strong> ${data.paymentIntentId}</p>
-            <p><strong>Purchase ID:</strong> ${data.purchaseId}</p>
+            <p><strong>Package:</strong> ${escapeEmailHtml(data.packageName)}</p>
+            <p><strong>Package ID:</strong> ${escapeEmailHtml(data.packageId)}</p>
+            <p><strong>Amount:</strong> €${escapeEmailHtml(data.amount)}</p>
+            <p><strong>Payment ID:</strong> ${escapeEmailHtml(data.paymentIntentId)}</p>
+            <p><strong>Purchase ID:</strong> ${escapeEmailHtml(data.purchaseId)}</p>
             <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
           </div>
           
@@ -229,180 +236,57 @@ export async function sendPurchaseNotification(data: PurchaseNotificationData) {
   }
 }
 
-export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchaseData) {
-  // CRITICAL: Validate customer email before attempting to send
+export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchaseData): Promise<boolean> {
   if (!data.customerEmail || !data.customerEmail.includes('@')) {
-    console.error('❌ CRITICAL: sendSatellitescanPurchaseEmail called with invalid/empty customerEmail:', data.customerEmail);
-    console.error('❌ Purchase data:', JSON.stringify(data, null, 2));
+    console.error('Satellite Scan email rejected', { errorType: 'invalid_recipient' });
     return false;
   }
-  if (!(await isConnectorEnabled("resend"))) {
-    console.log(`⏸️ Resend connector disabled — skipping Satellitescan purchase emails for ${data.customerEmail}`);
-    return false;
-  }
-  
-  console.log('📧 Attempting to send Satellitescan purchase emails...');
-  console.log('📧 Customer email:', data.customerEmail);
-  console.log('📧 Customer name:', data.customerName || 'Not provided');
-  
+
   try {
+    if (!(await isConnectorEnabled("resend"))) {
+      console.log('Satellite Scan email not attempted', { errorType: 'connector_disabled' });
+      return false;
+    }
     const { client, fromEmail } = await getUncachableResendClient();
-    console.log('📧 Resend client obtained, from email:', fromEmail);
-    
     const adminEmail = 'esteve@greenelephant.org';
     
-    // Send notification to admin
-    await client.emails.send({
-      from: fromEmail,
-      to: adminEmail,
-      subject: `🎯 New Satellitescan Purchase - €${data.amount}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">New Satellitescan Beta Purchase! 🚀</h2>
-          
-          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">Customer Details</h3>
-            <p><strong>Name:</strong> ${data.customerName || 'Not provided'}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.customerEmail}">${data.customerEmail}</a></p>
-          </div>
-          
-          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">Purchase Details</h3>
-            <p><strong>Product:</strong> Satellitescan Beta</p>
-            <p><strong>Amount:</strong> €${data.amount}</p>
-            <p><strong>Payment ID:</strong> ${data.paymentIntentId}</p>
-            <p><strong>Purchase ID:</strong> ${data.purchaseId}</p>
-            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-          </div>
-          
-          <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #1e40af;">⚡ Action Required</h3>
-            <ol style="line-height: 1.8;">
-              <li><strong>Dashboard timeline:</strong> Create their personalized dashboard within 48-72 hours after they complete the scan</li>
-              <li><strong>Follow-up:</strong> Set reminder to check if they completed the Typeform in 3-4 days</li>
-            </ol>
-          </div>
-          
-          <div style="background-color: #dcfce7; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #166534;">✅ Customer Resources (Sent Automatically)</h3>
-            <ul style="line-height: 1.8;">
-              <li><strong>Typeform Scan:</strong> <a href="https://greenelephantorg.typeform.com/individualscan">https://greenelephantorg.typeform.com/individualscan</a></li>
-              <li><strong>Prompt Library:</strong> <a href="https://greenelephant.org/resources">Access Prompts</a></li>
-              <li><strong>Video Tutorials (YouTube):</strong> <a href="https://www.youtube.com/playlist?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB">Watch Tutorials</a></li>
-            </ul>
-          </div>
-          
-          <p style="color: #6b7280; font-size: 14px;">
-            This notification was automatically sent from GreenElephant.org
-          </p>
-        </div>
-      `,
+    const customerMessage = { from: fromEmail, to:data.customerEmail, replyTo:'esteve@greenelephant.org', ...scanServiceEmail('purchase',data.customerName,data.language) };
+    const adminText = `Satellite Scan purchase / Achat Satellite Scan\nCustomer / Client: ${data.customerName || ''}\nEmail: ${data.customerEmail}\nAmount / Montant: EUR ${data.amount}\nPayment / Paiement: ${data.paymentIntentId}\nPurchase / Achat: ${data.purchaseId}\nLanguage / Langue: ${data.language || 'en'}\nPrepare the dashboard after the participant submits the Scan. / Préparer le tableau de bord après la réponse au Scan.\nCustomer email acceptance and delivery are checked separately. / L’acceptation et la livraison de l’e-mail client sont vérifiées séparément.`;
+    const adminMessage = {from:fromEmail,to:adminEmail,replyTo:'esteve@greenelephant.org',subject:'Satellite Scan purchase / Achat Satellite Scan',text:adminText,html:'<pre style="white-space:pre-wrap">'+escapeEmailHtml(adminText)+'</pre>'};
+
+    // Accepted by Resend is not proof of delivery to the recipient's inbox.
+    const results = await attemptPurchaseEmails({
+      admin: () => client.emails.send(adminMessage, data.idempotencyKey ? {idempotencyKey:data.idempotencyKey+':admin'} : undefined),
+      customer: () => client.emails.send(customerMessage, data.idempotencyKey ? {idempotencyKey:data.idempotencyKey+':customer'} : undefined),
     });
-    
-    // Send confirmation email to customer
-    await client.emails.send({
-      from: fromEmail,
-      to: data.customerEmail,
-      subject: "Your Satellite Scan is confirmed — begin when you're ready",
-      html: brandedEmailWrapper(
-        "Satellite Scan confirmed",
-        "Your 90-minute communication diagnostic is ready",
-        `
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
-          Hi ${data.customerName?.split(' ')[0] || 'there'},
-        </p>
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
-          Thank you for your purchase. You're about to map your communication patterns across 8 research-backed lenses. Set aside 90 uninterrupted minutes and start when you feel focused.
-        </p>
-        <div style="text-align:center;margin:0 0 28px 0;">
-          <a href="https://greenelephantorg.typeform.com/individualscan" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
-            Begin Your Satellite Scan
-          </a>
-        </div>
-        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
-          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">Dashboard timeline</h3>
-          <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
-            Your personalized dashboard is built by our coaches — not automated. After you complete the scan, allow <strong style="color:#e0e0e0;">48–72 hours</strong> for delivery.
-          </p>
-        </div>
-        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;">
-          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#e0e0e0;font-size:15px;font-weight:600;">Explore while you wait</h3>
-          <ul style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
-            <li><a href="https://greenelephant.org/resources" style="color:#009999;text-decoration:none;">Communication Prompt Library</a> — 40+ AI-ready prompts</li>
-            <li><a href="https://greenelephant.org/periodic-table" style="color:#009999;text-decoration:none;">Periodic Table of Conscious Communication</a></li>
-            <li><a href="https://www.youtube.com/playlist?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB" style="color:#009999;text-decoration:none;">Video Tutorials on YouTube</a></li>
-          </ul>
-        </div>
-        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
-          Questions? Reply to this email and we'll get back to you.<br><br>
-          <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong>
-        </p>
-        `,
-        "You received this because you purchased Satellite Scan at GreenElephant.org. This is a transactional confirmation email sent under legitimate interest."
-      ),
-    });
-    
-    console.log('✅ Satellitescan purchase notification email sent to admin:', adminEmail);
-    console.log('✅ Satellitescan welcome email sent to customer:', data.customerEmail);
-    console.log('✅ Both Satellitescan emails sent successfully');
-    return true;
-  } catch (error: any) {
-    console.error('❌ CRITICAL: Failed to send satellitescan purchase email');
-    console.error('❌ Error details:', error?.message || error);
-    console.error('❌ Customer email was:', data.customerEmail);
-    console.error('❌ Full error:', JSON.stringify(error, null, 2));
+    for (const result of results) {
+      if (result.accepted) {
+        console.log('Satellite Scan email accepted; delivery unverified', {
+          role: result.role,
+          messageId: result.messageId,
+        });
+      } else {
+        console.error('Satellite Scan email not accepted', {
+          role: result.role,
+          errorType: result.errorType,
+        });
+      }
+    }
+    return results.every(result => result.accepted);
+  } catch {
+    // Do not log provider exceptions, request payloads or recipient data.
+    console.error('Satellite Scan email not attempted', { errorType: 'configuration_error' });
     return false;
   }
 }
 
-export async function sendSatellitescanReminderEmail(customerEmail: string, customerName: string | null) {
-  try {
-    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping reminder for ${customerEmail}`); return false; }
-    const { client, fromEmail } = await getUncachableResendClient();
-    const firstName = customerName?.split(' ')[0] || 'there';
-
-    await client.emails.send({
-      from: fromEmail,
-      to: customerEmail,
-      subject: "Your Satellite Scan is still waiting for you",
-      html: brandedEmailWrapper(
-        "Your scan is waiting",
-        "Pick it up whenever you're ready",
-        `
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
-          Hi ${firstName},
-        </p>
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
-          We noticed you haven't completed your Satellite Scan yet. No pressure — we just wanted to make sure the link didn't get buried.
-        </p>
-        <div style="text-align:center;margin:0 0 28px 0;">
-          <a href="https://greenelephantorg.typeform.com/individualscan" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
-            Complete Your Satellite Scan
-          </a>
-        </div>
-        <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
-          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">A few things to remember</h3>
-          <ul style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
-            <li>90 minutes of focused, uninterrupted time</li>
-            <li>Best done in one sitting</li>
-            <li>Your personalized dashboard is delivered within 48–72 hours of completion</li>
-          </ul>
-        </div>
-        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
-          Have a question before you start? Just reply here.<br><br>
-          <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong>
-        </p>
-        `,
-        "You received this because you purchased Satellite Scan at GreenElephant.org. To unsubscribe from reminders, reply with the word STOP."
-      ),
-    });
-
-    console.log(`✅ Reminder email sent to: ${customerEmail}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Failed to send reminder email to ${customerEmail}:`, error);
-    return false;
-  }
+export async function sendSatellitescanReminderEmail(customerEmail:string,customerName:string|null,language:'en'|'fr'='en',idempotencyKey?:string) {
+ try {
+  if (!(await isConnectorEnabled('resend'))) return false;
+  const {client,fromEmail}=await getUncachableResendClient();
+  await client.emails.send({from:fromEmail,to:customerEmail,replyTo:'esteve@greenelephant.org',...scanServiceEmail('reminder',customerName,language)},idempotencyKey?{idempotencyKey}:undefined);
+  console.log('Scan reminder accepted; delivery unverified');return true;
+ } catch {console.error('Scan reminder acceptance unconfirmed');return false;}
 }
 
 interface WebinarWaitlistData {
@@ -429,8 +313,8 @@ export async function sendWebinarWaitlistConfirmation(data: WebinarWaitlistData)
           
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Contact Details</h3>
-            <p><strong>Name:</strong> ${data.customerName || 'Not provided'}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.customerEmail}">${data.customerEmail}</a></p>
+            <p><strong>Name:</strong> ${escapeEmailHtml(data.customerName || 'Not provided')}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeEmailHtml(data.customerEmail)}">${escapeEmailHtml(data.customerEmail)}</a></p>
             <p><strong>Preferred Lens:</strong> ${lensName}</p>
           </div>
           
@@ -450,7 +334,7 @@ export async function sendWebinarWaitlistConfirmation(data: WebinarWaitlistData)
         "Monthly Lens Webinars — one lens, one hour, real conversations",
         `
         <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
-          Hi ${data.customerName?.split(' ')[0] || 'there'},
+          Hi ${escapeEmailHtml(data.customerName?.split(' ')[0] || 'there')},
         </p>
         <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
           Thank you for joining the waitlist. Each month we go deep on one lens from the Periodic Table of Conscious Communication — live theory, live practice, and live Q&A. You'll hear from us as soon as the next session is scheduled.
@@ -490,6 +374,8 @@ export async function sendWebinarWaitlistConfirmation(data: WebinarWaitlistData)
 }
 
 interface TypeformScanData {
+  idempotencyKey?: string;
+  language?: ScanEmailLanguage;
   customerEmail: string;
   customerName: string | null;
   formattedSummary: {
@@ -508,123 +394,33 @@ interface TypeformScanData {
   submittedAt: string;
 }
 
-export async function sendTypeformScanCompletionEmail(data: TypeformScanData) {
+export async function sendTypeformScanCompletionEmail(data: TypeformScanData): Promise<boolean> {
   try {
-    if (!(await isConnectorEnabled("resend"))) { console.log(`⏸️ Resend disabled — skipping sendTypeformScanCompletionEmail`); return false; }
-    const { client, fromEmail } = await getUncachableResendClient();
-    
-    const adminEmails = ['esteve@greenelephant.org', 'anu@greenelephant.org'];
-    const firstName = data.formattedSummary.firstName || 'Explorer';
-    
-    // Build raw data table rows
-    const rawDataRows = Object.entries(data.rawData)
-      .filter(([_, value]) => value && value.trim() !== '')
-      .map(([question, answer]) => `
-        <tr>
-          <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; font-weight: 500; color: #374151; width: 40%;">${question}</td>
-          <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; color: #1f2937;">${answer}</td>
-        </tr>
-      `).join('');
-    
-    // Build formatted summary section
-    const summaryItems = [];
-    if (data.formattedSummary.role) summaryItems.push(`<strong>Role:</strong> ${data.formattedSummary.role}`);
-    if (data.formattedSummary.jobTitle) summaryItems.push(`<strong>Job Title:</strong> ${data.formattedSummary.jobTitle}`);
-    if (data.formattedSummary.country) summaryItems.push(`<strong>Country:</strong> ${data.formattedSummary.country}`);
-    if (data.formattedSummary.education) summaryItems.push(`<strong>Education:</strong> ${data.formattedSummary.education}`);
-    if (data.formattedSummary.experience) summaryItems.push(`<strong>Experience:</strong> ${data.formattedSummary.experience}`);
-    
-    const summaryHtml = summaryItems.length > 0 
-      ? `<ul style="line-height: 1.8; margin: 0; padding-left: 20px;">${summaryItems.map(item => `<li>${item}</li>`).join('')}</ul>`
-      : '<p style="color: #6b7280;">Summary data not available</p>';
-    
-    // Communication situations
-    const situationsHtml = data.formattedSummary.communicationSituations 
-      ? `<p style="line-height: 1.6; color: #1f2937;">${data.formattedSummary.communicationSituations}</p>`
-      : '';
-
-    // Customer email content
-    const customerEmailHtml = brandedEmailWrapper(
-      `Scan complete, ${firstName}`,
-      "Your responses are in — your dashboard is being built",
-      `
-      <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 20px 0;">
-        Congratulations on completing your 90-minute Satellite Scan. Your responses are safely stored and your coaches are reviewing them now.
-      </p>
-      <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
-        <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">What happens next</h3>
-        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
-          Your personalized dashboard is built by hand — not automated. Each response is reviewed carefully to create a visual map of your communication patterns. Allow <strong style="color:#e0e0e0;">48–72 hours</strong> for delivery.
-        </p>
-      </div>
-      <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;border-left:3px solid #009999;">
-        <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">Use your data now — don't wait</h3>
-        <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0 0 16px 0;">
-          Your scan data is already valuable. Copy your responses from the table below and paste them into any of the 40+ prompts in our library for instant insights.
-        </p>
-        <ol style="color:#cccccc;font-size:14px;line-height:2;margin:0;padding-left:18px;">
-          <li>Scroll down and copy your full scan data from the table</li>
-          <li>Go to the Resources page and pick a prompt</li>
-          <li>Paste into our GPT assistant for immediate analysis</li>
-        </ol>
-        <div style="text-align:center;margin:20px 0 0 0;">
-          <a href="https://greenelephant.org/resources" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 28px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
-            Go to Resources &amp; Prompts
-          </a>
-        </div>
-      </div>
-      ${summaryHtml ? `
-      <div style="background-color:#111111;padding:22px;border-radius:8px;margin:0 0 20px 0;">
-        <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#e0e0e0;font-size:15px;font-weight:600;">Your quick summary</h3>
-        <div style="color:#cccccc;font-size:14px;line-height:1.8;">${summaryHtml}</div>
-        ${situationsHtml ? `<div style="margin-top:14px;padding-top:14px;border-top:1px solid #222;"><strong style="color:#009999;">Communication focus areas:</strong>${situationsHtml}</div>` : ''}
-      </div>
-      ` : ''}
-      <div style="margin:0 0 24px 0;">
-        <h3 style="font-family:'Poppins',Arial,sans-serif;color:#e0e0e0;font-size:15px;font-weight:600;margin:0 0 8px 0;">Your complete scan data</h3>
-        <p style="color:#777777;font-size:13px;margin:0 0 14px 0;">Copy and paste this into any prompt or AI assistant to start discovering patterns.</p>
-        <div style="border:1px solid #1a1a1a;border-radius:8px;overflow:hidden;">
-          <table style="width:100%;border-collapse:collapse;font-size:13px;">
-            <thead>
-              <tr style="background-color:#0f1f2e;">
-                <th style="padding:12px;text-align:left;color:#009999;font-weight:600;width:40%;">Question</th>
-                <th style="padding:12px;text-align:left;color:#009999;font-weight:600;">Your response</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rawDataRows.replace(/style="padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; font-weight: 500; color: #374151; width: 40%;"/g, 'style="padding:10px;border-bottom:1px solid #1a1a1a;vertical-align:top;font-weight:500;color:#cccccc;width:40%;"').replace(/style="padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; color: #1f2937;"/g, 'style="padding:10px;border-bottom:1px solid #1a1a1a;vertical-align:top;color:#e0e0e0;"')}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div style="background-color:#111111;padding:18px;border-radius:8px;margin:0 0 24px 0;">
-        <p style="color:#cccccc;font-size:13px;margin:0;">
-          For best results, use our <a href="https://chatgpt.com/g/g-bUJ6dvAHK-conscious-communicator" style="color:#009999;text-decoration:none;">Conscious Communicator GPT</a> when exploring your data with prompts from our library.
-        </p>
-      </div>
-      <p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0;">
-        Questions about your data? Just reply here.<br><br>
-        <strong style="color:#e0e0e0;">Esteve from GreenElephant</strong><br>
-        <span style="color:#777777;font-size:12px;">Submitted: ${data.submittedAt}</span>
-      </p>
-      `,
-      "You received this because you completed the Satellite Scan at GreenElephant.org. This is a transactional email sent under legitimate interest."
-    );
-
-    // Send to customer
-    await client.emails.send({
-      from: fromEmail,
-      to: data.customerEmail,
-      cc: adminEmails,
-      subject: `Your Satellite Scan Data is Ready, ${firstName}!`,
-      html: customerEmailHtml,
+    if (!(await isConnectorEnabled("resend"))) return false;
+    const draft = renderScanResultDraft({
+      kind: "completion", language: data.language, name: data.formattedSummary.firstName || data.customerName,
+      rawData: data.rawData, submittedAt: data.submittedAt,
     });
-    
-    console.log('✅ Typeform scan completion email sent to:', data.customerEmail);
-    console.log('✅ CC sent to admins:', adminEmails.join(', '));
-    return true;
-  } catch (error) {
-    console.error('❌ Failed to send Typeform scan completion email:', error);
+    const { client, fromEmail } = await getUncachableResendClient();
+    const acceptance = await acceptScanResultEmail(() => client.emails.send({
+      from: fromEmail,
+      replyTo: "esteve@greenelephant.org",
+      to: data.customerEmail,
+      // Owner approved retaining both coach copies; participant disclosure remains a separate review.
+      cc: ["esteve@greenelephant.org", "anu@greenelephant.org"],
+      subject: draft.subject,
+      html: brandedEmailWrapper(draft.title, draft.subtitle, draft.bodyHtml, draft.footer),
+      text: draft.text,
+      attachments: [{ filename: draft.filename, content: Buffer.from(draft.downloadText, "utf8") }],
+    }, data.idempotencyKey ? { idempotencyKey: data.idempotencyKey } : undefined));
+    if (acceptance.accepted) {
+      console.log('Scan result email accepted; delivery unverified', { messageId: acceptance.messageId });
+    } else {
+      console.error('Scan result email not accepted', { errorType: acceptance.errorType });
+    }
+    return acceptance.accepted;
+  } catch {
+    console.error('Scan result email not attempted', { errorType: 'configuration_or_content_error' });
     return false;
   }
 }
@@ -700,8 +496,8 @@ export function brandedEmailWrapper(title: string, subtitle: string, bodyHtml: s
           <tr>
             <td style="background: linear-gradient(135deg, #0a0a0a 0%, #0f1f2e 50%, #0a0a0a 100%); padding: 40px 30px; text-align: center; border-bottom: 1px solid #1a1a1a;">
               <img src="https://greenelephant.org/ge-logo-512.png" alt="GreenElephant" width="48" height="48" style="margin-bottom: 16px; border-radius: 8px; display: block; margin-left: auto; margin-right: auto;" />
-              <h1 style="font-family: 'Poppins', Arial, sans-serif; color: #ffffff; margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.5px;">${title}</h1>
-              ${subtitle ? `<p style="color: #009999; margin-top: 8px; margin-bottom: 0; font-size: 15px; font-weight: 500;">${subtitle}</p>` : ''}
+              <h1 style="font-family: 'Poppins', Arial, sans-serif; color: #ffffff; margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.5px;">${escapeEmailHtml(title)}</h1>
+              ${subtitle ? `<p style="color: #009999; margin-top: 8px; margin-bottom: 0; font-size: 15px; font-weight: 500;">${escapeEmailHtml(subtitle)}</p>` : ''}
             </td>
           </tr>
           <!-- Body -->
@@ -747,7 +543,7 @@ export async function sendNewsletterConfirmationEmail(data: NewsletterConfirmati
 
     const body = `
       <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
-        Hi ${data.name || 'there'},
+        Hi ${escapeEmailHtml(data.name || 'there')},
       </p>
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
         Thank you for subscribing to the GreenElephant newsletter. You'll receive insights on conscious communication, updates on upcoming retreats and Play Labs sessions, and practical tools for transforming how you connect with others.
@@ -807,7 +603,7 @@ export async function sendScanInterestConfirmationEmail(data: ScanInterestConfir
 
     const body = `
       <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
-        Hi ${data.name || 'there'},
+        Hi ${escapeEmailHtml(data.name || 'there')},
       </p>
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
         Thank you for your interest in the Satellite Scan. Here's a free tool to start exploring your communication patterns right away.
@@ -883,8 +679,8 @@ export async function sendScanInterestAdminNotification(data: { email: string; n
           <h2 style="color: #2563eb;">New Scan Interest Lead</h2>
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Contact Details</h3>
-            <p><strong>Name:</strong> ${data.name || 'Not provided'}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Name:</strong> ${escapeEmailHtml(data.name || 'Not provided')}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeEmailHtml(data.email)}">${escapeEmailHtml(data.email)}</a></p>
             <p><strong>Source:</strong> Scan page lead magnet (Flow Check + updates)</p>
             <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
           </div>
@@ -933,13 +729,13 @@ export async function sendWaitlistConfirmationEmail(data: WaitlistConfirmationDa
           <h2 style="color: #2563eb;">New Retreat Waitlist Signup</h2>
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Contact Details</h3>
-            <p><strong>Name:</strong> ${data.name || 'Not provided'}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Name:</strong> ${escapeEmailHtml(data.name || 'Not provided')}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeEmailHtml(data.email)}">${escapeEmailHtml(data.email)}</a></p>
             <p><strong>Retreat:</strong> ${retreatName}</p>
           </div>
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Motivation</h3>
-            <p style="color: #374151; line-height: 1.6;">${data.motivation}</p>
+            <p style="color: #374151; line-height: 1.6;">${escapeEmailHtml(data.motivation)}</p>
           </div>
           <p style="color: #6b7280; font-size: 14px;">This notification was automatically sent from GreenElephant.org Retreats page.</p>
         </div>
@@ -948,7 +744,7 @@ export async function sendWaitlistConfirmationEmail(data: WaitlistConfirmationDa
 
     const customerBody = `
       <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
-        Hi ${data.name || 'there'},
+        Hi ${escapeEmailHtml(data.name || 'there')},
       </p>
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
         Thank you for your interest in the ${retreatName} retreat. We've received your application and you're now on the waitlist.
@@ -1025,17 +821,17 @@ export async function sendContactFormEmails(data: ContactFormData) {
           <h2 style="color: #2563eb;">New Contact Form Submission</h2>
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Contact Details</h3>
-            <p><strong>Name:</strong> ${data.name}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Name:</strong> ${escapeEmailHtml(data.name)}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeEmailHtml(data.email)}">${escapeEmailHtml(data.email)}</a></p>
             <p><strong>Intent:</strong> ${intentLabel}</p>
           </div>
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Message</h3>
-            <p style="color: #374151; line-height: 1.6; white-space: pre-wrap;">${data.message}</p>
+            <p style="color: #374151; line-height: 1.6; white-space: pre-wrap;">${escapeEmailHtml(data.message)}</p>
           </div>
           <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #1e40af;">Action Required</h3>
-            <p style="margin-bottom: 0; color: #1e3a8a;">Reply to <a href="mailto:${data.email}">${data.email}</a> within 24 hours.</p>
+            <p style="margin-bottom: 0; color: #1e3a8a;">Reply to <a href="mailto:${escapeEmailHtml(data.email)}">${escapeEmailHtml(data.email)}</a> within 24 hours.</p>
           </div>
           <p style="color: #6b7280; font-size: 14px;">This notification was automatically sent from GreenElephant.org Contact page.</p>
         </div>
@@ -1044,14 +840,14 @@ export async function sendContactFormEmails(data: ContactFormData) {
 
     const customerBody = `
       <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
-        Hi ${data.name},
+        Hi ${escapeEmailHtml(data.name)},
       </p>
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
         Thank you for reaching out. We've received your message and will respond personally within 24 hours.
       </p>
       ${darkCard(`
         <h3 style="font-family: 'Poppins', Arial, sans-serif; margin-top: 0; color: #888888; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Your Message</h3>
-        <p style="color: #999999; line-height: 1.7; white-space: pre-wrap; font-style: italic; margin-bottom: 0;">${data.message}</p>
+        <p style="color: #999999; line-height: 1.7; white-space: pre-wrap; font-style: italic; margin-bottom: 0;">${escapeEmailHtml(data.message)}</p>
       `)}
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
         In the meantime, feel free to explore:
@@ -1109,7 +905,7 @@ export async function sendQuizResultsEmail(data: QuizResultsData) {
 
     const body = `
       <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
-        Hi ${data.name || 'there'},
+        Hi ${escapeEmailHtml(data.name || 'there')},
       </p>
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
         Thank you for completing the Signals Quiz. Here are your results:
@@ -1117,10 +913,10 @@ export async function sendQuizResultsEmail(data: QuizResultsData) {
       
       <div style="background-color: #111111; padding: 30px; border-radius: 8px; margin: 24px 0; text-align: center; border: 1px solid #1a1a1a;">
         <p style="margin: 0 0 8px 0; color: #888888; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Your Score</p>
-        <p style="margin: 0; font-size: 56px; font-weight: 700; color: ${scoreColor}; font-family: 'Poppins', Arial, sans-serif;">${data.score}%</p>
+        <p style="margin: 0; font-size: 56px; font-weight: 700; color: ${scoreColor}; font-family: 'Poppins', Arial, sans-serif;">${escapeEmailHtml(data.score)}%</p>
         <p style="margin: 8px 0 0 0; color: ${scoreColor}; font-weight: 600; font-size: 16px;">${scoreLevel} Awareness</p>
         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #1a1a1a;">
-          <p style="margin: 0; color: #666666; font-size: 13px;">Community average: ${data.averageScore}%</p>
+          <p style="margin: 0; color: #666666; font-size: 13px;">Community average: ${escapeEmailHtml(data.averageScore)}%</p>
         </div>
       </div>
       
@@ -1253,10 +1049,10 @@ export async function sendFlowCheckResultEmail(data: FlowCheckResultEmailData) {
 
     const body = `
       <p style="font-size: 16px; line-height: 1.7; color: #e0e0e0;">
-        Hi ${data.name || 'there'},
+        Hi ${escapeEmailHtml(data.name || 'there')},
       </p>
       <p style="font-size: 16px; line-height: 1.7; color: #cccccc;">
-        Here are your Check-my-FLOW results. You assessed your communication flow in the context of <strong style="color: #e0e0e0;">${data.situation}</strong> as ${flowAOrAn(data.role)} <strong style="color: #e0e0e0;">${data.role}</strong>.
+        Here are your Check-my-FLOW results. You assessed your communication flow in the context of <strong style="color: #e0e0e0;">${escapeEmailHtml(data.situation)}</strong> as ${flowAOrAn(data.role)} <strong style="color: #e0e0e0;">${escapeEmailHtml(data.role)}</strong>.
       </p>
       ${darkCard(`
         <div style="text-align: center; margin-bottom: 16px;">
@@ -1273,15 +1069,15 @@ export async function sendFlowCheckResultEmail(data: FlowCheckResultEmailData) {
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="color: #999; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">Perceived Motivation</td>
-            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">${data.motivation}/10</td>
+            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">${escapeEmailHtml(data.motivation)}/10</td>
           </tr>
           <tr>
             <td style="color: #999; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">Perceived Challenge</td>
-            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">${data.challenge}/10</td>
+            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px solid #1a1a1a;">${escapeEmailHtml(data.challenge)}/10</td>
           </tr>
           <tr>
             <td style="color: #999; padding: 8px 0;">Perceived Competence</td>
-            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0;">${data.competence}/10</td>
+            <td style="color: #e0e0e0; font-weight: 600; text-align: right; padding: 8px 0;">${escapeEmailHtml(data.competence)}/10</td>
           </tr>
         </table>
       `)}
@@ -1352,18 +1148,18 @@ export async function sendFlowCheckAdminNotification(data: { email: string; name
           <h2 style="color: #2563eb;">New Flow Check Submission</h2>
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Contact Details</h3>
-            <p><strong>Name:</strong> ${data.name || 'Not provided'}</p>
-            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            <p><strong>Name:</strong> ${escapeEmailHtml(data.name || 'Not provided')}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeEmailHtml(data.email)}">${escapeEmailHtml(data.email)}</a></p>
             <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
           </div>
           <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #166534;">Flow Check Results</h3>
             <p><strong>Zone:</strong> <span style="color: ${zone.color}; font-weight: bold;">${zone.label}</span></p>
-            <p><strong>Situation:</strong> ${data.situation}</p>
-            <p><strong>Role:</strong> ${data.role}</p>
-            <p><strong>Motivation:</strong> ${data.motivation}/10</p>
-            <p><strong>Challenge:</strong> ${data.challenge}/10</p>
-            <p><strong>Competence:</strong> ${data.competence}/10</p>
+            <p><strong>Situation:</strong> ${escapeEmailHtml(data.situation)}</p>
+            <p><strong>Role:</strong> ${escapeEmailHtml(data.role)}</p>
+            <p><strong>Motivation:</strong> ${escapeEmailHtml(data.motivation)}/10</p>
+            <p><strong>Challenge:</strong> ${escapeEmailHtml(data.challenge)}/10</p>
+            <p><strong>Competence:</strong> ${escapeEmailHtml(data.competence)}/10</p>
           </div>
           <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #1e40af;">Next Steps</h3>
@@ -1401,7 +1197,7 @@ export async function sendWebinarReplayConfirmationEmail(data: { name: string; e
         "Your replay link is on its way",
         `
         <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
-          Hi ${data.name},
+          Hi ${escapeEmailHtml(data.name)},
         </p>
         <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
           Thank you for registering for the GreenElephant Monthly Lens Webinar series. The replay link for the most recent session will be sent to this address within a few hours.
@@ -1462,7 +1258,7 @@ export async function sendDailyPulseEmail(data: DailyPulseData): Promise<boolean
 
     const bodyHtml = `
       <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 20px 0;">
-        Here is your automated activity summary for the last 24 hours ending <strong style="color:#ffffff;">${data.date}</strong>.
+        Here is your automated activity summary for the last 24 hours ending <strong style="color:#ffffff;">${escapeEmailHtml(data.date)}</strong>.
       </p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -1538,9 +1334,9 @@ export async function sendContentFlywheelEmail(data: ContentFlywheelEmailData) {
       workplace: 'Workplace Conflict Decoded',
     };
 
-    const articleHtml = data.article.replace(/\n/g, '<br/>');
-    const pollHtml = data.poll.replace(/\n/g, '<br/>');
-    const artHtml = data.artDirection.replace(/\n/g, '<br/>');
+    const articleHtml = escapeEmailHtml(data.article).replace(/\n/g, '<br/>');
+    const pollHtml = escapeEmailHtml(data.poll).replace(/\n/g, '<br/>');
+    const artHtml = escapeEmailHtml(data.artDirection).replace(/\n/g, '<br/>');
 
     const bodyHtml = `
       <div style="text-align: center; margin-bottom: 24px;">
@@ -1571,9 +1367,9 @@ export async function sendContentFlywheelEmail(data: ContentFlywheelEmailData) {
 
       ${data.seoKeywords.length > 0 ? darkCard(`
         <h3 style="color: #ffffff; margin: 0 0 12px 0; font-family: 'Poppins', Arial, sans-serif; font-size: 16px;">SEO/GEO Enrichment Summary</h3>
-        <p style="color: #999999; font-size: 13px; margin-bottom: 12px;">Keywords: ${data.seoKeywords.join(', ')}</p>
-        ${data.seoFaqItems.map(f => `<p style="color: #cccccc; font-size: 13px;"><strong>Q:</strong> ${f.question}<br/><strong>A:</strong> ${f.answer}</p>`).join('')}
-        ${data.seoInternalLinks.length > 0 ? `<p style="color: #999999; font-size: 13px; margin-top: 12px;">Internal linking: ${data.seoInternalLinks.join(' | ')}</p>` : ''}
+        <p style="color: #999999; font-size: 13px; margin-bottom: 12px;">Keywords: ${escapeEmailHtml(data.seoKeywords.join(', '))}</p>
+        ${data.seoFaqItems.map(f => `<p style="color: #cccccc; font-size: 13px;"><strong>Q:</strong> ${escapeEmailHtml(f.question)}<br/><strong>A:</strong> ${escapeEmailHtml(f.answer)}</p>`).join('')}
+        ${data.seoInternalLinks.length > 0 ? `<p style="color: #999999; font-size: 13px; margin-top: 12px;">Internal linking: ${escapeEmailHtml(data.seoInternalLinks.join(' | '))}</p>` : ''}
       `, '#669966') : ''}
     `;
 
@@ -1598,6 +1394,7 @@ export async function sendContentFlywheelEmail(data: ContentFlywheelEmailData) {
 }
 
 interface CoachingRawDataEmailData {
+  language?: ScanEmailLanguage;
   coacheeEmail: string;
   coacheeName: string | null;
   rawData: Record<string, string>;
@@ -1605,55 +1402,35 @@ interface CoachingRawDataEmailData {
 
 export async function sendCoachingRawDataEmail(data: CoachingRawDataEmailData): Promise<boolean> {
   try {
-    if (!(await isConnectorEnabled("resend"))) {
-      console.log(`⏸️ Resend disabled — skipping coaching raw data email to ${data.coacheeEmail}`);
-      return false;
-    }
-    const { client, fromEmail } = await getUncachableResendClient();
-    const firstName = data.coacheeName?.split(' ')[0] || 'there';
-
-    const rawDataRows = Object.entries(data.rawData)
-      .map(([q, a]) => `<tr><td style="padding:6px 10px;border-bottom:1px solid #222;color:#999;font-size:13px;vertical-align:top;white-space:nowrap;">${q}</td><td style="padding:6px 10px;border-bottom:1px solid #222;color:#e0e0e0;font-size:13px;">${a}</td></tr>`)
-      .join('');
-
-    await client.emails.send({
-      from: fromEmail,
-      to: data.coacheeEmail,
-      subject: `Your Satellite Scan Raw Data — GreenElephant`,
-      html: brandedEmailWrapper(
-        "Your Satellite Scan Data",
-        "Copy-paste ready for the Conscious Communicator GPT",
-        `
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
-          Hi ${firstName},
-        </p>
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
-          Here is your raw Satellite Scan data. You can select all the text in the box below and paste it directly into the
-          <a href="https://chatgpt.com/g/g-A2D8HFqGl-conscious-communicator" style="color:#009999;text-decoration:none;">Conscious Communicator GPT</a>
-          for a personalized analysis.
-        </p>
-        <div style="background-color:#111111;border:1px solid #333;border-radius:8px;padding:0;margin:0 0 24px 0;overflow:auto;max-height:500px;">
-          <table cellpadding="0" cellspacing="0" border="0" style="width:100%;font-family:monospace;">
-            ${rawDataRows}
-          </table>
-        </div>
-        <p style="color:#999;font-size:13px;line-height:1.7;margin:0;">
-          Questions? Reply to this email and we'll get back to you.
-        </p>
-        `,
-        "You received this because your coach at GreenElephant sent you your Satellite Scan data."
-      ),
+    if (!(await isConnectorEnabled("resend"))) return false;
+    const draft = renderScanResultDraft({
+      kind: "raw-data", language: data.language, name: data.coacheeName,
+      rawData: data.rawData,
     });
-
-    console.log(`✅ Coaching raw data email sent to: ${data.coacheeEmail}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Failed to send coaching raw data email to ${data.coacheeEmail}:`, error);
+    const { client, fromEmail } = await getUncachableResendClient();
+    const acceptance = await acceptScanResultEmail(() => client.emails.send({
+      from: fromEmail,
+      replyTo: "esteve@greenelephant.org",
+      to: data.coacheeEmail,
+      subject: draft.subject,
+      html: brandedEmailWrapper(draft.title, draft.subtitle, draft.bodyHtml, draft.footer),
+      text: draft.text,
+      attachments: [{ filename: draft.filename, content: Buffer.from(draft.downloadText, "utf8") }],
+    }));
+    if (acceptance.accepted) {
+      console.log('Scan result email accepted; delivery unverified', { messageId: acceptance.messageId });
+    } else {
+      console.error('Scan result email not accepted', { errorType: acceptance.errorType });
+    }
+    return acceptance.accepted;
+  } catch {
+    console.error('Scan result email not attempted', { errorType: 'configuration_or_content_error' });
     return false;
   }
 }
 
 interface CoachingDocLinkEmailData {
+  language?: ScanEmailLanguage;
   coacheeEmail: string;
   coacheeName: string | null;
   docUrl: string;
@@ -1662,54 +1439,29 @@ interface CoachingDocLinkEmailData {
 
 export async function sendCoachingDocLinkEmail(data: CoachingDocLinkEmailData): Promise<boolean> {
   try {
-    if (!(await isConnectorEnabled("resend"))) {
-      console.log(`⏸️ Resend disabled — skipping coaching doc link email to ${data.coacheeEmail}`);
-      return false;
-    }
-    const { client, fromEmail } = await getUncachableResendClient();
-    const firstName = data.coacheeName?.split(' ')[0] || 'there';
-
-    const reportHtml = data.reportText
-      .split('\n')
-      .map(line => line.trim() ? `<p style="color:#cccccc;font-size:14px;line-height:1.7;margin:0 0 8px 0;">${line}</p>` : '<br/>')
-      .join('');
-
-    await client.emails.send({
-      from: fromEmail,
-      to: data.coacheeEmail,
-      subject: `Your Coaching Dashboard is Ready — GreenElephant`,
-      html: brandedEmailWrapper(
-        "Your Coaching Dashboard",
-        "Review your personalized communication insights",
-        `
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 16px 0;">
-          Hi ${firstName},
-        </p>
-        <p style="color:#cccccc;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
-          Your coaching dashboard is ready. You can view the full interactive version using the link below,
-          or read the summary right here in this email.
-        </p>
-        <div style="text-align:center;margin:0 0 28px 0;">
-          <a href="${data.docUrl}" style="display:inline-block;background-color:#009999;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:6px;font-family:'Poppins',Arial,sans-serif;font-weight:600;font-size:15px;">
-            Open Your Dashboard
-          </a>
-        </div>
-        <div style="background-color:#111111;border:1px solid #333;border-radius:8px;padding:22px;margin:0 0 24px 0;">
-          <h3 style="font-family:'Poppins',Arial,sans-serif;margin-top:0;color:#009999;font-size:15px;font-weight:600;">Report Summary</h3>
-          ${reportHtml}
-        </div>
-        <p style="color:#999;font-size:13px;line-height:1.7;margin:0;">
-          Questions about your results? Reply to this email and your coach will follow up.
-        </p>
-        `,
-        "You received this because your coach at GreenElephant prepared your coaching dashboard."
-      ),
+    if (!(await isConnectorEnabled("resend"))) return false;
+    const draft = renderScanResultDraft({
+      kind: "dashboard", language: data.language, name: data.coacheeName,
+      docUrl: data.docUrl, reportText: data.reportText,
     });
-
-    console.log(`✅ Coaching doc link email sent to: ${data.coacheeEmail}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Failed to send coaching doc link email to ${data.coacheeEmail}:`, error);
+    const { client, fromEmail } = await getUncachableResendClient();
+    const acceptance = await acceptScanResultEmail(() => client.emails.send({
+      from: fromEmail,
+      replyTo: "esteve@greenelephant.org",
+      to: data.coacheeEmail,
+      subject: draft.subject,
+      html: brandedEmailWrapper(draft.title, draft.subtitle, draft.bodyHtml, draft.footer),
+      text: draft.text,
+      attachments: [{ filename: draft.filename, content: Buffer.from(draft.downloadText, "utf8") }],
+    }));
+    if (acceptance.accepted) {
+      console.log('Scan result email accepted; delivery unverified', { messageId: acceptance.messageId });
+    } else {
+      console.error('Scan result email not accepted', { errorType: acceptance.errorType });
+    }
+    return acceptance.accepted;
+  } catch {
+    console.error('Scan result email not attempted', { errorType: 'configuration_or_content_error' });
     return false;
   }
 }
@@ -1721,106 +1473,37 @@ interface CoachOnlyEmailData {
 }
 
 export async function sendCoachOnlyEmail(data: CoachOnlyEmailData): Promise<boolean> {
-  try {
-    if (!(await isConnectorEnabled("resend"))) {
-      console.log(`⏸️ Resend disabled — skipping coach-only email`);
-      return false;
-    }
-    const { client, fromEmail } = await getUncachableResendClient();
-    const coachEmails = ['esteve@greenelephant.org', 'anu@greenelephant.org'];
-    const coacheeName = data.coacheeName || 'Unknown';
-
-    const rawDataRows = Object.entries(data.rawData)
-      .map(([q, a]) => `<tr><td style="padding:6px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px;vertical-align:top;white-space:nowrap;">${q}</td><td style="padding:6px 10px;border-bottom:1px solid #e5e7eb;color:#374151;font-size:13px;">${a}</td></tr>`)
-      .join('');
-
-    await client.emails.send({
-      from: fromEmail,
-      to: coachEmails,
-      subject: `[Internal] Scan Data for ${coacheeName} — Review Before Delivery`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%); padding: 24px 28px; border-radius: 8px 8px 0 0;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 20px;">Internal: Scan Data Review</h1>
-            <p style="color: #93c5fd; margin-top: 6px; margin-bottom: 0; font-size: 14px;">Coachee: ${coacheeName}</p>
-          </div>
-          
-          ${data.notes ? `
-          <div style="background-color: #fef3c7; padding: 16px 20px; border-left: 4px solid #f59e0b;">
-            <h3 style="margin-top: 0; color: #92400e; font-size: 14px;">Coach Notes</h3>
-            <p style="color: #78350f; font-size: 14px; margin-bottom: 0;">${data.notes}</p>
-          </div>
-          ` : ''}
-          
-          <div style="padding: 24px; background-color: #ffffff;">
-            <h3 style="margin-top: 0; color: #1f2937; font-size: 16px;">Raw Scan Data</h3>
-            <div style="border:1px solid #e5e7eb;border-radius:6px;overflow:auto;">
-              <table cellpadding="0" cellspacing="0" border="0" style="width:100%;">
-                ${rawDataRows}
-              </table>
-            </div>
-          </div>
-          
-          <div style="background-color: #f9fafb; padding: 16px 24px; border-top: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
-            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-              This is an internal email — the coachee was NOT notified. Sent automatically from the Coaching Cockpit.
-            </p>
-          </div>
-        </div>
-      `,
-    });
-
-    console.log(`✅ Coach-only email sent to: ${coachEmails.join(', ')} for coachee: ${coacheeName}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Failed to send coach-only email:`, error);
-    return false;
-  }
+ try {
+  if(!(await isConnectorEnabled('resend'))) return false;
+  const {client,fromEmail}=await getUncachableResendClient();
+  const draft=renderScanResultDraft({kind:'raw-data',name:data.coacheeName,rawData:data.rawData});
+  const note='Internal review / Relecture interne. Participant not notified / Participant non averti.\n'+(data.notes||'');
+  await client.emails.send({from:fromEmail,to:['esteve@greenelephant.org','anu@greenelephant.org'],replyTo:'esteve@greenelephant.org',subject:'[Internal / Interne] Satellite Scan',html:'<p>'+escapeEmailHtml(note)+'</p>'+draft.bodyHtml,text:note+'\n\n'+draft.text,attachments:[{filename:draft.filename,content:Buffer.from(draft.downloadText,'utf8')}]});
+  return true;
+ } catch {console.error('Internal Scan email acceptance unconfirmed');return false;}
 }
 
-export async function sendPortalDataExportEmail(email: string, name: string | null, exportData: { timeline: unknown[]; context: Record<string, string> }): Promise<boolean> {
+export async function sendPortalDataExportEmail(email: string, name: string | null, exportData: { timeline: unknown[]; context: Record<string, string> }, language: ScanEmailLanguage = 'en'): Promise<boolean> {
   try {
-    if (!(await isConnectorEnabled("resend"))) {
-      console.log("⏸️ Resend disabled — skipping portal data export email");
-      return false;
-    }
+    if (!(await isConnectorEnabled("resend"))) return false;
+    const draft = renderDataExportEmail(name, exportData, language);
     const { client, fromEmail } = await getUncachableResendClient();
-
-    const eventCount = exportData.timeline.length;
-    const exportDate = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-
-    await client.emails.send({
+    const acceptance = await acceptScanResultEmail(() => client.emails.send({
       from: fromEmail,
       to: email,
-      subject: "Your Communication Journey Data Export",
-      html: brandedEmailWrapper(
-        "Your Data Export",
-        `Exported on ${exportDate}`,
-        `
-          <p style="color: #cccccc; font-size: 15px; line-height: 1.8;">
-            Hi${name ? ` ${name}` : ""},
-          </p>
-          <p style="color: #cccccc; font-size: 15px; line-height: 1.8;">
-            Here is your complete GreenElephant communication journey data. This export contains
-            <strong style="color: #009999;">${eventCount} timeline event${eventCount !== 1 ? "s" : ""}</strong>
-            and your stored preferences.
-          </p>
-          <div style="background: #111; border: 1px solid #222; border-radius: 8px; padding: 16px; margin: 20px 0;">
-            <p style="color: #999; font-size: 12px; margin: 0 0 8px;">Attached below as JSON:</p>
-            <pre style="color: #009999; font-size: 11px; white-space: pre-wrap; word-break: break-all; margin: 0;">${JSON.stringify(exportData, null, 2).slice(0, 3000)}${JSON.stringify(exportData).length > 3000 ? "\n... (truncated — full data in attachment)" : ""}</pre>
-          </div>
-          <p style="color: #888; font-size: 13px;">
-            You can re-export your data anytime from your portal Settings page.
-          </p>
-        `,
-        "This email was sent because you requested a data export from your GreenElephant portal account. Under GDPR Article 20, you have the right to receive your personal data in a structured, commonly used format. If you did not request this, please contact us at hello@greenelephant.org."
-      ),
-    });
-
-    console.log(`✅ Portal data export email sent to: ${email}`);
-    return true;
-  } catch (error) {
-    console.error("❌ Failed to send portal data export email:", error);
+      subject: draft.subject,
+      html: brandedEmailWrapper(draft.title, draft.subtitle, draft.bodyHtml, draft.footer),
+      text: draft.text,
+      attachments: [{ filename: draft.filename, content: Buffer.from(draft.attachment, 'utf8') }],
+    }));
+    if (acceptance.accepted) {
+      console.log('Data export email accepted; delivery unverified', { messageId: acceptance.messageId });
+    } else {
+      console.error('Data export email not accepted', { errorType: acceptance.errorType });
+    }
+    return acceptance.accepted;
+  } catch {
+    console.error('Data export email not attempted', { errorType: 'configuration_or_content_error' });
     return false;
   }
 }

@@ -1,3 +1,5 @@
+import { WEBINARS_PARKED } from "@shared/site-features";
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,11 +67,8 @@ const FAQ_ITEMS = [
 export default function ForExecutiveAssistantsPage() {
   return (
     <div className="min-h-screen">
-      <SEO 
-        title="Communication Training for Executive Assistants | Satellite Scan"
-        description="Communication assessment designed for Executive Assistants. Map your managing up patterns, stakeholder dynamics, and boundary-setting across 8 lenses. €99.95 with personalized insights."
-        keywords="executive assistant communication training, EA professional development, managing up communication, assistant leadership communication, executive assistant coaching, EA training program, virtual assistant skills"
-        canonicalPath="/for-executive-assistants"
+      <SEO
+        {...PAGE_METADATA["/for-executive-assistants"]}
         faqItems={FAQ_ITEMS}
         breadcrumbs={[
           { name: "Home", url: "/" },
@@ -397,12 +396,12 @@ export default function ForExecutiveAssistantsPage() {
                   Free 2-Min Quick Check
                 </Button>
               </Link>
-              <Link href="/webinar">
+              {!WEBINARS_PARKED && (<Link href="/webinar">
                 <Button variant="outline" className="text-white border-white/20 backdrop-blur-sm" data-testid="link-ea-webinar">
                   <Zap className="mr-2 h-4 w-4" />
                   Join Free Monthly Webinar
                 </Button>
-              </Link>
+              </Link>)}
             </div>
           </motion.div>
         </div>

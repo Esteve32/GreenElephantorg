@@ -40,10 +40,11 @@ or independently edited mirror to complete a normal task.
 
 ## Project boundaries
 
-- **AI-LIT:** active discovery for website simplification and AI literacy training.
-  Audience direction is recorded; niche, offer, conversion, language launch,
-  architecture and application baseline remain open. Documentation consolidation
-  does not authorize product implementation.
+- **AI-LIT:** approved website implementation for human-centred AI literacy.
+  Current scope and release gates are recorded in the AI-LIT PRD and decisions.
+  Full French coverage and live provider verification remain explicit checks;
+  GitHub merge is separate from human Replit publication. Documentation
+  consolidation alone does not authorize additional product implementation.
 - **MY5:** MyFive, alias My5, is paused without a resumption date. Preserve its
   requirements, source material, branch and draft PR #4. Do not resume, rename,
   merge, deploy or close the paused work as a consequence of organizing docs.

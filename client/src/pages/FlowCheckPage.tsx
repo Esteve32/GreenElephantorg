@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -772,10 +773,7 @@ export default function FlowCheckPage() {
   return (
     <div className="min-h-screen pb-16">
       <SEO
-        title="Check Your Communication Flow | Free Assessment | GreenElephant"
-        description="Measure your communication flow state using Csikszentmihalyi's model. Discover if you're in the Flow, Challenge, Comfort, or Danger zone in your key communication situations."
-        canonicalPath="/flow-check"
-        keywords="flow state assessment, self-awareness tool, free emotional intelligence test, personal development check, communication self-reflection, Csikszentmihalyi flow model, flow zone, motivation challenge competence, free communication assessment, free EQ check, conscious communication test, resilience check, personal growth tool, self-assessment, AI personal growth"
+        {...PAGE_METADATA["/flow-check"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Flow Check", url: "/flow-check" },

@@ -1,3 +1,4 @@
+import { PAGE_METADATA } from "@shared/page-metadata";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,11 +66,8 @@ const FAQ_ITEMS = [
 export default function ForCEOsPage() {
   return (
     <div className="min-h-screen">
-      <SEO 
-        title="CEO Communication Coaching | Leadership Communication Assessment"
-        description="Communication diagnostic for CEOs and executives. Map your leadership patterns across Influence, Alignment, and team dynamics. Data-driven insights for executive presence. €99.95."
-        keywords="CEO communication coaching, executive communication assessment, leadership communication, executive presence training, CEO leadership development, team alignment diagnostic, executive coaching tools"
-        canonicalPath="/for-ceos"
+      <SEO
+        {...PAGE_METADATA["/for-ceos"]}
         faqItems={FAQ_ITEMS}
         breadcrumbs={[
           { name: "Home", url: "/" },

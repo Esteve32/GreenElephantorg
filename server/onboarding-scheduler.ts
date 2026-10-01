@@ -141,7 +141,9 @@ function shouldSendEmail(
   return false;
 }
 
-async function processOnboardingEmails(): Promise<void> {
+async function processOnboardingEmails(): Promise<void> { return; }
+
+async function legacyProcessOnboardingEmails(): Promise<void> {
   try {
     const templates = await storage.getActiveOnboardingEmailTemplates();
     if (templates.length === 0) {
@@ -203,7 +205,7 @@ async function processOnboardingEmails(): Promise<void> {
 }
 
 // Manual trigger for a specific customer and sequence
-export async function triggerOnboardingEmail(
+async function legacyTriggerOnboardingEmail(
   customerEmail: string,
   sequenceNumber: string
 ): Promise<{ success: boolean; message: string }> {
@@ -283,3 +285,6 @@ export function stopOnboardingScheduler(): void {
 
 // Export for testing
 export { processOnboardingEmails };
+
+// Paused until template purpose, EN/FR content and dashboard/consent triggers are reviewed.
+export async function triggerOnboardingEmail(_email:string,_sequence:string) {return {success:false,message:"Legacy onboarding is paused pending reviewed EN/FR templates and consent/trigger rules"};}
