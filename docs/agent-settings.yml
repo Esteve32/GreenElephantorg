@@ -1,0 +1,10 @@
+# Developer-controlled activation for the supplemental training seed.
+# Set enabled to false to switch off the seed layer in this repository.
+seed_instructions:
+  enabled: true
+  source_repository: Esteve32/esteve-ai-literacy-training-seed
+  source_commit: a874a4fb5ca375814c6d5faff35de574f5057c30
+  source_path: bundles/🍂 Esteve AI Literacy Training Seed/🍂 Agent Instructions.md
+  local_snapshot: docs/agent-instructions/esteve-ai-literacy-training-seed.md
+  first_use_setup: once_if_user_preferences_are_not_already_known
+  precedence: repository-specific safety, privacy, authority, environment, and product rules remain in force
