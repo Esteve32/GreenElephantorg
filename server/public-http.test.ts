@@ -216,7 +216,7 @@ test('French landing pages have real French content and reciprocal language link
   const home = await (await fetch(origin + '/fr')).text();
   assert.match(home,/Travaillez avec l’IA/); assert.match(home,/maeva-portrait/);
   const scan = await (await fetch(origin + '/fr/scan')).text();
-  assert.match(scan,/questionnaire du Scan et les vidéos sont actuellement en anglais/);
+  assert.match(scan,/Questionnaire et guides vidéo actuellement en anglais/);
   assert.match(scan,/href="\/fr\/checkout\?product=satellitescan&amp;lang=fr"|href="\/fr\/checkout\?product=satellitescan&lang=fr"/);
   const article=await (await fetch(origin+'/fr/blog/acx-levels-ai-literacy')).text();
   const schema=JSON.parse(article.match(/id="page-structured-data">([^<]+)<\/script>/)![1]);

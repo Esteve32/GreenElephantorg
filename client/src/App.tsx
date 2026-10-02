@@ -33,6 +33,7 @@ const MyFiveInvitationPage = lazy(() => import("@/pages/myfive/InvitationPage"))
 const ParkedWebinarsPage = lazy(() => import("@/pages/ParkedWebinarsPage"));
 
 const HomePage = lazy(() => import("@/pages/HomePage"));
+const CoachingLandingPage = lazy(() => import("@/pages/CoachingLandingPage"));
 const SignalsQuizPage = lazy(() => import("@/pages/SignalsQuizPage"));
 const ChooseYourPathPage = lazy(() => import("@/pages/ChooseYourPathPage"));
 const PeriodicTablePage = lazy(() => import("@/pages/PeriodicTablePage"));
@@ -139,6 +140,11 @@ function Router() {
         <Route path="/fr/checkout" component={CheckoutPage} />
         <Route path="/fr/payment-success" component={PaymentSuccessPage} />
         <Route path="/scan" component={ScanPage} />
+        <Route path="/ai-coaching/lifetime-archive" component={CoachingLandingPage} />
+        <Route path="/ai-coaching/next-chapter-business" component={CoachingLandingPage} />
+        <Route path="/ai-coaching/everyday-confidence" component={CoachingLandingPage} />
+        <Route path="/ai-coaching/facilitators-and-coaches" component={CoachingLandingPage} />
+        <Route path="/ai-coaching/experienced-specialists" component={CoachingLandingPage} />
         <Route path="/programs" component={ProgramsPage} />
         <Route path="/blog/acx-levels-ai-literacy" component={AcxArticlePage} />
 

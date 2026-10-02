@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.20.4
+# Green Elephant — Project Decision Log v11.21.2
 
-**Document Version:** `11.20.4`
-**Last Updated:** `2026-10-02T00:00:00+03:00`
+**Document Version:** `11.21.2`
+**Last Updated:** `2026-10-03T01:24:06+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,9 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.21.2 | 2026-10-03T01:24:06+03:00 | Estève Pannetier | AI-LIT: record owner visual acceptance and authorisation for commit, branch push and reviewed GitHub PR; manual Replit and GA4 gates remain separate |
+| 11.21.1 | 2026-10-03T01:16:12+03:00 | Estève Pannetier | AI-LIT: approve October copy and airy local homepage, five coaching pages and bilingual Scan implementation; visual, GA4 and release verification remain open |
+| 11.21.0 | 2026-10-03T00:39:29+03:00 | Estève Pannetier | AI-LIT: record five-page English-first experiment, existing GA4 and consent verification scope, and home/Scan refinement directions; copy remains proposed |
 | 11.20.3 | 2026-10-01T22:00:00+03:00 | Estève Pannetier | DEC-GE-PRD-002: establish the Green Elephant OS / website cross-check, local environment guide, human workshop decision path and verified integration boundary; no runtime changes |
 | 11.20.4 | 2026-10-02T00:00:00+03:00 | Estève Pannetier | DEC-GE-PRD-003: adopt the pinned supplemental seed instructions in both repos with a developer switch; repository authority and human approval rules stay active |
 | 11.20.2 | 2026-10-01T05:21:13+03:00 | Estève Pannetier | AI-LIT: authorised release preparation and Maeva blur approval; core EN/FR app, guarded email/payment flow, dependency and privacy repairs; full French and live provider gates remain explicit |
@@ -977,6 +980,210 @@ decision here when Estève selects one; do not silently change its status.
 - **Supersedes:** earlier implementation-not-approved status for the authorised
   website scope only. Preserves DEC-MY5-001, current publication boundaries and
   the existing canonical-document process.
+
+<a id="dec-ail-038"></a>
+### DEC-AIL-038 — Five coaching landing pages, English first
+
+- **Project:** AI-LIT
+- **Status:** approved experiment scope and language sequence; exact copy and implementation review pending
+- **Decision date:** 2026-10-03
+- **Approver / evidence:** Estève Pannetier selects “Go for option B” after the
+  five-page simultaneous-launch proposal, then answers “1” to English first with
+  French prepared in a later reviewed batch. These are two separate selections.
+- **Decision:** prepare five distinct coaching-journey landing pages: lifetime
+  archive to book/learning content; next-chapter venture; everyday AI confidence;
+  facilitators/coaches; employer-funded experienced specialists. Release the five
+  English pages in one shared window once copy, delivery details and measurement
+  are ready. Prepare French versions later; this does not remove French scope or
+  change the existing bilingual homepage/Scan alignment requirement.
+- **Offer boundary:** retain the four-day, part-time beginner journey for 1–5
+  people under AI-LIT-REQ-017. Project examples are draft learning activities,
+  not newly guaranteed deliverables. Journey fee, daily hours, location/delivery
+  terms and tool costs remain open. The EUR 2,400 group-workshop price is not the
+  coaching-journey price. Keep the workshop as a separate buying path.
+- **Evidence:** SRC-AI-LIT-RESEARCH-20261002 is exploratory research, including
+  reported enquiries and a proposal rather than proven purchases/search demand.
+  The selected portfolio is an experiment, not a market ranking. Private stories,
+  identities and supplied document instructions do not become public copy.
+- **Affected PRD IDs:** AI-LIT-REQ-001/002/004/017/021/032/039;
+  AI-LIT-TBD-001/002/004/006; AI-LIT-PROP-SEO-004.
+- **Refines / supersedes:** resolves the five-page versus staged-launch choice and
+  the first language for these five pages. Refines DEC-AIL-007/018/029; preserves
+  independent-professional homepage priority and the later French obligation.
+- **Implementation state:** recorded in the working tree; complete copy proposals
+  are in the canonical PRD's October workshop section. No public routes, tracking,
+  booking settings or deployment changed by this record.
+
+<a id="dec-ail-039"></a>
+### DEC-AIL-039 — Update existing GA4 for the three-month page comparison
+
+- **Project:** AI-LIT
+- **Status:** measurement objective approved; existing tag and consent behaviour unverified
+- **Decision date:** 2026-10-03
+- **Approver / evidence:** Estève requests updating the existing Google Analytics
+  setup and comparing page performance over three months. He reports that GA
+  tracking is already set up and that the live website has an Accept/Reject cookie
+  choice. Preserve these as owner reports, not independently verified runtime facts.
+- **Decision:** investigate and reuse the existing GA4 property and consent choice.
+  Reconcile the live setup before adding a tag or banner. Prepare measurement of
+  each page's visits, acquisition source and enquiry actions. Event names, exact
+  attribution, report design and the start date remain implementation proposals.
+- **Current technical evidence:** at website source commit
+  `2a029447065922649ed4391a275221694a7ad424`, `client/src/lib/analytics.ts`
+  exports an empty `initGA` and a consent function returning false. The admin status
+  endpoint checks presence of configuration, not event delivery. Cookie-policy
+  source says analytics cookies are not used. Public HTML checked during this
+  workshop showed no GA/GTM loader. These checks do not establish the absence of
+  an external or consent-dependent installation. Account data and actual browser
+  Accept/Reject behaviour have not been inspected.
+- **Scope:** no automatic Notion/Sheets customer transfer, new advertising feature,
+  provider credential or changed booking form is selected by this measurement goal.
+  Distinguish booking-link clicks from confirmed appointments and paid enquiries.
+- **Cross-repository check:** website baseline
+  `2a029447065922649ed4391a275221694a7ad424`; GreenElephantOS main
+  `83391d8520a6bfb2e010590686d6e32797490b62`, with its PRD and decision log read
+  at that commit. Website GEOS-REQ-002/003/004 and OS GEOS-REQ-002/003/004,
+  DEC-GEOS-001/002/003 apply. The OS is unaffected by this website-only draft:
+  no schema, package, Apps Script, calendar field or receiving-system write is
+  introduced. No paired OS PR is required for this record; recheck before any
+  implementation that introduces a shared flow. No receiving integration is claimed.
+- **Affected PRD IDs:** AI-LIT-REQ-010/040, AI-LIT-TBD-009,
+  AI-LIT-PROP-GROWTH-004; website GEOS-REQ-002/003/004.
+- **Refines / supersedes:** selects the measurement objective in
+  AI-LIT-PROP-GROWTH-004. It does not certify or bypass existing consent safeguards
+  recorded in DEC-AIL-037.
+- **Open gate:** identify the live GA4 destination and banner mechanism; inspect
+  consent states and events in a real browser and the GA4 account before collection
+  changes or starting the comparison. No account connection or live tag changed.
+
+<a id="dec-ail-040"></a>
+### DEC-AIL-040 — Homepage and bilingual Satellite Scan copy/layout workshop
+
+- **Project:** AI-LIT
+- **Status:** refinement direction requested; exact copy and Maeva placement proposed
+- **Decision date:** 2026-10-03
+- **Approver / evidence:** Estève requests shorter homepage copy informed by the
+  research, advice on moving Maeva higher, and shorter aligned English/French Scan
+  pages with simpler typography, more room around buttons, no walkthrough video
+  or screen mockups, and the language box replaced by short text below the button.
+- **Decision:** prepare English Scan first and match its content/order in French.
+  Remove the marketing-page walkthrough and screen mockups; this does not remove
+  the included customer dashboard, purchased video guides or practice materials.
+  Keep the original hero artwork. Each page's copy, labels and disclosures use its
+  own language, while approved product/framework names remain proper names.
+  Keep the purchase disclosure under the CTA in readable text: questionnaire and
+  videos currently English, automatic translation accuracy not guaranteed.
+- **Proposed design:** retain Poppins headings/Lato body and existing dark brand;
+  simplify the size scale and give CTA groups consistent vertical space. Move
+  Maeva's existing quote to the end of the training-format section for review,
+  keeping her words, attribution and approved asset. That precise placement has
+  not yet been approved.
+- **Affected PRD IDs:** AI-LIT-REQ-022/026/028/032/035/036/038/041;
+  DEC-AIL-020/035/037.
+- **Refines / supersedes:** the English-first exception in DEC-AIL-038 applies
+  only to the five new landing pages. Existing homepage/Scan copy changes continue
+  to require matched French. Removing the notice box changes presentation, not
+  the pre-purchase disclosure in DEC-AIL-035.
+- **Implementation state:** proposed copy and a derived local reading preview;
+  customer-facing application files remain unchanged. Public acceptance, PR and
+  human Replit publication follow the agreed three-phase workflow.
+
+<a id="dec-ail-041"></a>
+### DEC-AIL-041 — Approve October copy and airy local website implementation
+
+- **Project:** AI-LIT
+- **Status:** approved for local implementation; visual acceptance and release pending
+- **Decision date:** 2026-10-03
+- **Approver:** Estève Pannetier
+- **Approval evidence:** “This is all good. I want you to do that and make sure
+  that we use the styled airy Green Elephant style with the right fonts and
+  spacing everywhere for these pages.” This follows the complete October copy
+  packet and proposed homepage testimonial placement.
+- **Decision:** implement the approved homepage audience lines and Maeva
+  placement, five English coaching pages, and matched EN/FR Scan copy locally.
+  Use existing Poppins headings, Lato body type, dark/navy surfaces, teal controls,
+  purple ACX links, constrained reading widths and responsive generous spacing.
+  Coaching pages share a layout and link from the English training section;
+  no placeholder French coaching routes or new main-menu items.
+- **Preserved:** exact EN/FR Maeva quote, attribution and portrait; original
+  Scan hero asset; existing price, dashboard/video-guide inclusions, checkout
+  routes and 14-day refund promise. Existing Scan testimonials are retained in
+  a disclosure, with labelled French translations. Framework explanations,
+  resource/Flow Check links, optional email signup and server-gated subscription
+  remain available; verbose marketing sections are consolidated into shorter
+  explanations. Marketing walkthrough and device mockups are absent from these
+  two Scan page layouts, not deleted from unrelated uses or purchased materials.
+- **Implementation evidence:** shared authored coaching/Scan sources render on
+  both initial HTTP responses and React navigation. Existing sitemap and route
+  metadata include the five pages. `npm run preview:website` serves local-only
+  live-editing preview on 127.0.0.1:5180; all preview API calls return 503, with
+  no database, scheduler, payment or email route imported.
+- **Analytics boundary:** no new GA tag/banner, tracking enablement or external
+  analytics settings changed. Fixed CTA use-case/position labels are present;
+  they are not proof of events. DEC-AIL-039 runtime verification is still open.
+- **OS cross-check:** re-read OS PRD/log at current main
+  `83391d8520a6bfb2e010590686d6e32797490b62`; website baseline
+  `2a029447065922649ed4391a275221694a7ad424` plus this working tree. Website
+  GEOS-REQ-002/003/004 and OS GEOS-REQ-002/003/004, DEC-GEOS-001/002/003 apply.
+  No shared schemas/packages, calendar fields, new OS adapter, or purchase-to-Notion
+  transfer introduced. Existing optional `/api/scan-interest` code references
+  Notion sync and email providers; this record does not establish receiving-system
+  activity or authorize a test submission. No receiving integration is claimed.
+  No paired OS code change is needed; include both SHAs and this rationale in the PR.
+- **Verification:** production build, repository checks, 62 isolated release tests
+  and 7 new page/content checks pass. Both MY5 baselines and exact bilingual Maeva
+  blocks/footers match HEAD. Full TypeScript check still reports errors in
+  unchanged legacy files; no new-page errors reported. Browser connection is
+  unavailable: responsive visual/font-load and keyboard interaction acceptance
+  remain open, not claimed from HTML checks.
+- **Affected PRD IDs:** AI-LIT-REQ-022/026/028/032/035/036/038/039/041;
+  AI-LIT-TBD-001/004/006/007/009; AI-LIT-AC-005/007.
+- **Refines / supersedes:** approves the copy, routes, shared layout and Maeva
+  placement proposed in DEC-AIL-038/040 and the October PRD packet. Commercial
+  details still open in AI-LIT-TBD-002 are not invented. Preserves DEC-AIL-039's
+  consent/analytics gate, the common five-page launch window, MY5 pause and human
+  Replit publication boundary.
+- **Delivery state:** working tree on `fix/website-polish-20261002`; not committed,
+  pushed, merged, Replit-prepared or published. Review local layout before PR.
+
+<a id="dec-ail-042"></a>
+### DEC-AIL-042 — Accept website preview and authorise GitHub PR preparation
+
+- **Project:** AI-LIT
+- **Status:** owner-reviewed design accepted; commit, branch push and PR authorised
+- **Decision date:** 2026-10-03
+- **Approver:** Estève Pannetier
+- **Approval evidence:** “These are excellent. Continue working on them now.
+  Ready to push those to GitHub and then onwards to Replit. Maybe we need to do
+  a PR, or are there any other checks that we need to do before doing a PR?”
+- **Decision:** prepare the accepted homepage, five English coaching pages and
+  bilingual Scan refinement as one cohesive website PR against `main`. Include
+  shared style/content rendering, route/sitemap coverage, isolated preview and
+  regression checks with the corresponding canonical approval/source records.
+  This accepts the owner's visual review, not unperformed device, keyboard,
+  consent or provider tests. Do not bypass GitHub checks or manually publish Replit.
+- **Pre-PR evidence:** fetched credential-checked origin; HEAD and current main
+  both `2a029447065922649ed4391a275221694a7ad424`. Repo-local author is
+  Estève Pannetier <email@estevepannetier.com>. Production build, repository check
+  and all 69 isolated release tests pass. The dependency audit has zero high or
+  critical findings and eight moderate findings; no dependency version is changed.
+  The existing CI TypeScript exception remains visible, not weakened by this PR.
+- **Cross-repository evidence:** OS main remains
+  `83391d8520a6bfb2e010590686d6e32797490b62`; DEC-AIL-041's read of its PRD/log
+  and no-OS-code-change rationale still apply. Record both SHAs and website/OS
+  GEOS-REQ-002/003/004, DEC-GEOS-001/002/003 in the PR. No live integration is claimed.
+- **Release gates:** GitHub CI and review precede merge. Issue #31 is still the
+  manual Replit handoff and currently names the baseline SHA; use its refreshed
+  exact SHA only after merge. Do not infer live publication from a merged PR.
+  Existing analytics/consent and production provider evidence remain separate;
+  no three-month comparison starts until measurement is verified.
+- **Affected PRD IDs:** AI-LIT-REQ-022/026/028/032/035/036/038/039/040/041;
+  AI-LIT-AC-005/007; AI-LIT-TBD-008/009.
+- **Refines:** closes the owner visual-review gate in DEC-AIL-041 and authorises
+  its GitHub handoff. Does not approve new prices, grant claims, tracking,
+  customer-data transfers, database operations, email tests or a MY5 restart.
+- **Delivery state at recording:** PR preparation authorised; actual commit,
+  remote head, PR URL and CI results must be verified on GitHub. Replit untouched.
 
 ## MY5 pause and historical decisions
 

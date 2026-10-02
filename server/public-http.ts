@@ -1,5 +1,6 @@
 import homepage from '../shared/homepage-content.json';
-import scanFr from '../shared/scan-page-fr.json';
+import { renderScanPage } from '../shared/scan-page';
+import { coachingPage, renderCoachingPage } from '../shared/coaching-pages';
 import { ACX_ARTICLE_FR_HTML } from '../shared/acx-article-fr';
 import { basePagePath, hasFrenchPage, localPage, articleLinks, siteLanguage } from '../shared/site-language';
 import { ACX_ARTICLE, ACX_ARTICLE_HTML, ACX_ARTICLE_SCHEMA } from "../shared/acx-article";
@@ -84,7 +85,9 @@ export function renderPageMetadata(template: string, pathname: string): string {
     tags.push(`<script type="application/ld+json" id="page-structured-data">${JSON.stringify({ ...ACX_ARTICLE_SCHEMA, headline: m.title, description: m.description, inLanguage: language, url, mainEntityOfPage: url }).replaceAll("<", "\\u003c")}</script>`);
   }
   if (base === '/') html = html.replace('<div id="root"></div>', `<div id="root"><div class="ge-site"><main class="home-content">${homepage[language].main}</main>${homepage[language].footer}</div></div>`);
-  if (pathname === '/fr/scan') html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-scan-fr"><div class="scan-content">${scanFr.html}</div></main></div>`);
+  if (base.replace(/\/+$/, '') === '/scan') html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-site" lang="${language}">${renderScanPage(language)}</main></div>`);
+  const coaching = coachingPage(pathname);
+  if (coaching) html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-site" lang="en">${renderCoachingPage(coaching)}</main></div>`);
   return html.replace("</head>", tags.join("\n    ") + "\n  </head>");
 }
 

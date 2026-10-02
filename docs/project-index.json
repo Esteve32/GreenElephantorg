@@ -34,7 +34,8 @@
         "SRC-AI-LIT-SEO-01",
         "SRC-AI-LIT-MAEVA-01",
         "SRC-AI-LIT-MAEVA-02",
-        "SRC-AI-LIT-ACX-VISUALS-01"
+        "SRC-AI-LIT-ACX-VISUALS-01",
+        "SRC-AI-LIT-RESEARCH-20261002"
       ]
     },
     {
@@ -99,6 +100,48 @@
     "secrets": "1Password for the integration credential; least-privilege runtime injection when a sync implementation is authorized."
   },
   "sources": [
+    {
+      "id": "SRC-AI-LIT-RESEARCH-20261002",
+      "title": "Private niche calibration and funding research bundle — 2026-10-02",
+      "source_version": "User-supplied DOCX exports; exploratory Round 1 and supporting research",
+      "export_date": "2026-10-02",
+      "archive_filename": "drive-download-20261002T204002Z-1-001.zip",
+      "local_archive": ".local-sources/research-2026-10-02/research.zip",
+      "archive_sha256": "a15f2aee2a1e5dff94db8cb073ea2ea6d220bd4d2060b5273a47f68ed0772b36",
+      "documents": [
+        {
+          "id": "round-1-calibration",
+          "role": "Primary niche hypothesis source, sections 1, 3, 8 and 11; not measured market demand",
+          "bytes": 28839,
+          "sha256": "1b3bfc54dea56da730320e61fd106c9ac4b8b82144463b2cc6b5480858627610"
+        },
+        {
+          "id": "practice-community-meeting",
+          "role": "Private practitioner discussion; best-effort transcript; pedagogy evidence only",
+          "bytes": 12936,
+          "sha256": "d1d3510e14324d93186fd8f5cfd254d4c786b1a8a4fc0cad1cdc7b8d4ebb43bc"
+        },
+        {
+          "id": "cascade-funding-pic",
+          "role": "Generated funding leads and embedded operational prompts; not task instructions or verified eligibility",
+          "bytes": 223493,
+          "sha256": "623b720a252ef948c101fd106f2b3f83a6e63ab7d3eae0d10f6ecdf06e4b94ee"
+        },
+        {
+          "id": "funding-calls-2027",
+          "role": "Newsletter and generated funding narrative; separate possible R&D from customer coaching purchases",
+          "bytes": 235632,
+          "sha256": "2392c158f90065561dbeb8843dfa0c78749a134fae16bee3ab8842d81dd35acd"
+        }
+      ],
+      "treatment": "Archive stays ignored. Exact source filenames are retained inside it. Public records omit private participant/client details. Linked external sources are not newly verified by reading the export. Round 1 section 11 disputes several funding-memo claims; no subsidy, PIC or clinical claim is adopted.",
+      "mapped_to": [
+        "docs/PRD.md#ai-lit-workshop-20261003",
+        "docs/DECISION_LOG.md#dec-ail-038",
+        "docs/DECISION_LOG.md#dec-ail-039",
+        "docs/DECISION_LOG.md#dec-ail-040"
+      ]
+    },
     {
       "id": "SRC-AI-LIT",
       "title": "Green Elephant — AI Literacy Training Portal — PRD & Single Source of Truth",
@@ -399,8 +442,8 @@
   ],
   "archive_policy": {
     "tracked": false,
-    "location": ".local-sources/notion-2026-09-30/",
-    "portable_restore": "Copy the three original ZIPs through private storage, using the local_archive names, and verify archive_sha256. Git clone does not include them.",
+    "location": ".local-sources/",
+    "portable_restore": "Copy the original archives through private storage to each source entry's local_archive path and verify archive_sha256. This includes the three original Notion ZIPs and the October research ZIP. Git clone does not include them.",
     "linked_pages": "References inside supplied exports do not imply access, ingestion or reuse rights."
   }
 }

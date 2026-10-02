@@ -1,0 +1,76 @@
+/* Shared, scoped layout rhythm. Reuse Green Elephant's Poppins/Lato tokens. */
+.ge-site .ge-scan.ge-landing .ge-scan-hero { text-align: center; padding: 96px 0 64px; position: relative; isolation: isolate; background: #0a0a0a; }
+.ge-site .ge-scan-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg,#0a0a0a88,#0a0a0a60 35%,#0a0a0ae8 85%,#0a0a0a),url('/images/website/scan-earth-original.png') center top/cover no-repeat; }
+.ge-site .ge-scan-hero h1, .ge-site .ge-scan-hero p { margin-left: auto; margin-right: auto; }
+.ge-site .ge-scan-hero .ge-cta-group { align-items: center; margin: 40px auto 32px; }
+.ge-site .ge-scan-hero .ge-scroll { margin-top: 28px; }
+.ge-site .ge-scan-steps { list-style: decimal; padding-left: 26px; margin: 28px 0 0; }
+.ge-site .ge-scan-steps li { padding-left: 12px; margin-bottom: 24px; color: #ccc; }
+.ge-site .ge-scan-steps li::marker { color: var(--teal); font-weight: 700; }
+.ge-site .ge-acx-links { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 56px; margin: 40px 0; }
+.ge-site .ge-acx-link { display: flex; align-items: center; gap: 20px; padding: 18px; margin-bottom: 20px; border: 1px solid #b7a6e833; background: #11101a; border-radius: 6px; color: #b7a6e8; text-decoration: none; font-size: .875rem; }
+.ge-site .ge-acx-link strong { display: block; font: 700 1.125rem/1.5 var(--heading); margin-top: 4px; }
+.ge-site .ge-acx-link img { flex: 0 0 44px; }
+.ge-site .ge-acx-link:hover { border-color: #b7a6e8; background: #1d182b; }
+.ge-site .ge-scan-quotes figure { border-top: 1px solid var(--line); padding: 28px 0; }
+.ge-site .ge-scan-quotes blockquote { font-size: 1.125rem; line-height: 1.8; }
+.ge-site .ge-scan-quotes figcaption { font-size: .9375rem; margin-top: 20px; }
+.ge-site .ge-terms { display: flex; flex-wrap: wrap; gap: 16px 28px; margin-bottom: 36px; }
+.ge-site .ge-terms a { padding: 10px 0; }
+.ge-site .ge-scan-options { padding-top: 24px; padding-bottom: 80px; }
+.ge-site .ge-scan-options summary { padding: 22px 0; cursor: pointer; font-size: 1.125rem; font-weight: 700; }
+.ge-site .ge-scan-form { max-width: 680px; display: grid; gap: 24px; }
+.ge-site .ge-scan-form label { display: block; font-size: 1rem; }
+.ge-site .ge-scan-form input:not([type=checkbox]) { display: block; width: 100%; min-height: 48px; padding: 10px 14px; margin-top: 8px; background: #101820; border: 1px solid #ffffff55; border-radius: 6px; color: white; font: inherit; }
+.ge-site .ge-checkbox { display: flex; align-items: flex-start; gap: 14px; }
+.ge-site .ge-checkbox input { margin-top: 6px; width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--teal); }
+.ge-site .ge-scan-form button:disabled { opacity: .55; cursor: not-allowed; }
+.ge-site .ge-landing { overflow-wrap: anywhere; }
+.ge-site .ge-landing p { max-width: 66ch; color: #ccc; }
+.ge-site .ge-landing h1 { max-width: 17ch; font-size: clamp(2.5rem, 5vw, 4.25rem); line-height: 1.16; text-shadow: none; }
+.ge-site .ge-landing h2 { max-width: 23ch; font-size: clamp(1.9rem, 3.2vw, 2.7rem); line-height: 1.25; }
+.ge-site .ge-landing h3 { font-size: 1.4rem; line-height: 1.4; }
+.ge-site .ge-landing .eyebrow { color: var(--teal); font-size: .875rem; margin-bottom: 24px; }
+.ge-site .ge-landing-hero { padding: 40px 0 88px; background: radial-gradient(ellipse at 90% 25%, #143f4938, transparent 65%), linear-gradient(180deg,#0a0a0a,#0a1628 75%,#0a0a0a); }
+.ge-site .ge-back { display: inline-block; font-size: .9rem; color: #ccc; padding: 12px 0; margin-bottom: 56px; }
+.ge-site .ge-lead { font-size: clamp(1.125rem, 2vw, 1.375rem); line-height: 1.75; max-width: 60ch; }
+.ge-site .ge-cta-group { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; margin: 36px 0; }
+.ge-site .ge-cta-group .button { min-height: 54px; padding: 16px 28px; max-width: 100%; white-space: normal; text-align: center; }
+.ge-site .ge-cta-group p { margin: 0; }
+.ge-site .ge-note { font-size: .9375rem; line-height: 1.7; color: #ccc; max-width: 65ch; }
+.ge-site .ge-scroll { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; font-size: .9375rem; color: #ccc; }
+.ge-site .ge-split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 80px); align-items: start; }
+.ge-site .ge-example { padding: 32px 0 12px 32px; border-left: 1px solid #00b3b360; }
+.ge-site .ge-band { background: linear-gradient(160deg, #0a1628, #0a101b 60%, #0a0a0a); }
+.ge-site .ge-practice { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 36px; list-style: none; padding: 0; margin: 44px 0 56px; }
+.ge-site .ge-practice li { border-top: 1px solid var(--line); padding-top: 28px; }
+.ge-site .ge-step { display: block; color: var(--teal); font: 700 1rem var(--heading); margin-bottom: 20px; }
+.ge-site .ge-takeaway { border-top: 1px solid var(--line); padding-top: 32px; }
+.ge-site .ge-facts { display: flex; flex-wrap: wrap; gap: 12px 24px; list-style: none; padding: 0; margin: 28px 0 0; font-size: .9375rem; color: #ccc; }
+.ge-site .ge-facts li { border-bottom: 1px solid #00b3b355; padding-bottom: 8px; }
+.ge-site .ge-questions details { border-bottom: 1px solid var(--line); padding: 4px 0; }
+.ge-site .ge-questions summary { cursor: pointer; padding: 22px 0; font-weight: 700; font-size: 1.125rem; line-height: 1.6; }
+.ge-site .ge-questions details p { margin: 0 0 24px; }
+.ge-site .ge-landing-close { padding-top: 104px; padding-bottom: 104px; }
+.ge-site .ge-landing-close h2 { max-width: 30ch; }
+.ge-site .coaching-paths { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--line); }
+.ge-site .coaching-paths h3 { font-size: 1.5rem; }
+.ge-site .coaching-paths ul { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.ge-site .coaching-paths a { display: block; border-bottom: 1px solid var(--line); padding: 22px 0; text-decoration: none; min-height: 44px; }
+.ge-site .coaching-paths strong { color: var(--teal); display: block; margin-bottom: 8px; font-size: 1.1rem; }
+.ge-site .coaching-paths span { color: #ccc; display: block; font-size: 1rem; line-height: 1.7; }
+.ge-site .coaching-paths a:hover strong { color: #71d6d6; text-decoration: underline; }
+.ge-site .training .testimonial { margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--line); }
+@media (max-width: 700px) {
+  .ge-site .ge-acx-links { grid-template-columns: 1fr; gap: 24px; }
+  .ge-site .ge-scan.ge-landing .ge-scan-hero { padding-top: 64px; }
+  .ge-site .ge-split, .ge-site .ge-practice, .ge-site .coaching-paths ul { grid-template-columns: 1fr; }
+  .ge-site .ge-landing-hero { padding: 20px 0 56px; }
+  .ge-site .ge-back { margin-bottom: 32px; }
+  .ge-site .ge-cta-group { margin: 32px 0; gap: 20px; }
+  .ge-site .ge-cta-group .button { width: 100%; }
+  .ge-site .ge-example { padding: 0 0 0 24px; }
+  .ge-site .ge-practice { gap: 20px; margin: 32px 0; }
+  .ge-site .ge-landing-close { padding-top: 64px; padding-bottom: 64px; }
+  .ge-site .training .testimonial { margin-top: 44px; padding-top: 36px; }
+}

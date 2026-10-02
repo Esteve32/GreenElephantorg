@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
+    "preview:website": "tsx scripts/preview-website.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
@@ -15,7 +16,7 @@
     "manifest:generate": "node scripts/generate-repository-manifests.mjs",
     "decision:record": "node scripts/record-decision-version.mjs",
     "db:push": "drizzle-kit push",
-    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs"
+    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
