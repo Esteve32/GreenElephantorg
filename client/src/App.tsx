@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import FooterImage from "@/components/FooterImage";
 import { useHashScroll } from "@/hooks/useHashScroll";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { AnalyticsConsent } from '@/components/AnalyticsConsent';
 
 import NotFound from "@/pages/not-found";
 
@@ -228,6 +229,7 @@ function Router() {
       </main>
 
       {!hideGlobalFooter && <Footer />}
+      <AnalyticsConsent />
     </>
   );
 }

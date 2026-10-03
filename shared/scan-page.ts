@@ -2,6 +2,7 @@ import { scanLiteracy, type ScanLanguage } from './scan-literacy';
 import { localPage } from './site-language';
 import { DISCOVERY_URL, escapeCopy as e } from './coaching-pages';
 import testimonials from './scan-testimonials.json';
+import { restoredScan, renderRestoredScanSections, renderRestoredProcess } from './scan-restored';
 
 // Existing English testimonial wording is retained verbatim. French versions
 // are labelled translations, not new testimonials or new outcome evidence.
@@ -106,16 +107,18 @@ export function renderScanPage(language: ScanLanguage): string {
   const detail = (title: string, text: string, link?: [string,string]) => `<details><summary>${e(title)}</summary><p>${e(text)}</p>${link ? `<p><a class="text-link" href="${link[0]}">${e(link[1])} →</a></p>` : ''}</details>`;
   return `<article class="ge-landing ge-scan" data-testid="page-scan">
     <section class="ge-landing-hero ge-scan-hero"><div class="wrap"><p class="eyebrow">${e(c.eyebrow)}</p><h1>${e(acx.title)}</h1><p class="ge-lead">${e(c.intro)}</p>${buy('hero')}<p class="ge-note">${e(c.offer)}</p><a class="ge-scroll" href="#scan-more">${e(c.more)} <span aria-hidden="true">↓</span></a></div></section>
-    <section class="section wrap" id="scan-more"><h2>${e(c.includedTitle)}</h2><ul class="ge-practice">${c.included.map((item,i)=>`<li><span class="ge-step" aria-hidden="true">0${i+1}</span><p>${e(item)}</p></li>`).join('')}</ul></section>
+    ${renderRestoredScanSections(language)}
     <section class="ge-band"><div class="section wrap ge-split"><div><h2>${e(c.voiceTitle)}</h2><p>${e(c.voice)}</p><p class="ge-note">${e(c.privacy)}</p></div><div><h2>${e(c.how)}</h2><ol class="ge-scan-steps">${c.steps.map(item=>`<li>${e(item)}</li>`).join('')}</ol></div></div></section>
     <section class="section wrap"><h2>${e(acx.levelsTitle)}</h2><p>${e(acx.levelsIntro)}</p><div class="ge-acx-links">${acx.levels.map(([title,text],i)=>`<div><a class="ge-acx-link" href="${localPage(`/blog/acx-levels-ai-literacy#acx-${i+1}`,language)}"><img src="/images/acx/acx-${i+1}-outline.svg" width="44" height="44" alt=""><span>ACX ${i+1}<strong>${e(title)}</strong></span></a><p>${e(text)}</p></div>`).join('')}</div><a class="text-link" href="${localPage('/blog/acx-levels-ai-literacy',language)}">${e(acx.guide)} →</a></section>
     <section class="ge-band"><div class="section wrap ge-split"><h2>${e(c.faqTitle)}</h2><div class="ge-questions">
-      ${c.faq.map(item=>detail(item.question,item.answer)).join('')}
+      ${restoredScan[language].FAQ_ITEMS.map(item=>detail(item.question,item.answer,'linkUrl' in item && item.linkUrl ? [item.linkUrl,item.linkText!] : undefined)).join('')}
+      ${c.faq.filter((_,i)=>i===0||i===2).map(item=>detail(item.question,item.answer)).join('')}
       ${detail(c.framework,c.frameworkText,['/periodic-table',c.frameworkLink])}
       ${detail(c.situations,c.situationsText)}${detail(c.compare,c.compareText)}
       ${detail(c.resources,c.resourcesText,['/resources',c.resourcesLink])}
-      <details><summary>${e(c.testimonials)}</summary>${c.translation ? `<p class="ge-note">${e(c.translation)}</p>` : ''}<div class="ge-scan-quotes">${testimonials.map((t,i)=>`<figure><blockquote>${e(language==='fr'?frenchTestimonials[i][0]:t.quote)}</blockquote><figcaption>${e(t.name)} · ${e(language==='fr'?frenchTestimonials[i][1]:t.role)}, ${e(language==='fr'?frenchTestimonials[i][2]:t.country)}</figcaption></figure>`).join('')}</div></details>
     </div></div></section>
+    <section class="section wrap" id="scan-testimonials"><h2>${e(c.testimonials)}</h2>${c.translation ? `<p class="ge-note">${e(c.translation)}</p>` : ''}<div class="ge-scan-quotes">${testimonials.map((t,i)=>`<figure><blockquote>${e(language==='fr'?frenchTestimonials[i][0]:t.quote)}</blockquote><figcaption>${e(t.name)} · ${e(language==='fr'?frenchTestimonials[i][1]:t.role)}, ${e(language==='fr'?frenchTestimonials[i][2]:t.country)}</figcaption></figure>`).join('')}</div></section>
+    ${renderRestoredProcess(language)}
     <section class="section wrap ge-landing-close"><h2>${e(c.guaranteeTitle)}</h2><p>${e(c.guarantee)}</p>${buy('closing')}<p class="ge-note ge-terms"><a href="/terms">${e(c.terms)}</a><a href="/privacy">${e(c.privacyLink)}</a></p><a class="text-link" href="${DISCOVERY_URL}" target="_blank" rel="noopener noreferrer">${e(c.training)} ↗</a></section>
     <section class="ge-band"><div class="section wrap"><h2>${e(c.freeTitle)}</h2><p>${e(c.freeText)}</p><div class="ge-cta-group"><a class="text-link" href="/flow-check">${e(c.freeLink)} →</a></div></div></section>
   </article>`;

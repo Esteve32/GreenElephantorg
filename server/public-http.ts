@@ -1,4 +1,5 @@
 import homepage from '../shared/homepage-content.json';
+import { publicAnalyticsConfig } from '../shared/marketing-analytics';
 import { renderScanPage } from '../shared/scan-page';
 import { coachingPage, renderCoachingPage } from '../shared/coaching-pages';
 import { ACX_ARTICLE_FR_HTML } from '../shared/acx-article-fr';
@@ -12,6 +13,11 @@ import { SITE_ORIGIN, DEFAULT_SOCIAL_IMAGE, pageMetadata, fullPageTitle, isRegis
 // Register before sessions, parsers and provider routes. This endpoint only
 // proves that HTTP handling is alive; it makes no dependency-readiness claim.
 export function registerPublicHttp(app: Express) {
+  // Public measurement ID only. Never return property credentials or the env.
+  // Runtime lookup avoids depending on Replit exposing deployment secrets to Vite.
+  app.get('/api/public/analytics-config', (_req, res) => {
+    res.set('Cache-Control', 'no-store').json(publicAnalyticsConfig(process.env));
+  });
   app.get("/api/ping", (_req, res) => {
     res.set("Cache-Control", "no-store").json({ status: "ok", service: "greenelephant", scope: "http" });
   });

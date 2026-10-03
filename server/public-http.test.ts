@@ -106,6 +106,15 @@ test("initial HTML has a single set of route-specific metadata", async () => {
   assert.equal(renderPageMetadata(template, "/myfive"), template, "paused MyFive template remains unchanged");
 });
 
+test('runtime analytics config is no-store and never exposes reporting credentials',async()=>{
+  const response=await fetch(origin+'/api/public/analytics-config');
+  assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');
+  const body=await response.json();
+  assert.deepEqual(Object.keys(body).sort(),['enabled','measurementId']);
+  if(body.enabled) assert.match(body.measurementId,/^G-[A-Z0-9]{6,20}$/);
+  else assert.equal(body.measurementId,null);
+});
+
 // Node fetch does not reliably permit overriding Host. Use the HTTP client
 // directly to exercise the actual incoming Host header.
 async function hostResponse(route: string, host: string, method = "GET", forwardedHost?: string) {

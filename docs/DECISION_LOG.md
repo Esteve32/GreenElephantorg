@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.21.2
+# Green Elephant — Project Decision Log v11.21.3
 
-**Document Version:** `11.21.2`
-**Last Updated:** `2026-10-03T01:24:06+03:00`
+**Document Version:** `11.21.3`
+**Last Updated:** `2026-10-03T02:03:01+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.21.3 | 2026-10-03T02:03:01+03:00 | Estève Pannetier | AI-LIT: record requested Scan restoration, seamless fades, opt-in GA repair candidate and post-relaunch issue 31 follow-up |
 | 11.21.2 | 2026-10-03T01:24:06+03:00 | Estève Pannetier | AI-LIT: record owner visual acceptance and authorisation for commit, branch push and reviewed GitHub PR; manual Replit and GA4 gates remain separate |
 | 11.21.1 | 2026-10-03T01:16:12+03:00 | Estève Pannetier | AI-LIT: approve October copy and airy local homepage, five coaching pages and bilingual Scan implementation; visual, GA4 and release verification remain open |
 | 11.21.0 | 2026-10-03T00:39:29+03:00 | Estève Pannetier | AI-LIT: record five-page English-first experiment, existing GA4 and consent verification scope, and home/Scan refinement directions; copy remains proposed |
@@ -1184,6 +1185,81 @@ decision here when Estève selects one; do not silently change its status.
   customer-data transfers, database operations, email tests or a MY5 restart.
 - **Delivery state at recording:** PR preparation authorised; actual commit,
   remote head, PR URL and CI results must be verified on GitHub. Replit untouched.
+
+<a id="dec-ail-043"></a>
+### DEC-AIL-043 — Restore Scan detail, remove background seams and repair opt-in measurement
+
+- **Project:** AI-LIT
+- **Status:** corrections requested; implementation is a local review candidate
+- **Decision date:** 2026-10-03
+- **Approver / evidence:** Estève requests seamless Scan gradients, the previous
+  content blocks in EN/FR without the walkthrough/mockups, a local show-and-tell,
+  GA working on deployment, and issue #31 follow-up after relaunch. In the cookie
+  clarification, he no longer finds the choice on the new deployment and recalls
+  it at the bottom of the older homepage. This is implementation authority, not
+  evidence of acceptance of the revised copy or of live GA delivery.
+- **Recovery evidence:** website candidate base
+  `189b35704a5dce1b90b6a425c47fc843712fb6e4`; full earlier English source recovered
+  from `ec09f80d3b122e015f9dd51b01b57edf6191b740:client/src/pages/ScanPage.tsx`,
+  before the October 1 AI-LIT merge. No equivalent full French original was found
+  at that source; French is a new matching translation, not a claimed recovery.
+- **Implementation:** recover nine persona blocks, eight signals, eight detailed
+  lenses with three practice directions each, 28 historical FAQ topics, four
+  process steps, deliverables, comparison, before/after and revisit sections.
+  Keep the current AI-literacy section, testimonials, guarantee, optional signup
+  and gated subscription. Expand content from the previous short disclosure-only
+  presentation, without restoring the removed video or mockup visuals.
+- **Explicit recovery exceptions for review:** replace the unverified MBTI/DiSC
+  comparison grid with Scan-only features; retain current limits on self-report
+  versus objective measurement; correct the old “never shared with third parties”
+  statement to the current participant/Estève/Anu email delivery and provider
+  disclosure. Do not instruct blanket upload of private results into AI tools.
+  Preserve all FAQ topics but correct unsupported outcome/ability claims. New FR
+  copy and these corrections require owner review; no new effectiveness evidence.
+- **Analytics implementation defaults for review:** a separate bounded tracker
+  replaces neither the disabled legacy purchase/assessment helpers nor marketing
+  permissions. Equal-prominence EN/FR Accept/Reject; 180-day browser preference
+  and cookie expiry; withdrawal stops collection, clears GA cookies and reloads
+  to unload the library. Runtime ID via `/api/public/analytics-config`; only a
+  validated public measurement ID is returned. `GA4_COLLECTION_ENABLED` defaults
+  off, and the host must be the production HTTPS site. Only `page_view` and
+  `marketing_cta` on home/Scan/five coaching pages; fixed broad referral categories,
+  no raw UTM/referrer/query/answer/score/user identifiers. Local preview never sends
+  GA. Private-route navigation unloads the tag; receiving-system tests remain open.
+- **GA release gate:** verify the existing property/stream, privacy/retention and
+  processor arrangements; disable Enhanced Measurement and advertising/user-data
+  features; rule out separately injected tags. Then an owner can enable the runtime
+  switch through deployment settings. Real-browser consent, withdrawal, navigation
+  and account event evidence are required before declaring collection working or
+  starting the shared three-month window. No production settings changed here.
+- **Crawler evidence:** Estève supplies a read-only live audit showing current
+  title/H1/content in initial HTML for browser and Googlebot requests, index/follow,
+  canonical HTTPS, allowed robots and sitemap. Treat stale search listing as an
+  indexing-freshness lead, not proof of invisible content. Align fallback template
+  metadata with the current homepage; Search Console remains unverified.
+- **Release handoff:** durable follow-up comment posted to issue #31 on request.
+  Keep automated SHA/Bash instructions intact, preserve the reported dirty Replit
+  `.replit`, and retain current pre-publication safety gates. Defer the named live
+  delivery/reporting/Search Console follow-ups until after relaunch with Estève.
+  PR #42 is not merged; this record does not authorize human-only Republish.
+- **OS cross-check:** current OS main was re-resolved and its PRD and log read at
+  `83391d8520a6bfb2e010590686d6e32797490b62`. Website and OS GEOS-REQ-002/003/004,
+  DEC-GEOS-001/002/003 apply. No OS schema/package/calendar/customer-data flow changes;
+  no receiving Notion/Workspace integration is claimed, so no paired OS PR needed.
+  Include the website candidate base and OS SHA in the eventual PR update.
+- **Affected PRD IDs:** AI-LIT-REQ-026/028/032/035/036/038/040/041,
+  AI-LIT-TBD-009, AI-LIT-AC-005/007; GEOS-REQ-002/003/004.
+- **Refines:** DEC-AIL-039/041/042. Earlier visual acceptance does not cover these
+  new revisions. MY5 remains paused and its requirements/source baselines intact.
+- **Delivery state:** working tree, not a new commit or push; no merge, deployment,
+  live GA account change, payment, email, database operation or source attachment
+  publication. Automated checks and preview review must be recorded separately.
+- **Local verification:** 83 isolated release tests, production build, repository
+  check and diff whitespace check pass. The complete TypeScript check retains 34
+  baseline errors in legacy files; none in the new/revised UI or analytics modules.
+  Local preview returns HTTP 200 with eight lens and nine persona blocks in each
+  language, without walkthrough/video elements. Browser surfaces are unavailable,
+  so visual, keyboard and real Google network/account acceptance are still open.
 
 ## MY5 pause and historical decisions
 

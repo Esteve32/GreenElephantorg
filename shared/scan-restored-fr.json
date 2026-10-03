@@ -1,0 +1,443 @@
+{
+  "PERSONAS": [
+    {
+      "id": "product-leaders",
+      "title": "Responsables produit et fondateurs",
+      "description": "Concevoir et lancer des produits en équipe. Préparez les conversations essentielles autour de la stratégie, des priorités et de la vision.",
+      "lenses": [
+        "influence",
+        "alignment",
+        "flow"
+      ]
+    },
+    {
+      "id": "executive-assistants",
+      "title": "Assistantes et assistants de direction",
+      "description": "Gérer des interlocuteurs multiples et maintenir l’alignement de la direction. Vous faites le lien entre les personnes de l’organisation.",
+      "lenses": [
+        "dynamics",
+        "alignment",
+        "needs"
+      ]
+    },
+    {
+      "id": "operations",
+      "title": "Responsables des opérations",
+      "description": "Faire fonctionner les systèmes de l’organisation. Une communication claire vous aide à coordonner les différents métiers.",
+      "lenses": [
+        "flow",
+        "chaordic",
+        "alignment"
+      ]
+    },
+    {
+      "id": "innovation",
+      "title": "Responsables de l’innovation",
+      "description": "Accompagner les équipes dans le changement et l’incertitude. La communication contribue à créer la sécurité psychologique nécessaire à l’expérimentation.",
+      "lenses": [
+        "attitude",
+        "chaordic",
+        "influence"
+      ]
+    },
+    {
+      "id": "teal-leaders",
+      "title": "Équipes autogérées et organisations opales",
+      "description": "Construire des organisations au-delà de la hiérarchie. Communiquer par la décision par consentement et l’autorité distribuée.",
+      "lenses": [
+        "dynamics",
+        "chaordic",
+        "ego"
+      ]
+    },
+    {
+      "id": "educators",
+      "title": "Enseignants et responsables de programmes",
+      "description": "Enseigner et concevoir des expériences d’apprentissage. Votre communication influence la façon dont les participants s’engagent et progressent.",
+      "lenses": [
+        "attitude",
+        "flow",
+        "needs"
+      ]
+    },
+    {
+      "id": "coaches",
+      "title": "Coachs et facilitateurs",
+      "description": "Accompagner les personnes dans une transformation. Votre communication crée le cadre dans lequel de nouvelles perspectives peuvent émerger.",
+      "lenses": [
+        "ego",
+        "needs",
+        "alignment"
+      ]
+    },
+    {
+      "id": "therapists",
+      "title": "Thérapeutes et professionnels de santé",
+      "description": "Construire la confiance dans la relation de soin. Utilisez le Scan pour réfléchir à votre propre communication, pas comme outil de diagnostic ni comme remplacement des soins professionnels.",
+      "lenses": [
+        "needs",
+        "ego",
+        "dynamics"
+      ]
+    },
+    {
+      "id": "consultants",
+      "title": "Consultants et acteurs du changement",
+      "description": "Aider les organisations à se transformer. Communiquer clairement entre les niveaux hiérarchiques et les cultures.",
+      "lenses": [
+        "influence",
+        "attitude",
+        "dynamics"
+      ]
+    }
+  ],
+  "PAIN_SIGNALS": [
+    {
+      "signal": "Les conversations ressemblent à un terrain miné",
+      "lens": "needs"
+    },
+    {
+      "signal": "Les mêmes conflits se répètent",
+      "lens": "dynamics"
+    },
+    {
+      "signal": "Vous réagissez avant de comprendre",
+      "lens": "ego"
+    },
+    {
+      "signal": "La confiance s’érode sans raison évidente",
+      "lens": "alignment"
+    },
+    {
+      "signal": "Vous dominez le groupe ou vous effacez",
+      "lens": "influence"
+    },
+    {
+      "signal": "Les attentes ne sont jamais alignées",
+      "lens": "alignment"
+    },
+    {
+      "signal": "Le changement vous menace plutôt qu’il ne vous stimule",
+      "lens": "attitude"
+    },
+    {
+      "signal": "Vous ne trouvez pas de fluidité dans les échanges",
+      "lens": "flow"
+    }
+  ],
+  "STEPS": [
+    {
+      "id": 1,
+      "title": "1. Répondez au Scan",
+      "description": "90 minutes. 129 questions selon 8 perspectives. Répondez honnêtement : il n’y a pas de mauvaise réponse."
+    },
+    {
+      "id": 2,
+      "title": "2. Recevez votre tableau de bord",
+      "description": "Nos coachs examinent personnellement vos réponses et créent une carte visuelle personnalisée sous 48 à 72 heures."
+    },
+    {
+      "id": 3,
+      "title": "3. Explorez vos habitudes",
+      "description": "Utilisez la bibliothèque de consignes et, si vous le souhaitez, le GPT Conscious Communicator pour explorer vos habitudes. Ne partagez que le nécessaire et vérifiez les réglages de confidentialité de l’outil d’IA."
+    },
+    {
+      "id": 4,
+      "title": "4. Faites évoluer votre communication",
+      "description": "Appliquez ce que vous apprenez. Rejoignez des programmes. Échangez avec des facilitateurs. Construisez des changements durables."
+    }
+  ],
+  "LENS_DETAILS": {
+    "influence": {
+      "painSignal": "Dominer les conversations ou se réfugier dans le silence, faire des allusions plutôt que des demandes directes.",
+      "benefit": "Équilibrer la parole et l’écoute, et construire des relations authentiques par un dialogue honnête."
+    },
+    "attitude": {
+      "painSignal": "Résister au changement, s’accrocher à des points de vue figés ou rejeter de nouvelles perspectives avant de les explorer.",
+      "benefit": "Accueillir les possibilités d’apprentissage avec curiosité et adapter votre position sans perdre vos repères."
+    },
+    "chaordic": {
+      "painSignal": "Imposer un ordre rigide ou se laisser submerger par le chaos, sans trouver une structure créative.",
+      "benefit": "Naviguer entre l’ordre et le désordre créatif, en laissant place à une souplesse structurée."
+    },
+    "flow": {
+      "painSignal": "Se sentir débordé par l’inquiétude ou désengagé par l’ennui, sans trouver l’équilibre entre défi et compétences.",
+      "benefit": "Équilibrer le défi et vos capacités pour soutenir l’engagement et la motivation."
+    },
+    "alignment": {
+      "painSignal": "Des attentes différentes, des conversations difficiles évitées ou des accords de façade sans engagement.",
+      "benefit": "Clarifier la compréhension mutuelle, prévenir les déceptions et favoriser un suivi fiable."
+    },
+    "needs": {
+      "painSignal": "Agir à partir de besoins non reconnus, confondre stratégies et besoins ou négliger le soin de soi.",
+      "benefit": "Identifier les besoins sous-jacents, explorer des solutions créatives et agir avec davantage de discernement."
+    },
+    "ego": {
+      "painSignal": "Réagir sur la défensive, vouloir avoir raison, juger rapidement ou coller des étiquettes aux autres.",
+      "benefit": "Construire une connexion authentique, chercher des solutions communes et développer l’empathie."
+    },
+    "dynamics": {
+      "painSignal": "Rester dans un seul rôle, toujours diriger ou toujours suivre, sans s’adapter au contexte.",
+      "benefit": "Passer d’un rôle à l’autre selon ce que la situation demande."
+    }
+  },
+  "FAQ_ITEMS": [
+    {
+      "id": "what-is",
+      "question": "Qu’est-ce que le Satellite Scan ?",
+      "answer": "Le Satellite Scan est une réflexion personnelle structurée de 129 questions qui explore vos habitudes de communication selon 8 perspectives issues de la pratique du coaching. C’est un miroir de communication : il fait apparaître les tendances, préférences et habitudes que vous déclarez dans vos relations avec les autres."
+    },
+    {
+      "id": "how-long",
+      "question": "Combien de temps faut-il prévoir ?",
+      "answer": "Le questionnaire prend environ 90 minutes. Choisissez un endroit calme pour réfléchir honnêtement à chaque situation. Après l’envoi, nos coachs examinent personnellement vos réponses et préparent votre tableau de bord personnalisé sous 48 à 72 heures."
+    },
+    {
+      "id": "what-get",
+      "question": "Que vais-je recevoir ?",
+      "answer": "Vous recevez un tableau de bord visuel personnalisé, préparé par notre équipe de coaching, qui représente vos habitudes déclarées selon les 8 perspectives. Utilisez les consignes pour l’IA, les guides vidéo et les ressources à télécharger pour explorer ces habitudes et préparer vos conversations."
+    },
+    {
+      "id": "how-use",
+      "question": "Comment utiliser mes résultats ?",
+      "answer": "Votre tableau de bord vous aide à repérer des habitudes à explorer dans vos conversations. Utilisez la bibliothèque de consignes pour approfondir certaines perspectives, réfléchir à une relation difficile ou préparer une réunion importante. Un accompagnement en coaching peut prolonger cette exploration."
+    },
+    {
+      "id": "confidential",
+      "question": "Est-ce confidentiel ?",
+      "answer": "Vos réponses servent à préparer vos résultats et à assurer le service. Les réponses complètes vous sont envoyées par e-mail, avec Estève et Anu en copie, par l’intermédiaire de nos prestataires. Lisez la politique de confidentialité et la notice du questionnaire avant de répondre. Si vous utilisez un outil d’IA externe, vérifiez ses réglages de confidentialité et ne partagez que ce que vous acceptez de lui confier."
+    },
+    {
+      "id": "refund",
+      "question": "Et si cela ne me convient pas ?",
+      "answer": "Si, après avoir reçu votre tableau de bord personnalisé, vous estimez que le Satellite Scan ne vous a pas apporté d’éclairage utile, contactez-nous sous 14 jours pour un remboursement intégral. Sans justification à fournir."
+    },
+    {
+      "id": "personality-test-difference",
+      "question": "En quoi est-ce différent d’un test de personnalité ?",
+      "answer": "Le Satellite Scan décrit vos préférences de communication déclarées, qui peuvent varier selon le contexte, plutôt que de vous attribuer une catégorie fixe. Il propose des habitudes à examiner, sans définir qui vous êtes. Comme tout outil déclaratif, il décrit votre perception de vos comportements, pas une mesure objective de la façon dont les autres vous vivent."
+    },
+    {
+      "id": "conflict-resolution",
+      "question": "Comment cela aide-t-il face aux conflits ?",
+      "answer": "Le Scan explore votre perception de vos réactions aux besoins, au stress et aux rapports de pouvoir. Réfléchir à ces habitudes peut vous aider à remarquer une réaction défensive avant d’agir. Cette carte ouvre une réflexion sur les conversations difficiles ; changer ses habitudes demande une pratique régulière et parfois un accompagnement professionnel."
+    },
+    {
+      "id": "digital-skills-required",
+      "question": "Faut-il des compétences numériques ou en IA ?",
+      "answer": "Très peu. Le Scan est un questionnaire Typeform en ligne. Si vous choisissez d’utiliser l’IA, la bibliothèque propose des consignes à adapter à votre tâche, sans compétence technique particulière. Vérifiez les réglages de confidentialité de l’outil et ne partagez que les informations nécessaires. Le tableau de bord et les fiches peuvent aussi s’utiliser sans IA."
+    },
+    {
+      "id": "multiple-stakeholders",
+      "question": "Et lorsqu’il y a plusieurs interlocuteurs ?",
+      "answer": "Le Scan explore vos habitudes selon les Dynamiques, l’Alignement et l’Influence : rapports de pouvoir, compréhension partagée et argumentation. Dans une situation à plusieurs interlocuteurs, vous pouvez réfléchir à votre adaptation lorsque le contexte change. Les consignes vous aident à préparer une conversation particulière en tenant compte de la relation concernée."
+    },
+    {
+      "id": "time-management",
+      "question": "Et pour gérer le temps et les priorités ?",
+      "answer": "La perspective Fluidité invite à réfléchir aux moments où vous vous sentez débordé, désengagé ou absorbé par une conversation. L’Alignement explore les attentes et la compréhension mutuelle. Utilisez ces perspectives pour parler des priorités, des demandes floues, des réunions répétées ou du travail à refaire ; le Scan ne mesure pas la productivité et ne garantit pas un gain de temps."
+    },
+    {
+      "id": "personal-growth",
+      "question": "De quel développement personnel s’agit-il ?",
+      "answer": "Il s’agit de communication consciente : réfléchir à votre façon de créer du lien, d’influencer et de comprendre les autres. Ce n’est ni une thérapie ni un diagnostic. Utilisez le Scan pour choisir un point à pratiquer dans vos relations professionnelles et votre posture de responsable. Le refaire permet de discuter de l’évolution de vos réponses, pas de mesurer objectivement un progrès."
+    },
+    {
+      "id": "under-the-hood",
+      "question": "Puis-je comprendre ce qui est exploré ?",
+      "answer": "Oui. Le Satellite Scan utilise 129 questions selon 8 perspectives du Tableau périodique de la communication consciente. Explorez ce cadre pour comprendre les perspectives derrière les questions. Vos réponses décrivent votre propre perception, pas une évaluation objective de vos capacités.",
+      "hasLink": true,
+      "linkText": "Explorer le Tableau périodique (en anglais)",
+      "linkUrl": "/periodic-table"
+    },
+    {
+      "id": "fractional-roles",
+      "question": "Et pour les professionnels à temps partagé ?",
+      "answer": "Les professionnels à temps partagé doivent construire la confiance et agir rapidement dans plusieurs organisations. Le Scan permet de réfléchir à votre façon de changer de contexte entre clients. Comprendre vos habitudes peut vous aider à adapter votre communication, maintenir vos limites et garder de la cohérence entre des cultures différentes."
+    },
+    {
+      "id": "new-skills",
+      "question": "Comment cela aide-t-il à apprendre de nouvelles compétences ?",
+      "answer": "La conscience de soi peut soutenir l’apprentissage. Le Scan vous aide à choisir des habitudes à explorer ; il ne prouve pas quelles compétences vous maîtrisez. Vous pourriez pratiquer l’écoute, une demande claire ou la prise de parole en groupe. Utilisez la bibliothèque de consignes pour préparer de petits exercices et réfléchir à ce qui se passe."
+    },
+    {
+      "id": "tools-automation",
+      "question": "Quels outils d’IA peut-on utiliser ?",
+      "answer": "Vous pouvez utiliser les consignes avec l’outil d’IA de votre choix, par exemple ChatGPT, Claude, Gemini ou Copilot. Vérifiez sa disponibilité, ses conditions et ses réglages de confidentialité. Partagez seulement ce qui est nécessaire, sans données privées de clients ou du travail. L’IA est facultative : vous pouvez réfléchir avec le tableau de bord et les fiches sans l’utiliser."
+    },
+    {
+      "id": "retake-scan",
+      "question": "Peut-on refaire le Scan ?",
+      "answer": "Oui. Chaque Scan représente vos réponses à un moment et dans un contexte donnés. Vous pouvez le refaire après 6 à 12 mois, un changement de rôle ou un nouveau défi. Comparez vos réponses pour ouvrir une réflexion avec votre coach, pas comme preuve d’une capacité améliorée."
+    },
+    {
+      "id": "research-science",
+      "question": "Sur quelles recherches repose-t-il ?",
+      "answer": "Le Satellite Scan est un outil de coaching issu de la pratique, pas un instrument psychométrique évalué par des pairs. Il s’appuie sur le Tableau périodique de la communication consciente, une synthèse de 27 ans de pratique en coaching de dirigeants, médiation, communication non violente et développement des organisations. Il s’inspire notamment de la théorie de l’attachement, de l’intelligence émotionnelle, des actes de langage, de la pragmatique conversationnelle, de la pensée systémique et de l’éthique relationnelle. Ces inspirations ne constituent pas une validation du Scan. Celui-ci n’a pas fait l’objet d’une validation psychométrique indépendante, notamment de sa fiabilité dans le temps ou de sa validité prédictive. C’est un outil de réflexion pour la découverte de soi et le coaching, pas un diagnostic cliniquement validé."
+    },
+    {
+      "id": "not-for-hiring",
+      "question": "Peut-on l’utiliser pour recruter ou évaluer au travail ?",
+      "answer": "Non. Le Satellite Scan est réservé au développement personnel, aux échanges volontaires en équipe et au coaching. Il ne doit servir ni au recrutement, ni à la sélection, ni à l’évaluation professionnelle. Il décrit des préférences déclarées à un moment donné, pas des capacités ou des qualifications. Pour une évaluation professionnelle validée, adressez-vous à un spécialiste de la psychologie du travail."
+    },
+    {
+      "id": "workplace-use-limits",
+      "question": "Quelles sont les limites dans une organisation ?",
+      "answer": "La participation doit être réellement volontaire et les résultats rester privés pour la personne. Le Scan ne doit pas servir à étiqueter les salariés, décider d’une promotion, comparer les membres d’une équipe ou créer des indicateurs de performance. Une organisation doit protéger la confidentialité et la sécurité psychologique, sans décision défavorable fondée sur les résultats. Il s’agit de réflexion personnelle, pas d’une mesure objective des compétences."
+    },
+    {
+      "id": "ea-crisis-communication",
+      "question": "Comment aide-t-il les assistants de direction en situation de crise ?",
+      "answer": "Les assistants de direction sont souvent en première ligne et doivent communiquer avec plusieurs interlocuteurs sous pression. Le Scan explore leur perception des rapports d’autorité, des réactions au stress et de l’expression des besoins. Ces repères peuvent nourrir une réflexion sur le calme, la clarté du message et le soutien à la direction. La capacité réelle à gérer une crise dépend toutefois de nombreux autres facteurs."
+    },
+    {
+      "id": "workplace-wellbeing",
+      "question": "Quel lien avec le bien-être au travail ?",
+      "answer": "Les habitudes de communication peuvent contribuer au stress. Le Scan peut aider à réfléchir à certaines tensions : taire ses besoins pour faire plaisir, réagir vivement en réunion ou rarement ressentir de la fluidité. Ces repères peuvent ouvrir un travail sur les limites et des échanges plus authentiques. Le bien-être au travail dépend aussi de facteurs collectifs et organisationnels ; le Scan n’est pas une solution complète."
+    },
+    {
+      "id": "resilience",
+      "question": "Comment travailler la résilience ?",
+      "answer": "La résilience dans la communication consiste à se remettre d’un échange difficile, s’adapter au conflit et retrouver son équilibre sous pression. L’Attitude, la Fluidité et l’Ego proposent des perspectives sur les défis, le désengagement et les réactions à la critique. Utilisez vos réponses comme pistes pour pratiquer de nouvelles habitudes, sans promesse de résultat automatique."
+    },
+    {
+      "id": "social-intelligence",
+      "question": "Comment explorer l’intelligence sociale ?",
+      "answer": "Les 8 perspectives proposent des pistes de réflexion sur les situations sociales. Les Dynamiques explorent les rôles et le pouvoir, les Besoins ce qui compte pour vous et les autres, et l’Influence votre façon d’argumenter et d’écouter. Ce sont des habitudes déclarées à discuter et à travailler, pas un score objectif d’intelligence sociale."
+    },
+    {
+      "id": "ai-assisted-growth",
+      "question": "Comment utiliser l’IA pour cette réflexion ?",
+      "answer": "Après le Scan, utilisez votre tableau de bord préparé par un coach et la bibliothèque de consignes pour explorer vos habitudes, préparer une conversation ou choisir une micro-habitude. L’IA est un partenaire de réflexion facultatif, pas un remplacement du coaching. Vérifiez les réglages de confidentialité, ne partagez que le nécessaire et confrontez ses suggestions à votre propre jugement."
+    },
+    {
+      "id": "ethical-hr-alternative",
+      "question": "En quoi est-ce différent des tests des systèmes RH ?",
+      "answer": "Le Satellite Scan est conçu pour le développement personnel volontaire et le coaching, pas pour le recrutement, la sélection ou la gestion des performances. Il décrit des préférences de communication déclarées, plutôt que des types de personnalité fixes. Il ne doit pas servir à classer des salariés ni à prendre des décisions de sélection, de promotion ou de performance."
+    },
+    {
+      "id": "leadership-development",
+      "question": "Comment accompagne-t-il les responsables d’équipe ?",
+      "answer": "Diriger implique de communiquer : influencer, clarifier les attentes, naviguer dans les rapports de pouvoir et gérer ses propres réactions sous pression. Les 8 perspectives permettent de réfléchir à ces dimensions, par exemple à la place de l’argumentation et de l’écoute ou au recours au contrôle. Un accompagnement en coaching peut prolonger cette réflexion par des exercices ciblés."
+    },
+    {
+      "id": "what-it-measures",
+      "question": "Que décrit réellement le Satellite Scan ?",
+      "answer": "Le Scan décrit vos réponses déclarées à 129 situations de communication selon 8 perspectives. Il reflète ce que vous dites que vous feriez, vos préférences et vos tendances telles que vous les percevez aujourd’hui. Il ne mesure pas des capacités, ne prédit pas une performance et n’évalue pas des traits de personnalité comme un instrument psychométrique validé. C’est une réflexion structurée, pas un diagnostic ni une mesure objective de qui vous êtes."
+    }
+  ],
+  "LENS_BENEFITS": {
+    "influence": [
+      {
+        "benefit": "Découvrez votre façon de convaincre",
+        "insight": "Explorez la place de la logique, des émotions et de la crédibilité dans votre communication, et quand chaque approche vous aide."
+      },
+      {
+        "benefit": "Repérez vos angles morts dans l’argumentation",
+        "insight": "Comprenez pourquoi certains messages passent et d’autres non, à partir de vos habitudes d’influence."
+      },
+      {
+        "benefit": "Construisez une autorité authentique",
+        "insight": "Apprenez à influencer sans manipuler, en alignant votre communication sur vos valeurs."
+      }
+    ],
+    "attitude": [
+      {
+        "benefit": "Explorez votre relation au changement",
+        "insight": "Repérez votre tendance à ouvrir de nouvelles voies ou à stabiliser les situations, et son effet sur vos conversations."
+      },
+      {
+        "benefit": "Repérez ce qui suscite votre curiosité",
+        "insight": "Identifiez les situations qui activent votre envie d’apprendre ou votre résistance."
+      },
+      {
+        "benefit": "Faites évoluer vos croyances limitantes",
+        "insight": "Reconnaissez les récits intérieurs qui vous freinent et choisissez comment les faire évoluer."
+      }
+    ],
+    "chaordic": [
+      {
+        "benefit": "Trouvez votre équilibre entre structure et liberté",
+        "insight": "Explorez votre aisance dans l’ordre ou le désordre, et la façon de passer de l’un à l’autre."
+      },
+      {
+        "benefit": "Traversez l’ambiguïté avec confiance",
+        "insight": "Entraînez-vous à garder plusieurs possibilités ouvertes sans conclure trop vite."
+      },
+      {
+        "benefit": "Créez de meilleurs espaces de collaboration",
+        "insight": "Favorisez des environnements où la créativité et la concentration peuvent coexister."
+      }
+    ],
+    "flow": [
+      {
+        "benefit": "Explorez le niveau de défi qui vous convient",
+        "insight": "Observez comment l’équilibre entre défi et confiance influence votre expérience des conversations."
+      },
+      {
+        "benefit": "Repérez ce qui interrompt vos échanges",
+        "insight": "Identifiez les obstacles à la fluidité et cherchez des stratégies pour maintenir votre élan."
+      },
+      {
+        "benefit": "Soutenez un engagement de qualité",
+        "insight": "Apprenez à reconnaître les moments de pleine présence et à y revenir après une distraction."
+      }
+    ],
+    "alignment": [
+      {
+        "benefit": "Développez votre capacité d’empathie",
+        "insight": "Explorez votre manière d’écouter et élargissez vos possibilités de connexion."
+      },
+      {
+        "benefit": "Construisez la confiance avec attention",
+        "insight": "Repérez les comportements qui favorisent la confiance dans vos relations."
+      },
+      {
+        "benefit": "Réparez plus tôt les malentendus",
+        "insight": "Apprenez à reconnaître un désalignement et à en parler avant qu’il ne devienne une rupture."
+      }
+    ],
+    "needs": [
+      {
+        "benefit": "Clarifiez vos motivations profondes",
+        "insight": "Explorez les besoins qui orientent vos décisions et vos habitudes de communication."
+      },
+      {
+        "benefit": "Exprimez vos besoins sans exiger",
+        "insight": "Apprenez à formuler ce qui compte pour vous en invitant à la coopération plutôt qu’à la résistance."
+      },
+      {
+        "benefit": "Reconnaissez les besoins des autres",
+        "insight": "Entraînez-vous à entendre les besoins derrière les mots, même dans un conflit."
+      }
+    ],
+    "ego": [
+      {
+        "benefit": "Repérez vos déclencheurs",
+        "insight": "Identifiez les situations qui activent vos réactions défensives."
+      },
+      {
+        "benefit": "Choisissez consciemment votre rôle",
+        "insight": "Reconnaissez les différentes postures que vous adoptez et choisissez celle qui sert le moment."
+      },
+      {
+        "benefit": "Répondez plutôt que de réagir",
+        "insight": "Créez un espace entre ce qui vous arrive et votre réponse pour choisir votre communication."
+      }
+    ],
+    "dynamics": [
+      {
+        "benefit": "Comprenez vos habitudes relationnelles",
+        "insight": "Repérez les dynamiques récurrentes dans vos relations professionnelles et personnelles."
+      },
+      {
+        "benefit": "Naviguez dans les rapports de pouvoir",
+        "insight": "Apprenez à agir au sein des hiérarchies tout en gardant votre propre voix."
+      },
+      {
+        "benefit": "Posez des limites saines",
+        "insight": "Explorez votre façon de poser des limites et entraînez-vous à les communiquer clairement."
+      }
+    ]
+  }
+}

@@ -52,7 +52,7 @@ export default function AnalyticsAdmin() {
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
 
-  const { data: envCheck } = useQuery<{ clientTrackingConfigured: boolean; serverApiConfigured: boolean; measurementId: string | null }>({
+  const { data: envCheck } = useQuery<{ clientTrackingConfigured: boolean; collectionEnabled: boolean; deliveryVerified: boolean; serverApiConfigured: boolean; measurementId: string | null }>({
     queryKey: ['/api/admin/analytics-status'],
   });
 
@@ -129,16 +129,16 @@ export default function AnalyticsAdmin() {
   const setupSteps = [
     {
       step: 1,
-      title: "Create a Google Analytics 4 property",
+      title: "Verify the existing Google Analytics 4 property",
       time: "5 min",
       content: [
         "1. Go to analytics.google.com and sign in with your Google account",
         "2. Click Admin (gear icon, bottom left)",
-        "3. Click '+ Create Property'",
-        "4. Name it 'GreenElephant.org', set timezone and currency",
-        "5. Choose 'Web' as the platform",
-        "6. Enter your domain: greenelephant.org",
-        "7. Copy the Measurement ID (starts with G-...)",
+        "3. Select the existing GreenElephant property; do not create a duplicate",
+        "4. Verify its timezone, retention and access settings",
+        "5. Open the Web data stream for greenelephant.org",
+        "6. Turn off Enhanced Measurement, including history page views, forms and outbound clicks; the site sends only its reviewed events",
+        "7. Verify the stream's Measurement ID (starts with G-...)",
       ],
       link: "https://analytics.google.com/analytics/web/#/a/p/admin/streams",
       linkLabel: "Open GA4 Admin",
@@ -148,11 +148,11 @@ export default function AnalyticsAdmin() {
       title: "Add the Measurement ID to GreenElephant",
       time: "2 min",
       content: [
-        "1. In your Replit project, go to Secrets (lock icon in left sidebar)",
-        "2. Add a new secret: VITE_GA_MEASUREMENT_ID",
-        "3. Paste your G-XXXXXXX Measurement ID as the value",
-        "4. The site will automatically start sending page views",
-        "5. No code changes needed — it's already wired up!",
+        "1. Verify VITE_GA_MEASUREMENT_ID in the Replit deployment environment, not only the workspace",
+        "2. The public config endpoint reads the validated ID at runtime; no build-time Vite secret is required",
+        "3. Complete the consent/privacy checklist in the release runbook",
+        "4. Only then set GA4_COLLECTION_ENABLED=true in deployment settings and manually republish the reviewed commit",
+        "5. A visitor must Accept analytics; Reject and withdrawal keep tracking off. Verify actual events in GA4 after publication",
       ],
       link: null,
       linkLabel: null,
@@ -178,18 +178,18 @@ export default function AnalyticsAdmin() {
       title: "Set up conversion events",
       time: "5 min",
       content: [
-        "GreenElephant already sends these events (when GA4 is connected):",
+        "After production enablement and visitor acceptance, the site sends:",
         "",
-        "  scan_purchase — When someone buys a Satellite Scan",
-        "  coaching_inquiry — Contact form submissions",
-        "  newsletter_signup — Email list opt-ins",
-        "  webinar_registration — Webinar signups",
-        "  portal_login — Client portal access",
+        "  page_view — Home, Scan and five coaching landing pages only",
+        "  marketing_cta — Discovery-call or Scan checkout-link click",
+        "  Parameters: public page path, language, use_case, cta_action, cta_position and broad acquisition_source",
+        "  These are link clicks, not completed bookings or purchases",
+        "  Purchase, portal, form and assessment tracking remains disabled",
         "",
         "To mark them as conversions in GA4:",
-        "1. Go to GA4 > Admin > Events",
-        "2. Find each event above and toggle 'Mark as conversion'",
-        "3. This enables conversion tracking in your reports",
+        "1. Verify both event names in the existing GA4 property",
+        "2. Register the reviewed custom parameters as event-scoped dimensions if needed for comparisons",
+        "3. If marking marketing_cta as a key event, label it as link-click intent, never a completed booking",
       ],
       link: "https://analytics.google.com/analytics/web/#/events",
       linkLabel: "GA4 Events",
@@ -199,12 +199,12 @@ export default function AnalyticsAdmin() {
       title: "Verify everything works",
       time: "3 min",
       content: [
-        "1. Open your site in a new tab",
+        "1. Open the live site in a clean browser and check no GA request occurs before a choice or after Reject",
         "2. In GA4, go to Reports > Realtime",
-        "3. You should see your visit appear within 30 seconds",
-        "4. Navigate around the site — each page should register",
-        "5. If nothing shows: check that your ad blocker isn't blocking GA",
-        "6. Check the browser console for 'GA initialized' message",
+        "3. Accept analytics, then verify exactly one initial page view and one per public landing-page navigation",
+        "4. Click a discovery link and confirm marketing_cta; do not submit a booking or purchase",
+        "5. Withdraw using Cookie choices: tracking must stop and site GA cookies clear; verify reload, private routes and browser blockers",
+        "6. Record evidence and the shared three-month comparison start date; configuration alone does not prove delivery",
       ],
       link: "https://analytics.google.com/analytics/web/#/realtime",
       linkLabel: "GA4 Realtime",
@@ -472,19 +472,19 @@ export default function AnalyticsAdmin() {
               />
               {clientTracking ? (
                 <Badge variant="outline" className="text-xs text-green-400 border-green-400/30">
-                  <CheckCircle2 className="h-3 w-3 mr-1" /> Tracking Active
+                  <CheckCircle2 className="h-3 w-3 mr-1" /> Configuration present · delivery unverified
                 </Badge>
               ) : (
                 <Badge variant="outline" className="text-xs text-muted-foreground border-white/10">
-                  Not Connected
+                  Not configured
                 </Badge>
               )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <AdminTooltip
-                what="Shows whether Google Analytics 4 is connected and sending data."
-                how="Add your GA4 Measurement ID (G-XXXXXXX) as the VITE_GA_MEASUREMENT_ID secret in Replit. No code changes needed."
+                what="Shows configuration only, not proof that Google Analytics receives events."
+                how="Verify the existing measurement ID, production switch, visitor consent and actual GA4 Realtime events separately."
               >
                 <Card className="backdrop-blur-sm bg-card/50 border-white/10" data-testid="card-ga4-tracking">
                   <CardContent className="pt-5 pb-4 px-4">
@@ -497,7 +497,7 @@ export default function AnalyticsAdmin() {
                       )}
                     </div>
                     <div className={`text-2xl font-bold mb-1 ${clientTracking ? "text-green-400" : "text-yellow-400"}`}>
-                      {clientTracking ? "Connected" : "Not Connected"}
+                      {clientTracking ? (envCheck?.collectionEnabled ? "Enabled · verify delivery" : "Configured · paused") : "Not configured"}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {clientTracking
@@ -509,8 +509,8 @@ export default function AnalyticsAdmin() {
               </AdminTooltip>
 
               <AdminTooltip
-                what="Number of custom events GreenElephant sends to GA4 automatically."
-                how="These fire on key user actions (purchase, signup, etc.). Mark them as conversions in GA4 for tracking."
+                what="Two bounded event types after analytics acceptance."
+                how="page_view and marketing_cta cover the approved public landing pages. No purchase, form, portal or assessment events."
               >
                 <Card className="backdrop-blur-sm bg-card/50 border-white/10" data-testid="card-custom-events">
                   <CardContent className="pt-5 pb-4 px-4">
@@ -518,8 +518,8 @@ export default function AnalyticsAdmin() {
                       <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Custom Events</span>
                       <MousePointerClick className="h-5 w-5 text-chaordic/60" />
                     </div>
-                    <div className="text-2xl font-bold text-chaordic mb-1">5</div>
-                    <p className="text-xs text-muted-foreground">Pre-configured conversion events</p>
+                    <div className="text-2xl font-bold text-chaordic mb-1">2</div>
+                    <p className="text-xs text-muted-foreground">Opt-in event types; not completed conversions</p>
                   </CardContent>
                 </Card>
               </AdminTooltip>
@@ -535,10 +535,10 @@ export default function AnalyticsAdmin() {
                       <TrendingUp className="h-5 w-5 text-chaordic/60" />
                     </div>
                     <div className={`text-2xl font-bold mb-1 ${serverApi ? "text-green-400" : "text-white/30"}`}>
-                      {serverApi ? "Active" : "Inactive"}
+                      {serverApi ? "Configured" : "Not configured"}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {serverApi ? "Funnel pulls real traffic data" : "Funnel uses estimates"}
+                      {serverApi ? "Credentials present; verify report access" : "API unavailable; do not treat estimates as measured traffic"}
                     </p>
                   </CardContent>
                 </Card>

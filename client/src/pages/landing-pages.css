@@ -1,6 +1,17 @@
 /* Shared, scoped layout rhythm. Reuse Green Elephant's Poppins/Lato tokens. */
 .ge-site .ge-scan.ge-landing .ge-scan-hero { text-align: center; padding: 96px 0 64px; position: relative; isolation: isolate; background: #0a0a0a; }
-.ge-site .ge-scan-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg,#0a0a0a88,#0a0a0a60 35%,#0a0a0ae8 85%,#0a0a0a),url('/images/website/scan-earth-original.png') center top/cover no-repeat; }
+.ge-site .ge-scan-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(#0a0a0a70,#0a0a0a70),url('/images/website/scan-earth-original.png') center top/cover no-repeat; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 25%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 25%, transparent 100%); }
+.ge-site .ge-scan { background: #0a0a0a; }
+/* Every coloured glow reaches transparent before ALL four section edges. */
+.ge-site .ge-scan .ge-band { background: radial-gradient(ellipse 50% 50% at center, #12304480 0%, #10233340 50%, transparent 100%); }
+.ge-site .ge-scan-content-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 40px 56px; margin-top: 40px; }
+.ge-site .ge-scan-content-grid h3 { margin-bottom: 16px; }
+.ge-site .ge-scan-list { padding-left: 22px; margin: 24px 0; color: #ccc; }
+.ge-site .ge-scan-list li { padding-left: 8px; margin-bottom: 16px; }
+.ge-site .ge-scan-lens { padding: 32px 0; border-top: 1px solid var(--line); }
+.ge-site .ge-scan-lens > summary { color: var(--teal); }
+.ge-site .ge-scan-lens h4 { margin-top: 28px; font: 700 1.1rem/1.6 var(--heading); }
+.ge-site .ge-scan .ge-scan-quotes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 48px; }
 .ge-site .ge-scan-hero h1, .ge-site .ge-scan-hero p { margin-left: auto; margin-right: auto; }
 .ge-site .ge-scan-hero .ge-cta-group { align-items: center; margin: 40px auto 32px; }
 .ge-site .ge-scan-hero .ge-scroll { margin-top: 28px; }
@@ -62,6 +73,7 @@
 .ge-site .coaching-paths a:hover strong { color: #71d6d6; text-decoration: underline; }
 .ge-site .training .testimonial { margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--line); }
 @media (max-width: 700px) {
+  .ge-site .ge-scan-content-grid, .ge-site .ge-scan .ge-scan-quotes { grid-template-columns: 1fr; }
   .ge-site .ge-acx-links { grid-template-columns: 1fr; gap: 24px; }
   .ge-site .ge-scan.ge-landing .ge-scan-hero { padding-top: 64px; }
   .ge-site .ge-split, .ge-site .ge-practice, .ge-site .coaching-paths ul { grid-template-columns: 1fr; }

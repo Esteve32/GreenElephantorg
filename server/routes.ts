@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { publicAnalyticsConfig, validMeasurementId } from '../shared/marketing-analytics';
 import { contacts } from '@shared/schema';
 import { redeemFreeScan, recordPaidScan, notifyScanPurchase, remindScanOnce } from './scan-purchase-service';
 import { validScanPayment } from './scan-purchase-validation';
@@ -2491,11 +2492,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/admin/analytics-status", requireAdminAuth, async (_req, res) => {
-    const measurementId = process.env.VITE_GA_MEASUREMENT_ID || null;
+    const measurementId = validMeasurementId(process.env.VITE_GA_MEASUREMENT_ID) ? process.env.VITE_GA_MEASUREMENT_ID : null;
     const ga4PropertyId = process.env.GA4_PROPERTY_ID || null;
     const serviceKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || null;
     res.json({
       clientTrackingConfigured: !!measurementId,
+      collectionEnabled: publicAnalyticsConfig(process.env).enabled,
+      deliveryVerified: false,
       serverApiConfigured: !!(ga4PropertyId && serviceKey),
       measurementId,
     });

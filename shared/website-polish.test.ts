@@ -8,6 +8,7 @@ import { pageMetadata, isRegisteredPage } from './page-metadata';
 import { hasFrenchPage } from './site-language';
 import homepage from './homepage-content.json';
 import testimonials from './scan-testimonials.json';
+import { restoredScan } from './scan-restored';
 
 const template = readFileSync('client/index.html', 'utf8');
 
@@ -111,4 +112,32 @@ test('styles reuse the brand fonts and contain narrow-screen layouts and explici
 
 test('rendered copy escapes markup', () => {
   assert.equal(escapeCopy('<script>"&'), '&lt;script&gt;&quot;&amp;');
+});
+
+test('restored Scan retains full topic coverage and bilingual parity without old unsafe claims',()=>{
+  for (const language of ['en','fr'] as const) {
+    const content=restoredScan[language],html=renderScanPage(language);
+    assert.equal(content.PERSONAS.length,9);assert.equal(content.PAIN_SIGNALS.length,8);
+    assert.equal(content.FAQ_ITEMS.length,28);assert.equal(content.STEPS.length,4);
+    for(const [key,benefits] of Object.entries(content.LENS_BENEFITS)) {
+      assert.equal(benefits.length,3);assert.match(html,new RegExp(`data-testid="lens-${key}"`));
+      for(const item of benefits)assert.ok(html.includes(escapeCopy(item.insight)));
+    }
+    for(const item of content.FAQ_ITEMS)assert.ok(html.includes(escapeCopy(item.answer)));
+    for(const id of ['scan-more','before-after','signals','what-is-it','comparison','benefits','lenses','repeatable-reflection','scan-testimonials','how-it-works'])assert.ok(html.includes(`id="${id}"`));
+  }
+  assert.deepEqual(restoredScan.en.FAQ_ITEMS.map(x=>x.id),restoredScan.fr.FAQ_ITEMS.map(x=>x.id));
+  assert.doesNotMatch(renderScanPage('en'),/never shared with third parties|growth is measurable|exact balance of difficulty|<table/);
+  const css=readFileSync('client/src/pages/landing-pages.css','utf8');
+  assert.match(css,/\.ge-site \.ge-scan \.ge-band \{ background: radial-gradient\(ellipse 50% 50% at center[^}]+transparent 100%\)/);
+  assert.match(css,/mask-image: radial-gradient\(ellipse 50% 50% at center, #000 25%, transparent 100%\)/);
+});
+
+test('fallback homepage title and descriptions match current route metadata',()=>{
+  const metadata=pageMetadata('/');
+  assert.ok(template.includes(`<title>${metadata.title}</title>`));
+  for(const name of ['description','og:description','twitter:description']) {
+    assert.ok(template.includes(`${name}" content="${metadata.description}"`));
+  }
+  assert.doesNotMatch(template,/Communication Coaching for Self-Awareness &amp; Career Growth|Communication Coaching for Self-Awareness & Career Growth/);
 });

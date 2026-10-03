@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
             Thank you for taking this moment to review our privacy practices. We believe in transparency, kindness and mutual respect — in data handling as in dialogue.
           </p>
           <p className="text-sm text-muted-foreground">
-            Last updated: October 1, 2026
+            Last updated: October 3, 2026
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export default function PrivacyPolicyPage() {
                   <h3 className="font-semibold text-foreground mb-2">Technical Data:</h3>
                   <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>Session cookies (essential for website functionality)</li>
-                    <li>No tracking or analytics cookies without your consent</li>
+                    <li>Optional Google Analytics, only after acceptance: public home, Scan and coaching-page visits, broad referral categories and selected enquiry/checkout-link clicks; no assessment answers, scores, form contents or private routes. Google also processes technical request information and cookie identifiers. Manage or withdraw your choice using “Cookie choices”; see the <a href="/cookies" className="text-needs underline">cookie policy</a>.</li>
                   </ul>
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Typeform:</strong> Hosts the Scan questionnaire and passes submitted answers to our service.</li>
                 <li><strong>Cloudflare:</strong> Delivers and protects the website; technical request data may be processed for security.</li>
                 <li><strong>Calendly:</strong> Booking and scheduling (when you book sessions)</li>
-                <li><strong>Google:</strong> OAuth authentication (when you choose Google sign-in)</li>
+                <li><strong>Google:</strong> OAuth authentication (when you choose Google sign-in), and optional GA4 website measurement after analytics consent. Cookie expiry does not determine account-side retention or erase historical analytics data.</li>
                 <li><strong>LinkedIn:</strong> OpenID Connect authentication (when you choose LinkedIn sign-in)</li>
                 <li><strong>Notion:</strong> Contact and service records in our team workspace where the relevant integration is enabled; optional exports to a workspace you connect</li>
                 <li><strong>Thesys.dev:</strong> AI-powered communication visualisations; the prompt and data supplied for a visualisation are processed by this provider</li>
