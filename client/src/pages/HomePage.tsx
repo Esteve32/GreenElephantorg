@@ -3,6 +3,7 @@ import { useSiteLanguage } from '@/hooks/use-site-language';
 import { pageMetadata } from '@shared/page-metadata';
 import content from '@shared/homepage-content.json';
 import './homepage.css';
+import './landing-pages.css';
 export default function HomePage() {
   const language = useSiteLanguage();
   return <><SEO {...pageMetadata(language === 'fr' ? '/fr' : '/')} />

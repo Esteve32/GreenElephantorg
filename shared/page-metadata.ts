@@ -2,6 +2,7 @@ import { FRENCH_ROUTES, basePagePath, localPage, hasFrenchPage } from "./site-la
 import { ACX_ARTICLE_FR } from "./acx-article-fr";
 import { ACX_ARTICLE } from "./acx-article";
 import { isParkedWebinar } from "./site-features";
+import { COACHING_PAGES, coachingPath } from './coaching-pages';
 // Existing public copy moved here unchanged, except invalid canonical paths.
 // This is HTTP metadata for current routes, not the future AI-literacy sitemap.
 export const SITE_ORIGIN = "https://greenelephant.org";
@@ -16,6 +17,7 @@ export interface PageMetadata {
   noIndex?: boolean;
 }
 export const PAGE_METADATA: Record<string, PageMetadata> = {
+  ...Object.fromEntries(COACHING_PAGES.map(page => [coachingPath(page.slug), { title: page.title, description: page.description, canonicalPath: coachingPath(page.slug) }])),
   [ACX_ARTICLE.path]: { title: ACX_ARTICLE.title, description: ACX_ARTICLE.description, canonicalPath: ACX_ARTICLE.path, ogType: "article" },
   "/": {
     "title": "Human-centred AI Literacy Training | GreenElephant",
@@ -159,6 +161,11 @@ export const REGISTERED_PAGE_PATHS = [
   "/fr/checkout",
   "/fr/payment-success",
   "/scan",
+  "/ai-coaching/lifetime-archive",
+  "/ai-coaching/next-chapter-business",
+  "/ai-coaching/everyday-confidence",
+  "/ai-coaching/facilitators-and-coaches",
+  "/ai-coaching/experienced-specialists",
   "/programs",
   "/blog/acx-levels-ai-literacy",
   "/myfive",

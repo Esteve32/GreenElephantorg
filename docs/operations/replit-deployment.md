@@ -216,9 +216,10 @@ release as complete French coverage or close AI-LIT-REQ-032 yet.
 - Replit currently documents US hosting by default, with EU hosting by Enterprise
   arrangement; do not promise EEA-only hosting without evidence of that arrangement.
   [Replit publishing documentation](https://docs.replit.com/learn/projects-and-artifacts/replit-deployments)
-- Analytics initialisation and automatic promotional onboarding are disabled.
-  Do not resume them until consent, withdrawal, template purpose and language have
-  been checked. Signed marketing unsubscribe requires its separate secret.
+- Optional public-page analytics now has a candidate consent implementation, but
+  collection defaults off until the GA4 checklist below is complete. Automatic
+  promotional onboarding remains disabled. Do not resume it through an analytics
+  consent choice. Signed marketing unsubscribe requires its separate secret.
 - The new Scan purchase path does not copy purchases into Notion: restoration of
   that transfer was rejected by automatic approval review for lack of specific
   approval for buyer email, name and amount. Existing unrelated integration paths
@@ -273,3 +274,62 @@ transaction/unique constraints have not been exercised locally.
   The ping endpoint proves HTTP health only, not database or provider health.
   Record the exact successful GitHub deployment SHA, then close the pending-release
   issue. Leave it open if any required gate remains unresolved.
+
+## GA4 relaunch checklist — candidate prepared 2026-10-03
+
+Use the **existing** GreenElephant GA4 property and Web stream. Do not create a
+duplicate property or use the numeric `GA4_PROPERTY_ID` as the `G-...` measurement
+ID. The numeric ID and service-account credentials support reporting separately;
+their presence does not prove browser event delivery.
+
+Before enabling collection:
+
+1. Verify the destination/account owner, processor/transfer arrangements, access
+   and retention settings. The browser choice and GA cookies expire after 180
+   days; that is not an account-side retention or deletion guarantee. Review the
+   updated privacy/cookie wording and EN/FR controls.
+2. Turn **Enhanced Measurement off** for the selected Web stream, including
+   history-based page views, outbound links, site search, downloads, videos and
+   forms. This implementation sends its own page views and two bounded event
+   types; extra automatic events could duplicate counts or collect other data.
+   Keep Google Signals, advertising and user-provided-data collection off. Verify
+   there is no Cloudflare/CMP/GTM or other separately injected tracking tag.
+3. In Replit **deployment** settings, verify `VITE_GA_MEASUREMENT_ID` contains that
+   existing stream's public `G-...` identifier. Once the above is reviewed, set
+   `GA4_COLLECTION_ENABLED=true`. This new switch is deliberately false/missing
+   by default. No agent has set it or changed any production secret. The server
+   exposes only the validated public ID through `/api/public/analytics-config`,
+   with `no-store`; this fixes the build-time Vite/deployment-environment mismatch.
+4. Publish only the reviewed commit through the human-controlled release flow.
+   Verify the config endpoint returns `enabled:true` on production. Preview and
+   non-production hosts must not send analytics, even after pressing Accept.
+
+After publishing, use a clean browser and record evidence in issue #31:
+
+- Before choosing and after Reject: no GA/GTM load or analytics collection request.
+- Accept: exactly one initial `page_view`; a reload gives one new view. Navigating
+  between allowed landing pages gives one view per change, not duplicate history
+  events. A blocked loader may result in missing events, never a broken page.
+- A discovery-call or Scan checkout-link click emits `marketing_cta`, not a booking
+  or purchase event. Check `cta_action`, `cta_position`, `use_case`, `language` and
+  the allowlisted public `page_path` in GA4 Realtime/DebugView. Register the custom
+  dimensions in the existing account for reporting if needed.
+- Only `/`, `/fr`, `/scan`, `/fr/scan` and the five English `/ai-coaching/...` pages
+  are measured. Names, emails, answers, scores, purchase IDs, URL queries, hashes
+  and full referrers are not sent by the site. No automatic form/assessment events.
+  Acquisition uses fixed broad referral categories, not arbitrary UTM values;
+  direct/unknown and browser privacy limitations must stay visible in reports.
+- “Cookie choices” remains available at the bottom of the allowed pages and
+  policies. Withdraw: collection stops, site GA cookies clear and the page reloads
+  to remove the loaded library. Rejection persists. Test a second open tab too.
+- Test navigation and browser Back/Forward into excluded routes: no private URL
+  or assessment payload in analytics. Check mobile layout, keyboard access and
+  French wording. Automated unit checks are not a substitute for this browser test.
+- Verify received events in the **existing account**. Then record one shared start
+  date for the three-month comparison. Configuration and a successful build alone
+  do not establish live measurement. Consent-dependent counts are not all visitors.
+
+Google references: [basic consent mode](https://developers.google.com/tag-platform/security/concepts/consent-mode),
+[consent setup](https://developers.google.com/tag-platform/security/guides/consent),
+[manual page views](https://developers.google.com/analytics/devguides/collection/ga4/views),
+[single-page applications](https://developers.google.com/analytics/devguides/collection/ga4/single-page-applications).

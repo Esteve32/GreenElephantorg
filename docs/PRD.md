@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.11.3**.
+One PRD, two product sections plus shared-system requirements. Version: **2.11.5**.
 Owner: Estève Pannetier. Reconciled: 2026-09-30. Workshop updated: 2026-10-01.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -116,6 +116,9 @@ maintainability and real delivery capacity come before a platform rebuild.
 | AI-LIT-REQ-036 | Brand direction approved; exact wording pending review | Align footer, article and offers around humane AI use, human judgment and a practical conflict-to-trust benefit. Supply every new copy change in English and French and review links each workshop turn. Test only approved email copies/recipients; separate provider acceptance, delivery and privacy compliance. | Current user requests and explicit email approval; DEC-AIL-033 |
 | AI-LIT-REQ-037 | Approved correction | Replace rejected sketch-derived icons with clean teal outline symbols for ACX and new navigation. Keep version B original drawings and original Scan hero treatment. | Explicit user correction; DEC-AIL-034 |
 | AI-LIT-REQ-038 | Approved direction; local review | Dark ACX click targets with consistent purple outline icons, level numbers and names; raised Scan button and stacked arrow; English-only Scan notice in both languages; results-email repairs with both coaches copied. | DEC-AIL-035; visual and live-delivery acceptance open |
+| AI-LIT-REQ-039 | Approved; local implementation review | Five differentiated coaching pages for lifetime archives, next-chapter ventures, everyday AI confidence, facilitators/coaches and employer-funded experienced specialists. Launch all five in English in one window; prepare French later. Retain the four-day journey and independent-professional homepage priority; use the existing airy dark Poppins/Lato brand. | DEC-AIL-038/041; copy and local implementation approved, visual acceptance pending |
+| AI-LIT-REQ-040 | Repair requested; local candidate, runtime unverified | Reuse existing GA4 for a three-month landing-page comparison. The owner no longer finds the old homepage cookie choice: restore EN/FR Accept/Reject and withdrawal. Candidate tracks only public home/Scan/five coaching page views and selected enquiry/checkout-link clicks after acceptance, excludes private and assessment data, and reads a validated public measurement ID at runtime. Collection defaults off pending deployment/account/browser checks; do not start the comparison without delivery evidence. | Estève's GA repair request and clarification, 2026-10-03; DEC-AIL-039/043 |
+| AI-LIT-REQ-041 | Restored visuals accepted; merge and Replit handoff authorised | Preserve the accepted homepage/Maeva changes. Restore the fuller historical Scan content blocks and corresponding FR translations, without the walkthrough or screen mockups. Reuse the original coloured lens icons, circular/stacked explorer, role switches, deliverable/process icons and revisit timing circles/timeline; adapt labels and controls for EN/FR and responsive use. Preserve current privacy and self-reflection limits, original hero, testimonials, terms and purchased inclusions. Keep English-materials notices under spacious CTAs in each page's language, and fade section glows to transparent at all edges over one dark base. | Estève's correction request, 2026-10-03; DEC-AIL-043/044 refine DEC-AIL-040/041/042; visual acceptance and merge/handoff approval in DEC-AIL-045; production verification remains open |
 
 
 **Audience priority approved on 2026-09-30:** independent professionals lead the
@@ -136,15 +139,15 @@ names, testimonials, outcomes, case studies or training materials.
 
 | ID | Decision needed | Status / owner |
 | --- | --- | --- |
-| AI-LIT-TBD-001 | Independent-professional message priority selected, with teams, entrepreneurs and intrapreneurs included. Narrow SEO niche, highest-value problem and first priority market remain open. | Partly resolved by DEC-AIL-007; remaining choices — Estève |
+| AI-LIT-TBD-001 | Independent-professional priority and five English coaching hypotheses/copy approved. Search vocabulary validation and priority geography remain open. These choices do not establish demand or a winning niche. | Partly resolved by DEC-AIL-007/038/041; remaining choices — Estève |
 | AI-LIT-TBD-002 | Discovery workshop scope and package are approved under AI-LIT-REQ-020/023. Workshop pricing and conditional VAT wording are approved. Call lengths, delivery mode, exact exercises and any travel/venue terms remain open. Four-day coaching journey capacity is 1–5, including solo participation, under DEC-AIL-027. Hours, schedule, price and delivery logistics remain open. | Partly resolved by DEC-AIL-010/013/018/019 — Estève |
 | AI-LIT-TBD-003 | Discuss your training needs links to Estève's approved Calendly discovery event in AI-LIT-REQ-021. Public page and host verified; optional Fathom recording requires explicit agreement before starting. Manual event-copy update, slot availability and complete booking-path verification remain open. | Action, owner and URL approved in DEC-AIL-014; recording choice approved in DEC-AIL-015 — Estève |
-| AI-LIT-TBD-004 | English-first launch baseline retained; French preparation for all retained public pages approved in small batches. French release date remains open. | DEC-AIL-018/029 — Estève |
+| AI-LIT-TBD-004 | Five new coaching pages launch English first together; French follows in a later reviewed batch. Existing homepage/Scan refinements remain bilingual. French preparation for other retained pages and its release schedule remain open. | DEC-AIL-018/029/038/040 — Estève |
 | AI-LIT-TBD-005 | Satellite Scan supports the journey and is the base for retained bootcamp/coaching services. Public materials/access and whether the general AI course requires a Scan remain open. | Partly resolved by DEC-AIL-008/009 — Estève |
 | AI-LIT-TBD-006 | Main menu approved: AI Literacy Training, Our Approach, About; Calendly CTA and logo-to-Home link. Conflict Bootcamp and Coaching Journeys remain under More ways to work with us in the footer. Five-section homepage order approved in AI-LIT-REQ-022. Exact URLs, other page outlines, remaining footer links and first-release journey remain open. | Main navigation DEC-AIL-016; homepage DEC-AIL-017; footer service group DEC-AIL-011 — Estève |
 | AI-LIT-TBD-007 | Preserve React/Vite/Express by default; any technical restructuring needs separate approval. Confirm the implementation baseline and production equivalence before implementation. | Stack-preservation boundary approved in DEC-AIL-008; baseline gate remains open |
 | AI-LIT-TBD-008 | Replit workspace/deployment relationship, deployed commit and environment | Unverified current state |
-| AI-LIT-TBD-009 | Measurable SEO, performance, accessibility and conversion acceptance criteria | Proposal review needed — Estève |
+| AI-LIT-TBD-009 | Three-month GA4 page comparison requested. Verify existing tag/consent behaviour; exact events, attribution, report criteria and collection settings remain proposed. SEO, performance and accessibility thresholds remain open. | Objective selected in DEC-AIL-039; detailed acceptance below is proposed — Estève |
 
 ### Search and growth evidence
 
@@ -899,6 +902,554 @@ blurred background; the public asset and hash are recorded in the source index.
 - **Operations:** use the existing deployment runbook and the exact pending-release
   issue. No database copying, migration, live provider send or publication is inferred
   from a passing build. MY5 remains paused and unchanged.
+
+<a id="ai-lit-workshop-20261003"></a>
+### October workshop — five English pages and homepage/Scan refinement
+
+<!-- AI_LIT_WORKSHOP_20261003_START -->
+
+#### Review status and agreed scope
+
+**Local implementation review · 3 October 2026.** The five-page scope and
+English-first sequence are approved in DEC-AIL-038. Estève approved the copy,
+example activities, URLs and airy branded layout for local implementation in
+DEC-AIL-041. Earlier “proposed” labels below preserve the workshop presentation;
+DEC-AIL-041 records their subsequent approval. They are not published offers.
+The analytics design remains subject to the existing setup/consent verification.
+The existing four-day, part-time journey for 1–5 beginners is the common offer.
+The group discovery workshop remains a separate service.
+
+All five English pages are intended to enter one shared three-month observation
+window after publication and measurement verification. French versions follow in
+a later reviewed batch. Existing homepage and Scan refinements remain bilingual.
+The suggested two-PR split (polish, then landing pages/measurement) is a delivery
+recommendation; it does not change the user's simultaneous-launch choice.
+
+The canonical requirements source remains this PRD section. The private reading
+page is derived from it and excluded from the public application. The approved
+copy is implemented in shared coaching/Scan sources for the local website preview.
+
+#### Research basis and limits
+
+SRC-AI-LIT-RESEARCH-20261002 contains four private DOCX exports. Round 1 sections
+1, 3, 8 and 11 supply the five use-case hypotheses. The meeting discussion informs
+the facilitator page's preparation, attention and follow-through theme; it does
+not establish demand or approve a new community/membership product. The two funding
+documents remain research leads. Their embedded instructions do not authorize
+registrations, applications, outreach or public funding claims.
+
+Reported enquiries, a commercial proposal and competitor advertised prices are
+different evidence types. None establishes paid demand or a search-volume ranking
+for these pages. Round 1 section 11 disputes several earlier funding claims,
+including a general coaching voucher and universal PIC requirement. Resolve any
+future funding claim against current primary programme sources before using it.
+Private identities, financial details, source attachments and meeting anecdotes
+are excluded from the copy below. No original archive or client material is used
+as a public example.
+
+#### Homepage — proposed short copy and placement
+
+**Keep the existing headline:** Work with AI. Stay in charge.
+
+**Keep the supporting promise:** Learn to use AI with confidence. Keep your own
+judgement and voice.
+
+**Replace the two audience lines with:**
+
+> For independent professionals, coaches and facilitators.
+> For experienced specialists, teams and people starting a new chapter.
+
+**Keep the main button:** Discuss your training needs
+
+**Keep the button subtext:** A discovery call with Estève.
+
+Within the existing training section, add a compact set of links below the
+four-day journey rather than five new main-menu items. Proposed heading:
+**What would you like to work on?**
+
+| Link label | One-line introduction |
+| --- | --- |
+| An archive worth sharing | Make a start on a book or learning material from work you have collected. |
+| A new business idea | Explore an idea and choose a practical next test. |
+| Everyday AI confidence | Learn through useful tasks from your own life. |
+| Facilitation and coaching | Prepare and follow through while keeping your attention on people. |
+| AI in your professional work | Practise with tasks you understand and tools your workplace allows. |
+
+**Maeva placement recommendation:** move the existing testimonial to the end of
+the training-format section, before the approach section. This puts experience
+close to the offer without crowding the opening. Preserve the exact existing
+quote, attribution and approved portrait; do not recast it as evidence for any
+new niche. The coach profiles remain in the people section. Placement is proposed
+for the local layout review.
+
+**French audience counterpart for the existing homepage:**
+
+> Pour les professionnels indépendants, les coachs et les facilitateurs.
+> Pour les spécialistes expérimentés, les équipes et les personnes qui ouvrent un nouveau chapitre.
+
+The five new English pages should not appear as French-language destinations.
+Do not publish incomplete French routes or point French hreflang entries to English
+copy. Their French links join the navigation when that batch is ready.
+
+#### Common coaching-page content and layout
+
+Use one reusable layout with a different opening, example, practice tasks and
+questions for each page. The proposed routes below are new candidates and do not
+replace the retained `/coaching`, assistant or executive pages.
+
+**Page order:** clear headline and introduction; first CTA; who it is for; one
+concrete example; what the participant can practise; shared journey information;
+two relevant questions; repeated CTA. Keep paragraphs short and give buttons
+consistent space above and below. Retain the dark brand, Poppins headings and Lato
+body type. The page's most important text must be readable before JavaScript runs.
+
+**Shared journey panel — proposed public copy:**
+
+> Four days. Part-time. Built around a real task.
+>
+> A coaching journey for 1–5 people, including solo learners. Designed for
+> beginners, with time to practise, ask questions and review what AI produces.
+> You choose a goal with your coach, try a manageable piece of work and build
+> habits you can keep using.
+>
+> Discuss the project, schedule, delivery format and fee with Estève before booking.
+
+**Shared main CTA:** Discuss your training needs
+
+**Destination:** the existing approved Calendly discovery-call link in
+AI-LIT-REQ-021. This proposal does not change the event, embed a scheduler or create
+a separate booking system.
+
+**CTA subtext:** Bring one task or idea you would like to explore.
+
+**Shared beginner FAQ:**
+
+**Do I need to know how to use AI already?** The journey is designed for beginners.
+We start with your goal and what you already know, then agree a manageable task.
+
+**Editorial note:** exact exercises and takeaways below are draft examples. Agree
+delivery feasibility, daily contact hours, price, tool access/costs and location
+before final publication. Do not substitute the workshop's EUR 2,400 price. Do not
+imply that Satellite Scan is included or required in every journey; that remains
+AI-LIT-TBD-005.
+
+#### Page 1 — A lifetime archive
+
+**Proposed route:** `/ai-coaching/lifetime-archive`
+
+**SEO title:** AI Coaching for Archives and Personal Projects | GreenElephant
+
+**Meta description:** Learn to use AI with your notes, interviews or research. Explore an outline and a small sample for a book or learning project, with human coaching.
+
+**Headline:** Turn a lifetime of work into something others can learn from.
+
+**Introduction:** You have notes, interviews, films or research worth sharing.
+Learn how AI can help you organise a small part of it and explore a shape for your
+book or learning project. You choose the meaning, the audience and the voice.
+
+**Who this is for:** Researchers, educators, filmmakers and other people with
+experience or material they want to pass on. You may be starting a new chapter or
+returning to a project that has waited for years.
+
+**A place to begin:** Choose a small set of material you own or have permission
+to use. Together, explore recurring themes, keep track of their sources and try
+an outline. Then test a short passage or lesson to see what fits your intention.
+
+**What you can practise:**
+
+- Organising a manageable sample and keeping its source labels.
+- Asking AI to suggest themes and an outline, then checking them yourself.
+- Drafting a small sample in a voice you can recognise as your own.
+
+**A useful next step:** An outline and a tested sample can help you decide what to
+develop next. We agree a realistic scope for the journey; a finished book is a
+larger project.
+
+**Do I need to digitise everything first?** Start by discussing the material and
+its format. We can agree which small, usable sample to bring and what preparation
+it needs.
+
+**What happens to private material?** You decide what can be used. We discuss
+permissions and tool settings before uploading anything; confidential items can
+stay out of the exercise.
+
+**Final invitation:** Tell us about the material—and who you hope it will help.
+
+#### Page 2 — A next-chapter venture
+
+**Proposed route:** `/ai-coaching/next-chapter-business`
+
+**SEO title:** AI Coaching for Your Next Business Idea | GreenElephant
+
+**Meta description:** Explore a new business idea through personal AI coaching. Clarify a customer problem, draft an offer and plan a small test using your experience.
+
+**Headline:** Explore your next business idea with AI—on your terms.
+
+**Introduction:** Bring an idea and the experience behind it. Learn to use AI to
+ask better questions, explore an offer and prepare a small real-world test.
+
+**Who this is for:** People considering a small venture after a long career,
+during a transition or alongside their current work. You do not need a finished
+business plan to begin.
+
+**A place to begin:** Suppose you want to turn something you know into a service.
+Use AI to explore who might need it, draft questions for those people and write a
+first description of the offer. Check the assumptions before deciding what to do.
+
+**What you can practise:**
+
+- Turning a broad idea into a clear customer question.
+- Drafting an offer in words that sound like you.
+- Preparing one small test and deciding what you want to learn from it.
+
+**A useful next step:** A clearer offer draft, a short list of assumptions and a
+manageable next experiment. You keep the business decisions; AI helps you explore
+and prepare.
+
+**Will AI tell me whether the idea will work?** AI can suggest possibilities, but
+real people provide the evidence. We help you distinguish a promising suggestion
+from an assumption that still needs testing.
+
+**Can I bring an idea that is still rough?** Yes. A question such as “Could my
+experience help someone with this problem?” is enough for a discovery conversation.
+
+**Final invitation:** Bring the idea you keep coming back to.
+
+#### Page 3 — Everyday AI confidence
+
+**Proposed route:** `/ai-coaching/everyday-confidence`
+
+**SEO title:** Personal AI Coaching for Everyday Life | GreenElephant
+
+**Meta description:** Learn to use AI through everyday tasks you choose. Practise asking clear questions, checking answers and keeping control, with patient personal coaching.
+
+**Headline:** Feel more confident using AI in everyday life.
+
+**Introduction:** Start with something useful to you: writing a message, planning
+a personal project or understanding unfamiliar information. Learn at a manageable
+pace, with a person who helps you ask, try and check.
+
+**Who this is for:** Adults who want practical help getting started with AI. Your
+questions and interests shape the work; you do not need a technical background.
+
+**A place to begin:** Bring a letter or a planning task with private details
+removed. Practise asking for an explanation or a first draft. Compare it with the
+original, spot what needs checking and make the result your own.
+
+**What you can practise:**
+
+- Giving enough context without sharing unnecessary personal details.
+- Asking follow-up questions when an answer is unclear.
+- Checking sources and changing a draft so it expresses what you mean.
+
+**A useful next step:** A few repeatable tasks you have practised yourself, plus
+simple notes to help you try them again.
+
+**What if I find AI overwhelming?** We start with one task and explain each step.
+There is room to ask questions and repeat what needs more practice.
+
+**Can someone else arrange the journey for me?** Talk with us about who will
+attend and who will pay. The learner helps choose the goal and what they want
+to share.
+
+**Final invitation:** What is one everyday task you would like help with?
+
+**Editorial boundary:** initial examples avoid medical tasks. If later copy
+includes health-information literacy, limit it to finding/checking information and
+preparing questions for a clinician; it must not promise diagnosis or treatment.
+Do not use age-based assumptions or publish private family/health anecdotes.
+
+#### Page 4 — Facilitators and coaches
+
+**Proposed route:** `/ai-coaching/facilitators-and-coaches`
+
+**SEO title:** AI Training for Facilitators and Coaches | GreenElephant
+
+**Meta description:** Build a practical AI workflow for preparation and follow-through. Personal coaching for facilitators and coaches who want to keep their attention on people.
+
+**Headline:** Use AI around your work. Keep your attention on people.
+
+**Introduction:** Explore how AI can support preparation, writing and follow-up
+in your professional practice. Keep your own judgement, voice and responsibility
+for the people you work with.
+
+**Who this is for:** Facilitators, business coaches and learning designers who
+want to connect scattered AI experiments into a useful working routine.
+
+**A place to begin:** Take a fictional or approved brief. Use AI to explore a
+session outline, check whether the activities serve the goal and prepare a
+follow-up summary. Review what each step adds—and where your attention matters.
+
+**What you can practise:**
+
+- Turning a brief into useful preparation questions.
+- Adapting an outline or exercise to a particular group.
+- Checking a summary against the source and turning it into clear next steps.
+
+**A useful next step:** A small preparation-to-follow-up workflow you have tried,
+with clear points for your own review.
+
+**Is this coaching from an AI chatbot?** Your learning is guided by a human coach.
+You practise with AI tools as part of your own professional work.
+
+**Do I need to bring client recordings?** No. Use a fictional, anonymised or
+explicitly approved example. Client recordings are not needed to learn the steps.
+
+**Final invitation:** Which repeatable part of your work would you like to improve?
+
+#### Page 5 — Experienced specialists
+
+**Proposed route:** `/ai-coaching/experienced-specialists`
+
+**SEO title:** AI Coaching for Experienced Professionals | GreenElephant
+
+**Meta description:** Use your expertise as the starting point for learning AI. Practise reports, research or recurring work with personal coaching; discuss employer sponsorship.
+
+**Headline:** Keep your expertise. Build new ways of working with AI.
+
+**Introduction:** You know your field. Learn to use AI with the reports, research
+and questions you already understand, so your experience guides the work.
+
+**Who this is for:** Experienced specialists who want focused, beginner-friendly
+practice with relevant tasks. An employer may be organising the learning, or you
+may be exploring it yourself.
+
+**A place to begin:** Use a public or approved sample report. Ask AI to help
+structure a summary, identify questions and prepare a repeatable draft. Check each
+important claim against its source before deciding what is useful.
+
+**What you can practise:**
+
+- Giving clear instructions drawn from your own expertise.
+- Comparing an AI answer with reliable source material.
+- Building a small working template and a checklist for reviewing its output.
+
+**A useful next step:** A task you have practised end to end, a reusable guide and
+a clearer sense of where AI helps your work.
+
+**Can my employer arrange this?** Start with a discovery conversation. We discuss
+the learning goal, participant needs, scope and fee before a booking is confirmed.
+Employer payment or reimbursement is not automatic.
+
+**Can I use workplace material?** Only material and tools your organisation
+allows. A public, fictional or appropriately approved example can be used for
+practice instead.
+
+**Final invitation:** Bring one professional task you know well and would like
+to approach differently.
+
+#### Satellite Scan — English copy proposal
+
+This is a shorter content proposal for the product page, not a change to the
+questionnaire or purchased service. Existing original hero artwork and checkout
+remain in scope to preserve. The walkthrough and device/dashboard mockups are
+removed from the page layout. Included guides and the actual customer dashboard
+remain part of the offer.
+
+**Headline:** Help AI communicate more like you.
+
+**Introduction:** Notice your communication habits. Use what you learn to give
+AI clearer instructions, keep your own voice and check its answers.
+
+**Offer line:** A personal communication assessment, a dashboard prepared by a
+coach, and prompts and exercises to help you practise.
+
+**Price and button:** Get your Satellite Scan — €99.95
+
+**Unboxed subtext directly below the button:**
+
+> Questionnaire and video guides currently in English. Automatic translations may be inaccurate.
+
+**What is included**
+
+- A self-reflection questionnaire: allow about 90 minutes.
+- A dashboard prepared by a coach, normally within 48–72 hours of completion.
+- More than 10 communication prompts, video guides and practice materials.
+
+**How it works**
+
+1. Buy your Scan and check your email for the next steps.
+2. Complete the questionnaire at your own pace.
+3. Use your dashboard and prompts to explore a real task and review what you learn.
+
+**Bring your own voice to AI**
+
+Start with your goal, your preferred tone and what matters to you. Practise turning
+those choices into a clear request. Read the answer, check it and change what
+doesn't fit.
+
+**Is coaching included?** Training and coaching are booked separately. The Scan
+supports personal reflection and practice; it does not train an AI model for you.
+
+**What do the results tell me?** They describe patterns in your own responses.
+Use them for reflection and coaching, rather than hiring or performance reviews.
+
+**Short privacy note:** Share only what an AI tool needs. Leave out private client
+or workplace information.
+
+**Final CTA:** Get your Satellite Scan — €99.95
+
+Repeat the same English-language materials disclosure below the final CTA. Place
+any retained terms/refund links next to the buying context; do not remove product
+terms or alter checkout conditions as part of copy shortening.
+
+**Secondary link:** Discuss your training needs
+
+#### Satellite Scan — matching French copy proposal
+
+**Titre :** Aidez l’IA à communiquer à votre manière.
+
+**Introduction :** Repérez vos habitudes de communication. Appuyez-vous sur ce
+que vous découvrez pour donner des consignes plus claires à l’IA, garder votre
+propre voix et vérifier ses réponses.
+
+**Présentation :** Un bilan personnel de communication, un tableau de bord
+préparé par un coach, et des consignes et exercices pour pratiquer.
+
+**Prix et bouton :** Acheter votre Satellite Scan — 99,95 €
+
+**Texte sans encadré, directement sous le bouton :**
+
+> Questionnaire et guides vidéo actuellement en anglais. Les traductions automatiques peuvent être inexactes.
+
+**Ce qui est inclus**
+
+- Un questionnaire de réflexion personnelle : prévoyez environ 90 minutes.
+- Un tableau de bord préparé par un coach, normalement sous 48 à 72 heures après le questionnaire.
+- Plus de 10 consignes pour l’IA, des guides vidéo et des exercices de communication.
+
+**Comment ça marche**
+
+1. Achetez votre Scan, puis consultez les prochaines étapes dans votre boîte mail.
+2. Répondez au questionnaire à votre rythme.
+3. Utilisez votre tableau de bord et les consignes pour essayer une tâche réelle et faire le point.
+
+**Gardez votre voix dans vos échanges avec l’IA**
+
+Partez de votre objectif, du ton souhaité et de ce qui compte pour vous. Entraînez-vous
+à transformer ces repères en une demande claire. Lisez la réponse, vérifiez-la et
+changez ce qui ne vous convient pas.
+
+**Le coaching est-il inclus ?** La formation et le coaching se réservent séparément.
+Le Scan vous aide à réfléchir et à pratiquer ; il n’entraîne pas de modèle d’IA
+pour vous.
+
+**Que m’apprennent les résultats ?** Ils décrivent des tendances dans vos propres
+réponses. Utilisez-les pour la réflexion personnelle et le coaching, plutôt que
+pour le recrutement ou l’évaluation au travail.
+
+**Note de confidentialité :** Ne partagez avec un outil d’IA que les informations
+nécessaires. Écartez les données privées de vos clients ou de votre travail.
+
+**Bouton final :** Acheter votre Satellite Scan — 99,95 €
+
+Repeat the French materials-language notice beneath the final French CTA.
+Retain equivalent product terms/refund links in French. Translate navigation,
+accessible labels and footer context as well as body text; proper product names
+remain unchanged. No English explanatory paragraph belongs on this French page.
+
+**Lien secondaire :** Parlons de vos besoins de formation
+
+**Scope note for both Scan drafts:** the existing price, material count and
+turnaround are carried over from current source, not newly validated provider
+performance. Confirm their current accuracy before release. These short drafts
+also need the retained ACX/framework links and product-specific essential terms
+checked during the layout pass. Public removal of additional explanatory sections
+or testimonials is not implied by this draft.
+
+#### GA4 and the three-month comparison — proposed implementation brief
+
+**First reconcile the existing setup.** Estève reports a live Accept/Reject
+choice and installed GA tracking. Current source has disabled browser analytics
+and cookie-policy wording saying analytics is not used; the HTML check found no
+GA/GTM loader. Identify the actual property/data stream, tag delivery mechanism
+and consent manager. Reuse what is already present where it works. A configured
+measurement ID or server reporting credential is not proof of event collection.
+
+**Proposed measurement:**
+
+| Question | Proposed evidence | Interpretation |
+| --- | --- | --- |
+| Are people finding each page? | Landing-page sessions by source/medium/campaign; Search Console page/query data where access exists | Visibility and traffic quality; keep referral and search traffic distinct |
+| Do they take the next step? | Existing `calendly_click` event extended with a fixed use-case slug, language and CTA position | Booking-link interest, not a completed appointment |
+| Do suitable enquiries follow? | Confirmed calls and qualified enquiries by use case, initially tallied manually from information volunteered in the enquiry | No automated calendar/CRM integration is implied |
+| Do they become customers? | Aggregate proposals and paid engagements by use case, reviewed outside GA unless a later integration is approved | Do not infer sales from clicks or copy client data into analytics |
+
+Use the five fixed route slugs as the `use_case` values; no free-text goals,
+names, email addresses, questionnaire responses or private document references in
+event parameters. Keep existing event history and avoid creating a second tag.
+Check initial page loads and in-app navigation separately so one visit does not
+produce duplicate page views. Consent acceptance must not duplicate the current
+page view either. Leave unrelated ad/personalisation settings unchanged.
+
+Proposed campaign convention: `utm_campaign=coaching_journeys_90d`, a real
+source/medium such as `linkedin / organic_social`, and the fixed case slug in
+`utm_content`. Review links before use; no campaign messages have been sent.
+Country, language, source and the kind of promotion may differ, so this is a
+portfolio comparison, not a randomised A/B test. A page with more promotion does
+not establish a better niche. Compare like traffic sources and disclose small
+sample sizes and consent-related gaps.
+
+Begin the shared clock only after all five approved English pages are live,
+measurement has passed a consent-aware browser check, and the GA4 destination
+shows the expected events. Record actual start/end dates then. Use a lightweight
+weekly data-quality check and reviews at days 30, 60 and 90; no scheduled automation
+is created by this draft. Low traffic means insufficient evidence, not a failed
+market. Report counts as well as rates.
+
+**Technical verification proposal:** use Google Tag Assistant to check the tag and
+the banner's initial, Accept, Reject and withdrawal states; inspect relevant network
+requests/cookies and GA4 Realtime or DebugView; ensure page and event behaviour
+matches the selected consent design. Reconcile the cookie/privacy copy with the
+observed implementation. The banner's presence alone does not establish these
+results. The measurement mode and retention settings remain to inspect.
+
+Reference: [Google tag verification](https://support.google.com/analytics/answer/15756111?hl=en),
+[consent-mode verification](https://support.google.com/analytics/answer/14218557?hl=en),
+and [GA4 landing-page reporting](https://support.google.com/analytics/answer/12931766?hl=en).
+These technical references are not a legal-compliance certification.
+
+#### Build and review sequence
+
+1. Review the proposed copy and agree feasible journey activities; confirm open
+   coaching schedule/price/delivery details before public offers are final.
+2. Implement homepage and EN/FR Scan refinements on the local branch. Preserve
+   exact testimonial wording, existing buying terms, original artwork and working
+   checkout destinations. Review both languages on desktop and mobile.
+3. Implement the five English pages using one content-driven layout. Add unique
+   titles/descriptions/canonical URLs and internal links; serve meaningful initial
+   HTML for each new page and English Scan, using the existing Express/Vite stack.
+   Add only published pages to the sitemap. Keep French equivalents out of
+   hreflang until the translated pages exist.
+4. Reconcile and test existing analytics/consent, then prepare the agreed landing
+   report. Confirmed booking attribution may begin with a manual tally; do not
+   label outbound clicks as confirmed bookings.
+5. Run the applicable repository/release checks and review the actual pages.
+   Prepare PRs with the source/OS cross-check below. After reviewed merges, use
+   the refreshed manual Replit release issue; the human selects Republish.
+
+**Cross-repository record:** website base
+`2a029447065922649ed4391a275221694a7ad424`; OS main
+`83391d8520a6bfb2e010590686d6e32797490b62`. The OS PRD/log were read at that
+commit. Website GEOS-REQ-002/003/004 and OS GEOS-REQ-002/003/004,
+DEC-GEOS-001/002/003 apply. This draft introduces no OS schema, shared package,
+calendar field or customer transfer, so no paired OS change is proposed. The
+website manifest still has no shared contracts dependency; no receiving-system
+integration is asserted. Any later shared flow needs its own explicit record.
+
+**Current state:** copy/layout implemented under DEC-AIL-041 and owner-reviewed
+under DEC-AIL-042. Commit, branch push and PR preparation are authorised; verify
+actual remote/CI state on GitHub. Not yet merged or published. Preview with
+`npm run preview:website` at `http://127.0.0.1:5180` (backend actions unavailable).
+Existing account/billing/provider settings are untouched. Production build,
+repository checks, 62 isolated release tests and 7 new page checks pass. The full
+type check has legacy errors in unchanged files. The owner accepts the preview;
+independent mobile/keyboard/font checks, existing GA4/consent verification and
+live provider/release gates remain open. The pre-PR audit reports zero high or
+critical dependency findings and eight moderate findings; dependency versions
+are unchanged. Do not start the three-month comparison before verified measurement.
+
+<!-- AI_LIT_WORKSHOP_20261003_END -->
 
 ### Discovery acceptance and progress
 

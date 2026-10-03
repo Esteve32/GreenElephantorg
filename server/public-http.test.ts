@@ -106,6 +106,15 @@ test("initial HTML has a single set of route-specific metadata", async () => {
   assert.equal(renderPageMetadata(template, "/myfive"), template, "paused MyFive template remains unchanged");
 });
 
+test('runtime analytics config is no-store and never exposes reporting credentials',async()=>{
+  const response=await fetch(origin+'/api/public/analytics-config');
+  assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');
+  const body=await response.json();
+  assert.deepEqual(Object.keys(body).sort(),['enabled','measurementId']);
+  if(body.enabled) assert.match(body.measurementId,/^G-[A-Z0-9]{6,20}$/);
+  else assert.equal(body.measurementId,null);
+});
+
 // Node fetch does not reliably permit overriding Host. Use the HTTP client
 // directly to exercise the actual incoming Host header.
 async function hostResponse(route: string, host: string, method = "GET", forwardedHost?: string) {
@@ -216,7 +225,7 @@ test('French landing pages have real French content and reciprocal language link
   const home = await (await fetch(origin + '/fr')).text();
   assert.match(home,/Travaillez avec l’IA/); assert.match(home,/maeva-portrait/);
   const scan = await (await fetch(origin + '/fr/scan')).text();
-  assert.match(scan,/questionnaire du Scan et les vidéos sont actuellement en anglais/);
+  assert.match(scan,/Questionnaire et guides vidéo actuellement en anglais/);
   assert.match(scan,/href="\/fr\/checkout\?product=satellitescan&amp;lang=fr"|href="\/fr\/checkout\?product=satellitescan&lang=fr"/);
   const article=await (await fetch(origin+'/fr/blog/acx-levels-ai-literacy')).text();
   const schema=JSON.parse(article.match(/id="page-structured-data">([^<]+)<\/script>/)![1]);

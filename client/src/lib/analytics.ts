@@ -5,8 +5,9 @@ declare global {
   }
 }
 
-// Optional analytics stay off until an audited opt-in and withdrawal control exists.
-// Merely configuring a GA key is not consent.
+// Legacy purchase, assessment and form trackers remain disabled. Public landing
+// measurement is owned by marketing-tracker.ts; do not turn these broad helpers
+// back on merely because a visitor accepts marketing-page analytics.
 export const initGA = () => {};
 const hasAnalyticsConsent = () => false;
 

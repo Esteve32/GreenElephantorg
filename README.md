@@ -171,6 +171,12 @@ npm run repo:check
 npm run dev
 ```
 
+For copy and layout work without database or provider credentials, use
+`npm run preview:website` and open <http://127.0.0.1:5180>. Saved frontend edits
+update through Vite. This computer-local preview returns 503 for every `/api`
+request: it cannot process payments, send emails or save customer data. It is not
+a production health check. Use the full development environment for backend tests.
+
 Before changing computers, commit the intended files and explicitly push the work
 branch when ready. The other computer can then fetch that branch. GitHub cannot
 recover edits or commits that have never left the first computer. Private source

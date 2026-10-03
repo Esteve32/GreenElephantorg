@@ -1,5 +1,7 @@
 import homepage from '../shared/homepage-content.json';
-import scanFr from '../shared/scan-page-fr.json';
+import { publicAnalyticsConfig } from '../shared/marketing-analytics';
+import { renderScanPage } from '../shared/scan-page';
+import { coachingPage, renderCoachingPage } from '../shared/coaching-pages';
 import { ACX_ARTICLE_FR_HTML } from '../shared/acx-article-fr';
 import { basePagePath, hasFrenchPage, localPage, articleLinks, siteLanguage } from '../shared/site-language';
 import { ACX_ARTICLE, ACX_ARTICLE_HTML, ACX_ARTICLE_SCHEMA } from "../shared/acx-article";
@@ -11,6 +13,11 @@ import { SITE_ORIGIN, DEFAULT_SOCIAL_IMAGE, pageMetadata, fullPageTitle, isRegis
 // Register before sessions, parsers and provider routes. This endpoint only
 // proves that HTTP handling is alive; it makes no dependency-readiness claim.
 export function registerPublicHttp(app: Express) {
+  // Public measurement ID only. Never return property credentials or the env.
+  // Runtime lookup avoids depending on Replit exposing deployment secrets to Vite.
+  app.get('/api/public/analytics-config', (_req, res) => {
+    res.set('Cache-Control', 'no-store').json(publicAnalyticsConfig(process.env));
+  });
   app.get("/api/ping", (_req, res) => {
     res.set("Cache-Control", "no-store").json({ status: "ok", service: "greenelephant", scope: "http" });
   });
@@ -84,7 +91,9 @@ export function renderPageMetadata(template: string, pathname: string): string {
     tags.push(`<script type="application/ld+json" id="page-structured-data">${JSON.stringify({ ...ACX_ARTICLE_SCHEMA, headline: m.title, description: m.description, inLanguage: language, url, mainEntityOfPage: url }).replaceAll("<", "\\u003c")}</script>`);
   }
   if (base === '/') html = html.replace('<div id="root"></div>', `<div id="root"><div class="ge-site"><main class="home-content">${homepage[language].main}</main>${homepage[language].footer}</div></div>`);
-  if (pathname === '/fr/scan') html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-scan-fr"><div class="scan-content">${scanFr.html}</div></main></div>`);
+  if (base.replace(/\/+$/, '') === '/scan') html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-site" lang="${language}">${renderScanPage(language)}</main></div>`);
+  const coaching = coachingPage(pathname);
+  if (coaching) html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-site" lang="en">${renderCoachingPage(coaching)}</main></div>`);
   return html.replace("</head>", tags.join("\n    ") + "\n  </head>");
 }
 

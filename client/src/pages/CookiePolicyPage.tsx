@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Cookie } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { openCookiePreferences } from '@/lib/marketing-tracker';
 
 export default function CookiePolicyPage() {
   useEffect(() => { document.title = "Cookie Policy | GreenElephant"; }, []);
@@ -23,10 +24,10 @@ export default function CookiePolicyPage() {
             Cookie Policy
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4 italic">
-            We keep things simple. Thank you for reviewing how we use cookies—only what's essential for your experience.
+            Essential cookies support the site. Optional analytics need your permission.
           </p>
           <p className="text-sm text-muted-foreground">
-            Last updated: October 1, 2026
+            Last updated: October 3, 2026
           </p>
         </div>
 
@@ -41,8 +42,8 @@ export default function CookiePolicyPage() {
                 remember your preferences, maintain your session, and improve your browsing experience.
               </p>
               <p>
-                At GreenElephant.org, we believe in transparency and minimal data collection. We only use cookies 
-                that are essential for the website to function properly.
+                At GreenElephant.org, essential cookies support sign-in and the service.
+                Optional Google Analytics cookies are used only after you accept analytics.
               </p>
             </CardContent>
           </Card>
@@ -83,18 +84,23 @@ export default function CookiePolicyPage() {
               <div>
                 <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-muted"></span>
-                  Analytics Cookies (Currently Not Used)
+                  Optional Analytics Cookies
                 </h3>
                 <p>
-                  We do not currently use analytics or tracking cookies. If we decide to implement analytics in the 
-                  future, we will:
+                  When analytics is enabled for production and you accept, Google Analytics 4
+                  helps compare visits and enquiry-link or Scan checkout-link clicks on our
+                  home, Scan and five coaching landing pages. A click is not a confirmed booking or purchase.
                 </p>
                 <ul className="list-disc list-inside space-y-2 ml-4 mt-3">
-                  <li>Request your explicit consent before placing any analytics cookies</li>
-                  <li>Provide clear information about what data is collected</li>
-                  <li>Allow you to opt-out at any time</li>
-                  <li>Use privacy-respecting analytics tools that anonymize your data</li>
+                  <li>No Google analytics tag loads before acceptance or after an initial rejection.</li>
+                  <li>We send the public page path, language, a broad referral category and selected link-click labels. Google also processes technical request/device information and cookie identifiers. This is not a claim of anonymous collection.</li>
+                  <li>We do not send names, emails, purchase identifiers, questionnaire answers, scores, full referrer URLs or URL query strings through this measurement.</li>
+                  <li>Private, account, checkout, result and MyFive pages are excluded. Advertising signals and ad personalisation are disabled.</li>
+                  <li>Google cookies named _ga and _ga_* are configured to expire after 180 days without renewal. Your Accept/Reject preference is stored locally as ge.analytics-consent.v1 for 180 days.</li>
+                  <li>Rejecting or withdrawing leaves the site available. Withdrawal stops future tracking and clears the site’s GA cookies; it does not erase information already received by Google.</li>
                 </ul>
+                <p className="mt-4">Google processes analytics data as a service provider. See <a className="text-needs underline" href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google’s explanation of partner-site data</a> and our <a className="text-needs underline" href="/privacy">privacy policy</a>. Account-side retention and transfer arrangements must be checked separately; browser cookie expiry is not server-side deletion.</p>
+                <button type="button" className="mt-6 rounded-md border border-needs px-6 py-3 text-needs" onClick={openCookiePreferences}>Change my cookie choice</button>
               </div>
 
               <div>
