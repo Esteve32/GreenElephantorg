@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.21.4
+# Green Elephant — Project Decision Log v11.21.5
 
-**Document Version:** `11.21.4`
-**Last Updated:** `2026-10-03T08:56:16+09:00`
+**Document Version:** `11.21.5`
+**Last Updated:** `2026-10-03T03:10:37+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.21.5 | 2026-10-03T03:10:37+03:00 | Estève Pannetier | AI-LIT: record visual acceptance and authority to merge PR 42 and prepare Replit handoff; clarify bounded analytics coverage and production configuration |
 | 11.21.4 | 2026-10-03T08:56:16+09:00 | Estève Pannetier | AI-LIT: recover supplied Mac work and reuse original bilingual Scan controls and visuals; browser checks pass, revised visual acceptance and release gates remain open |
 | 11.21.3 | 2026-10-03T02:03:01+03:00 | Estève Pannetier | AI-LIT: record requested Scan restoration, seamless fades, opt-in GA repair candidate and post-relaunch issue 31 follow-up |
 | 11.21.2 | 2026-10-03T01:24:06+03:00 | Estève Pannetier | AI-LIT: record owner visual acceptance and authorisation for commit, branch push and reviewed GitHub PR; manual Replit and GA4 gates remain separate |
@@ -1315,6 +1316,45 @@ decision here when Estève selects one; do not silently change its status.
   No production credentials, settings, payment/email/database actions or live GA
   event delivery were used or verified; the three-month analytics window has not
   started. DEC-AIL-043's live analytics and post-relaunch checks remain open.
+
+<a id="dec-ail-045"></a>
+### DEC-AIL-045 — Accept the restored visuals and authorise merge/release handoff
+
+- **Project:** AI-LIT
+- **Status:** approved visual candidate and GitHub merge; Replit preparation handoff authorised
+- **Decision date:** 2026-10-03 (Europe/Helsinki)
+- **Approver / evidence:** Estève: “This is all very good. Merge and prepare the
+  Replit handoff.” He also asks for overall Google Analytics status and whether
+  Replit needs local action. Approval covers the reviewed restored candidate
+  `c7ccf3e6369aa5752aa0a3abfd8ac4e9e99e4739`; no runtime code changes accompany
+  this approval record.
+- **Decision:** close the revised visual-acceptance gate in DEC-AIL-043/044 and
+  merge PR #42 through its required checks. Refresh issue #31 to the exact merged
+  main SHA, preserve its guarded Bash and durable follow-up context, and provide
+  the complete Replit preparation handoff. Human Republish remains separate.
+- **Analytics clarification:** implemented coverage is the nine allowlisted page
+  paths (EN/FR home and Scan plus five English coaching pages), consented page
+  views and enquiry/Scan-checkout link clicks. It is not whole-site or completed
+  booking/purchase tracking. The existing GA property is reused; production
+  account access, event receipt and the three-month comparison start remain
+  unverified. No consent scope expansion or collection enablement is inferred.
+- **Replit configuration:** verify the existing stream's public
+  `VITE_GA_MEASUREMENT_ID` and, only after the existing GA/account/consent checks,
+  `GA4_COLLECTION_ENABLED=true` in production deployment settings. Workspace or
+  Mac settings alone do not activate production collection. Keep local/preview
+  tracking disabled; no new installation or source rewrite is required.
+- **Fresh public evidence:** before this merge, the www production `/api/ping`
+  returns HTTP 200 with `status:ok`, while `/api/public/analytics-config` returns
+  404. The earlier ping-404 observation is no longer current on that host.
+  These reads do not verify the deployed commit, database/providers or GA receipt.
+- **Affected IDs:** AI-LIT-REQ-040/041; AI-LIT-TBD-008/009; AI-LIT-AC-005/007.
+  Resolves DEC-AIL-044 visual acceptance; retains DEC-AIL-043 analytics and live
+  release boundaries. No shared OS schema/package/data-flow/release-rule change;
+  the recorded OS cross-check at `83391d8520a6bfb2e010590686d6e32797490b62` remains
+  applicable. MY5 stays paused.
+- **Publication evidence:** approval is not proof of a completed merge or Replit
+  deployment. Record the actual merge SHA and subsequent verification in PR #42
+  and issue #31; do not mark publication or live analytics complete here.
 
 ## MY5 pause and historical decisions
 
