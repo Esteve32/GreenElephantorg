@@ -100,12 +100,12 @@ export const scanPageCopy = {
   },
 };
 
-export function renderScanPage(language: ScanLanguage): string {
+export function renderScanPageBody(language: ScanLanguage): string {
   const c = scanPageCopy[language], acx = scanLiteracy[language];
   const checkout = `${localPage('/checkout', language)}?product=satellitescan&lang=${language}`;
   const buy = (position: string) => `<div class="ge-cta-group"><a class="button" href="${e(checkout)}" data-testid="button-get-scan-${position}">${e(c.buy)} <span aria-hidden="true">↗</span></a><p class="ge-note scan-language-notice">${e(c.notice)}</p></div>`;
   const detail = (title: string, text: string, link?: [string,string]) => `<details><summary>${e(title)}</summary><p>${e(text)}</p>${link ? `<p><a class="text-link" href="${link[0]}">${e(link[1])} →</a></p>` : ''}</details>`;
-  return `<article class="ge-landing ge-scan" data-testid="page-scan">
+  return `
     <section class="ge-landing-hero ge-scan-hero"><div class="wrap"><p class="eyebrow">${e(c.eyebrow)}</p><h1>${e(acx.title)}</h1><p class="ge-lead">${e(c.intro)}</p>${buy('hero')}<p class="ge-note">${e(c.offer)}</p><a class="ge-scroll" href="#scan-more">${e(c.more)} <span aria-hidden="true">↓</span></a></div></section>
     ${renderRestoredScanSections(language)}
     <section class="ge-band"><div class="section wrap ge-split"><div><h2>${e(c.voiceTitle)}</h2><p>${e(c.voice)}</p><p class="ge-note">${e(c.privacy)}</p></div><div><h2>${e(c.how)}</h2><ol class="ge-scan-steps">${c.steps.map(item=>`<li>${e(item)}</li>`).join('')}</ol></div></div></section>
@@ -121,5 +121,9 @@ export function renderScanPage(language: ScanLanguage): string {
     ${renderRestoredProcess(language)}
     <section class="section wrap ge-landing-close"><h2>${e(c.guaranteeTitle)}</h2><p>${e(c.guarantee)}</p>${buy('closing')}<p class="ge-note ge-terms"><a href="/terms">${e(c.terms)}</a><a href="/privacy">${e(c.privacyLink)}</a></p><a class="text-link" href="${DISCOVERY_URL}" target="_blank" rel="noopener noreferrer">${e(c.training)} ↗</a></section>
     <section class="ge-band"><div class="section wrap"><h2>${e(c.freeTitle)}</h2><p>${e(c.freeText)}</p><div class="ge-cta-group"><a class="text-link" href="/flow-check">${e(c.freeLink)} →</a></div></div></section>
-  </article>`;
+  `;
+}
+
+export function renderScanPage(language: ScanLanguage): string {
+  return `<article class="ge-landing ge-scan" data-testid="page-scan">${renderScanPageBody(language)}</article>`;
 }

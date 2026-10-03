@@ -1,3 +1,7 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { BarChart3, Bot, Video, FileText, Smartphone, MessageSquare, Timer, Brain, Sparkles, Target, type LucideIcon } from 'lucide-react';
+import { LENSES, type LensType } from '../client/src/constants/lenses';
 import en from './scan-restored-en.json';
 import fr from './scan-restored-fr.json';
 import { escapeCopy as e } from './coaching-pages';
@@ -12,7 +16,7 @@ export const scanLensNames = {
   fr: ['Influence', 'Attitude', 'Chaordique', 'Fluidité', 'Alignement', 'Énergie et besoins', 'Ego', 'Dynamiques'],
 };
 const lensKeys = Object.keys(en.LENS_DETAILS) as (keyof typeof en.LENS_DETAILS)[];
-const labels = {
+export const scanLabels = {
   en: {
     deliverables: 'What you receive.',
     deliverablesIntro: 'Your dashboard in 48–72 hours. A communication map prepared by a coach, with tools to keep exploring your patterns.',
@@ -78,23 +82,32 @@ const labels = {
 };
 
 const list = (items: string[]) => `<ul class="ge-scan-list">${items.map(x=>`<li>${e(x)}</li>`).join('')}</ul>`;
-const cards = (items: string[][]) => `<div class="ge-scan-content-grid">${items.map(([title,text])=>`<div><h3>${e(title)}</h3><p>${e(text)}</p></div>`).join('')}</div>`;
+// Same Lucide assets and colour assignments as the original Scan sections.
+const icon = (Icon: LucideIcon) => renderToStaticMarkup(createElement(Icon, {size:24, 'aria-hidden':true}));
+const deliverableIcons = [BarChart3, Bot, Video, FileText];
+const deliverableColours = ['#009999', '#e8c840', '#cc3333', '#3b7dd8'];
+const mirrorIcons = [Smartphone, BarChart3, MessageSquare];
+const processIcons = [Timer, Brain, Sparkles, Target];
+const cards = (items: string[][], icons: LucideIcon[] = [], colours: string[] = []) => `<div class="ge-scan-content-grid">${items.map(([title,text],i)=>`<div class="ge-scan-icon-card">${icons[i]?`<span class="ge-scan-icon" style="color:${colours[i]??'var(--teal)'}">${icon(icons[i])}</span>`:''}<div><h3>${e(title)}</h3><p>${e(text)}</p></div></div>`).join('')}</div>`;
+const lensBadge = (key: string, name: string) => `<span class="ge-scan-lens-badge" style="--lens-colour:hsl(var(--${key}))">${e(name)}</span>`;
+const widget = (name: 'benefits'|'lenses', html: string) => `<!--scan-widget:${name}-->${html}<!--/scan-widget-->`;
+
 const section = (id: string, title: string, intro: string, body: string, glow = false) => `<section id="${id}" data-testid="section-${id}"${glow?' class="ge-band"':''}><div class="section wrap"><h2>${e(title)}</h2><p>${e(intro)}</p>${body}</div></section>`;
 
 export function renderRestoredScanSections(language: ScanLanguage): string {
-  const c = labels[language], data = restoredScan[language];
+  const c = scanLabels[language], data = restoredScan[language];
   const lensName = (key: string) => scanLensNames[language][lensKeys.indexOf(key as typeof lensKeys[number])];
-  return section('scan-more', c.deliverables, c.deliverablesIntro, cards(c.items))
+  return section('scan-more', c.deliverables, c.deliverablesIntro, cards(c.items, deliverableIcons, deliverableColours))
     + section('before-after', c.beforeAfter, c.beforeIntro, `<div class="ge-scan-content-grid"><div><h3>${e(c.before)}</h3>${list(c.beforeItems)}</div><div><h3>${e(c.after)}</h3>${list(c.afterItems)}</div></div>`, true)
-    + section('signals', c.signals, c.signalsIntro, `<div class="ge-scan-content-grid">${data.PAIN_SIGNALS.map(x=>`<div><p>${e(x.signal)}</p><p class="eyebrow">${e(lensName(x.lens))}</p></div>`).join('')}</div>`)
-    + section('what-is-it', c.mirror, c.mirrorIntro, cards(c.mirrorItems), true)
+    + section('signals', c.signals, c.signalsIntro, `<div class="ge-scan-content-grid">${data.PAIN_SIGNALS.map(x=>`<div><p>${e(x.signal)}</p>${lensBadge(x.lens,lensName(x.lens))}</div>`).join('')}</div>`)
+    + section('what-is-it', c.mirror, c.mirrorIntro, cards(c.mirrorItems, mirrorIcons), true)
     + section('comparison', c.comparison, c.comparisonIntro, list(c.comparisons))
-    + section('benefits', c.people, c.peopleIntro, `<div class="ge-scan-content-grid">${data.PERSONAS.map(x=>`<div data-testid="persona-${x.id}"><h3>${e(x.title)}</h3><p>${e(x.description)}</p><p class="ge-note">${e(c.keyLenses)} : ${x.lenses.map(lensName).map(e).join(' · ')}</p></div>`).join('')}</div>`, true)
-    + section('lenses', c.lenses, c.lensesIntro, `<div class="ge-questions">${lensKeys.map(key=>`<details class="ge-scan-lens" data-testid="lens-${key}"><summary>${e(lensName(key))}</summary><h4>${e(c.pattern)}</h4><p>${e(data.LENS_DETAILS[key].painSignal)}</p><h4>${e(c.practice)}</h4><p>${e(data.LENS_DETAILS[key].benefit)}</p>${data.LENS_BENEFITS[key].map(x=>`<h4>${e(x.benefit)}</h4><p>${e(x.insight)}</p>`).join('')}</details>`).join('')}</div>`)
-    + section('repeatable-reflection', c.repeat, c.repeatIntro, cards(c.repeatItems), true);
+    + widget('benefits', section('benefits', c.people, c.peopleIntro, `<div class="ge-scan-content-grid">${data.PERSONAS.map(x=>`<div data-testid="persona-${x.id}"><h3>${e(x.title)}</h3><p>${e(x.description)}</p><p class="ge-note">${e(c.keyLenses)} : ${x.lenses.map(key=>lensBadge(key,lensName(key))).join(' ')}</p></div>`).join('')}</div>`, true))
+    + widget('lenses', section('lenses', c.lenses, c.lensesIntro, `<div class="ge-questions">${lensKeys.map(key=>`<details class="ge-scan-lens" data-testid="lens-${key}"><summary><span class="ge-scan-lens-icon" style="background:hsl(var(--${key}))">${icon(LENSES[key as LensType].icon)}</span>${e(lensName(key))}<span class="ge-note">${LENSES[key as LensType].code}</span></summary><h4>${e(c.pattern)}</h4><p>${e(data.LENS_DETAILS[key].painSignal)}</p><h4>${e(c.practice)}</h4><p>${e(data.LENS_DETAILS[key].benefit)}</p>${data.LENS_BENEFITS[key].map(x=>`<h4>${e(x.benefit)}</h4><p>${e(x.insight)}</p>`).join('')}</details>`).join('')}</div>`))
+    + section('repeatable-reflection', c.repeat, c.repeatIntro, `<div class="ge-scan-repeat-grid">${c.repeatItems.map(([title,text])=>`<div class="ge-scan-repeat-card"><span class="ge-scan-timing">${e(title)}</span><p>${e(text)}</p></div>`).join('')}</div><div class="ge-scan-timeline" aria-hidden="true"><span></span><i></i><span></span><i></i><span></span></div>`, true);
 }
 
 export function renderRestoredProcess(language: ScanLanguage): string {
-  const c = labels[language];
-  return section('how-it-works', c.process, c.processIntro, `<ol class="ge-scan-steps">${restoredScan[language].STEPS.map(x=>`<li><h3>${e(x.title.replace(/^\d\. /,''))}</h3><p>${e(x.description)}</p></li>`).join('')}</ol>`);
+  const c = scanLabels[language];
+  return section('how-it-works', c.process, c.processIntro, `<ol class="ge-scan-steps">${restoredScan[language].STEPS.map((x,i)=>`<li class="ge-scan-process-card"><span class="ge-scan-icon">${icon(processIcons[i])}</span><div><h3>${e(x.title.replace(/^\d\. /,''))}</h3><p>${e(x.description)}</p></div></li>`).join('')}</ol>`);
 }

@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.21.3
+# Green Elephant — Project Decision Log v11.21.4
 
-**Document Version:** `11.21.3`
-**Last Updated:** `2026-10-03T02:03:01+03:00`
+**Document Version:** `11.21.4`
+**Last Updated:** `2026-10-03T08:56:16+09:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.21.4 | 2026-10-03T08:56:16+09:00 | Estève Pannetier | AI-LIT: recover supplied Mac work and reuse original bilingual Scan controls and visuals; browser checks pass, revised visual acceptance and release gates remain open |
 | 11.21.3 | 2026-10-03T02:03:01+03:00 | Estève Pannetier | AI-LIT: record requested Scan restoration, seamless fades, opt-in GA repair candidate and post-relaunch issue 31 follow-up |
 | 11.21.2 | 2026-10-03T01:24:06+03:00 | Estève Pannetier | AI-LIT: record owner visual acceptance and authorisation for commit, branch push and reviewed GitHub PR; manual Replit and GA4 gates remain separate |
 | 11.21.1 | 2026-10-03T01:16:12+03:00 | Estève Pannetier | AI-LIT: approve October copy and airy local homepage, five coaching pages and bilingual Scan implementation; visual, GA4 and release verification remain open |
@@ -1260,6 +1261,60 @@ decision here when Estève selects one; do not silently change its status.
   Local preview returns HTTP 200 with eight lens and nine persona blocks in each
   language, without walkthrough/video elements. Browser surfaces are unavailable,
   so visual, keyboard and real Google network/account acceptance are still open.
+
+<a id="dec-ail-044"></a>
+### DEC-AIL-044 — Recover the local candidate and reuse the original Scan visuals
+
+- **Project:** AI-LIT
+- **Status:** restoration requested; implementation verified for visual review
+- **Decision date:** 2026-10-03 (recovery session following DEC-AIL-043)
+- **Approver / evidence:** Estève supplies the Mac patch and eight missing source
+  files, asks to finish and visualise the work before GitHub merge and Replit,
+  and explicitly requests reuse of working historical code. Fourteen supplied
+  screenshots identify the original icons, wheel, stacked disclosures, role
+  switches, process cards and revisit timeline. This is restoration authority;
+  acceptance of the revised visual candidate is still open.
+- **Recovery provenance:** the uploaded tracked patch applies cleanly to PR #42
+  head `189b35704a5dce1b90b6a425c47fc843712fb6e4`. Its 20 tracked changes plus eight
+  listed new source files are preserved in local checkpoint `18daf63`. Uploaded
+  archives/screenshots and private source files are not published. Direct access
+  to the Mac filesystem was not available; this recovery uses the supplied exports.
+- **Reuse implementation:** extract the original BenefitsSection and LensesSection
+  from `2a029447065922649ed4391a275221694a7ad424:client/src/pages/ScanPage.tsx` into
+  `RecoveredScanSections.tsx`, retaining their wheel geometry, eight shared Lucide
+  icons/colours, circular/stacked switch and nine role switches. Connect the existing
+  recovered EN/FR copy. Restore original deliverable/process icons, coloured lens
+  badges and the three timing circles/timeline around the current corrected copy.
+  Preserve the airy layout, edge fades, paid inclusions, homepage and testimonials.
+- **Bounded adaptations:** expose translated labels and keyboard controls; remove
+  the original card/switch double-toggle path; close an open lens when changing
+  views; provide Escape and a touch close button; keep popover positioning through
+  animation; wrap the long French resource link and allow wider phone detail text.
+  Phones below 480px retain the original stacked-only behaviour. The separate
+  Periodic Table destination remains English and is explicitly labelled in French.
+  The server HTML keeps complete readable lens/persona fallbacks from the same copy.
+- **Verification evidence:** 83 isolated release tests pass; final production build,
+  repository and whitespace checks pass. Node 24.19.0. Full TypeScript retains the
+  34 known legacy errors, with none in the restored Scan modules. Dependency audit:
+  zero high/critical and eight moderate findings; lockfile/dependencies unchanged.
+  Chromium checks exercise all eight lenses in both views and all nine role switches
+  in EN/FR, including keyboard Space/Escape. Layouts checked at 1440, 768, 480 and
+  390px have no horizontal overflow after the French link fix; no page exceptions.
+  Real section screenshots were inspected. This is not a full accessibility audit,
+  owner acceptance, backend/provider test or production verification.
+- **OS cross-check:** website source `189b35704a5dce1b90b6a425c47fc843712fb6e4`
+  and OS main `83391d8520a6bfb2e010590686d6e32797490b62`; current OS PRD/log read.
+  GEOS-REQ-002/003/004 and OS DEC-GEOS-001/002/003 apply. No schema, package,
+  calendar or customer-data flow changed, so no paired OS implementation PR.
+- **Affected PRD IDs:** AI-LIT-REQ-002/007/008/009/018/026/028/040/041,
+  AI-LIT-AC-005/007; GEOS-REQ-002/003/004. Refines DEC-AIL-043, preserving its
+  corrected claims/privacy boundaries. MY5 stays paused and its baseline intact.
+- **Open release gates:** revised visual acceptance before merge; required GitHub
+  CI; then refresh manual Replit issue #31 to the merged SHA. Replit app access and
+  deployed SHA are not independently confirmed. Human Republish remains separate.
+  No production credentials, settings, payment/email/database actions or live GA
+  event delivery were used or verified; the three-month analytics window has not
+  started. DEC-AIL-043's live analytics and post-relaunch checks remain open.
 
 ## MY5 pause and historical decisions
 

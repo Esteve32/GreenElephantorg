@@ -12,6 +12,35 @@
 .ge-site .ge-scan-lens > summary { color: var(--teal); }
 .ge-site .ge-scan-lens h4 { margin-top: 28px; font: 700 1.1rem/1.6 var(--heading); }
 .ge-site .ge-scan .ge-scan-quotes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 48px; }
+/* Restore the original Scan icon, timing-card and process treatments. */
+.ge-site .ge-scan-fragment { display: contents; }
+.ge-site .ge-scan-icon-card { display: flex; align-items: flex-start; gap: 20px; }
+.ge-site .ge-scan-icon { display: inline-flex; flex: 0 0 48px; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: 10px; background: color-mix(in srgb, currentColor 12%, transparent); color: var(--teal); }
+.ge-site .ge-scan-icon svg { flex: none; }
+.ge-site .ge-scan-lens-badge { display: inline-block; margin: 8px 8px 0 0; padding: 4px 12px; background: var(--lens-colour); color: #0a0a0a; border-radius: 6px; font-size: .875rem; font-weight: 700; }
+.ge-site .ge-scan-lens > summary { display: flex; align-items: center; gap: 16px; }
+.ge-site .ge-scan-lens-icon { display: inline-flex; width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; align-items: center; justify-content: center; color: white; }
+.ge-site .ge-scan-repeat-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; margin-top: 40px; }
+.ge-site .ge-scan-repeat-card { border: 1px solid var(--line); border-radius: 12px; padding: 28px; text-align: center; background: #ffffff08; }
+.ge-site .ge-scan-timing { display: inline-flex; width: 80px; height: 80px; align-items: center; justify-content: center; border-radius: 50%; font-size: .875rem; font-weight: 700; line-height: 1.4; background: #00b3b320; border: 1px solid #00b3b345; color: var(--teal); padding: 6px 12px; margin-bottom: 20px; }
+.ge-site .ge-scan-timeline { display: flex; justify-content: center; align-items: center; margin-top: 48px; }
+.ge-site .ge-scan-timeline span { height: 12px; width: 12px; border-radius: 50%; background: var(--teal); }
+.ge-site .ge-scan-timeline i { width: 96px; height: 2px; background: #00b3b350; }
+.ge-site .ge-scan-steps:has(.ge-scan-process-card) { list-style: none; padding: 0; margin-top: 40px; }
+.ge-site .ge-scan-process-card { display: flex; align-items: flex-start; gap: 28px; padding: 32px; margin-bottom: 32px; border: 1px solid var(--line); border-radius: 12px; background: #ffffff08; }
+.ge-site .ge-scan-process-card p { margin-bottom: 0; }
+.ge-site .ge-scan-recovered h2, .ge-site .ge-scan-recovered .text-center > p { margin-left: auto; margin-right: auto; }
+.ge-site .ge-scan .ge-scan-recovered h3 { font-size: 1.125rem; margin: 0; }
+.ge-site .ge-scan-recovered p { font-size: 1rem; line-height: 1.65; }
+.ge-site .ge-scan-recovered label { min-width: 0; }
+.ge-site .ge-scan-recovered [role=switch] { flex-shrink: 0; margin-left: 12px; }
+.ge-site .ge-scan-recovered [data-testid^="button-lens-stacked-"] > .flex-1 { min-width: 0; }
+.ge-site .ge-scan-recovered .ge-scan-lens-popover p { font-size: .875rem; line-height: 1.6; }
+.ge-site .ge-scan-recovered .ge-scan-lens-popover { max-height: 380px; overflow-y: auto; }
+@media (max-width: 700px) {
+  .ge-site .ge-scan-repeat-grid { grid-template-columns: 1fr; }
+  .ge-site .ge-scan-process-card { padding: 24px; gap: 16px; }
+}
 .ge-site .ge-scan-hero h1, .ge-site .ge-scan-hero p { margin-left: auto; margin-right: auto; }
 .ge-site .ge-scan-hero .ge-cta-group { align-items: center; margin: 40px auto 32px; }
 .ge-site .ge-scan-hero .ge-scroll { margin-top: 28px; }
