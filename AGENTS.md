@@ -4,8 +4,7 @@ These instructions apply to Codex, GitHub agents and agents querying from Notion
 
 ## Device-scoped local Mac guidance
 
-When a local macOS task is running on the user's Intel desktop iMac, confirm uname -s is Darwin and uname -m is x86_64, then read [the Intel iMac local-development note](docs/local-development/intel-imac.md). This note applies only to that iMac; skip it on the user's newer MacBook, Replit, Linux, and CI. Never identify or document the device using a MAC address, serial number, account name, or IP address.
-
+For local work on the user's older Intel desktop/iMac, read [the desktop setup note](docs/local-development/intel-imac.md). Confirm the user is on that desktop, then check the OS and architecture; architecture alone is not a device identifier. Preserve the existing Desktop checkout and local branches. These machine-specific instructions do not apply to the newer laptop, Replit or CI. Never record IP/MAC addresses, serial numbers or account names to identify the device.
 
 ## Canonical supplemental agent instructions
 
