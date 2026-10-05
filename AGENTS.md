@@ -2,6 +2,11 @@
 
 These instructions apply to Codex, GitHub agents and agents querying from Notion.
 
+## Device-scoped local Mac guidance
+
+When a local macOS task is running on the user's Intel desktop iMac, confirm uname -s is Darwin and uname -m is x86_64, then read [the Intel iMac local-development note](docs/local-development/intel-imac.md). This note applies only to that iMac; skip it on the user's newer MacBook, Replit, Linux, and CI. Never identify or document the device using a MAC address, serial number, account name, or IP address.
+
+
 ## Canonical supplemental agent instructions
 
 Read `docs/agent-settings.yml`. When `seed_instructions.enabled` is `true`, apply the pinned supplemental snapshot at `docs/agent-instructions/esteve-ai-literacy-training-seed.md` when relevant and compatible with these repository instructions. A developer can switch this layer off by setting the value to `false`. This switch never disables this file, repository safety boundaries, human approval requirements, or source-of-truth rules. Personal setup answers belong in the person's AI settings, never in Git.
