@@ -2,6 +2,10 @@
 
 These instructions apply to Codex, GitHub agents and agents querying from Notion.
 
+## Device-scoped local Mac guidance
+
+For local work on the user's older Intel desktop/iMac, read [the desktop setup note](docs/local-development/intel-imac.md). Confirm the user is on that desktop, then check the OS and architecture; architecture alone is not a device identifier. Preserve the existing Desktop checkout and local branches. These machine-specific instructions do not apply to the newer laptop, Replit or CI. Never record IP/MAC addresses, serial numbers or account names to identify the device.
+
 ## Canonical supplemental agent instructions
 
 Read `docs/agent-settings.yml`. When `seed_instructions.enabled` is `true`, apply the pinned supplemental snapshot at `docs/agent-instructions/esteve-ai-literacy-training-seed.md` when relevant and compatible with these repository instructions. A developer can switch this layer off by setting the value to `false`. This switch never disables this file, repository safety boundaries, human approval requirements, or source-of-truth rules. Personal setup answers belong in the person's AI settings, never in Git.

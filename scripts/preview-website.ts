@@ -1,11 +1,14 @@
-/** Local website-only preview. No database, schedulers, email or payment routes. */
+/** Website-only preview for local development and Replit. No database, schedulers, email or payment routes. */
 import express from 'express';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createServer as createViteServer } from 'vite';
 
-const port = Number(process.argv[2] ?? 5180);
+import { previewNetwork } from './preview-hosts';
+
+const network = previewNetwork();
+const port = Number(process.argv[2] ?? (network.remote ? 5000 : 5180));
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Use a port from 1024 to 65535');
 const app = express();
 const server = createServer(app);
@@ -31,7 +34,7 @@ app.get('*', async (req, res, next) => {
 app.use((_error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   res.status(500).type('text').send('Local preview could not render this page. Check the terminal.');
 });
-server.listen(port, '127.0.0.1', () => console.log(`Website-only preview: http://127.0.0.1:${port} (backend actions unavailable)`));
+server.listen(port, network.host, () => console.log(`Website-only preview listening on ${network.host}:${port} (backend actions unavailable)`));
 async function shutdown() { await vite.close(); server.close(()=>process.exit(0)); }
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);

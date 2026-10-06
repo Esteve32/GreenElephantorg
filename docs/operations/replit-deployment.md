@@ -150,6 +150,34 @@ REPLIT_RELEASE
 Generated `dist/` output is not tracked. Every deployment must build it from the
 selected source commit.
 
+## Website-only Replit preview
+
+For page review without connecting the database, schedulers, email or payments,
+use `npm run preview:website -- 5000`. In Replit this binds to `0.0.0.0`, matching
+the existing port mapping. Local previews continue to bind to `127.0.0.1:5180`.
+The website-only preview returns 503 for `/api` and marks responses noindex.
+It is not evidence that production providers work.
+
+Both Vite development and built preview use the exact `REPLIT_DEV_DOMAIN`
+hostname supplied by the workspace. If it is unavailable, set `GE_PREVIEW_HOST`
+to the exact hostname shown by Replit Preview, without `https://`, a path or a
+port, then restart the preview process. These are public hostnames, not secrets.
+Do not use `allowedHosts: true`, `*.replit.dev` or `.replit.dev`; other workspaces
+must remain blocked. The source configuration is `vite.config.ts`, not a new
+`vite.config.js`. A host setting does not publish the website.
+
+If the process is `vite preview`, rebuild first and restart that preview after
+the configuration change. Prefer the website-only command above for page review:
+it preserves the application's public metadata/status behavior and explicitly
+disables backend actions. Do not use `npm start` to fix a preview error.
+
+Before release, preserve any Replit-only commits on their existing branch and
+review their differences from the selected GitHub commit. Preserve dirty files
+before switching branches. The release preparation block above deliberately
+selects a clean exact GitHub SHA; a workspace merge containing extra unreviewed
+Replit commits is not the same release. Do not reset, discard, force-push or copy
+the development database as a shortcut.
+
 ## Safety gates
 
 As of 2026-09-30, GitHub `main` is protected. It requires a pull request and the
