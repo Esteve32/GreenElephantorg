@@ -2,7 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+import { previewNetwork } from "./scripts/preview-hosts";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+
+const network = previewNetwork();
 
 export default defineConfig({
   plugins: [
@@ -33,7 +36,14 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+  preview: {
+    host: network.host,
+    port: network.remote ? 5000 : 4173,
+    allowedHosts: network.allowedHosts,
+  },
   server: {
+    host: network.host,
+    allowedHosts: network.allowedHosts,
     fs: {
       strict: true,
       deny: ["**/.*"],

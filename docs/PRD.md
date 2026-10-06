@@ -8,15 +8,16 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.22.10**.
-Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-06.
+One PRD, two product sections plus shared-system requirements. Version: **2.22.11**.
+Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
 GitHub owns this PRD and the single decision log. Notion holds derived mirrors.
 The shared-document structure is present in GitHub main at `84d5230`.
-The 2026-10-05 homepage-refresh requirements below are a review candidate in the
-`codex/website-refresh-anu` working tree until reviewed and merged through a pull
-request. Product proposals remain proposals even when their source recommends them.
+The website-refresh implementation was merged through PR #48 at
+`f433e611544feacfda86c4b418d6ca802a824612`. This establishes GitHub source status,
+not production publication or completion of open acceptance gates. Product
+proposals remain proposals even when their source recommends them.
 
 | Project ID | Project | State | Entry |
 | --- | --- | --- | --- |
@@ -72,6 +73,7 @@ The MyFive project remains paused.
 | --- | --- | --- | --- |
 | AI-LIT-REQ-070 | Local repair; human acceptance pending | Make each Periodic Table “View Related Prompts” action open Resources filtered to the element’s existing communication lens. Offer a clear route back to all prompts; support API and fallback prompts, ignore unknown lens values and show an honest empty state. Preserve prompt text, votes and provider behavior. | Estève reports the broken button during final release checks; 2026-10-06; DEC-AIL-073 |
 | AI-LIT-REQ-071 | User choice A; implementation evidence | Replace the public personal Scan example with wholly fictional, clearly labelled partial practice inputs across eight lenses. Remove personal answers and identifiers from the shipped example; retain the Copy Sample Data interaction. Commit, push and open the reviewed website PR after checks. Merge and Replit publication remain separate. | Estève selected option A on 2026-10-06; DEC-AIL-074 |
+| AI-LIT-REQ-072 | Requested repair; implementation candidate | Permit the exact Replit workspace hostname in Vite development and built preview, retain host checks, and run the provider-isolated website preview on the forwarded port. Review GitHub maintenance blockers and preserve Replit-only work before selecting an exact reviewed release SHA. Human Republish and live provider checks remain separate. | Estève requests GitHub blocker resolution and a Replit preview repair, 2026-10-07; DEC-AIL-075 |
 
 ### Purpose and audience
 

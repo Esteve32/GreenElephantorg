@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.22.10
+# Green Elephant — Project Decision Log v11.22.11
 
-**Document Version:** `11.22.10`
-**Last Updated:** `2026-10-06T23:09:57+03:00`
+**Document Version:** `11.22.11`
+**Last Updated:** `2026-10-07T00:25:06+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.22.11 | 2026-10-07T00:25:06+03:00 | Implementation evidence; human acceptance and publication not attested | AI-LIT: exact-host Replit preview repair and release triage (DEC-AIL-075) |
 | 11.22.10 | 2026-10-06T23:09:57+03:00 | User selection A; no legal or production attestation | AI-LIT: fictional practice sample and user-selected GitHub PR step (DEC-AIL-074) |
 | 11.22.9 | 2026-10-06T19:47:10+03:00 | Implementation evidence only; human approval not attested | AI-LIT: repair Periodic Table related-prompt navigation during final release review |
 | 11.22.8 | 2026-10-06T19:13:53+03:00 | Estève Pannetier — review acknowledgement and local repair request | AI-LIT: acknowledge owner review and prepare dependency, CI, footer and acronym repairs locally |
@@ -2133,6 +2134,18 @@ decision here when Estève selects one; do not silently change its status.
 - **Affected IDs:** AI-LIT-REQ-071, REQ-064/068/070; prior website direction remains as recorded.
 - **Implementation:** Replace the named personal Scan example wholesale with invented, partial practice inputs across all eight lenses. Explicitly label it fictional in the UI and copied text. Exclude personal answers, identifiers, health information, consent and submission records; preserve Copy Sample Data and existing prompts/provider behavior.
 - **Boundary:** No history rewriting or deletion of private backups; old Git history is not made private by replacing current source. No OS schema, provider, data transfer, authentication or payment behavior changes. OS source remains `83391d8520a6bfb2e010590686d6e32797490b62`; website base `ef0199a2084ea090355e831a314ca25505370262`. No paired OS PR required. No merge, live submission, email, database action or Replit Republish follows from this selection.
+
+<a id="dec-ail-075"></a>
+### DEC-AIL-075 — Replit preview repair and release triage
+
+- **Project / status:** AI-LIT; user-requested implementation and GitHub release preparation. This record is technical evidence, not an attestation of human acceptance, qualified review or publication.
+- **Date / evidence:** 2026-10-07, Europe/Helsinki. Estève asks to check blocking GitHub PRs/issues, tackle them to merge/solve them, and fix the reported Replit blocked-host preview or prepare an agent prompt for republish readiness.
+- **Affected IDs:** AI-LIT-REQ-072; existing release checks under REQ-069/070/071 and GEOS-REQ-002/003.
+- **Implementation:** Exact non-secret workspace hostnames from REPLIT_DEV_DOMAIN or GE_PREVIEW_HOST configure both Vite development and built preview. Remove the development middleware's allow-all override and preserve filesystem restrictions. Website-only preview binds to the forwarded interface in Replit, retaining disabled backend routes. Local previews remain on loopback. Record automated and live-workspace checks separately.
+- **Maintenance scope:** Consolidate the reviewed Tooltip 1.2.16 update from PR #44, esbuild 0.28.2 from PR #46 (superseding #36), and device-scoped documentation from #47. PR #22 (input-otp 1.5.0) is already merged. Major application and workflow upgrades remain separate maintenance; no approval for a breaking product migration is inferred.
+- **Source status:** PR #48 is merged in website main at f433e611544feacfda86c4b418d6ca802a824612. The supplied Replit-agent report is not independent evidence of its current workspace or deployed SHA. Preserve its unique commits and dirty work; never treat a merged workspace containing extra commits as the exact GitHub release.
+- **Cross-repository check:** Website base f433e611544feacfda86c4b418d6ca802a824612 plus working tree; GreenElephantOS main freshly resolved to 83391d8520a6bfb2e010590686d6e32797490b62 and its PRD/log read at that SHA. Website-owned preview/build maintenance changes no OS contract, schema, field, transfer, provider or deployment ownership. No paired OS PR required (GEOS-REQ-002/003; DEC-GEOS-001/002/003).
+- **Release boundary:** Keep MY5 paused. GA4 remains its separate disabled follow-up. Retain the manual release issue until human Republish, public health checks and the successful exact-SHA deployment record. No database operation, scheduler startup, provider send or production publication is implied by this repair.
 
 ## MY5 pause and historical decisions
 
