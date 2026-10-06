@@ -305,6 +305,10 @@ transaction/unique constraints have not been exercised locally.
 
 ## GA4 relaunch checklist — candidate prepared 2026-10-03
 
+For dated source/preview evidence, the owner-reported GA4 switch changes and remaining
+gates, see [the 7 October verification record](release-verification-2026-10-07.md).
+That record is not publication or privacy clearance.
+
 Use the **existing** GreenElephant GA4 property and Web stream. Do not create a
 duplicate property or use the numeric `GA4_PROPERTY_ID` as the `G-...` measurement
 ID. The numeric ID and service-account credentials support reporting separately;

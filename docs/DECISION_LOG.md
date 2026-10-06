@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.22.14
+# Green Elephant — Project Decision Log v11.22.15
 
-**Document Version:** `11.22.14`
-**Last Updated:** `2026-10-07T01:01:38+03:00`
+**Document Version:** `11.22.15`
+**Last Updated:** `2026-10-07T01:48:54+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.22.15 | 2026-10-07T01:48:54+03:00 | Estève Pannetier | AI-LIT: record owner-reported GA4 controls, opt-in media repair and final reviewed-release checks; production gates remain open |
 | 11.22.14 | 2026-10-07T01:01:38+03:00 | User follow-up request; no production or privacy attestation | AI-LIT: resume issue 43 verification and distinguish production gates (DEC-AIL-078) |
 | 11.22.13 | 2026-10-07T00:57:03+03:00 | User maintenance request; technical evidence only | AI-LIT: validate final dependency and workflow upgrades (DEC-AIL-077) |
 | 11.22.12 | 2026-10-07T00:46:41+03:00 | User implementation request; publication not attested | AI-LIT: issue 50 TypeScript repairs and blocking release check (DEC-AIL-076) |
@@ -2183,6 +2184,18 @@ decision here when Estève selects one; do not silently change its status.
 - **Observed evidence:** Read-only inspection found the existing website stream, Enhanced Measurement enabled, Google Signals and user-provided data disabled, and ads personalization allowed. This is an account-settings observation, not a legal/processor attestation. Keep private account details and operational readbacks in the local handoff. The public configuration endpoint returned enabled:false and /api/ping returned status:ok on both public website hosts; neither response attests the deployed commit.
 - **Validation / open gates:** Record pure preflight tests and isolated browser consent/withdrawal/navigation evidence in the PR. Synthetic browser commands are not Google receipt. Production duplicate-source resolution, owner privacy/retention approval, human Republish and actual page_view/marketing_cta receipt remain required in #43/#31. Do not close #43 just because its source PR merges.
 - **Sources / cross-repository check:** Website base deb0ef3956ecee2b424ee2182dec82fefd3caaab; OS main 83391d8520a6bfb2e010590686d6e32797490b62, resolved and PRD/log read at that SHA. No OS schema, package adoption, recipient, consent expansion, data transfer or release ownership change; no paired OS PR required (GEOS-REQ-002/003, DEC-GEOS-001/002/003).
+
+<a id="dec-ail-079"></a>
+### DEC-AIL-079 — Record owner-reported GA4 controls and finish reviewed release preparation
+
+- **Project / status:** AI-LIT; owner-reported external configuration and authorized GitHub PR/release preparation. This is not a completed publication, independent GA4 readback, privacy certification or provider-delivery approval.
+- **Date / authority:** 2026-10-07, Europe/Helsinki. The owner approves disabling Enhanced Measurement and ads personalization, then reports both changes completed and requests final checks, a GitHub PR for the work and publication. Publication remains human-controlled under the supported Replit flow.
+- **Affected IDs:** AI-LIT-REQ-075/040; DEC-AIL-078/039/043/045. Full French coverage under AI-LIT-REQ-032 and live release/privacy gates remain separate.
+- **Configuration evidence:** Treat the two GA4 switches as owner-reported OFF, not independently verified. Preserve the existing property/stream, retention, Google Signals and user-provided-data boundaries. Do not enable collection, rename the measurement variable, delete shared Account settings or infer that duplicate Replit sources have been resolved.
+- **Candidate repair:** Prior real Replit preview browsing of Resources attempted DoubleClick requests through retained video embeds. Require an explicit per-video choice before mounting an external player, disclose the external-provider boundary and preserve existing videos, external watch links and downloads. Site analytics acceptance must not automatically load a video.
+- **GitHub source authority:** Put the repair, saved website-only preview workflow and verification record into a reviewable PR based on reviewed main. Preserve the prior Replit branches, private backups and agent-asset metadata checkpoint; do not silently merge generated asset metadata or private attachments into website source. A new merged SHA, not an unreviewed Replit checkpoint, is the next release candidate.
+- **Verification / open gates:** Record actual source and browser checks in the PR. GitHub CI's locked install is distinct from a Replit clean install; do not claim unsupported `npm ci` execution. Keep #31 and #43 open until their respective production evidence exists. Typeform/Stripe signing, participant notice, delivery, legal/processor/retention review, complete French coverage and an identified rollback remain open unless separately established.
+- **Sources / cross-repository check:** Website main `81a6bc5eec307e71bb0bee0ee6b70aba593e3ddc`; OS main `83391d8520a6bfb2e010590686d6e32797490b62`, current PRD/log read at that SHA. GEOS-REQ-002/003 and DEC-GEOS-001/002/003 remain unchanged: no shared contract/schema/package adoption, recipient expansion, OS transfer or change of release ownership. No paired OS PR is required for this website-only restriction on implicit media loading.
 
 ## MY5 pause and historical decisions
 

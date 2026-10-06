@@ -16,7 +16,7 @@
     "manifest:generate": "node scripts/generate-repository-manifests.mjs",
     "decision:record": "node scripts/record-decision-version.mjs",
     "db:push": "drizzle-kit push",
-    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts shared/marketing-analytics.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs server/search-discovery.test.ts shared/policy-pages.test.ts scripts/preview-hosts.test.ts server/type-safety-regressions.test.ts server/google-client-compatibility.test.ts scripts/analytics-preflight.test.ts",
+    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts shared/marketing-analytics.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs server/search-discovery.test.ts shared/policy-pages.test.ts scripts/preview-hosts.test.ts server/type-safety-regressions.test.ts server/google-client-compatibility.test.ts scripts/analytics-preflight.test.ts client/src/components/youtube-opt-in-player.release.test.mjs",
     "analytics:preflight": "tsx scripts/analytics-preflight.ts"
   },
   "dependencies": {
