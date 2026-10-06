@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.22.11**.
+One PRD, two product sections plus shared-system requirements. Version: **2.22.12**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -74,6 +74,7 @@ The MyFive project remains paused.
 | AI-LIT-REQ-070 | Local repair; human acceptance pending | Make each Periodic Table “View Related Prompts” action open Resources filtered to the element’s existing communication lens. Offer a clear route back to all prompts; support API and fallback prompts, ignore unknown lens values and show an honest empty state. Preserve prompt text, votes and provider behavior. | Estève reports the broken button during final release checks; 2026-10-06; DEC-AIL-073 |
 | AI-LIT-REQ-071 | User choice A; implementation evidence | Replace the public personal Scan example with wholly fictional, clearly labelled partial practice inputs across eight lenses. Remove personal answers and identifiers from the shipped example; retain the Copy Sample Data interaction. Commit, push and open the reviewed website PR after checks. Merge and Replit publication remain separate. | Estève selected option A on 2026-10-06; DEC-AIL-074 |
 | AI-LIT-REQ-072 | Requested repair; implementation candidate | Permit the exact Replit workspace hostname in Vite development and built preview, retain host checks, and run the provider-isolated website preview on the forwarded port. Review GitHub maintenance blockers and preserve Replit-only work before selecting an exact reviewed release SHA. Human Republish and live provider checks remain separate. | Estève requests GitHub blocker resolution and a Replit preview repair, 2026-10-07; DEC-AIL-075 |
+| AI-LIT-REQ-073 | Requested implementation; validation in progress | Resolve issue #50 without suppressing TypeScript diagnostics, make type checking blocking in CI and release preparation, then resolve active website PRs before producing the final Replit handoff. Preserve paused MyFive PR #4 as explicitly selected. | Estève requests issue #50 before republishing and selects keeping MyFive draft #4 open, 2026-10-07; DEC-AIL-076 |
 
 ### Purpose and audience
 

@@ -86,6 +86,7 @@ jobs:
           npm ci
           npm run repo:check
           npm run test:release
+          npm run check
           npm run build
           npm audit --audit-level=high
           test "$(git rev-parse HEAD)" = "$expected_sha"

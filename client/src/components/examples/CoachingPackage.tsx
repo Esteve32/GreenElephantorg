@@ -5,6 +5,8 @@ export default function CoachingPackageExample() {
     <div className="p-8 grid md:grid-cols-2 gap-6 max-w-4xl">
       <CoachingPackage
         title="Foundation"
+        packageId="example-foundation"
+        buttonLink="/connect"
         type="1:1"
         sessions={4}
         duration="4 weeks"
@@ -18,6 +20,8 @@ export default function CoachingPackageExample() {
       />
       <CoachingPackage
         title="Team Transformation"
+        packageId="example-team"
+        buttonLink="/connect"
         type="Team"
         sessions={8}
         duration="2 months"
