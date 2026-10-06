@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.22.13**.
+One PRD, two product sections plus shared-system requirements. Version: **2.22.14**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -75,7 +75,8 @@ The MyFive project remains paused.
 | AI-LIT-REQ-071 | User choice A; implementation evidence | Replace the public personal Scan example with wholly fictional, clearly labelled partial practice inputs across eight lenses. Remove personal answers and identifiers from the shipped example; retain the Copy Sample Data interaction. Commit, push and open the reviewed website PR after checks. Merge and Replit publication remain separate. | Estève selected option A on 2026-10-06; DEC-AIL-074 |
 | AI-LIT-REQ-072 | Requested repair; implementation candidate | Permit the exact Replit workspace hostname in Vite development and built preview, retain host checks, and run the provider-isolated website preview on the forwarded port. Review GitHub maintenance blockers and preserve Replit-only work before selecting an exact reviewed release SHA. Human Republish and live provider checks remain separate. | Estève requests GitHub blocker resolution and a Replit preview repair, 2026-10-07; DEC-AIL-075 |
 | AI-LIT-REQ-073 | Implemented in PR #51; source validation passed | Resolve issue #50 without suppressing TypeScript diagnostics, make type checking blocking in CI and release preparation, then resolve active website PRs before producing the final Replit handoff. Preserve paused MyFive PR #4 as explicitly selected. | Estève requests issue #50 before republishing and selects keeping MyFive draft #4 open, 2026-10-07; DEC-AIL-076 |
-| AI-LIT-REQ-074 | Requested maintenance; validated candidate | Resolve the active website maintenance queue on the clean TypeScript baseline: current pinned checkout/setup-node actions, Google client compatibility and resizable-panel API migration. Retire superseded proposals without deleting branches; preserve paused MY5 #4. | Estève requests the remaining website PRs resolved before Replit handoff, 2026-10-07; DEC-AIL-077 |
+| AI-LIT-REQ-074 | Implemented in PR #52; CI passed | Resolve the active website maintenance queue on the clean TypeScript baseline: current pinned checkout/setup-node actions, Google client compatibility and resizable-panel API migration. Retire superseded proposals without deleting branches; preserve paused MY5 #4. | Estève requests the remaining website PRs resolved before Replit handoff, 2026-10-07; DEC-AIL-077 |
+| AI-LIT-REQ-075 | Requested follow-up; production evidence pending | Address issue #43 in a separately reviewed PR: verify existing bounded consent behavior, provide value-free runtime checks and resolve the Replit configuration source with the existing GA4 stream. Keep collection off until the account/privacy gates pass; merge does not prove event receipt or start the observation window. | Estève explicitly requests #43 tackled in a new PR and merged, 2026-10-07; DEC-AIL-078 |
 
 ### Purpose and audience
 

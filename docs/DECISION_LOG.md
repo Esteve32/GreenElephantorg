@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.22.13
+# Green Elephant — Project Decision Log v11.22.14
 
-**Document Version:** `11.22.13`
-**Last Updated:** `2026-10-07T00:57:03+03:00`
+**Document Version:** `11.22.14`
+**Last Updated:** `2026-10-07T01:01:38+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.22.14 | 2026-10-07T01:01:38+03:00 | User follow-up request; no production or privacy attestation | AI-LIT: resume issue 43 verification and distinguish production gates (DEC-AIL-078) |
 | 11.22.13 | 2026-10-07T00:57:03+03:00 | User maintenance request; technical evidence only | AI-LIT: validate final dependency and workflow upgrades (DEC-AIL-077) |
 | 11.22.12 | 2026-10-07T00:46:41+03:00 | User implementation request; publication not attested | AI-LIT: issue 50 TypeScript repairs and blocking release check (DEC-AIL-076) |
 | 11.22.11 | 2026-10-07T00:25:06+03:00 | Implementation evidence; human acceptance and publication not attested | AI-LIT: exact-host Replit preview repair and release triage (DEC-AIL-075) |
@@ -2171,6 +2172,17 @@ decision here when Estève selects one; do not silently change its status.
 - **Queue disposition:** Historical drafts #1 (TLS monitoring proposal) and #15 (superseded audit/canonical-document proposal) may be closed with rationale and branches preserved. Do not activate the old recurring workflow or import conflicting decision IDs. Keep MY5 #4 paused/open.
 - **Sources / cross-repository check:** Website base 15c7db37fb7f6d4b4292dddeb9b9e39aaab3dbc8; OS main 83391d8520a6bfb2e010590686d6e32797490b62, freshly resolved and PRD/log read at that SHA. No OS package adoption, schema, consent, recipient, transfer or release ownership change; no paired OS PR required (DEC-GEOS-001/002/003).
 - **Open gates:** Estève subsequently requests #43 addressed in its own PR; analytics production configuration and actual event receipt remain separate from this maintenance change. Regenerate the final exact-SHA release prompt after that PR. Keep #31 open for human Republish and verified production deployment.
+
+<a id="dec-ail-078"></a>
+### DEC-AIL-078 — Resume GA4 verification without conflating source and production evidence
+
+- **Project / status:** AI-LIT; explicitly requested follow-up to #43, superseding its scheduling deferral in DEC-AIL-076/077. Existing consent, destination and publication boundaries remain in force.
+- **Date / authority:** 2026-10-07, Europe/Helsinki. Estève asks to tackle issue #43, open a new PR and merge it when complete. This is engineering/verification authority, not attested privacy review, changed retention or received events.
+- **Affected IDs:** AI-LIT-REQ-075 and REQ-040; DEC-AIL-039/043/045. Preserve the nine allowed routes and two bounded event types.
+- **Implementation:** Add a value-free, network-free analytics preflight that distinguishes runtime, ID validity/match and collection switch. Explicitly disclose that process variables cannot identify duplicate Replit sources or establish event receipt. Update the admin setup guide and runbook with Project/Account precedence, app-scoped unlinking, separate production verification and separate retention facts.
+- **Observed evidence:** Read-only inspection found the existing website stream, Enhanced Measurement enabled, Google Signals and user-provided data disabled, and ads personalization allowed. This is an account-settings observation, not a legal/processor attestation. Keep private account details and operational readbacks in the local handoff. The public configuration endpoint returned enabled:false and /api/ping returned status:ok on both public website hosts; neither response attests the deployed commit.
+- **Validation / open gates:** Record pure preflight tests and isolated browser consent/withdrawal/navigation evidence in the PR. Synthetic browser commands are not Google receipt. Production duplicate-source resolution, owner privacy/retention approval, human Republish and actual page_view/marketing_cta receipt remain required in #43/#31. Do not close #43 just because its source PR merges.
+- **Sources / cross-repository check:** Website base deb0ef3956ecee2b424ee2182dec82fefd3caaab; OS main 83391d8520a6bfb2e010590686d6e32797490b62, resolved and PRD/log read at that SHA. No OS schema, package adoption, recipient, consent expansion, data transfer or release ownership change; no paired OS PR required (GEOS-REQ-002/003, DEC-GEOS-001/002/003).
 
 ## MY5 pause and historical decisions
 
