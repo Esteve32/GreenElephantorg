@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.22.12
+# Green Elephant — Project Decision Log v11.22.13
 
-**Document Version:** `11.22.12`
-**Last Updated:** `2026-10-07T00:46:41+03:00`
+**Document Version:** `11.22.13`
+**Last Updated:** `2026-10-07T00:57:03+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.22.13 | 2026-10-07T00:57:03+03:00 | User maintenance request; technical evidence only | AI-LIT: validate final dependency and workflow upgrades (DEC-AIL-077) |
 | 11.22.12 | 2026-10-07T00:46:41+03:00 | User implementation request; publication not attested | AI-LIT: issue 50 TypeScript repairs and blocking release check (DEC-AIL-076) |
 | 11.22.11 | 2026-10-07T00:25:06+03:00 | Implementation evidence; human acceptance and publication not attested | AI-LIT: exact-host Replit preview repair and release triage (DEC-AIL-075) |
 | 11.22.10 | 2026-10-06T23:09:57+03:00 | User selection A; no legal or production attestation | AI-LIT: fictional practice sample and user-selected GitHub PR step (DEC-AIL-074) |
@@ -2158,6 +2159,18 @@ decision here when Estève selects one; do not silently change its status.
 - **Validation:** Record fresh compiler, regression, release-test, repository, build and audit evidence in the PR. Tests must isolate database/provider behavior and use synthetic data. Source checks do not establish a production integration.
 - **Source / cross-repository check:** Website main 92c4750b87b831f6603845e1ecdcd3f377a2e112 plus working tree. OS main freshly verified unchanged at 83391d8520a6bfb2e010590686d6e32797490b62; its PRD/log were read at that SHA. No OS schema, contract, package adoption, recipient, consent, data-transfer or release ownership change; no paired OS PR required (GEOS-REQ-002/003, DEC-GEOS-001/002/003).
 - **Remaining queue / boundaries:** Review remaining dependency/workflow upgrades separately against the clean baseline; retire obsolete drafts without deleting branches. Keep MyFive #4 open/paused. GA4 #43 remains separate and disabled. Preserve Replit-only work and regenerate the exact-SHA handoff after merges. Human Republish, provider delivery and production/privacy gates remain distinct.
+
+<a id="dec-ail-077"></a>
+### DEC-AIL-077 — Resolve the active maintenance queue on the clean baseline
+
+- **Project / status:** AI-LIT; user-requested engineering and GitHub merge preparation. Technical validation is not human acceptance or production verification.
+- **Date / authority:** 2026-10-07, Europe/Helsinki. Estève requests issue #50 repaired and the active website PR queue resolved before the final Replit handoff, with paused MY5 draft #4 explicitly retained.
+- **Affected IDs:** AI-LIT-REQ-073/074; GEOS-REQ-002/003 release boundaries.
+- **Implementation:** Supersede dependency PRs #17/#18/#35/#45 with current-base compatibility repairs. Pin checkout v7.0.1 and setup-node v7.0.0 to full release SHAs; retain least-privilege read permissions and Node 24. Upgrade googleapis to 183 and repair the missing Sheets connector guard. Migrate the currently unused resizable wrapper to Group/Separator, native orientation and separator ARIA styling; v4 percentage sizes must be explicit strings.
+- **Validation:** Node 24 type check, 114 release tests, repository checks and production build pass. Synthetic transports exercise the installed Google library without credentials or network calls. Isolated Chrome confirms horizontal/vertical drag, keyboard resizing, separator dimensions and no browser errors. Audit reports zero high/critical and six moderate findings, down from ten; do not force the suggested breaking downgrades.
+- **Queue disposition:** Historical drafts #1 (TLS monitoring proposal) and #15 (superseded audit/canonical-document proposal) may be closed with rationale and branches preserved. Do not activate the old recurring workflow or import conflicting decision IDs. Keep MY5 #4 paused/open.
+- **Sources / cross-repository check:** Website base 15c7db37fb7f6d4b4292dddeb9b9e39aaab3dbc8; OS main 83391d8520a6bfb2e010590686d6e32797490b62, freshly resolved and PRD/log read at that SHA. No OS package adoption, schema, consent, recipient, transfer or release ownership change; no paired OS PR required (DEC-GEOS-001/002/003).
+- **Open gates:** Estève subsequently requests #43 addressed in its own PR; analytics production configuration and actual event receipt remain separate from this maintenance change. Regenerate the final exact-SHA release prompt after that PR. Keep #31 open for human Republish and verified production deployment.
 
 ## MY5 pause and historical decisions
 
