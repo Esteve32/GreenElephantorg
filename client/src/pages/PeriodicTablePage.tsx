@@ -20,24 +20,24 @@ import semanticConnectionsUrl from "@assets/🔥2022_full_transparent_BG_with_in
 const PERIODIC_TABLE_FAQ_ITEMS = [
   {
     question: "What is the Periodic Table of Conscious Communication?",
-    answer: "The Periodic Table of Conscious Communication is a framework of 146 micro-habits organized across 8 lenses. Inspired by chemistry's periodic table, it maps the building blocks of human communication—from how you express needs and set boundaries to how you influence, lead, and build trust. Each element includes a practical prompt you can use in real conversations."
+    answer: "The Periodic Table of Conscious Communication is a learning framework with 146 elements organised across eight lenses. Each element offers a prompt to help you reflect on a conversation or practise a communication habit. Start with one element that fits your current task.",
   },
   {
-    question: "How do the 8 lenses work?",
-    answer: "Each lens represents a different dimension of communication: Influence (how you persuade), Attitude (your openness to change), Chaordic (structure vs. freedom), Flow (engagement and motivation), Alignment (empathy and trust), Needs (what drives you), Ego (self-awareness and triggers), and Dynamics (relationship patterns). Together, they provide a complete map of how you connect—or disconnect—with others."
+    question: "How do the eight lenses work?",
+    answer: "The lenses offer different questions to explore: Influence, Attitude, Chaordic, Flow, Alignment, Energy & Needs, Ego and Dynamics. They help you look at intentions, boundaries, motivation and relationships from several angles. Choose the perspective that helps with your situation; you do not need to work through every lens.",
   },
   {
-    question: "Is the Periodic Table based on research?",
-    answer: "Yes. The framework draws on 27 years of coaching practice and integrates concepts from established fields including Nonviolent Communication (Marshall Rosenberg), Flow theory (Mihaly Csikszentmihalyi), Transactional Analysis, systems thinking, and neuroscience of communication. Each element has been refined through real-world coaching application."
+    question: "How should I use this framework?",
+    answer: "Use the table as a learning map for reflection and practice. Its prompts help you ask questions, prepare conversations and try small changes. Its drawn connections suggest ways to explore ideas together. Ask for sources when you need evidence for a particular claim, and check whether they apply to your situation. Try one small practice and review what happened.",
   },
   {
-    question: "How do I use the Periodic Table in my daily life?",
-    answer: "Start with one lens that resonates with your current challenges. Pick a single element and practice it for one week—notice what shifts in your conversations. The table is designed for gradual integration, not overnight mastery. Many people begin with the Needs or Alignment lens for foundational shifts."
+    question: "How can I try it in a real task?",
+    answer: "Choose a message you need to send. Pick an element about needs or boundaries. Use its prompt to write your own brief, then ask AI to suggest a draft if useful. Check names, facts, tone and what you agree to before sending. Share only the information needed for the task.",
   },
   {
-    question: "What's the difference between the Periodic Table and the Satellite Scan?",
-    answer: "The Periodic Table is the framework—it shows all 146 communication elements across 8 lenses. The Satellite Scan is the diagnostic tool—a 129-question assessment that maps YOUR specific patterns against this framework and generates a personalized dashboard. Think of the table as the map and the Scan as your GPS location on that map."
-  }
+    question: "What is the difference between the table and the Satellite Scan?",
+    answer: "The table is a framework you can explore freely. The Satellite Scan is a 129-question self-reflection questionnaire with a coach-prepared dashboard, prompts and practice materials. It helps you notice reported communication preferences and choose what to practise. You decide which insights to use as instructions for AI; AI training and coaching are booked separately.",
+  },
 ];
 
 const lensFilters = [
@@ -135,10 +135,7 @@ function SemanticConnectionsViewer({ onClose }: { onClose: () => void }) {
         <div className="max-w-xl">
           <h2 className="text-white font-bold text-lg leading-tight">Semantic Connections</h2>
           <p className="text-white/50 text-sm mt-0.5">
-            Each coloured line shows a research-backed relationship between elements across lenses.
-            These connections were mapped during the initial framework build from 27 years of coaching
-            practice, NVC, flow theory, Transactional Analysis and systems thinking.
-            Scroll to zoom · Drag to pan.
+            Each coloured line links elements across lenses in the framework. Explore a connection, ask how it might fit your situation and check what happens when you try a related practice. Scroll to zoom. Drag to pan.
           </p>
         </div>
         <div className="flex items-center gap-2 ml-4 shrink-0">
@@ -287,12 +284,12 @@ export default function PeriodicTablePage() {
           variants={fadeInUp}
         >
           <Badge className="mb-4 bg-white/10 backdrop-blur-sm border-white/20 text-white">The Framework</Badge>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
             Periodic Table of Conscious Communication
           </h1>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto mb-4">146 elements. 8 lenses. One map of human connection.</p>
+          <p className="text-xl text-white/70 max-w-3xl mx-auto mb-4">146 elements. Eight lenses. Practical questions for communication.</p>
           <p className="text-lg text-white/70 max-w-2xl mx-auto mb-8">
-            The language of human-to-human communication has structure, pattern and geometry. Our Periodic Table gives you a clear map of how you connect—or disconnect—with yourself and others.
+            Explore how you communicate with yourself and other people. Choose one element and try its prompt in a real task. When working with AI, use a chosen insight to clarify your goal, tone or boundaries, then check the answer.
           </p>
 
           <motion.div
@@ -317,17 +314,17 @@ export default function PeriodicTablePage() {
           >
             <button
               onClick={() => setShowSemanticViewer(true)}
-              className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-lg border border-white/15 bg-white/5 backdrop-blur-sm text-white/70 hover:text-white hover:border-white/30 hover:bg-white/10 transition-all duration-200 text-sm"
+              className="group inline-flex flex-wrap max-w-full items-center gap-2.5 px-5 py-2.5 rounded-lg border border-white/15 bg-white/5 backdrop-blur-sm text-white/70 hover:text-white hover:border-white/30 hover:bg-white/10 transition-all duration-200 text-sm"
               data-testid="button-view-semantic-connections"
             >
               <Network className="w-4 h-4 text-needs group-hover:text-needs" />
-              <span>View research connections between elements</span>
+              <span>Explore connections between elements</span>
               <span className="text-white/35 text-xs border border-white/15 rounded px-1.5 py-0.5 ml-1">
                 Interactive
               </span>
             </button>
             <p className="text-white/65 text-xs mt-2">
-              Each coloured line is a semantic link drawn from 27 years of research across NVC, flow theory, TA and systems thinking.
+              Coloured lines show connections drawn within the framework. Use them to explore how ideas may relate.
             </p>
           </motion.div>
 
@@ -408,31 +405,31 @@ export default function PeriodicTablePage() {
           viewport={{ once: true, margin: "-50px" }}
           variants={fadeInUp}
         >
-          <h3 className="text-3xl font-bold mb-6 text-center text-white drop-shadow-lg">How to Apply This Today</h3>
+          <h3 className="text-3xl font-bold mb-6 text-center text-white drop-shadow-lg">Prepare one message</h3>
           <p className="text-center text-white/70 mb-8 max-w-2xl mx-auto">
-            The Periodic Table isn't meant to be mastered overnight—it's designed for gradual integration into your life.
+            Choose a message you need to send. Pick an element about needs or boundaries. Use its prompt to write your own brief, then ask AI to suggest a draft if useful. Check names, facts, tone and what you agree to before sending. Share only the information needed for the task.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 mx-auto">
                 <span className="text-2xl font-bold text-needs">1</span>
               </div>
-              <p className="font-semibold mb-2 text-lg text-white drop-shadow-lg">Start with One Lens</p>
-              <p className="text-sm text-white/70">Choose a lens that resonates with your current challenges. Begin with Needs or Alignment for foundational shifts.</p>
+              <p className="font-semibold mb-2 text-lg text-white drop-shadow-lg">Choose one task</p>
+              <p className="text-lg leading-relaxed text-white/70">Start with a conversation or message you need to prepare.</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 mx-auto">
                 <span className="text-2xl font-bold text-needs">2</span>
               </div>
-              <p className="font-semibold mb-2 text-lg text-white drop-shadow-lg">Practice One Element Daily</p>
-              <p className="text-sm text-white/70">Select a single element and practice it for one week. Notice what shifts in your conversations and relationships.</p>
+              <p className="font-semibold mb-2 text-lg text-white drop-shadow-lg">Try one prompt</p>
+              <p className="text-lg leading-relaxed text-white/70">Use an element to clarify what you want to say or ask.</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 mx-auto">
                 <span className="text-2xl font-bold text-needs">3</span>
               </div>
-              <p className="font-semibold mb-2 text-lg text-white drop-shadow-lg">Track Your Transformation</p>
-              <p className="text-sm text-white/70">Journal your observations. Where did you notice more connection? Where did you catch yourself in old patterns?</p>
+              <p className="font-semibold mb-2 text-lg text-white drop-shadow-lg">Review what happened</p>
+              <p className="text-lg leading-relaxed text-white/70">Note what helped, what felt unclear and one adjustment for next time.</p>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-white/10 text-center">
@@ -447,38 +444,8 @@ export default function PeriodicTablePage() {
       </div>
     </div>
 
-    <div className="relative w-full bg-[#0a0a0a]">
-      <div
-        className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
-        style={{
-          height: '160px',
-          background: `linear-gradient(to bottom,
-            #0a0a0a                  0%,
-            rgba(10,10,10,0.88)     22%,
-            rgba(10,10,10,0.60)     46%,
-            rgba(10,10,10,0.24)     72%,
-            transparent            100%
-          )`,
-        }}
-      />
-      <img
-        src={archipelagoUrl}
-        alt="Finnish Archipelago"
-        className="w-full h-auto block"
-      />
-      <div
-        className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
-        style={{
-          height: '160px',
-          background: `linear-gradient(to top,
-            #000000                  0%,
-            rgba(0,0,0,0.88)        22%,
-            rgba(0,0,0,0.60)        46%,
-            rgba(0,0,0,0.24)        72%,
-            transparent            100%
-          )`,
-        }}
-      />
+    <div className="photo-boundary w-full">
+      <img src={archipelagoUrl} alt="Finnish Archipelago" className="photo-boundary-image" />
       <div className="absolute bottom-4 left-0 right-0 z-20 text-center">
         <p className="text-white/65 text-xs tracking-wide">Finnish Archipelago</p>
       </div>

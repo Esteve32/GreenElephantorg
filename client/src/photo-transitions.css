@@ -1,0 +1,54 @@
+/* Green Elephant: photo edges meet the neighbouring reading surface. */
+.photo-boundary {
+  --photo-start: #000000;
+  --photo-start-rgb: 0, 0, 0;
+  --photo-end: #0a0a0a;
+  --photo-end-rgb: 10, 10, 10;
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(180deg, var(--photo-start), #08101c 50%, var(--photo-end));
+}
+.photo-boundary--coaching { --photo-start: #08101c; --photo-start-rgb: 8, 16, 28; }
+.photo-boundary--connect { --photo-start: #273d5f; --photo-start-rgb: 39, 61, 95; }
+.photo-boundary::before, .photo-boundary::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 38%;
+  z-index: 1;
+  pointer-events: none;
+}
+.photo-boundary::before {
+  top: 0;
+  background: linear-gradient(180deg, var(--photo-start) 0%,
+    rgba(var(--photo-start-rgb), .96) 12%,
+    rgba(var(--photo-start-rgb), .78) 35%,
+    rgba(var(--photo-start-rgb), .42) 64%,
+    rgba(var(--photo-start-rgb), .12) 85%, transparent 100%);
+}
+.photo-boundary::after {
+  bottom: 0;
+  background: linear-gradient(0deg, var(--photo-end) 0%,
+    rgba(var(--photo-end-rgb), .96) 12%,
+    rgba(var(--photo-end-rgb), .78) 35%,
+    rgba(var(--photo-end-rgb), .42) 64%,
+    rgba(var(--photo-end-rgb), .12) 85%, transparent 100%);
+}
+.photo-boundary-image { display: block; width: 100%; height: auto; }
+.photo-boundary-cover { position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat; }
+/* Both edges fade even when a decorative image is inverted or moves. */
+.photo-edge-layer {
+  mask-image: linear-gradient(180deg, transparent 0%, #000 24%, #000 72%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 24%, #000 72%, transparent 100%);
+}
+/* Keep the parallax hero's surface fixed while its image moves. */
+[data-testid="page-connect"] [data-testid="section-hero"]::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, #0a0a0a 0%, #0a0a0a00 22%, #0a162800 65%, #0a1628 100%);
+}
+.retreat-photo { position: relative; background: #08101c; }
+.retreat-photo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, #08101c 0%, #08101c00 18%, #08101c00 65%, #08101c 100%);
+}

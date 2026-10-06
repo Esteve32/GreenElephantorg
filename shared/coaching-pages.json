@@ -3,18 +3,52 @@
     "slug": "lifetime-archive",
     "label": "An archive worth sharing",
     "summary": "Make a start on a book or learning material from work you have collected.",
+    "image": "/images/coaching/lifetime-archive-overhead-v3.jpg",
+    "imageAlt": "Directly overhead view of an older man in a rust cardigan sorting archive photographs and working papers in a home office.",
+    "acxHeading": "What ACX looks like when you shape an archive.",
+    "acxIntro": "From finding a theme to working with an editor:",
+    "acx": [
+      {
+        "level": "ACX 1",
+        "name": "Chat",
+        "action": "Find the story in a small collection.",
+        "detail": "Share a few notes or photo captions you can use. Ask AI for possible themes, then discuss which fits your experience.",
+        "control": "You check names, dates and meaning against the originals."
+      },
+      {
+        "level": "ACX 2",
+        "name": "Workflow",
+        "action": "Turn each batch into an outline.",
+        "detail": "Build a routine: label the material, summarise it, check the summary, then add it to a chapter outline with source references.",
+        "control": "You keep only the themes and passages that fit your purpose."
+      },
+      {
+        "level": "ACX 3",
+        "name": "Agent",
+        "action": "Have an agent prepare a chapter draft.",
+        "detail": "Give it an approved outline and selected sources. Ask it to draft one section, flag gaps and pause for your review.",
+        "control": "You check the sources and voice before it drafts more."
+      },
+      {
+        "level": "ACX 4",
+        "name": "Teamwork",
+        "action": "Bring an editor into the project.",
+        "detail": "Agree how you and an editor use AI to organise sources and suggest edits while you shape the book or learning material together.",
+        "control": "People check permissions, preserve your voice and decide what to publish."
+      }
+    ],
     "title": "AI Coaching for Archives and Personal Projects | GreenElephant",
     "description": "Learn to use AI with your notes, interviews or research. Explore an outline and a small sample for a book or learning project, with human coaching.",
     "headline": "Turn a lifetime of work into something others can learn from.",
-    "intro": "You have notes, interviews, films or research worth sharing. Learn how AI can help you organise a small part of it and explore a shape for your book or learning project. You choose the meaning, the audience and the voice.",
-    "audience": "Researchers, educators, filmmakers and other people with experience or material they want to pass on. You may be starting a new chapter or returning to a project that has waited for years.",
-    "example": "Choose a small set of material you own or have permission to use. Together, explore recurring themes, keep track of their sources and try an outline. Then test a short passage or lesson to see what fits your intention.",
+    "intro": "Give your notes, interviews, films or research a new purpose. Explore a book or learning project without losing your voice.",
+    "audience": "Researchers, educators, filmmakers and anyone ready to pass on a collection of work or experience.",
+    "example": "A few notes, photographs or interview extracts you own or have permission to use, with their source labels.",
     "practice": [
-      "Organising a manageable sample and keeping its source labels.",
-      "Asking AI to suggest themes and an outline, then checking them yourself.",
-      "Drafting a small sample in a voice you can recognise as your own."
+      "Keeping source references attached to your material.",
+      "Choosing themes that reflect your intention.",
+      "Editing an AI draft in your own voice."
     ],
-    "takeaway": "An outline and a tested sample can help you decide what to develop next. We agree a realistic scope for the journey; a finished book is a larger project.",
+    "takeaway": "Work towards an outline and a tested sample within an agreed scope. A finished book is a larger project.",
     "faq": [
       {
         "question": "Do I need to digitise everything first?",
@@ -31,18 +65,52 @@
     "slug": "next-chapter-business",
     "label": "A new business idea",
     "summary": "Explore an idea and choose a practical next test.",
+    "image": "/images/coaching/next-chapter-business-overhead-v3.jpg",
+    "imageAlt": "Directly overhead view of a woman in a mustard jumper reviewing a rough prototype and sketchbook at home.",
+    "acxHeading": "What ACX looks like when you test a venture.",
+    "acxIntro": "From customer questions to a small real-world trial:",
+    "acx": [
+      {
+        "level": "ACX 1",
+        "name": "Chat",
+        "action": "Write questions for potential customers.",
+        "detail": "Describe your idea to AI. Work together on five questions that help you learn what people need before you build anything.",
+        "control": "You listen to real people; AI's guesses are not evidence of demand."
+      },
+      {
+        "level": "ACX 2",
+        "name": "Workflow",
+        "action": "Turn feedback into a one-page offer.",
+        "detail": "Use the same steps each time: summarise anonymised feedback, check the themes, draft an offer and choose one small test.",
+        "control": "You check that the offer reflects what people actually said."
+      },
+      {
+        "level": "ACX 3",
+        "name": "Agent",
+        "action": "Ask an agent to prepare your trial.",
+        "detail": "Give it your offer, budget and limits. Have it draft a trial plan and feedback questions, then stop for your review.",
+        "control": "You approve the plan before anything is sent or money is spent."
+      },
+      {
+        "level": "ACX 4",
+        "name": "Teamwork",
+        "action": "Run a small test with a partner.",
+        "detail": "Agree who talks to customers, who delivers the trial and how AI helps organise feedback for your next discussion.",
+        "control": "You and your partner decide whether to continue, change or stop."
+      }
+    ],
     "title": "AI Coaching for Your Next Business Idea | GreenElephant",
     "description": "Explore a new business idea through personal AI coaching. Clarify a customer problem, draft an offer and plan a small test using your experience.",
     "headline": "Explore your next business idea with AI—on your terms.",
-    "intro": "Bring an idea and the experience behind it. Learn to use AI to ask better questions, explore an offer and prepare a small real-world test.",
-    "audience": "People considering a small venture after a long career, during a transition or alongside their current work. You do not need a finished business plan to begin.",
-    "example": "Suppose you want to turn something you know into a service. Use AI to explore who might need it, draft questions for those people and write a first description of the offer. Check the assumptions before deciding what to do.",
+    "intro": "Turn your experience into an idea you can test. Use AI to prepare; learn what works from real people.",
+    "audience": "People exploring a venture after a career change or alongside their work. No finished business plan needed.",
+    "example": "A rough idea for a service, who you think it could help, and any anonymised feedback you already have.",
     "practice": [
-      "Turning a broad idea into a clear customer question.",
-      "Drafting an offer in words that sound like you.",
-      "Preparing one small test and deciding what you want to learn from it."
+      "Separating assumptions from customer evidence.",
+      "Explaining an offer in your own words.",
+      "Choosing what a small test should teach you."
     ],
-    "takeaway": "A clearer offer draft, a short list of assumptions and a manageable next experiment. You keep the business decisions; AI helps you explore and prepare.",
+    "takeaway": "Work towards an offer draft, a list of assumptions and one manageable experiment—not a prediction of business success.",
     "faq": [
       {
         "question": "Will AI tell me whether the idea will work?",
@@ -59,18 +127,52 @@
     "slug": "everyday-confidence",
     "label": "Everyday AI confidence",
     "summary": "Learn through useful tasks from your own life.",
+    "image": "/images/coaching/everyday-confidence-overhead-v3.jpg",
+    "imageAlt": "Directly overhead view of a young man in a blue shirt checking a letter and handwritten list at a kitchen-table workspace.",
+    "acxHeading": "What ACX looks like in everyday life.",
+    "acxIntro": "Choose the level that helps your task. You do not need all four.",
+    "acx": [
+      {
+        "level": "ACX 1",
+        "name": "Chat",
+        "action": "Make sense of a confusing letter.",
+        "detail": "Remove private details, then ask AI to explain the letter in plain language. Ask follow-up questions about anything unclear.",
+        "control": "You compare the explanation with the letter and check with its sender if needed."
+      },
+      {
+        "level": "ACX 2",
+        "name": "Workflow",
+        "action": "Make a routine for writing replies.",
+        "detail": "Save a simple sequence: explain the message, list what you want to say, draft a reply and check it before sending.",
+        "control": "You check the details and make the reply sound like you."
+      },
+      {
+        "level": "ACX 3",
+        "name": "Agent",
+        "action": "Have an agent research a day out.",
+        "detail": "Set your budget, travel range and interests. Ask it to find three options with sources and return a shortlist for you to check.",
+        "control": "You confirm prices and opening times. Nothing gets booked without you."
+      },
+      {
+        "level": "ACX 4",
+        "name": "Teamwork",
+        "action": "Plan the outing with other people.",
+        "detail": "Agree who checks transport and who asks about access needs. Use AI to bring the agreed details into one shared plan.",
+        "control": "Everyone chooses what to share and agrees the final plan."
+      }
+    ],
     "title": "Personal AI Coaching for Everyday Life | GreenElephant",
     "description": "Learn to use AI through everyday tasks you choose. Practise asking clear questions, checking answers and keeping control, with patient personal coaching.",
     "headline": "Feel more confident using AI in everyday life.",
-    "intro": "Start with something useful to you: writing a message, planning a personal project or understanding unfamiliar information. Learn at a manageable pace, with a person who helps you ask, try and check.",
-    "audience": "Adults who want practical help getting started with AI. Your questions and interests shape the work; you do not need a technical background.",
-    "example": "Bring a letter or a planning task with private details removed. Practise asking for an explanation or a first draft. Compare it with the original, spot what needs checking and make the result your own.",
+    "intro": "Learn at your pace with a human coach, using a message, a personal plan or information you want to understand.",
+    "audience": "Adults starting with AI, with any level of technical experience.",
+    "example": "A letter with private details removed, a message to draft or an outing you would like to plan.",
     "practice": [
-      "Giving enough context without sharing unnecessary personal details.",
-      "Asking follow-up questions when an answer is unclear.",
-      "Checking sources and changing a draft so it expresses what you mean."
+      "Giving context without unnecessary private details.",
+      "Asking follow-up questions when something is unclear.",
+      "Checking sources and making a draft your own."
     ],
-    "takeaway": "A few repeatable tasks you have practised yourself, plus simple notes to help you try them again.",
+    "takeaway": "A few practised tasks and simple notes to help you try them again.",
     "faq": [
       {
         "question": "What if I find AI overwhelming?",
@@ -87,18 +189,52 @@
     "slug": "facilitators-and-coaches",
     "label": "Facilitation and coaching",
     "summary": "Prepare and follow through while keeping your attention on people.",
+    "image": "/images/coaching/facilitators-and-coaches-overhead-v3.jpg",
+    "imageAlt": "Directly overhead view of a facilitator in a plum overshirt arranging yellow notes and workshop materials at home.",
+    "acxHeading": "What ACX looks like in facilitation and coaching.",
+    "acxIntro": "From an opening question to a shared session pack:",
+    "acx": [
+      {
+        "level": "ACX 1",
+        "name": "Chat",
+        "action": "Find an opening question that fits.",
+        "detail": "Give AI a fictional or approved session brief. Ask for three opening questions and refine one for your group or coaching conversation.",
+        "control": "You judge whether the wording feels useful, inclusive and appropriate."
+      },
+      {
+        "level": "ACX 2",
+        "name": "Workflow",
+        "action": "Build a repeatable session routine.",
+        "detail": "Connect an approved brief to an agenda and activity sheets. After the session, use agreed notes to draft a follow-up message.",
+        "control": "You review each document and keep confidential details out of AI tools."
+      },
+      {
+        "level": "ACX 3",
+        "name": "Agent",
+        "action": "Have an agent draft the session pack.",
+        "detail": "Give it the goal, timing and approved materials. Ask for an agenda first; after your review, let it draft the activity sheets.",
+        "control": "You check timing, accessibility and fit before using the pack."
+      },
+      {
+        "level": "ACX 4",
+        "name": "Teamwork",
+        "action": "Prepare together with a co-facilitator.",
+        "detail": "Agree who leads each activity and reviews the materials. Use AI to combine approved edits into a shared agenda and follow-up draft.",
+        "control": "Facilitators read the room, adapt the session and approve what is shared."
+      }
+    ],
     "title": "AI Training for Facilitators and Coaches | GreenElephant",
     "description": "Build a practical AI workflow for preparation and follow-through. Personal coaching for facilitators and coaches who want to keep their attention on people.",
     "headline": "Use AI around your work. Keep your attention on people.",
-    "intro": "Explore how AI can support preparation, writing and follow-up in your professional practice. Keep your own judgement, voice and responsibility for the people you work with.",
-    "audience": "Facilitators, business coaches and learning designers who want to connect scattered AI experiments into a useful working routine.",
-    "example": "Take a fictional or approved brief. Use AI to explore a session outline, check whether the activities serve the goal and prepare a follow-up summary. Review what each step adds—and where your attention matters.",
+    "intro": "Use AI for preparation and follow-up, with your professional judgement guiding what reaches the people you work with.",
+    "audience": "Facilitators, business coaches and learning designers ready to turn AI experiments into a working routine.",
+    "example": "A fictional or approved session brief, its goal and timing. No client recordings needed.",
     "practice": [
       "Turning a brief into useful preparation questions.",
-      "Adapting an outline or exercise to a particular group.",
-      "Checking a summary against the source and turning it into clear next steps."
+      "Adapting activities to a particular group.",
+      "Checking a summary against the session notes."
     ],
-    "takeaway": "A small preparation-to-follow-up workflow you have tried, with clear points for your own review.",
+    "takeaway": "A preparation-to-follow-up routine you have tested, with clear review points.",
     "faq": [
       {
         "question": "Is this coaching from an AI chatbot?",
@@ -115,18 +251,52 @@
     "slug": "experienced-specialists",
     "label": "AI in your professional work",
     "summary": "Practise with tasks you understand and tools your workplace allows.",
+    "image": "/images/coaching/experienced-specialists-overhead-v3.jpg",
+    "imageAlt": "Directly overhead view of an older woman in a green blouse checking reports and source notes in a home office.",
+    "acxHeading": "What ACX looks like in specialist work.",
+    "acxIntro": "From checking one summary to reviewing a report with colleagues:",
+    "acx": [
+      {
+        "level": "ACX 1",
+        "name": "Chat",
+        "action": "Get a summary you can check.",
+        "detail": "Give AI a report your workplace allows you to use. Ask for its key findings, open questions and the source passage behind each claim.",
+        "control": "You compare every important claim with the original report."
+      },
+      {
+        "level": "ACX 2",
+        "name": "Workflow",
+        "action": "Create a routine for recurring reports.",
+        "detail": "Connect approved notes to a report template, then check the facts and revise the draft. Reuse those steps for the next report.",
+        "control": "You check figures, missing context and conclusions before sharing."
+      },
+      {
+        "level": "ACX 3",
+        "name": "Agent",
+        "action": "Ask an agent to compare sources.",
+        "detail": "Set one question and the sources it may use. Ask it to compare findings, flag disagreements and return a referenced brief for review.",
+        "control": "You verify the references and investigate gaps before relying on the brief."
+      },
+      {
+        "level": "ACX 4",
+        "name": "Teamwork",
+        "action": "Review a report with your colleagues.",
+        "detail": "Agree who researches, who checks and who approves. Use AI for assigned drafting and comparison tasks within your team's permitted tools.",
+        "control": "Named people resolve disagreements and sign off the final report."
+      }
+    ],
     "title": "AI Coaching for Experienced Professionals | GreenElephant",
     "description": "Use your expertise as the starting point for learning AI. Practise reports, research or recurring work with personal coaching; discuss employer sponsorship.",
     "headline": "Keep your expertise. Build new ways of working with AI.",
-    "intro": "You know your field. Learn to use AI with the reports, research and questions you already understand, so your experience guides the work.",
-    "audience": "Experienced specialists who want focused, beginner-friendly practice with relevant tasks. An employer may be organising the learning, or you may be exploring it yourself.",
-    "example": "Use a public or approved sample report. Ask AI to help structure a summary, identify questions and prepare a repeatable draft. Check each important claim against its source before deciding what is useful.",
+    "intro": "Learn AI through work you know how to judge. Your expertise is the starting point, not something to replace.",
+    "audience": "Experienced specialists learning independently or through their employer, with no prior AI skills required.",
+    "example": "A public or workplace-approved report, its sources and one question you would like it to answer.",
     "practice": [
-      "Giving clear instructions drawn from your own expertise.",
-      "Comparing an AI answer with reliable source material.",
-      "Building a small working template and a checklist for reviewing its output."
+      "Turning your expertise into clear instructions.",
+      "Comparing AI claims with reliable sources.",
+      "Making a reusable template and review checklist."
     ],
-    "takeaway": "A task you have practised end to end, a reusable guide and a clearer sense of where AI helps your work.",
+    "takeaway": "A practised task, a reusable guide and a checklist for reviewing future outputs.",
     "faq": [
       {
         "question": "Can my employer arrange this?",

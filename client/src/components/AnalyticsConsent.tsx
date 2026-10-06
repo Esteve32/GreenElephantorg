@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'wouter';
 import { browserMarketingTracker, chooseAnalytics } from '@/lib/marketing-tracker';
+import { basePagePath, localPage } from '@shared/site-language';
 import { marketingPath } from '@shared/marketing-analytics';
 import './analytics-consent.css';
 
@@ -11,7 +12,8 @@ export function AnalyticsConsent() {
   const button = useRef<HTMLButtonElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const fr = path === '/fr' || path.startsWith('/fr/');
-  const visible = !!marketingPath(path) || path === '/cookies' || path === '/privacy';
+  const base = basePagePath(path).replace(/\/+$/, '') || '/';
+  const visible = !!marketingPath(path) || base === '/cookies' || base === '/privacy';
   useEffect(()=>{
     const refresh = () => {
       const choice = browserMarketingTracker().choice();
@@ -32,7 +34,7 @@ export function AnalyticsConsent() {
     {open && <section className="ge-cookie-banner" role="region" aria-labelledby="cookie-choice-title" data-testid="analytics-consent">
       <div><h2 id="cookie-choice-title" ref={heading} tabIndex={-1}>{fr?'Votre choix pour les cookies':'Your cookie choice'}</h2>
         <p>{fr?'Avec votre accord, Google Analytics nous aide à comparer les visites et les clics vers un achat ou une prise de contact sur nos pages publiques. Refuser ne change pas votre accès au site. Aucun suivi publicitaire.':'With your permission, Google Analytics helps us compare visits and purchase or enquiry-link clicks on our public landing pages. Rejecting does not change your access to the site. No advertising tracking.'}</p>
-        <p>{fr?'Choix conservé sur cet appareil pendant 6 mois. Vous pouvez le modifier ici à tout moment.':'Choice saved on this device for 6 months. You can change it here at any time.'} <a href="/cookies">{fr?'Détails sur les cookies (en anglais)':'Cookie details'}</a></p>
+        <p>{fr?'Choix conservé sur cet appareil pendant 180 jours. Vous pouvez le modifier ici à tout moment.':'Choice saved on this device for 180 days. You can change it here at any time.'} <a href={localPage('/cookies',fr?'fr':'en')}>{fr?'Détails sur les cookies':'Cookie details'}</a></p>
       </div>
       <div className="ge-cookie-actions">
         <button type="button" onClick={()=>choose('rejected')} data-testid="reject-analytics">{fr?'Refuser':'Reject'}</button>

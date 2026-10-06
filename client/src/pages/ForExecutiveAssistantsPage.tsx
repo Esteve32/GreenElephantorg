@@ -8,10 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowRight, CheckCircle2, Users, MessageSquare, Shield, Sparkles, Brain, Target, Zap, Lock } from "lucide-react";
 import { SEO } from "@/components/SEO";
-import { ScanVideoDemo } from "@/components/ScanVideoDemo";
 import { DashboardPreview } from "@/components/DashboardPreview";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
-import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 const EA_CHALLENGES = [
   {
@@ -82,7 +80,7 @@ export default function ForExecutiveAssistantsPage() {
         data-testid="section-ea-hero"
       >
         <motion.div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="photo-edge-layer absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${earthOrbitUrl})` }}
         />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(153,51,204,0.05) 50%, #0a0a0a 100%)" }} />
@@ -173,7 +171,7 @@ export default function ForExecutiveAssistantsPage() {
       </section>
 
       <section 
-        className="py-24"
+        className="py-24 overflow-x-clip"
         style={{
           background: "linear-gradient(180deg, #0a0a0a 0%, #0b0a0d 50%, #0a0a0a 100%)"
         }}
@@ -243,18 +241,6 @@ export default function ForExecutiveAssistantsPage() {
         </div>
       </section>
 
-      <ScanVideoDemo
-        accentColor="#9933cc"
-        badgeText="See It In Action"
-        headline="Watch the Full Scan Experience"
-        subheadline="A 5-minute silent walkthrough — see how the Satellite Scan maps your communication patterns and what your personalized dashboard looks like."
-        ctaLink="/checkout?product=satellitescan"
-        ctaText="Start Your Scan — €99.95"
-        testIdPrefix="ea"
-        videoSrc={scanWalkthroughUrl}
-        gradientFrom="#0a0a0a"
-        gradientTo="#0a0a0a"
-      />
 
       <section
         className="py-20"
@@ -436,7 +422,7 @@ export default function ForExecutiveAssistantsPage() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
                 <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
-                <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+                <Link href="/privacy" className="flex items-center gap-2 underline underline-offset-4"><Shield className="w-4 h-4" /> Privacy information</Link>
                 <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Role-specific insights</span>
               </div>
             </div>

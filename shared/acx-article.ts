@@ -1,5 +1,6 @@
 // Authored, trusted static content. Draft: publication and indexing await review.
 // Keep the initial HTML and the React page on this same source.
+import { renderReadableAcx } from './acx-readable';
 export const ACX_ARTICLE = {
   "path": "/blog/acx-levels-ai-literacy",
   "title": "The four ACX levels: a practical guide to AI literacy",
@@ -7,7 +8,7 @@ export const ACX_ARTICLE = {
   "source": "https://www.linkedin.com/pulse/four-levels-ai-integration-nobody-warned-you-est%C3%A8ve-pannetier-rptff/"
 } as const;
 
-export const ACX_ARTICLE_HTML = `<header class="acx-article-header">
+const ORIGINAL_ARTICLE_HTML = `<header class="acx-article-header">
   <p class="acx-kicker">AI literacy · A practical guide</p>
 
   <h1>The four ACX levels: a practical guide to AI literacy</h1>
@@ -111,6 +112,8 @@ export const ACX_ARTICLE_HTML = `<header class="acx-article-header">
 </footer>
 </div></div>
 `;
+
+export const ACX_ARTICLE_HTML = renderReadableAcx(ORIGINAL_ARTICLE_HTML, 'en');
 
 export const ACX_ARTICLE_SCHEMA = {
   "@context": "https://schema.org",

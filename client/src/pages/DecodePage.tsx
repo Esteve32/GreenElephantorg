@@ -1,3 +1,5 @@
+import { LEARNING_PAGES, renderLearningHero, renderLearningPractice, renderLearningQuestions } from "@shared/learning-pages";
+import "./learning-tools.css";
 import { PAGE_METADATA } from "@shared/page-metadata";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -464,13 +466,12 @@ function ComparisonBar() {
 }
 
 export default function DecodePage() {
-  useEffect(() => { document.title = "Decode — Communication Pattern Analysis | GreenElephant"; }, []);
   const [activeSpeechId, setActiveSpeechId] = useState<string>(MANDELA_1994.id);
   const activeSpeech = ALL_SPEECHES.find(s => s.id === activeSpeechId) || MANDELA_1994;
 
   return (
     <div
-      className="min-h-screen pt-24 pb-16 relative"
+      className="min-h-screen pt-12 pb-16 relative"
       style={{ background: "linear-gradient(180deg, #060810 0%, #020305 40%, #000000 100%)" }}
     >
       <SEO
@@ -479,34 +480,15 @@ export default function DecodePage() {
           { name: "Home", url: "/" },
           { name: "Speech Lab", url: "/decode" }
         ]}
-        faqItems={[
-          {
-            question: "What is the GreenBlueRed communication model?",
-            answer: "GreenBlueRed is a behavioural model of interpersonal communication. It identifies three communication behaviours: Green (empathic connection — focusing on others' feelings and needs), Blue (informing and expressing — sharing your own knowledge and opinions), and Red (influencing and uniting — proposals, decisions, and collective action). It is not a personality model."
-          },
-          {
-            question: "Why analyse famous speeches this way?",
-            answer: "Famous speeches are studied for what they say, but rarely for how they structure communication behaviours. The GreenBlueRed model reveals the invisible architecture behind great speeches — why they feel empathic, credible, and inspiring all at once."
-          },
-          {
-            question: "What do the JFK and Obama Berlin speeches have in common?",
-            answer: "Both were delivered in Berlin, both open with Green (acknowledging others), both build through Blue (historical context), and both close with Red (collective vision). The GBR analysis shows that great speakers across generations use the same structural architecture — even when they don't know the model."
-          }
-        ]}
+        faqItems={[...LEARNING_PAGES["/decode"].faq]}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div className="text-center mb-10" initial="hidden" animate="visible" variants={fadeInUp}>
-          <Badge className="mb-4 bg-white/10 backdrop-blur-sm border-white/20 text-white">Speech Lab</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white drop-shadow-lg">
-            Colour-Decoded Speeches
-          </h1>
-          <p className="text-lg text-white/65 max-w-2xl mx-auto">
-            The GreenBlueRed model maps three communication behaviours in real speech.
-            Hover over any coloured passage for the analysis.
-            This proves the model is about <em>behaviour</em>, not personality.
-          </p>
+          <div className="ge-learning-copy" dangerouslySetInnerHTML={{ __html: renderLearningHero("/decode") }} />
         </motion.div>
+
+        <div className="ge-learning-copy" dangerouslySetInnerHTML={{ __html: renderLearningPractice("/decode") }} />
 
         <motion.div
           className="flex flex-wrap justify-center gap-2 mb-8"
@@ -600,9 +582,9 @@ export default function DecodePage() {
             <ComparisonBar />
             <BehaviorLegend />
             <div className="rounded-xl border border-white/10 bg-white/5 p-4" data-testid="sidebar-cta">
-              <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Map your own style</p>
+              <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Explore your own communication</p>
               <p className="text-white/70 text-sm leading-relaxed mb-4">
-                These leaders use all three behaviours fluently. The Satellite Scan reveals your natural proportion across all 8 communication lenses.
+                The Satellite Scan offers 129 self-reflection questions across eight lenses, with a coach-prepared dashboard, prompts and practice materials. Choose what to practise; AI training and coaching are booked separately.
               </p>
               <Link href="/scan">
                 <Button className="w-full bg-needs text-white text-sm" data-testid="button-cta-scan">
@@ -612,7 +594,7 @@ export default function DecodePage() {
               </Link>
               <Link href="/flow-check">
                 <Button variant="outline" className="w-full mt-2 border-white/15 text-white/70 text-sm" data-testid="button-cta-flow-check">
-                  Free Flow Check — 2 min
+                  Try the free Flow Check
                 </Button>
               </Link>
             </div>
@@ -627,13 +609,13 @@ export default function DecodePage() {
           variants={fadeInUp}
           data-testid="section-more-speeches"
         >
-          <Badge className="mb-4 bg-[#009999]/15 border-[#009999]/30 text-[#009999] text-xs">Expanding</Badge>
-          <h3 className="text-2xl font-bold text-white mb-3">More speeches coming to the lab</h3>
+          <Badge className="mb-4 bg-[#009999]/15 border-[#009999]/30 text-[#009999] text-base">Practice</Badge>
+          <h3 className="text-2xl font-bold text-white mb-3">Review another interpretation</h3>
           <p className="text-white/50 max-w-xl mx-auto text-sm leading-relaxed">
-            Next up: Brené Brown TED talk on vulnerability · Greta Thunberg at the UN · Jacinda Ardern's Christchurch response.
-            Each reveals a different GBR signature — and why that signature worked in that context.
+            Compare passages from the existing speeches. What do you notice about the audience, context and requested action? Treat each colour annotation as an interpretation you can question.
           </p>
         </motion.div>
+        <div className="ge-learning-copy" dangerouslySetInnerHTML={{ __html: renderLearningQuestions("/decode") }} />
       </div>
     </div>
   );

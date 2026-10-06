@@ -38,18 +38,34 @@ import {
 
 const FAQ_ITEMS = [
   {
-    question: "What is the Check-my-FLOW assessment?",
-    answer: "Check-my-FLOW is a free assessment based on Csikszentmihalyi's flow model. It measures your perceived motivation, challenge, and competence in a specific communication situation and maps you into one of four zones: Flow, Challenge/Stress, Comfort, or Danger/Apathy.",
+    question: "What is Flow Check?",
+    answer: "Choose one communication situation. Rate how motivated you feel, how challenging it seems and how able you feel to handle it. Flow Check uses your ratings to suggest one of four zones: Flow, Stretch, Comfort or Low-demand. Use the result to plan one practical action.",
   },
   {
-    question: "How accurate is this assessment?",
-    answer: "This is a directional indicator based on one of 8 lenses from the Satellite Scan. It reveals your flow pattern in a single communication situation. For a comprehensive analysis across all 8 lenses with 129 questions, the full Satellite Scan provides a much deeper picture.",
+    question: "How should I interpret my result?",
+    answer: "Flow Check offers a snapshot of how you rate motivation, challenge and competence in one communication situation. Use the suggested zone to reflect and choose a small next step. It is not a validated test of ability or mental health, and it does not assess your AI skills.",
   },
   {
-    question: "Is my data private?",
-    answer: "Yes. Your assessment is processed locally unless you choose to provide your email. If you do, we store your results securely and never share personal data with third parties. We follow GDPR guidelines.",
+    question: "What happens to my answers?",
+    answer: "Your result is calculated in your browser. Selecting See My Results also sends your situation, role and ratings to Green Elephant’s server, where successful submissions are stored, even without email. If you provide your email and tick the box, your contact details are stored. When the relevant services are enabled, your details and results are emailed to you and Green Elephant’s team, and your contact details are passed to its contact-management service. See our Privacy Policy for data handling and questions.",
   },
 ];
+
+function FlowSubmissionNotice({ includeEmailDetails = false }: { includeEmailDetails?: boolean }) {
+  return (
+    <div className="space-y-3">
+    <p className="text-lg leading-relaxed text-muted-foreground" data-testid="flow-submission-notice">
+      When you select See My Results, your situation, role and three ratings are sent to Green Elephant and stored, even if you skip email. Your result is also calculated in your browser. Describe your situation without names or confidential details. Email is optional.{' '}
+      <Link href="/privacy" className="underline underline-offset-4">Read our Privacy Policy</Link> before continuing.
+    </p>
+    {includeEmailDetails && (
+      <p className="text-lg leading-relaxed text-muted-foreground" data-testid="flow-email-handling-notice">
+        If you provide your email and tick the box, your contact details are stored. When the relevant services are enabled, your details and results are emailed to you and Green Elephant’s team, and your contact details are passed to its contact-management service.
+      </p>
+    )}
+    </div>
+  );
+}
 
 const SITUATIONS = [
   { id: "team_meeting", label: "Leading or participating in a team meeting", icon: Users },
@@ -100,24 +116,24 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     textClass: "text-flow",
     borderClass: "border-flow/30",
     bgClass: "bg-flow/10",
-    description: "High perceived challenge matched with high perceived competence. You are fully engaged.",
+    description: "Your ratings place this situation in the Flow zone of the model. Reflect on what helps you take part.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive both high challenge (${challenge}/10) and high competence (${competence}/10), with strong motivation (${motivation}/10). This is the optimal state—you're stretched just enough to stay engaged without feeling overwhelmed. Your skills match the demands of this situation, creating deep involvement and satisfaction.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you rate challenge at ${challenge}/10, competence at ${competence}/10 and motivation at ${motivation}/10. These are your ratings today, not measured ability or a mental state. Notice what helps you engage and decide whether to keep the current challenge.`,
     recommendations: [
-      "Protect this state — notice what conditions create it so you can replicate them",
+      "Notice which conditions help you engage so you can try them again",
       "Talk to a colleague about what is working — it can help them find their rhythm too",
       "Consider increasing complexity gradually to keep growing",
     ],
   },
   challenge: {
-    name: "Challenge / Stress Zone",
+    name: "Stretch Zone",
     badgeClass: "bg-attitude text-white",
     textClass: "text-attitude",
     borderClass: "border-attitude/30",
     bgClass: "bg-attitude/10",
-    description: "High perceived challenge with lower perceived competence. You may feel anxious or stressed.",
+    description: "Your ratings place this situation in the Stretch zone of the model. Consider what preparation or support would help.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive high challenge (${challenge}/10) but lower competence (${competence}/10). With motivation at ${motivation}/10, this creates a stress pattern. The situation demands more than you currently feel equipped to handle. This isn't about actual ability — it's about perception. Targeted support can shift this rapidly.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you rate challenge at ${challenge}/10, competence at ${competence}/10 and motivation at ${motivation}/10. The suggested zone is a reflection prompt, not evidence of stress or anxiety. Identify one part of the task you can prepare, simplify or discuss with someone.`,
     recommendations: [
       "Ask trusted colleagues to share what they notice you doing well",
       "Break the challenge into smaller, manageable sub-tasks",
@@ -131,9 +147,9 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     textClass: "text-primary",
     borderClass: "border-primary/30",
     bgClass: "bg-primary/10",
-    description: "Low perceived challenge with high perceived competence. You feel safe but may be coasting.",
+    description: "Your ratings place this situation in the Comfort zone of the model. Decide whether the current task meets your goal.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive low challenge (${challenge}/10) but high competence (${competence}/10). With motivation at ${motivation}/10, you're in your comfort zone. While this feels safe, sustained comfort leads to stagnation. Your skills exceed the demands — which means you have capacity for growth.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you rate challenge at ${challenge}/10, competence at ${competence}/10 and motivation at ${motivation}/10. A familiar task may be useful as it is. If you want a new challenge, choose a manageable step that serves your goal.`,
     recommendations: [
       "Volunteer for a stretch role — host a session, mentor someone, take notes for the group",
       "Set a personal challenge within the situation (e.g., ask a provocative question)",
@@ -142,14 +158,14 @@ const ZONE_CONFIG: Record<Zone, ZoneConfig> = {
     ],
   },
   danger: {
-    name: "Danger / Apathy Zone",
+    name: "Low-demand Zone",
     badgeClass: "bg-destructive text-white",
     textClass: "text-destructive",
     borderClass: "border-destructive/30",
     bgClass: "bg-destructive/10",
-    description: "Low perceived challenge and low perceived competence. Disengagement risk is high.",
+    description: "Your ratings place this situation in the Low-demand zone of the model. Choose one small, useful next step.",
     interpretation: (situation, role, motivation, challenge, competence) =>
-      `As ${aOrAn(role)} ${role} in "${situation}", you perceive both low challenge (${challenge}/10) and low competence (${competence}/10), with motivation at ${motivation}/10. This is the danger zone — neither the situation nor your skills feel adequate. This creates apathy and disengagement, which compounds over time. Urgent attention is needed.`,
+      `As ${aOrAn(role)} ${role} in "${situation}", you rate challenge at ${challenge}/10, competence at ${competence}/10 and motivation at ${motivation}/10. These ratings do not establish apathy, disengagement or danger. Clarify why this situation matters, then choose one small action or ask for a different perspective.`,
     recommendations: [
       "Reconnect with your purpose — why does this situation matter to you?",
       "Ask for honest perspective from a trusted peer or coach",
@@ -328,8 +344,8 @@ function FlowDiamond({
           <>
             <text x="50"  y="-3"  textAnchor="middle" fontSize="4"   fill={zoneFills.flow}      opacity="0.9" fontWeight="bold">FLOW</text>
             <text x="108" y="52"  textAnchor="start"  fontSize="3.5" fill={zoneFills.comfort}   opacity="0.8">COMFORT</text>
-            <text x="50"  y="108" textAnchor="middle" fontSize="3.5" fill={zoneFills.danger}    opacity="0.8">DANGER</text>
-            <text x="-8"  y="52"  textAnchor="end"    fontSize="3.5" fill={zoneFills.challenge} opacity="0.8">STRESS</text>
+            <text x="50"  y="108" textAnchor="middle" fontSize="3.5" fill={zoneFills.danger}    opacity="0.8">LOW DEMAND</text>
+            <text x="-8"  y="52"  textAnchor="end"    fontSize="3.5" fill={zoneFills.challenge} opacity="0.8">STRETCH</text>
           </>
         )}
 
@@ -503,9 +519,9 @@ export default function FlowCheckPage() {
       <div className="min-h-screen pb-16" style={{ background: "linear-gradient(180deg, #000000 0%, #030308 100%)" }}>
         <SEO
           title="Your Flow Check Results | GreenElephant"
-          description="See your communication flow zone based on Csikszentmihalyi's flow model. Understand your motivation, challenge, and competence balance."
+          description="Reflect on your ratings of motivation, challenge and competence in one situation. Use the suggested zone to choose a practical next step."
           canonicalPath="/flow-check"
-          keywords="flow state, communication flow, Csikszentmihalyi, flow assessment, communication zones"
+          keywords="communication reflection, Flow Check, motivation, perceived challenge, perceived competence"
           breadcrumbs={[
             { name: "Home", url: "/" },
             { name: "Flow Check", url: "/flow-check" },
@@ -530,7 +546,7 @@ export default function FlowCheckPage() {
                   {zoneConfig.name}
                 </Badge>
                 <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white">
-                  Your Flow Zone
+                  Your reflection result
                 </h1>
                 <p
                   className="text-2xl font-bold mb-4"
@@ -576,17 +592,20 @@ export default function FlowCheckPage() {
                     showDot={true}
                   />
                 </div>
+                <p className="text-base text-white/70 text-center leading-relaxed">
+                  The diagram uses terms from the Flow model. Its labels are not measurements of your feelings.
+                </p>
                 {motivation !== undefined && (() => {
                   const effCh = effectiveChallengeLevel(motivation, challenge);
                   const shifted = Math.abs(effCh - challenge) >= 0.5;
-                  const dir = motivation < 5 ? "reduced" : motivation > 5 ? "amplified" : null;
+                  const dir = motivation < 5 ? "lowers" : motivation > 5 ? "raises" : null;
                   return (
                     <div className="mt-3 text-xs text-white/65 text-center leading-snug space-y-0.5">
                       {shifted && dir ? (
                         <>
                           <div>
                             <span className="text-white/60">Motivation {motivation}/10</span>
-                            {" "}{dir} perceived engagement:
+                            {" "}{dir} the model’s challenge value:
                           </div>
                           <div>
                             effective challenge{" "}
@@ -668,7 +687,7 @@ export default function FlowCheckPage() {
                 <h3 className="text-lg font-bold text-white">Learn More About Flow</h3>
               </div>
               <p className="text-sm text-white/60 mb-4">
-                Watch "Measuring Flow" (4101) to understand how to measure and hack communication flow in your work and team.
+                Watch "Measuring Flow" (4101) for ideas to reflect on communication in your work and team.
               </p>
               <a
                 href="https://youtu.be/EZBP2FByWBg"
@@ -689,10 +708,10 @@ export default function FlowCheckPage() {
               <div className="text-center mb-6">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <Scan className="h-6 w-6 text-flow" />
-                  <h3 className="text-xl font-bold text-white">See the Full Picture</h3>
+                  <h3 className="text-xl font-bold text-white">Explore your communication more widely</h3>
                 </div>
                 <p className="text-white/60 max-w-2xl mx-auto">
-                  You measured <strong>1 of 8 lenses</strong>. The full Satellite Scan maps all 8 with 129 questions and delivers a personalized AI-powered dashboard.
+                  Flow Check focuses on one situation through the Flow lens. The Satellite Scan invites broader self-reflection through 129 questions across eight communication lenses. It includes a coach-prepared dashboard, prompts and practice materials. You choose which insights to turn into instructions for AI. AI training and coaching are booked separately.
                 </p>
               </div>
 
@@ -726,19 +745,19 @@ export default function FlowCheckPage() {
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                      129 calibrated questions across all 8 lenses
+                      129 self-reflection questions across eight lenses
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                      Personalized AI-powered dashboard
+                      Coach-prepared dashboard
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                      Actionable coaching prompts for each lens
+                      Communication prompts and practice materials
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                      27 years of research-backed methodology
+                      Chosen preferences to guide AI
                     </li>
                   </ul>
                 </div>
@@ -802,14 +821,12 @@ export default function FlowCheckPage() {
           <div data-testid="step-welcome">
             <div className="flex flex-col md:flex-row gap-8 items-center mb-8">
               <div className="flex-1">
-                <Badge className="mb-4 bg-flow/20 text-flow border-flow/30">Free Assessment · 2 minutes</Badge>
+                <Badge className="mb-4 bg-flow/20 text-flow border-flow/30">Free reflection tool</Badge>
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">
                   Check Your Communication Flow
                 </h1>
                 <p className="text-muted-foreground mb-6">
-                  Based on Mihaly Csikszentmihalyi's flow research, this assessment maps your
-                  <strong> perceived motivation, challenge, and competence</strong> in a specific
-                  communication situation — and places you in one of 4 zones.
+                  Choose one communication situation. Rate how motivated you feel, how challenging it seems and how able you feel to handle it. Flow Check uses your ratings to suggest one of four zones: Flow, Stretch, Comfort or Low-demand. Use the result to plan one practical action.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
@@ -817,7 +834,7 @@ export default function FlowCheckPage() {
                     <div>
                       <p className="font-medium text-sm">What is Flow?</p>
                       <p className="text-sm text-muted-foreground">
-                        Flow is when perceived challenge matches perceived competence — you're fully immersed and energized. Performers call it "being in the zone."
+                        Flow is often described as feeling absorbed in a task. Here, you reflect on how challenge and competence feel in one situation.
                       </p>
                     </div>
                   </div>
@@ -826,7 +843,7 @@ export default function FlowCheckPage() {
                     <div>
                       <p className="font-medium text-sm">It's All About Perception</p>
                       <p className="text-sm text-muted-foreground">
-                        Flow is based on your individual perception, not objective reality. You can hack your flow by shifting how you perceive situations.
+                        Your ratings describe your perspective right now. Use them to choose a question to explore or a small action to try.
                       </p>
                     </div>
                   </div>
@@ -850,10 +867,11 @@ export default function FlowCheckPage() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground text-center mt-3">
-                  You'll discover which zone you're in
+                  Your ratings suggest a zone to reflect on
                 </p>
               </div>
             </div>
+            <FlowSubmissionNotice />
           </div>
         )}
 
@@ -861,7 +879,7 @@ export default function FlowCheckPage() {
           <div data-testid="step-situation">
             <h2 className="text-2xl font-bold mb-2">Choose a Communication Situation</h2>
             <p className="text-muted-foreground mb-6">
-              Think of a specific situation you want to assess your flow in.
+              Think of one communication situation you want to reflect on.
             </p>
             <div className="grid sm:grid-cols-2 gap-3 mb-4">
               {SITUATIONS.map((sit) => {
@@ -1017,6 +1035,7 @@ export default function FlowCheckPage() {
               Leave your email to receive a copy of your results with personalized recommendations.
               You can skip this step—your results will still be shown.
             </p>
+            <div className="mb-6"><FlowSubmissionNotice includeEmailDetails /></div>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="flow-name">Name</Label>

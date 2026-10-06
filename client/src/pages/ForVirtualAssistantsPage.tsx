@@ -80,12 +80,12 @@ export default function ForVirtualAssistantsPage() {
       <section 
         className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
         style={{
-          background: `linear-gradient(180deg, ${atmosphericPalette.space} 0%, ${atmosphericPalette.highAtmosphere} 50%, ${atmosphericPalette.upperAtmosphere} 100%)`
+          background: `linear-gradient(180deg, #0a0a0a 0%, ${atmosphericPalette.highAtmosphere} 50%, ${atmosphericPalette.upperAtmosphere} 100%)`
         }}
         data-testid="section-va-hero"
       >
         <motion.div 
-          className="absolute inset-0 bg-cover bg-center opacity-30"
+          className="photo-edge-layer absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: `url(${earthOrbitUrl})` }}
         />
         
@@ -173,7 +173,7 @@ export default function ForVirtualAssistantsPage() {
       </section>
 
       <section 
-        className="py-24"
+        className="py-24 overflow-x-clip"
         style={{
           background: `linear-gradient(180deg, ${atmosphericPalette.midAtmosphere} 0%, ${atmosphericPalette.lowerAtmosphere} 100%)`
         }}

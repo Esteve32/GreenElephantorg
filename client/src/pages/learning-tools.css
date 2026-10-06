@@ -1,0 +1,25 @@
+/* Green Elephant · AI-LIT: scoped public learning copy, shared with initial HTML. */
+.ge-learning-copy { max-width: 1100px; margin: 0 auto; padding: 32px 24px; color: #e0e3e7; font-family: 'Lato', sans-serif; }
+.ge-learning-copy h1, .ge-learning-copy h2 { font-family: 'Poppins', sans-serif; color: #fff; }
+.ge-learning-copy h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.22; margin: 16px 0 24px; }
+.ge-learning-copy h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); line-height: 1.4; margin-bottom: 20px; }
+.ge-learning-copy p, .ge-learning-copy li { font-size: 18px; line-height: 1.75; }
+.ge-learning-copy header { max-width: 760px; margin: 0 auto; text-align: center; }
+.ge-learning-copy .ge-learning-label { font-size: 16px; color: #65cccc; }
+.ge-learning-practice { max-width: 760px; margin: 36px auto; padding: 28px; border: 1px solid #ffffff20; border-radius: 16px; background: #ffffff05; text-align: left; }
+.ge-learning-practice ol { padding-left: 24px; list-style: decimal; }
+.ge-learning-practice li + li { margin-top: 16px; }
+.ge-learning-practice nav { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 24px; }
+.ge-learning-copy a { color: #65cccc; text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.ge-learning-copy a, .ge-learning-copy summary { min-height: 44px; padding: 10px 0; }
+.ge-learning-copy a:focus-visible, .ge-learning-copy summary:focus-visible { outline: 2px solid #65cccc; outline-offset: 5px; }
+.ge-learning-questions { max-width: 760px; margin: 48px auto; text-align: left; }
+.ge-learning-questions details { border-bottom: 1px solid #ffffff20; padding: 12px 0; }
+.ge-learning-questions summary { font-size: 18px; cursor: pointer; }
+.ge-learning-questions p { margin: 12px 0 20px; }
+.ge-learning-video-index { max-width: 760px; margin: 32px auto; }
+.ge-learning-video-index li { margin: 16px 0; }
+@media (max-width: 650px) { .ge-learning-copy { padding: 24px 16px; } .ge-learning-practice { padding: 22px 18px; } }
+
+.ge-learning-copy > h1, .ge-learning-copy > p { max-width: 760px; margin-left: auto; margin-right: auto; }
+.ge-learning-hero { background: linear-gradient(180deg, #00000000, #000000cf 18%, #000000ed 82%, #00000000); }

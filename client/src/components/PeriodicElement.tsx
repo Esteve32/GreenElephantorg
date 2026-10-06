@@ -194,10 +194,12 @@ export default function PeriodicElement({ symbol, name, number, lens, descriptio
                 variant="outline"
                 className="backdrop-blur-sm bg-white/5"
                 data-testid="button-view-prompts"
-                onClick={() => console.log('View related prompts for:', name)}
+                asChild
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View Related Prompts
+                <a href={`/resources?lens=${encodeURIComponent(lens)}#prompt-library`}>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Related Prompts
+                </a>
               </Button>
             </div>
           </div>

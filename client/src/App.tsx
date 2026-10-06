@@ -176,6 +176,10 @@ function Router() {
         <Route path="/satellitescan">{() => <Redirect to="/scan" />}</Route>
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/payment-success" component={PaymentSuccessPage} />
+        <Route path="/fr/privacy" component={PrivacyPolicyPage} />
+        <Route path="/fr/ai-policy" component={AIPolicyPage} />
+        <Route path="/fr/terms" component={TermsOfServicePage} />
+        <Route path="/fr/cookies" component={CookiePolicyPage} />
         <Route path="/privacy" component={PrivacyPolicyPage} />
         <Route path="/terms" component={TermsOfServicePage} />
         <Route path="/cookies" component={CookiePolicyPage} />

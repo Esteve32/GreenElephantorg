@@ -85,12 +85,12 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <section
         className="relative min-h-screen overflow-hidden"
         style={{
           background: `linear-gradient(180deg,
-            #000000 0%,
+            #0a0a0a 0%,
             #020204 5%,
             #030308 10%,
             #040410 15%,
@@ -135,8 +135,8 @@ export default function AdminLoginPage() {
             backgroundPosition: 'center 40%',
             backgroundRepeat: 'no-repeat',
             transform: 'scaleY(-1)',
-            maskImage: 'linear-gradient(to bottom, black 0%, black 15%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 15%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)'
+            maskImage: 'linear-gradient(to bottom, transparent 0%, black 24%, black 72%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 24%, black 72%, transparent 100%)'
           }}
         />
 
@@ -145,8 +145,8 @@ export default function AdminLoginPage() {
           style={{
             height: '200px',
             background: `linear-gradient(180deg, 
-              #000000 0%,
-              rgba(0, 0, 0, 0.85) 50%,
+              #0a0a0a 0%,
+              rgba(10, 10, 10, 0.85) 50%,
               transparent 100%
             )`
           }}
@@ -162,7 +162,7 @@ export default function AdminLoginPage() {
               rgba(4, 4, 12, 0.45) 35%,
               #040410 60%,
               #030308 80%,
-              #000000 100%
+              #0a0a0a 100%
             )`
           }}
         />

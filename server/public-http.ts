@@ -1,4 +1,8 @@
-import homepage from '../shared/homepage-content.json';
+import { ORGANIZATION_SCHEMA, discoverySchema, discoveryFaq, discoveryBreadcrumbs } from "../shared/search-discovery";
+import { learningPage, renderLearningLanding, type LearningPath } from "../shared/learning-pages";
+import { renderResourceVideoIndex } from "../shared/resource-videos";
+import { isPolicyPath, renderPolicyPage } from '../shared/policy-pages';
+import { homepage } from '../shared/homepage-rendered';
 import { publicAnalyticsConfig } from '../shared/marketing-analytics';
 import { renderScanPage } from '../shared/scan-page';
 import { coachingPage, renderCoachingPage } from '../shared/coaching-pages';
@@ -53,7 +57,7 @@ export function renderPageMetadata(template: string, pathname: string): string {
   if (pathname === "/myfive" || pathname.startsWith("/myfive/")) return template;
   const m = pageMetadata(pathname);
   const language = siteLanguage(pathname);
-  const base = basePagePath(pathname);
+  const base = basePagePath(pathname).replace(/\/+$/, '') || '/';
   const title = fullPageTitle(m.title);
   const url = m.canonicalPath ? SITE_ORIGIN + m.canonicalPath : undefined;
   const image = new URL(m.ogImage ?? DEFAULT_SOCIAL_IMAGE, SITE_ORIGIN).href;
@@ -65,7 +69,8 @@ export function renderPageMetadata(template: string, pathname: string): string {
     meta("robots", m.noIndex ? "noindex, nofollow" : "index, follow"),
     meta("og:type", m.ogType ?? "website", true), meta("og:title", title, true),
     meta("og:description", m.description, true), meta("og:image", image, true),
-    meta("twitter:card", "summary"), meta("twitter:title", title),
+    meta("og:locale", language === "fr" ? "fr_FR" : "en_US", true),
+    meta("twitter:card", m.ogImage ? "summary_large_image" : "summary"), meta("twitter:title", title),
     meta("twitter:description", m.description), meta("twitter:image", image),
   ];
   if (url) tags.push(`<link rel="canonical" href="${escapeHtml(url)}" />`,
@@ -73,7 +78,7 @@ export function renderPageMetadata(template: string, pathname: string): string {
   if (hasFrenchPage(pathname) && !m.noIndex) {
     for (const lang of ['en', 'fr', 'x-default'] as const) tags.push(`<link rel="alternate" hreflang="${lang}" href="${SITE_ORIGIN}${localPage(base, lang === 'fr' ? 'fr' : 'en')}" />`);
   }
-  const names = new Set(["title", "description", "keywords", "robots", "og:type", "og:url", "og:title", "og:description", "og:image", "twitter:card", "twitter:url", "twitter:title", "twitter:description", "twitter:image"]);
+  const names = new Set(["title", "description", "keywords", "robots", "og:type", "og:locale", "og:url", "og:title", "og:description", "og:image", "twitter:card", "twitter:url", "twitter:title", "twitter:description", "twitter:image"]);
   let html = template.replace(/<html\b[^>]*>/i, `<html lang="${language}" class="dark">`).replace(/<title>[^<]*<\/title>/gi, "")
     .replace(/<meta\b[^>]*>/gi, tag => {
       const key = tag.match(/(?:name|property)=["']([^"']+)["']/i)?.[1];
@@ -90,10 +95,24 @@ export function renderPageMetadata(template: string, pathname: string): string {
     html = html.replace('<div id="root"></div>', `<div id="root"><main><article class="acx-article">${articleLinks(language === "fr" ? ACX_ARTICLE_FR_HTML : ACX_ARTICLE_HTML, language)}</article></main></div>`);
     tags.push(`<script type="application/ld+json" id="page-structured-data">${JSON.stringify({ ...ACX_ARTICLE_SCHEMA, headline: m.title, description: m.description, inLanguage: language, url, mainEntityOfPage: url }).replaceAll("<", "\\u003c")}</script>`);
   }
+  if (isPolicyPath(base)) html = html.replace('<div id="root"></div>', `<div id="root"><main>${renderPolicyPage(base, language)}</main></div>`);
   if (base === '/') html = html.replace('<div id="root"></div>', `<div id="root"><div class="ge-site"><main class="home-content">${homepage[language].main}</main>${homepage[language].footer}</div></div>`);
   if (base.replace(/\/+$/, '') === '/scan') html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-site" lang="${language}">${renderScanPage(language)}</main></div>`);
   const coaching = coachingPage(pathname);
   if (coaching) html = html.replace('<div id="root"></div>', `<div id="root"><main class="ge-site" lang="en">${renderCoachingPage(coaching)}</main></div>`);
+  const learning = !m.noIndex && m.canonicalPath ? learningPage(m.canonicalPath) : undefined;
+  if (learning) {
+    const learningPath = m.canonicalPath as LearningPath;
+    html = html.replace('<div id="root"></div>', `<div id="root"><main>${renderLearningLanding(learningPath)}${learningPath === '/resources' ? renderResourceVideoIndex() : ''}</main></div>`);
+  }
+  const schemaTag = (id: string, data: object) => `<script type="application/ld+json" id="${id}">${JSON.stringify(data).replaceAll('<', '\\u003c')}</script>`;
+  if (!m.noIndex) tags.push(schemaTag('org-structured-data', ORGANIZATION_SCHEMA));
+  const discovery = discoverySchema(pathname);
+  if (discovery) tags.push(schemaTag('page-structured-data', discovery));
+  const faq = discoveryFaq(pathname);
+  if (faq?.length) tags.push(schemaTag('faq-structured-data', { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(item => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })) }));
+  const breadcrumbs = discoveryBreadcrumbs(pathname);
+  if (breadcrumbs) tags.push(schemaTag('breadcrumb-structured-data', { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: breadcrumbs.map((item, i) => ({ '@type': 'ListItem', position: i + 1, name: item.name, item: SITE_ORIGIN + item.url })) }));
   return html.replace("</head>", tags.join("\n    ") + "\n  </head>");
 }
 

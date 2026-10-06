@@ -34,8 +34,8 @@ export default function RetreatCard({
 
   return (
     <>
-      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-white/10 hover-elevate transition-all">
-        <div className="aspect-[4/3] overflow-hidden">
+      <Card className="overflow-hidden backdrop-blur-sm bg-[#08101c] border-white/10 hover-elevate transition-all">
+        <div className="retreat-photo aspect-[4/3] overflow-hidden">
           <img
             src={imageUrl}
             alt={title}

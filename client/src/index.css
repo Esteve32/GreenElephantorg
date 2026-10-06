@@ -1,6 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+@source "../../shared";
+
+/* Green Elephant: retain the existing focus and form defaults after Tailwind 4. */
+@theme {
+  --default-ring-width: 3px;
+  --default-ring-color: #3b82f6;
+  --blur-sm: 4px;
+  --backdrop-blur-sm: 4px;
+}
+@layer base {
+  *, ::before, ::after, ::backdrop, ::file-selector-button { border-color: hsl(var(--border)); }
+  input::placeholder, textarea::placeholder { color: #9ca3af; }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+  dialog { margin: auto; }
+}
 
 /*
  * MyFive Organic Holography foundation.

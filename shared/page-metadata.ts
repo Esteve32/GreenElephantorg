@@ -1,4 +1,5 @@
 import { FRENCH_ROUTES, basePagePath, localPage, hasFrenchPage } from "./site-language";
+import { POLICY_PAGES, isPolicyPath } from './policy-pages';
 import { ACX_ARTICLE_FR } from "./acx-article-fr";
 import { ACX_ARTICLE } from "./acx-article";
 import { isParkedWebinar } from "./site-features";
@@ -17,12 +18,12 @@ export interface PageMetadata {
   noIndex?: boolean;
 }
 export const PAGE_METADATA: Record<string, PageMetadata> = {
-  ...Object.fromEntries(COACHING_PAGES.map(page => [coachingPath(page.slug), { title: page.title, description: page.description, canonicalPath: coachingPath(page.slug) }])),
+  ...Object.fromEntries(COACHING_PAGES.map(page => [coachingPath(page.slug), { title: page.title, description: page.description, canonicalPath: coachingPath(page.slug), ogImage: page.image }])),
   [ACX_ARTICLE.path]: { title: ACX_ARTICLE.title, description: ACX_ARTICLE.description, canonicalPath: ACX_ARTICLE.path, ogType: "article" },
   "/": {
     "title": "Human-centred AI Literacy Training | GreenElephant",
     "description": "Hands-on AI literacy training for independent professionals and teams. Build human skills, practise with AI and stay in charge. Workshops and small-group coaching.",
-    "keywords": "self-awareness assessment, communication self-assessment, emotional intelligence coaching, personal development tools, career change assessment, future-proof career skills, executive assistant communication training, CEO communication coaching, executive coaching assessment, leadership communication, communication diagnostic, team alignment, EA professional development, managing up skills, conscious communication, self-reflection tools, resilience assessment, social intelligence, personal growth, ethical personal development, AI personal growth, AI-assisted communication, leadership development, ethical HR tools, HRIS alternative, self-assessment tool",
+    "keywords": "AI literacy training, human-centred AI, AI training for beginners, practical AI coaching, AI workshops, conscious communication",
     "canonicalPath": "/"
   },
   "/scan": {
@@ -38,14 +39,14 @@ export const PAGE_METADATA: Record<string, PageMetadata> = {
     "canonicalPath": "/programs"
   },
   "/signals": {
-    "title": "Communication Signals Quiz — Drift Assessment",
-    "description": "Take GreenElephant's Communication Drift Assessment. 6 questions to reveal your unconscious communication patterns, blind spots, and disconnection signals.",
+    "title": "Communication Drift Check | Everyday Conversations",
+    "description": "Reflect on six everyday communication situations. Notice drift between intention and words, with practical links to self-reflection, people and AI requests.",
     "keywords": "communication quiz, communication assessment, communication drift, blind spots, ego patterns, conflict patterns, self-awareness quiz",
     "canonicalPath": "/signals"
   },
   "/periodic-table": {
     "title": "Periodic Table of Conscious Communication | 146 Elements | GreenElephant",
-    "description": "Explore the Periodic Table of Conscious Communication — 146 micro-habits across 8 lenses mapping the full spectrum of human connection. A research-backed framework for transforming how you communicate.",
+    "description": "Explore 146 communication elements across eight lenses. Choose a practical prompt to prepare a conversation, clarify an AI request and review the result.",
     "canonicalPath": "/periodic-table",
     "keywords": "periodic table of communication, conscious communication framework, emotional intelligence framework, personal development tools, self-awareness micro-habits, 146 communication elements, 8 lenses, communication micro-habits, NVC, nonviolent communication, behavioural change tools, communication self-improvement"
   },
@@ -62,10 +63,10 @@ export const PAGE_METADATA: Record<string, PageMetadata> = {
     "canonicalPath": "/coaching"
   },
   "/resources": {
-    "title": "Communication Resources & AI Prompts | GreenElephant",
-    "description": "Access free AI-powered communication prompts, infographics, videos, and downloadable resources structured by the 8 lenses of conscious communication. Explore tools for self-awareness, leadership, and team dynamics.",
-    "canonicalPath": "/resources",
-    "keywords": "communication prompts, AI coaching prompts, conscious communication resources, communication infographics, leadership prompts, team communication tools"
+      "title": "AI Practice Resources | Communication Prompts & Videos | GreenElephant",
+      "description": "Explore communication prompts, teaching videos and infographics. Prepare a real task, give AI clearer instructions and check the result. Start without a Scan.",
+      "canonicalPath": "/resources",
+      "keywords": "AI literacy resources, communication prompts, AI practice, conscious communication videos"
   },
   "/connect": {
     "title": "Contact & Connect | GreenElephant",
@@ -140,16 +141,16 @@ export const PAGE_METADATA: Record<string, PageMetadata> = {
     "keywords": "conscious communication webinar, GreenBlueRed webinar, communication training online, live communication coaching"
   },
   "/flow-check": {
-    "title": "Check Your Communication Flow | Free Assessment | GreenElephant",
-    "description": "Measure your communication flow state using Csikszentmihalyi's model. Discover if you're in the Flow, Challenge, Comfort, or Danger zone in your key communication situations.",
+    "title": "Flow Check | Communication Reflection | Green Elephant",
+    "description": "Reflect on motivation, challenge and competence in one communication situation. Use three ratings to choose a practical next step.",
     "canonicalPath": "/flow-check",
-    "keywords": "flow state assessment, self-awareness tool, free emotional intelligence test, personal development check, communication self-reflection, Csikszentmihalyi flow model, flow zone, motivation challenge competence, free communication assessment, free EQ check, conscious communication test, resilience check, personal growth tool, self-assessment, AI personal growth"
+    "keywords": "communication reflection, Flow Check, motivation, perceived challenge, perceived competence, conscious communication"
   },
   "/decode": {
-    "title": "Colour-Decode Famous Speeches | GreenBlueRed Communication Analysis | GreenElephant",
-    "description": "See how the GreenBlueRed communication model maps onto Mandela, JFK, and Obama's most famous speeches. Discover which sentences build empathy, which inform, and which unite around action — and what that tells us about conscious communication.",
-    "canonicalPath": "/decode",
-    "keywords": "GreenBlueRed model, communication behaviour analysis, Mandela speech decoded, JFK Berlin speech analysis, Obama communication style, green blue red communication, conscious communication examples, behaviour vs personality"
+      "title": "Speech Lab | Communication Practice for AI Writing | GreenElephant",
+      "description": "Explore colour-annotated speeches by Mandela, JFK and Obama. Practise audience, context and action, then use those habits to brief AI and check a draft.",
+      "canonicalPath": "/decode",
+      "keywords": "Speech Lab, GreenBlueRed, communication practice, AI writing, AI literacy"
   }
 };
 
@@ -194,6 +195,10 @@ export const REGISTERED_PAGE_PATHS = [
   "/satellitescan",
   "/checkout",
   "/payment-success",
+  "/fr/privacy",
+  "/fr/ai-policy",
+  "/fr/terms",
+  "/fr/cookies",
   "/privacy",
   "/terms",
   "/cookies",
@@ -279,6 +284,12 @@ export function isPrivatePage(path: string): boolean {
 
 export function pageMetadata(pathname: string): PageMetadata {
   const path = normalizePagePath(pathname);
+  const base = basePagePath(path);
+  if (isPolicyPath(base) && (!path.startsWith('/fr/') || hasFrenchPage(path))) {
+    const language = path.startsWith('/fr/') ? 'fr' : 'en';
+    const copy = POLICY_PAGES[language][base];
+    return { title: copy.title + ' | GreenElephant', description: copy.description, canonicalPath: localPage(base, language) };
+  }
   if ((path === '/fr' || path.startsWith('/fr/')) && hasFrenchPage(path)) {
     const base = basePagePath(path);
     const copy = base === '/' ? {

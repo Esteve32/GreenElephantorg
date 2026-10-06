@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Landing-page visual style workshop · Green Elephant</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f7f8;
+      --muted: #c9ccd2;
+      --soft: #979ca7;
+      --paper: #080a0d;
+      --navy: #0a1628;
+      --teal: #00b3b3;
+      --purple: #b7a6e8;
+      --line: #ffffff26;
+      --heading: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --body: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--paper); }
+    body { margin: 0; background: linear-gradient(180deg, #050608 0%, #0a1628 46%, #07090c 100%); color: var(--ink); font: 18px/1.65 var(--body); }
+    a { color: inherit; text-underline-offset: 5px; }
+    .wrap { width: min(1380px, calc(100% - 64px)); margin: 0 auto; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 86px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; }
+    .brand img { width: 42px; height: 42px; object-fit: contain; }
+    .back { color: var(--muted); font-size: 16px; }
+    header { padding: 84px 0 58px; max-width: 910px; }
+    .kicker { margin: 0 0 18px; color: var(--teal); font-size: 15px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    h1, h2, h3, h4 { margin: 0; font-family: var(--heading); line-height: 1.15; letter-spacing: -.035em; }
+    h1 { font-size: clamp(43px, 6vw, 76px); }
+    header .lead { max-width: 810px; margin: 28px 0 0; color: var(--muted); font-size: 21px; }
+    .scope-note { margin-top: 30px; padding: 17px 20px; border-left: 3px solid var(--purple); background: #ffffff08; color: var(--muted); font-size: 16px; }
+    .comparison { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; padding-bottom: 88px; }
+    .option { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #0b0e14; box-shadow: 0 28px 75px #0006; }
+    .option-head { padding: 27px 27px 25px; border-bottom: 1px solid var(--line); }
+    .option-letter { display: inline-flex; align-items: center; justify-content: center; width: 39px; height: 39px; margin-bottom: 21px; border: 1px solid var(--purple); border-radius: 50%; color: var(--purple); font: 800 16px/1 var(--heading); }
+    .option h2 { font-size: 29px; }
+    .option-summary { min-height: 78px; margin: 13px 0 0; color: var(--muted); font-size: 16px; }
+    .sample { display: flex; flex: 1; flex-direction: column; background: linear-gradient(180deg, #111827 0%, #090b10 100%); }
+    .visual { position: relative; height: 310px; overflow: hidden; border-bottom: 1px solid var(--line); background: #090b11; }
+    .visual > svg, .visual > img { display: block; width: 100%; height: 100%; }
+    .photo img { object-fit: cover; object-position: center 24%; filter: saturate(.75) contrast(1.08); }
+    .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, #07101fcc 77%, #09101b 100%); }
+    .visual-label { position: absolute; z-index: 2; right: 18px; bottom: 16px; padding: 7px 10px; border: 1px solid #ffffff42; border-radius: 5px; background: #05070bcc; color: #fff; font-size: 13px; }
+    .sample-copy { display: flex; flex: 1; flex-direction: column; padding: 27px; }
+    .sample-copy .eyebrow { margin: 0 0 15px; color: var(--teal); font-size: 14px; font-weight: 800; }
+    .sample-copy h3 { font-size: 29px; }
+    .sample-copy > p { margin: 18px 0 25px; color: var(--muted); font-size: 17px; }
+    .sample-cta { margin-top: auto; color: var(--teal); font-size: 16px; font-weight: 800; }
+    .assessment { padding: 23px 27px 27px; border-top: 1px solid var(--line); background: #080a0e; }
+    .assessment h4 { margin-bottom: 14px; color: #fff; font-size: 18px; }
+    .assessment ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 16px; }
+    .assessment li + li { margin-top: 8px; }
+    .recommend { border-color: #00b3b388; box-shadow: 0 28px 80px #001f2666; }
+    .recommend .option-head { background: linear-gradient(135deg, #092026, #101526); }
+    .recommended { display: inline-block; margin-left: 8px; padding: 4px 8px; border-radius: 999px; background: var(--teal); color: #001313; font: 800 11px/1.2 var(--body); letter-spacing: .04em; vertical-align: middle; }
+    .decision { margin-bottom: 92px; padding: 42px; border: 1px solid var(--line); border-radius: 15px; background: linear-gradient(135deg, #111625, #081016); }
+    .decision h2 { font-size: clamp(31px, 4vw, 46px); }
+    .decision > p { max-width: 780px; color: var(--muted); }
+    .decision-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; margin-top: 28px; }
+    .decision-item { padding: 20px; border: 1px solid var(--line); border-radius: 9px; background: #05070a80; }
+    .decision-item strong { display: block; margin-bottom: 5px; color: var(--teal); }
+    footer { padding: 35px 0 52px; border-top: 1px solid var(--line); color: var(--soft); font-size: 14px; }
+    @media (max-width: 1080px) {
+      .comparison { grid-template-columns: 1fr; }
+      .option { display: grid; grid-template-columns: 280px 1fr; }
+      .option-head { border-right: 1px solid var(--line); border-bottom: 0; }
+      .sample { min-width: 0; }
+      .assessment { grid-column: 1 / -1; }
+      .option-summary { min-height: 0; }
+    }
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .wrap { width: min(100% - 36px, 1380px); }
+      .topbar { min-height: 76px; }
+      .back { font-size: 14px; }
+      header { padding: 60px 0 42px; }
+      header .lead { font-size: 19px; }
+      .comparison { padding-bottom: 64px; }
+      .option { display: flex; }
+      .option-head { border-right: 0; border-bottom: 1px solid var(--line); }
+      .visual { height: 270px; }
+      .decision { padding: 28px 22px; }
+      .decision-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar" aria-label="Workshop navigation">
+      <a class="brand" href="/"><img src="/images/website/logo.png" alt=""><span>Green Elephant</span></a>
+      <a class="back" href="/#coaching-paths">← Return to the homepage preview</a>
+    </nav>
+
+    <header>
+      <p class="kicker">Local visual workshop · not a public page</p>
+      <h1>Compare the same idea in three visual styles.</h1>
+      <p class="lead">Each panel uses the same experienced-specialist message, size and page structure. Only the visual treatment changes, so you can judge the character of the system rather than three different concepts.</p>
+      <p class="scope-note"><strong>Review boundary:</strong> Direction B is selected. The photograph is an original local review candidate, not a claim of legal clearance or permission to publish.</p>
+    </header>
+
+    <main class="comparison" aria-label="Three visual style examples">
+      <article class="option">
+        <div class="option-head">
+          <span class="option-letter">A</span>
+          <h2>Custom line-art icon</h2>
+          <p class="option-summary">Clear, lightweight and closely related to the existing ACX visual language.</p>
+        </div>
+        <div class="sample">
+          <div class="visual icon-art">
+            <svg viewBox="0 0 520 310" role="img" aria-labelledby="icon-title icon-desc">
+              <title id="icon-title">Report and connected workflow line-art icon</title>
+              <desc id="icon-desc">A report with verified lines connected to three workflow nodes.</desc>
+              <defs>
+                <radialGradient id="icon-glow" cx="50%" cy="46%" r="62%"><stop offset="0" stop-color="#31254d"/><stop offset="1" stop-color="#090b11"/></radialGradient>
+              </defs>
+              <rect width="520" height="310" fill="url(#icon-glow)"/>
+              <circle cx="260" cy="154" r="112" fill="none" stroke="#b7a6e8" stroke-opacity=".18"/>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+                <path d="M178 73h125l39 39v126H178z" stroke="#b7a6e8"/>
+                <path d="M303 73v40h39M210 143h99M210 174h72M210 205h56" stroke="#b7a6e8"/>
+                <path d="M342 194h52m-26-26v52" stroke="#00b3b3" opacity=".38"/>
+                <circle cx="399" cy="137" r="14" stroke="#00b3b3"/>
+                <circle cx="428" cy="194" r="14" stroke="#00b3b3"/>
+                <circle cx="399" cy="250" r="14" stroke="#00b3b3"/>
+                <path d="M407 148l14 33m0 25l-14 32" stroke="#00b3b3"/>
+                <path d="M221 118l9 10 19-23" stroke="#00b3b3"/>
+              </g>
+            </svg>
+            <span class="visual-label">Report + connected workflow</span>
+          </div>
+          <div class="sample-copy">
+            <p class="eyebrow">Personal AI coaching · Experienced specialists</p>
+            <h3>Keep your expertise. Build new ways of working with AI.</h3>
+            <p>Practise a relevant task from start to finish. Check every important claim before deciding what is useful.</p>
+            <span class="sample-cta">Explore this coaching path →</span>
+          </div>
+        </div>
+        <div class="assessment">
+          <h4>What this system would give us</h4>
+          <ul><li>Five distinct, immediately readable symbols.</li><li>Fast loading and reliable dark-mode contrast.</li><li>Less human warmth than a well-chosen photograph.</li></ul>
+        </div>
+      </article>
+
+      <article class="option recommend">
+        <div class="option-head">
+          <span class="option-letter">B</span>
+          <h2>Photography <span class="recommended">SELECTED</span></h2>
+          <p class="option-summary">Original overhead scenes make each task tangible without showing faces.</p>
+        </div>
+        <div class="sample">
+          <div class="visual photo">
+            <img src="/images/coaching/experienced-specialists-overhead-v3.jpg" alt="Directly overhead view of an older woman in a green blouse checking reports and source notes in a home office.">
+            <span class="visual-label">A real task, seen from directly above</span>
+          </div>
+          <div class="sample-copy">
+            <p class="eyebrow">Personal AI coaching · Experienced specialists</p>
+            <h3>Keep your expertise. Build new ways of working with AI.</h3>
+            <p>Practise a relevant task from start to finish. Check every important claim before deciding what is useful.</p>
+            <span class="sample-cta">Explore this coaching path →</span>
+          </div>
+        </div>
+        <div class="assessment">
+          <h4>What this system would give us</h4>
+          <ul><li>Five related scenes in one Scandinavian urban-nature world.</li><li>No faces, client material, stock library or third-party logos.</li><li>Dark edge gradients preserve legible copy and smooth page transitions.</li></ul>
+        </div>
+      </article>
+
+      <article class="option">
+        <div class="option-head">
+          <span class="option-letter">C</span>
+          <h2>Atmospheric illustration</h2>
+          <p class="option-summary">Story-rich and distinctive, with more mood than literal explanation.</p>
+        </div>
+        <div class="sample">
+          <div class="visual atmospheric-art">
+            <svg viewBox="0 0 520 310" role="img" aria-labelledby="scene-title scene-desc">
+              <title id="scene-title">Atmospheric specialist workflow illustration</title>
+              <desc id="scene-desc">A person reviews a luminous document while connected ideas move through a dark landscape.</desc>
+              <defs>
+                <linearGradient id="scene-sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10162c"/><stop offset=".48" stop-color="#192744"/><stop offset="1" stop-color="#071116"/></linearGradient>
+                <radialGradient id="scene-light" cx="64%" cy="45%" r="46%"><stop stop-color="#55d7ca" stop-opacity=".58"/><stop offset=".52" stop-color="#6e5ea8" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+                <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dcd5ff"/><stop offset="1" stop-color="#776da6"/></linearGradient>
+              </defs>
+              <rect width="520" height="310" fill="url(#scene-sky)"/>
+              <rect width="520" height="310" fill="url(#scene-light)"/>
+              <path d="M0 245c91-41 158-28 236-3 90 29 172 9 284-35v103H0z" fill="#071016"/>
+              <path d="M0 268c110-29 204-17 299 9 77 21 139 11 221-10v43H0z" fill="#030709"/>
+              <g opacity=".8" fill="none" stroke="#00b3b3" stroke-width="2">
+                <path d="M303 105c55-29 102-21 142 10"/>
+                <path d="M309 137c49 8 85 27 112 57"/>
+                <circle cx="449" cy="117" r="7"/><circle cx="425" cy="198" r="7"/>
+              </g>
+              <g transform="translate(146 61)">
+                <circle cx="65" cy="59" r="29" fill="#0a0c12"/>
+                <path d="M19 192c8-65 22-105 52-105 42 0 59 41 64 105z" fill="#0a0c12"/>
+                <path d="M106 95l105-19 19 115-105 19z" fill="url(#paper)" opacity=".9"/>
+                <path d="M128 112l72-13m-68 37l57-10m-52 34l64-11" stroke="#222239" stroke-width="6" stroke-linecap="round"/>
+                <path d="M143 184l12 10 24-31" fill="none" stroke="#00b3b3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+              <path d="M30 51c96 13 136-8 205-30" fill="none" stroke="#b7a6e8" stroke-opacity=".22" stroke-width="18" stroke-linecap="round"/>
+            </svg>
+            <span class="visual-label">A specialist reviewing AI-supported work</span>
+          </div>
+          <div class="sample-copy">
+            <p class="eyebrow">Personal AI coaching · Experienced specialists</p>
+            <h3>Keep your expertise. Build new ways of working with AI.</h3>
+            <p>Practise a relevant task from start to finish. Check every important claim before deciding what is useful.</p>
+            <span class="sample-cta">Explore this coaching path →</span>
+          </div>
+        </div>
+        <div class="assessment">
+          <h4>What this system would give us</h4>
+          <ul><li>A distinctive visual world with room for story and emotion.</li><li>Each scene can show a task without identifying a real client.</li><li>More production effort and less instant clarity than icons.</li></ul>
+        </div>
+      </article>
+    </main>
+
+    <section class="decision" aria-labelledby="decision-title">
+      <p class="kicker">Decision checkpoint</p>
+      <h2 id="decision-title">Which family should guide all five pages?</h2>
+      <p>Direction B is selected. The five original top-down scenes are now local review candidates; they still need the project's normal publication review.</p>
+      <div class="decision-grid">
+        <div class="decision-item"><strong>A · Line-art icons</strong>Best for clarity, speed and a consistent ACX relationship.</div>
+        <div class="decision-item"><strong>B · Photography · selected</strong>Five directly overhead, task-specific scenes with a shared Nordic visual language.</div>
+        <div class="decision-item"><strong>C · Atmospheric illustrations</strong>Best for a distinctive story-led identity.</div>
+      </div>
+    </section>
+
+    <footer>Local Green Elephant visual workshop · Direction B selected on 6 October 2026.</footer>
+  </div>
+</body>
+</html>

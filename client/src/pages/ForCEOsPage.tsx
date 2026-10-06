@@ -7,10 +7,8 @@ import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { Link } from "wouter";
 import { ArrowRight, CheckCircle2, Users, TrendingUp, Target, Sparkles, Brain, Zap, Crown, BarChart3, Shield, Lock } from "lucide-react";
 import { SEO } from "@/components/SEO";
-import { ScanVideoDemo } from "@/components/ScanVideoDemo";
 import { DashboardPreview } from "@/components/DashboardPreview";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
-import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 const CEO_CHALLENGES = [
   {
@@ -59,7 +57,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "Is this confidential?",
-    answer: "Absolutely. Your data is encrypted and never shared. Only you and your coach (if you choose coaching) can access your results. Many CEOs use this as a private development tool."
+    answer: "Review the Privacy Policy before submitting personal information. Scan completion emails contain your answers and copy Estève and Anu; service providers also process information to deliver the service. Ask us who handles your data, how it is kept and how to request deletion. Your results are not shared with your team by default."
   }
 ];
 
@@ -81,7 +79,7 @@ export default function ForCEOsPage() {
         data-testid="section-ceo-hero"
       >
         <motion.div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="photo-edge-layer absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${earthOrbitUrl})` }}
         />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(204,51,51,0.06) 50%, #0a0a0a 100%)" }} />
@@ -178,7 +176,7 @@ export default function ForCEOsPage() {
       </section>
 
       <section 
-        className="py-24"
+        className="py-24 overflow-x-clip"
         style={{
           background: "linear-gradient(180deg, #0a0a0a 0%, #0c0909 50%, #0a0a0a 100%)"
         }}
@@ -248,18 +246,6 @@ export default function ForCEOsPage() {
         </div>
       </section>
 
-      <ScanVideoDemo
-        accentColor="#cc3333"
-        badgeText="See It In Action"
-        headline="Watch the Full Scan Experience"
-        subheadline="A 5-minute silent walkthrough — see exactly how the Satellite Scan works and what your leadership dashboard looks like."
-        ctaLink="/checkout?product=satellitescan"
-        ctaText="Start Your Scan — €99.95"
-        testIdPrefix="ceo"
-        videoSrc={scanWalkthroughUrl}
-        gradientFrom="#0a0a0a"
-        gradientTo="#0a0a0a"
-      />
 
       <section
         className="py-20"
@@ -435,7 +421,7 @@ export default function ForCEOsPage() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
                 <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
-                <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+                <Link href="/privacy" className="flex items-center gap-2 underline underline-offset-4"><Shield className="w-4 h-4" /> Privacy information</Link>
                 <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Executive-level privacy</span>
               </div>
             </div>

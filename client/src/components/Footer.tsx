@@ -1,4 +1,4 @@
-import content from '@shared/homepage-content.json';
+import { homepage as content } from '@shared/homepage-rendered';
 import { useSiteLanguage } from '@/hooks/use-site-language';
 import '@/pages/homepage.css';
 export default function Footer() {
