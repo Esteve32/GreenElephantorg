@@ -6,6 +6,7 @@ import { WEBINARS_PARKED } from "@shared/site-features";
 import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { SEO } from "@/components/SEO";
+import { YouTubeOptInPlayer } from "@/components/YouTubeOptInPlayer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1772,19 +1773,12 @@ export default function ResourcesPromptsPage() {
                     transition={{ duration: 0.4, delay: index * 0.05 }}
                     className="bg-black/20 rounded-xl border border-white/10 overflow-hidden"
                   >
-                    <div className="aspect-video bg-black">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                        title={video.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        loading="lazy"
-                        className="border-0"
-                        data-testid={`video-understanding-${video.id}`}
-                      />
-                    </div>
+                    <YouTubeOptInPlayer
+                      title={video.title}
+                      youtubeId={video.youtubeId}
+                      testId={`video-understanding-${video.id}`}
+                      className="rounded-none"
+                    />
                     <div className="p-4">
                       <div className="flex items-center gap-2 flex-wrap mb-2">
                         {video.lensType && (
@@ -1838,19 +1832,12 @@ export default function ResourcesPromptsPage() {
                     transition={{ duration: 0.4, delay: index * 0.05 }}
                     className="flex flex-col md:flex-row gap-6 p-4 bg-black/20 rounded-xl border border-white/10"
                   >
-                    <div className="flex-1 aspect-video bg-black rounded-lg overflow-hidden">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                        title={video.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        loading="lazy"
-                        className="border-0"
-                        data-testid={`video-science-${video.id}`}
-                      />
-                    </div>
+                    <YouTubeOptInPlayer
+                      title={video.title}
+                      youtubeId={video.youtubeId}
+                      testId={`video-science-${video.id}`}
+                      className="min-w-0 flex-1"
+                    />
                     <div className="md:w-72 flex flex-col gap-3">
                       <div className="flex items-center gap-2 flex-wrap">
                         {video.lensType && (

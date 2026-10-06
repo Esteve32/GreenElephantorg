@@ -11,3 +11,27 @@ externalPort = 80
 [deployment]
 build = "npm ci && npm run build"
 run = "npm start"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Website preview"
+
+[[workflows.workflow]]
+name = "Website preview"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run preview:website -- 5000"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"

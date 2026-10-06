@@ -1,0 +1,1 @@
+- [Exact-source release handoffs](exact-source-release-handoffs.md) — asset registration can create an automatic metadata checkpoint outside the reviewed release.
