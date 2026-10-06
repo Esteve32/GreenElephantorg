@@ -332,7 +332,51 @@ Before enabling collection:
    Verify the config endpoint returns `enabled:true` on production. Preview and
    non-production hosts must not send analytics, even after pressing Accept.
 
-After publishing, use a clean browser and record evidence in issue #31:
+### Resolve duplicate GA4 settings and verify the effective configuration (#43)
+
+Inspect **Publishing/production** separately from workspace Secrets. Compare the
+existing Web stream ID privately with both the Project entry and any linked Account
+entry named `VITE_GA_MEASUREMENT_ID`. Replit may give the linked Account entry
+precedence. A process receives only the effective value and cannot report which
+entry supplied it. Never diagnose this with an environment dump or by printing the
+secret values. Check whether another app depends on the Account entry before
+changing it; prefer unlinking it from this app over deleting a shared secret.
+
+Keep the exact variable name. Once the chosen source is unambiguous, inspect the
+published deployment configuration again; a workspace edit is not proof that an
+existing deployment changed. Keep `GA4_COLLECTION_ENABLED=false` until the preceding
+account, privacy and consent checks are complete. Changing the Google property or
+stream is not part of this task.
+
+Run the value-free check in the intended runtime, replacing the example with the
+existing stream's **public** measurement ID:
+
+```bash
+npm run analytics:preflight -- --expected-id G-EXISTINGSTREAM --expect disabled
+```
+
+After the owner authorizes collection and the reviewed production release uses it,
+repeat with `--expect enabled`. The command reads the process environment without
+loading `.env`, makes no network calls and prints only statuses. A non-production
+runtime, invalid flag, missing/mismatched ID or unexpected enablement fails. A pass
+is only configuration evidence for that process: it does not resolve duplicate
+sources, attest production settings or prove received events. Do not start the
+backend to obtain this check. A clean local/website preview is expected to fail the
+production-runtime requirement.
+
+Account-side retention is separate from the site's 180-day consent/cookie expiry.
+Record event retention, user retention and the reset-on-new-activity switch as three
+separate facts. Do not extend retention or attest processor/transfer terms merely
+to run the three-month comparison. Use aggregate reports within the owner's chosen
+policy; live acceptance remains a human gate.
+
+Keep issue #43 open until the destination/source, consent matrix and received
+`page_view`/`marketing_cta` evidence are complete. A merged verification PR does not
+close that production task. Record release/public health evidence in #31 and
+analytics evidence in #43; start the common observation window only after all five
+English coaching pages and actual events have been checked.
+
+After publishing, use a clean browser and record release evidence in issue #31 and analytics evidence in #43:
 
 - Before choosing and after Reject: no GA/GTM load or analytics collection request.
 - Accept: exactly one initial `page_view`; a reload gives one new view. Navigating
