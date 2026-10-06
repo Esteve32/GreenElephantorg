@@ -16,7 +16,7 @@
     "manifest:generate": "node scripts/generate-repository-manifests.mjs",
     "decision:record": "node scripts/record-decision-version.mjs",
     "db:push": "drizzle-kit push",
-    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts shared/marketing-analytics.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs server/search-discovery.test.ts shared/policy-pages.test.ts scripts/preview-hosts.test.ts server/type-safety-regressions.test.ts"
+    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts shared/marketing-analytics.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs server/search-discovery.test.ts shared/policy-pages.test.ts scripts/preview-hosts.test.ts server/type-safety-regressions.test.ts server/google-client-compatibility.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -65,7 +65,7 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "framer-motion": "^11.13.1",
-    "googleapis": "^148.0.0",
+    "googleapis": "^183.0.0",
     "input-otp": "^1.5.0",
     "lucide-react": "^0.469.0",
     "memorystore": "^1.6.7",
@@ -79,7 +79,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.55.0",
     "react-icons": "^5.4.0",
-    "react-resizable-panels": "^2.1.7",
+    "react-resizable-panels": "^4.14.2",
     "recharts": "^2.15.2",
     "resend": "^6.5.2",
     "stripe": "^19.3.0",
