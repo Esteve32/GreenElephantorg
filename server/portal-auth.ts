@@ -1076,8 +1076,9 @@ export function registerPortalRoutes(app: Express) {
     if (!req.session?.clientUserId) {
       return res.status(401).json({ message: "Login required" });
     }
+    const clientUserId = req.session.clientUserId;
     try {
-      const user = await storage.getClientUserById(req.session.clientUserId);
+      const user = await storage.getClientUserById(clientUserId);
       if (!user?.spotifyAccessToken) {
         return res.status(400).json({ message: "Spotify not connected" });
       }
@@ -1109,7 +1110,7 @@ export function registerPortalRoutes(app: Express) {
         if (refreshData.refresh_token) {
           updateFields.spotifyRefreshToken = refreshData.refresh_token;
         }
-        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        await storage.updateClientUser(clientUserId, updateFields);
         return refreshData.access_token;
       };
 
@@ -1341,8 +1342,9 @@ export function registerPortalRoutes(app: Express) {
     if (!req.session?.clientUserId) {
       return res.status(401).json({ message: "Login required" });
     }
+    const clientUserId = req.session.clientUserId;
     try {
-      const user = await storage.getClientUserById(req.session.clientUserId);
+      const user = await storage.getClientUserById(clientUserId);
       if (!user?.ouraAccessToken) {
         return res.status(400).json({ message: "Oura not connected" });
       }
@@ -1373,7 +1375,7 @@ export function registerPortalRoutes(app: Express) {
         if (refreshData.refresh_token) {
           updateFields.ouraRefreshToken = refreshData.refresh_token;
         }
-        await storage.updateClientUser(req.session.clientUserId, updateFields);
+        await storage.updateClientUser(clientUserId, updateFields);
         return refreshData.access_token;
       };
 

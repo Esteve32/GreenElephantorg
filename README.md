@@ -206,9 +206,9 @@ managers, GitHub Actions pins Node 24 and the repository check verifies it match
 shell, and `replit.nix` configures Replit. Commands are defined in
 `package.json`: `npm ci`, `npm run check`, `npm run repo:check`, `npm run build`,
 `npm run dev` and `npm start`. CI blocks repository/configuration errors, production
-build failures and critical dependency vulnerabilities. Existing TypeScript errors
-and high-severity dependency findings are reported as known follow-up work; the
-workflow does not yet claim a functional browser test suite or a production deploy.
+build failures, TypeScript errors, and high/critical dependency vulnerabilities.
+Release regression tests also block CI. Moderate dependency findings remain visible;
+these checks do not establish production provider health or a deployment.
 
 Before running the app, verify a suitable runtime and use isolated development
 services. The application needs environment configuration such as database and

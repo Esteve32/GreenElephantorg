@@ -124,16 +124,8 @@ async function runGA4Report(
   }
 }
 
-export async function fetchGA4Metrics(window: string): Promise<GA4Metrics> {
-  if (!(await isConnectorEnabled("google-analytics"))) {
-    console.log('⏸️ Google Analytics connector disabled — returning null metrics');
-    return {
-      sessions: null, uniqueUsers: null, organicUsers: null, topTrafficSources: null,
-      scanPageViews: null, promptCopyEvents: null, coachingCTAClicks: null,
-      returnVisitorRate: null, promptCopiesPerSession: null, directTrafficShare: null,
-    };
-  }
-  const nullMetrics: GA4Metrics = {
+export function emptyGA4Metrics(): GA4Metrics {
+  return {
     sessions: null,
     uniqueUsers: null,
     organicUsers: null,
@@ -145,6 +137,14 @@ export async function fetchGA4Metrics(window: string): Promise<GA4Metrics> {
     promptCopiesPerSession: null,
     directTrafficShare: null,
   };
+}
+
+export async function fetchGA4Metrics(window: string): Promise<GA4Metrics> {
+  if (!(await isConnectorEnabled("google-analytics"))) {
+    console.log('⏸️ Google Analytics connector disabled — returning null metrics');
+    return emptyGA4Metrics();
+  }
+  const nullMetrics = emptyGA4Metrics();
 
   if (!isGA4Configured()) {
     return nullMetrics;

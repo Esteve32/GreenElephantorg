@@ -6,6 +6,7 @@ export default function RetreatCardExample() {
     <div className="p-8 max-w-sm">
       <RetreatCard
         title="Spring Awakening Retreat"
+        retreatType="provence"
         season="Spring 2024"
         date="April 15-17, 2024"
         location="Lake Como, Italy"

@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.22.11
+# Green Elephant — Project Decision Log v11.22.12
 
-**Document Version:** `11.22.11`
-**Last Updated:** `2026-10-07T00:25:06+03:00`
+**Document Version:** `11.22.12`
+**Last Updated:** `2026-10-07T00:46:41+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.22.12 | 2026-10-07T00:46:41+03:00 | User implementation request; publication not attested | AI-LIT: issue 50 TypeScript repairs and blocking release check (DEC-AIL-076) |
 | 11.22.11 | 2026-10-07T00:25:06+03:00 | Implementation evidence; human acceptance and publication not attested | AI-LIT: exact-host Replit preview repair and release triage (DEC-AIL-075) |
 | 11.22.10 | 2026-10-06T23:09:57+03:00 | User selection A; no legal or production attestation | AI-LIT: fictional practice sample and user-selected GitHub PR step (DEC-AIL-074) |
 | 11.22.9 | 2026-10-06T19:47:10+03:00 | Implementation evidence only; human approval not attested | AI-LIT: repair Periodic Table related-prompt navigation during final release review |
@@ -2146,6 +2147,17 @@ decision here when Estève selects one; do not silently change its status.
 - **Source status:** PR #48 is merged in website main at f433e611544feacfda86c4b418d6ca802a824612. The supplied Replit-agent report is not independent evidence of its current workspace or deployed SHA. Preserve its unique commits and dirty work; never treat a merged workspace containing extra commits as the exact GitHub release.
 - **Cross-repository check:** Website base f433e611544feacfda86c4b418d6ca802a824612 plus working tree; GreenElephantOS main freshly resolved to 83391d8520a6bfb2e010590686d6e32797490b62 and its PRD/log read at that SHA. Website-owned preview/build maintenance changes no OS contract, schema, field, transfer, provider or deployment ownership. No paired OS PR required (GEOS-REQ-002/003; DEC-GEOS-001/002/003).
 - **Release boundary:** Keep MY5 paused. GA4 remains its separate disabled follow-up. Retain the manual release issue until human Republish, public health checks and the successful exact-SHA deployment record. No database operation, scheduler startup, provider send or production publication is implied by this repair.
+
+<a id="dec-ail-076"></a>
+### DEC-AIL-076 — Clean TypeScript gate before the final release handoff
+
+- **Project / status:** AI-LIT; user-requested engineering and GitHub release preparation, with technical implementation evidence. No production or qualified human review is attested.
+- **Date / evidence:** 2026-10-07, Europe/Helsinki. Estève requests issue #50 resolved before republishing, followed by new reviewed PRs and a final Replit-agent handoff after the active merge queue is resolved. When asked about the paused exception, Estève selects keeping MyFive draft PR #4 open.
+- **Affected IDs:** AI-LIT-REQ-073; REQ-072 and GEOS-REQ-002/003 release boundaries.
+- **Implementation:** Repair obsolete component fixtures and alias the unused legacy prompts module to its existing canonical page. Observe HTTP response completion for audit logging without replacing the response API. Capture the authenticated user ID across asynchronous refresh callbacks. Use valid optional fields when creating a portal record, sentAt for email-log metrics, null-valued GA4 fallback metrics and an honest unavailable response for disabled Notion. Align in-memory record defaults with the unchanged schema and make its previously absent operations explicitly unsupported rather than pretending success. Production continues to use DatabaseStorage. Keep compiler strictness unchanged and make TypeScript a blocking CI/release command.
+- **Validation:** Record fresh compiler, regression, release-test, repository, build and audit evidence in the PR. Tests must isolate database/provider behavior and use synthetic data. Source checks do not establish a production integration.
+- **Source / cross-repository check:** Website main 92c4750b87b831f6603845e1ecdcd3f377a2e112 plus working tree. OS main freshly verified unchanged at 83391d8520a6bfb2e010590686d6e32797490b62; its PRD/log were read at that SHA. No OS schema, contract, package adoption, recipient, consent, data-transfer or release ownership change; no paired OS PR required (GEOS-REQ-002/003, DEC-GEOS-001/002/003).
+- **Remaining queue / boundaries:** Review remaining dependency/workflow upgrades separately against the clean baseline; retire obsolete drafts without deleting branches. Keep MyFive #4 open/paused. GA4 #43 remains separate and disabled. Preserve Replit-only work and regenerate the exact-SHA handoff after merges. Human Republish, provider delivery and production/privacy gates remain distinct.
 
 ## MY5 pause and historical decisions
 

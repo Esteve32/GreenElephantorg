@@ -14,7 +14,7 @@ import { createServer, type Server } from "http";
 import { db } from "./db";
 import { storage } from "./storage";
 import { requireAdminAuth, verifyAdminPassword, requireAdminRole, requireWriteAccess, auditMiddleware, logAuditEvent, hashAdminPassword } from "./auth";
-import { fetchGA4Metrics, isGA4Configured, isGA4DataApiConfigured } from "./lib/ga4Client";
+import { fetchGA4Metrics, emptyGA4Metrics, isGA4Configured, isGA4DataApiConfigured } from "./lib/ga4Client";
 import { isConnectorEnabled } from "./lib/connectorGuard";
 import Stripe from "stripe";
 import { COACHING_PACKAGES, type PackageId } from "@shared/packages";
@@ -2117,14 +2117,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!clientUser) {
         clientUser = await storage.createClientUser({
           email: customerEmail,
-          name: customerName || null,
+          name: customerName || undefined,
           passwordHash: null,
           googleId: null,
-          linkedinSub: null,
-          linkedinAccessToken: null,
           avatarUrl: null,
-          notionAccessToken: null,
-          notionWorkspaceId: null,
         });
       }
 
@@ -2557,7 +2553,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fQuiz = allQuizResults.filter(q => inWindow(q.createdAt));
       const fMessages = allContactMessages.filter(m => inWindow(m.createdAt));
       const fWaitlist = allWaitlist.filter(w => inWindow(w.createdAt));
-      const fEmailLogs = allEmailLogs.filter(l => inWindow(l.createdAt));
+      const fEmailLogs = allEmailLogs.filter(l => inWindow(l.sentAt));
 
       const totalRevenue = fScanPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
         + fPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
@@ -2601,7 +2597,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }).length;
 
       const ga4Enabled = await isConnectorEnabled("google-analytics");
-      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : null;
+      const ga4 = ga4Enabled && isGA4DataApiConfigured() ? await fetchGA4Metrics(window) : emptyGA4Metrics();
       const ga4Connected = ga4Enabled && isGA4Configured();
 
       let typeformApiRate: number | null = null;
@@ -2654,7 +2650,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pQuiz = allQuizResults.filter(q => inPrevWindow(q.createdAt));
       const pMessages = allContactMessages.filter(m => inPrevWindow(m.createdAt));
       const pWaitlist = allWaitlist.filter(w => inPrevWindow(w.createdAt));
-      const pEmailLogs = allEmailLogs.filter(l => inPrevWindow(l.createdAt));
+      const pEmailLogs = allEmailLogs.filter(l => inPrevWindow(l.sentAt));
 
       const prevRevenue = pScanPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
         + pPurchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
@@ -3589,6 +3585,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/notion/schema", requireAdminAuth, async (_req, res) => {
     try {
       const schema = await getNotionDatabaseSchema();
+      if (!schema) {
+        return res.status(503).json({ message: "Notion connector is disabled or unavailable" });
+      }
       res.json({ 
         message: "Notion connection verified",
         databaseId: schema.id,

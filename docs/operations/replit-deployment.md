@@ -44,8 +44,8 @@ session from Replit's UI.
 1. A change is reviewed in a GitHub pull request.
 2. Required GitHub checks install from the lockfile, validate repository/runtime
    configuration, run the release tests, build from source, and block high and
-   critical dependency vulnerabilities. Pre-existing TypeScript errors remain
-   visible but non-blocking; moderate transitive audit findings remain to review.
+   critical dependency vulnerabilities. TypeScript checking is blocking;
+   moderate transitive audit findings remain to review.
 3. The pull request is merged to protected `main`.
 4. The Replit workspace fetches `main`, creates a local release branch at the exact
    approved SHA and verifies it without creating Replit-only code changes.
@@ -122,6 +122,7 @@ esac
 npm ci
 npm run repo:check
 npm run test:release
+npm run check
 npm run build
 npm audit --audit-level=high
 test "$(git rev-parse HEAD)" = "$expected_sha"
@@ -189,8 +190,7 @@ reviewer and revisit the approval count if repository ownership changes.
 - Keep production builds and repository/runtime configuration checks blocking.
 - Keep high and critical dependency vulnerability checks blocking. Review moderate
   transitive findings without forcing unreviewed breaking upgrades.
-- Remove the TypeScript `continue-on-error` exception after the existing baseline
-  errors are repaired.
+- Keep TypeScript checking blocking; do not suppress new diagnostics to release.
 - Never force-push GitHub from the deployed application.
 - Never deploy from an unreviewed Replit-only commit.
 - Never run `scripts/post-merge.sh` as an automatic deployment hook: it contains a

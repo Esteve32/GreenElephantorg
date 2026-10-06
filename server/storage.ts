@@ -336,6 +336,39 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  // This legacy test store is partial; never pretend unsupported operations succeeded.
+  createWebinarWaitlistEntry: IStorage["createWebinarWaitlistEntry"] = async () => { throw new Error("MemStorage does not support createWebinarWaitlistEntry"); };
+  getAllWebinarWaitlistEntries: IStorage["getAllWebinarWaitlistEntries"] = async () => { throw new Error("MemStorage does not support getAllWebinarWaitlistEntries"); };
+  getCouponByCode: IStorage["getCouponByCode"] = async () => { throw new Error("MemStorage does not support getCouponByCode"); };
+  createCoupon: IStorage["createCoupon"] = async () => { throw new Error("MemStorage does not support createCoupon"); };
+  getAllCoupons: IStorage["getAllCoupons"] = async () => { throw new Error("MemStorage does not support getAllCoupons"); };
+  updateCoupon: IStorage["updateCoupon"] = async () => { throw new Error("MemStorage does not support updateCoupon"); };
+  deleteCoupon: IStorage["deleteCoupon"] = async () => { throw new Error("MemStorage does not support deleteCoupon"); };
+  incrementCouponUsage: IStorage["incrementCouponUsage"] = async () => { throw new Error("MemStorage does not support incrementCouponUsage"); };
+  createPrompt: IStorage["createPrompt"] = async () => { throw new Error("MemStorage does not support createPrompt"); };
+  getPromptById: IStorage["getPromptById"] = async () => { throw new Error("MemStorage does not support getPromptById"); };
+  getAllPrompts: IStorage["getAllPrompts"] = async () => { throw new Error("MemStorage does not support getAllPrompts"); };
+  getActivePrompts: IStorage["getActivePrompts"] = async () => { throw new Error("MemStorage does not support getActivePrompts"); };
+  getPromptsByLens: IStorage["getPromptsByLens"] = async () => { throw new Error("MemStorage does not support getPromptsByLens"); };
+  getPromptsByRole: IStorage["getPromptsByRole"] = async () => { throw new Error("MemStorage does not support getPromptsByRole"); };
+  updatePrompt: IStorage["updatePrompt"] = async () => { throw new Error("MemStorage does not support updatePrompt"); };
+  deletePrompt: IStorage["deletePrompt"] = async () => { throw new Error("MemStorage does not support deletePrompt"); };
+  upvotePrompt: IStorage["upvotePrompt"] = async () => { throw new Error("MemStorage does not support upvotePrompt"); };
+  createOnboardingEmailTemplate: IStorage["createOnboardingEmailTemplate"] = async () => { throw new Error("MemStorage does not support createOnboardingEmailTemplate"); };
+  getOnboardingEmailTemplateById: IStorage["getOnboardingEmailTemplateById"] = async () => { throw new Error("MemStorage does not support getOnboardingEmailTemplateById"); };
+  getOnboardingEmailTemplateBySequence: IStorage["getOnboardingEmailTemplateBySequence"] = async () => { throw new Error("MemStorage does not support getOnboardingEmailTemplateBySequence"); };
+  getAllOnboardingEmailTemplates: IStorage["getAllOnboardingEmailTemplates"] = async () => { throw new Error("MemStorage does not support getAllOnboardingEmailTemplates"); };
+  getActiveOnboardingEmailTemplates: IStorage["getActiveOnboardingEmailTemplates"] = async () => { throw new Error("MemStorage does not support getActiveOnboardingEmailTemplates"); };
+  getOnboardingEmailTemplatesByTrigger: IStorage["getOnboardingEmailTemplatesByTrigger"] = async () => { throw new Error("MemStorage does not support getOnboardingEmailTemplatesByTrigger"); };
+  updateOnboardingEmailTemplate: IStorage["updateOnboardingEmailTemplate"] = async () => { throw new Error("MemStorage does not support updateOnboardingEmailTemplate"); };
+  deleteOnboardingEmailTemplate: IStorage["deleteOnboardingEmailTemplate"] = async () => { throw new Error("MemStorage does not support deleteOnboardingEmailTemplate"); };
+  createOnboardingEmailLog: IStorage["createOnboardingEmailLog"] = async () => { throw new Error("MemStorage does not support createOnboardingEmailLog"); };
+  getOnboardingEmailLogsByCustomer: IStorage["getOnboardingEmailLogsByCustomer"] = async () => { throw new Error("MemStorage does not support getOnboardingEmailLogsByCustomer"); };
+  getLastSentEmailForCustomer: IStorage["getLastSentEmailForCustomer"] = async () => { throw new Error("MemStorage does not support getLastSentEmailForCustomer"); };
+  hasEmailBeenSent: IStorage["hasEmailBeenSent"] = async () => { throw new Error("MemStorage does not support hasEmailBeenSent"); };
+  getAllOnboardingEmailLogs: IStorage["getAllOnboardingEmailLogs"] = async () => { throw new Error("MemStorage does not support getAllOnboardingEmailLogs"); };
+  getCustomersDueForEmail: IStorage["getCustomersDueForEmail"] = async () => { throw new Error("MemStorage does not support getCustomersDueForEmail"); };
+
   private users: Map<string, User>;
   private recommendationSubmissions: Map<string, RecommendationSubmission>;
   private contacts: Map<string, Contact>;
@@ -775,7 +808,7 @@ export class MemStorage implements IStorage {
   }
   async createWebinarSession(session: InsertWebinarSession): Promise<WebinarSession> {
     const id = randomUUID();
-    const record: WebinarSession = { ...session, id, createdAt: new Date() };
+    const record: WebinarSession = { ...session, spotsLeft: session.spotsLeft ?? 12, sortOrder: session.sortOrder ?? 0, id, createdAt: new Date() };
     this.webinarSessionsMap.set(id, record);
     return record;
   }
@@ -795,7 +828,7 @@ export class MemStorage implements IStorage {
   }
   async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
     const id = randomUUID();
-    const record: CalendarEvent = { ...event, id, createdAt: new Date() };
+    const record: CalendarEvent = { ...event, sortOrder: event.sortOrder ?? 0, id, createdAt: new Date() };
     this.calendarEventsMap.set(id, record);
     return record;
   }
@@ -839,13 +872,18 @@ export class MemStorage implements IStorage {
   }
   async isConnectorEnabled(_name: string): Promise<boolean> { return true; }
   async createConnectorToggleLog(log: InsertConnectorToggleLog): Promise<ConnectorToggleLog> {
-    return { id: randomUUID(), connectorName: log.connectorName, action: log.action, performedBy: log.performedBy || "admin", createdAt: new Date() };
+    return { id: randomUUID(), connectorName: log.connectorName, action: log.action, previousEnabled: log.previousEnabled ?? null, newEnabled: log.newEnabled ?? null, triggeredBy: log.triggeredBy ?? "individual", performedBy: log.performedBy ?? "admin", createdAt: new Date() };
   }
   async getConnectorToggleLogs(_limit?: number): Promise<ConnectorToggleLog[]> { return []; }
 
   async createClientUser(user: InsertClientUser): Promise<ClientUser> {
     const id = randomUUID();
-    return { id, email: user.email, name: user.name || null, googleId: user.googleId || null, avatarUrl: user.avatarUrl || null, passwordHash: user.passwordHash || null, twoFactorSecret: null, twoFactorEnabled: "false", resetToken: null, resetTokenExpiry: null, isActive: "true", createdAt: new Date(), lastLoginAt: null };
+    return { id, email: user.email, name: user.name || null, googleId: user.googleId || null, avatarUrl: user.avatarUrl || null, passwordHash: user.passwordHash || null, twoFactorSecret: null, twoFactorEnabled: "false", resetToken: null, resetTokenExpiry: null, isActive: "true", createdAt: new Date(), lastLoginAt: null,
+      notionAccessToken: null, notionWorkspaceName: null, notionWorkspaceId: null, notionBotId: null,
+      linkedinSub: user.linkedinSub ?? null, linkedinAccessToken: null, linkedinTokenExpiry: null,
+      spotifyId: null, spotifyAccessToken: null, spotifyRefreshToken: null, spotifyTokenExpiry: null,
+      ouraId: null, ouraAccessToken: null, ouraRefreshToken: null, ouraTokenExpiry: null, ouraConsentGrantedAt: null,
+    };
   }
   async getClientUserById(_id: string): Promise<ClientUser | undefined> { return undefined; }
   async getClientUserByEmail(_email: string): Promise<ClientUser | undefined> { return undefined; }
@@ -900,7 +938,7 @@ export class MemStorage implements IStorage {
   }
   async deleteAllPortalTimelineEvents(userId: string): Promise<number> {
     let count = 0;
-    for (const [id, event] of this.portalTimelineEvents.entries()) {
+    for (const [id, event] of Array.from(this.portalTimelineEvents.entries())) {
       if (event.userId === userId) {
         this.portalTimelineEvents.delete(id);
         count++;
@@ -930,7 +968,7 @@ export class MemStorage implements IStorage {
   }
   async deleteAllPortalUserContext(userId: string): Promise<number> {
     let count = 0;
-    for (const [id, ctx] of this.portalUserContextMap.entries()) {
+    for (const [id, ctx] of Array.from(this.portalUserContextMap.entries())) {
       if (ctx.userId === userId) {
         this.portalUserContextMap.delete(id);
         count++;
@@ -972,7 +1010,7 @@ export class MemStorage implements IStorage {
   }
   async deleteQrScansByCodeId(qrCodeId: string): Promise<number> {
     let count = 0;
-    for (const [id, scan] of this.qrScansMap.entries()) {
+    for (const [id, scan] of Array.from(this.qrScansMap.entries())) {
       if (scan.qrCodeId === qrCodeId) { this.qrScansMap.delete(id); count++; }
     }
     return count;

@@ -38,10 +38,7 @@ jobs:
       - name: Verify public routes, checkout and email safeguards
         run: npm run test:release
 
-      # Existing TypeScript debt is visible but does not block the first reproducible
-      # source build. Remove continue-on-error when the baseline errors are fixed.
-      - name: Type-check baseline
-        continue-on-error: true
+      - name: Type-check application
         run: npm run check
 
       - name: Build production bundle
