@@ -7,10 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowRight, CheckCircle2, Brain, Target, Sparkles, Zap, BarChart3, Users, Heart, Compass, Shield, Lock } from "lucide-react";
 import { SEO } from "@/components/SEO";
-import { ScanVideoDemo } from "@/components/ScanVideoDemo";
 import { DashboardPreview } from "@/components/DashboardPreview";
 import earthOrbitUrl from "@assets/generated_images/earth_orbit_aurora_view.png";
-import scanWalkthroughUrl from "@assets/VIdeo_walkthrough_Satellite_Scan_1773664135382.mp4";
 
 const ASSESSMENT_USES = [
   {
@@ -81,7 +79,7 @@ export default function ExecutiveCoachingAssessmentPage() {
         data-testid="section-coaching-assessment-hero"
       >
         <motion.div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="photo-edge-layer absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${earthOrbitUrl})` }}
         />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(59,125,216,0.05) 50%, #0a0a0a 100%)" }} />
@@ -178,7 +176,7 @@ export default function ExecutiveCoachingAssessmentPage() {
       </section>
 
       <section 
-        className="py-24"
+        className="py-24 overflow-x-clip"
         style={{
           background: "linear-gradient(180deg, #0a0a0a 0%, #0a0b0f 50%, #0a0a0a 100%)"
         }}
@@ -251,18 +249,6 @@ export default function ExecutiveCoachingAssessmentPage() {
         </div>
       </section>
 
-      <ScanVideoDemo
-        accentColor="#3b7dd8"
-        badgeText="See It In Action"
-        headline="Watch the Full Scan Experience"
-        subheadline="A 5-minute silent walkthrough — see exactly what the coaching assessment looks like and how your results are presented."
-        ctaLink="/checkout?product=satellitescan"
-        ctaText="Start Your Scan — €99.95"
-        testIdPrefix="coaching"
-        videoSrc={scanWalkthroughUrl}
-        gradientFrom="#0a0a0a"
-        gradientTo="#0a0a0a"
-      />
 
       <section
         className="py-20"
@@ -431,7 +417,7 @@ export default function ExecutiveCoachingAssessmentPage() {
                 14-Day Satisfaction Guarantee
               </h2>
               <p className="text-white/60 max-w-xl mx-auto mb-6">
-                If the Satellite Scan doesn't give your coaching a measurable head start, receive a full refund within 14 days. Your data stays private and deleted on request.
+                If the Satellite Scan doesn't give your coaching a measurable head start, receive a full refund within 14 days. Read the Privacy Policy for who handles Scan responses and how to ask about deletion.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
                 <Link href="/checkout?product=satellitescan">
@@ -443,7 +429,7 @@ export default function ExecutiveCoachingAssessmentPage() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
                 <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> Secure checkout</span>
-                <span className="flex items-center gap-2"><Shield className="w-4 h-4" /> GDPR compliant</span>
+                <Link href="/privacy" className="flex items-center gap-2 underline underline-offset-4"><Shield className="w-4 h-4" /> Privacy information</Link>
                 <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Coach-ready reports</span>
               </div>
             </div>

@@ -263,7 +263,7 @@ function EACoachingSection() {
   return (
     <section 
       id="ea-coaching" 
-      className="relative py-24 md:py-32"
+      className="relative py-24 md:py-32 overflow-x-clip"
       style={{
         background: `linear-gradient(180deg, 
           ${atmosphericPalette.upperAtmosphere} 0%, 
@@ -367,7 +367,7 @@ function InterviewCoachingSection() {
   return (
     <section 
       id="interview-coaching" 
-      className="relative py-24 md:py-32"
+      className="relative py-24 md:py-32 overflow-x-clip"
       style={{
         background: `linear-gradient(180deg, 
           ${atmosphericPalette.midAtmosphere} 0%, 
@@ -667,38 +667,8 @@ export default function ProgramsPage() {
       <YourPathSection />
     </div>
 
-    <div className="relative w-full bg-[#0a0a0a]">
-      <div
-        className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
-        style={{
-          height: '160px',
-          background: `linear-gradient(to bottom,
-            #0a0a0a                  0%,
-            rgba(10,10,10,0.88)     22%,
-            rgba(10,10,10,0.60)     46%,
-            rgba(10,10,10,0.24)     72%,
-            transparent            100%
-          )`,
-        }}
-      />
-      <img
-        src={archipelagoUrl}
-        alt="Finnish Archipelago"
-        className="w-full h-auto block"
-      />
-      <div
-        className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
-        style={{
-          height: '160px',
-          background: `linear-gradient(to top,
-            #000000                  0%,
-            rgba(0,0,0,0.88)        22%,
-            rgba(0,0,0,0.60)        46%,
-            rgba(0,0,0,0.24)        72%,
-            transparent            100%
-          )`,
-        }}
-      />
+    <div className="photo-boundary w-full">
+      <img src={archipelagoUrl} alt="Finnish Archipelago" className="photo-boundary-image" />
       <div className="absolute bottom-4 left-0 right-0 z-20 text-center">
         <p className="text-white/65 text-xs tracking-wide">Finnish Archipelago</p>
       </div>

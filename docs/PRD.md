@@ -8,14 +8,15 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.11.5**.
-Owner: Estève Pannetier. Reconciled: 2026-09-30. Workshop updated: 2026-10-01.
+One PRD, two product sections plus shared-system requirements. Version: **2.22.10**.
+Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-06.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
 GitHub owns this PRD and the single decision log. Notion holds derived mirrors.
 The shared-document structure is present in GitHub main at `84d5230`.
-The current workshop refinements are local working-tree changes until reviewed
-and merged through a pull request.
+The 2026-10-05 homepage-refresh requirements below are a review candidate in the
+`codex/website-refresh-anu` working tree until reviewed and merged through a pull
+request. Product proposals remain proposals even when their source recommends them.
 
 | Project ID | Project | State | Entry |
 | --- | --- | --- | --- |
@@ -65,6 +66,13 @@ v0.3 exported 2026-09-30, refined by the current AI-LIT decisions below.
 reviewed PR; production publication and verified delivery remain separate gates.
 The MyFive project remains paused.
 
+### Final release repair
+
+| ID | Status | Requirement | Evidence |
+| --- | --- | --- | --- |
+| AI-LIT-REQ-070 | Local repair; human acceptance pending | Make each Periodic Table “View Related Prompts” action open Resources filtered to the element’s existing communication lens. Offer a clear route back to all prompts; support API and fallback prompts, ignore unknown lens values and show an honest empty state. Preserve prompt text, votes and provider behavior. | Estève reports the broken button during final release checks; 2026-10-06; DEC-AIL-073 |
+| AI-LIT-REQ-071 | User choice A; implementation evidence | Replace the public personal Scan example with wholly fictional, clearly labelled partial practice inputs across eight lenses. Remove personal answers and identifiers from the shipped example; retain the Copy Sample Data interaction. Commit, push and open the reviewed website PR after checks. Merge and Replit publication remain separate. | Estève selected option A on 2026-10-06; DEC-AIL-074 |
+
 ### Purpose and audience
 
 Simplify greenelephant.org so a suitable visitor can understand the AI literacy
@@ -94,7 +102,7 @@ maintainability and real delivery capacity come before a platform rebuild.
 | AI-LIT-REQ-019 | Approved pedagogical direction | Use Estève's ACX article as the basic pedagogy for AI literacy: begin with human communication (Do, Think, Say, Feel; Human-to-Self and Human-to-Human), then explain personal AI chats, connected workflows, participating agents and AI-supported work across team members within an organisation (ACX 4). ACX 4 is not positioned as operating AI systems across an entire organisation. Preserve human judgement and awareness of information filtering throughout. Delivery depth is approved separately for each format; exact exercises and completion outcomes remain open. | Estève identifies his article as the basic pedagogy and corrects ACX 4 scope; DEC-AIL-012/013; SRC-AI-LIT-ACX-01 |
 | AI-LIT-REQ-020 | Approved offer boundary | The discovery workshop maps the different ACX levels and provides practical takeaways at ACX 1–2 only. It must not promise guided ACX 3 work or the four-day journey's ACX 1–4 learning programme. Mapping levels 3–4 explains the landscape; it does not extend the workshop's practical delivery scope. Duration, group size, base price and inclusions are approved under AI-LIT-REQ-023. Exact exercises, delivery mode and workshop-specific enquiry details remain open. | Estève workshop approvals, 2026-10-01; DEC-AIL-013/018 |
 | AI-LIT-REQ-021 | Approved direction | Use Discuss your training needs as the main homepage button. Link directly to Calendly to book a discovery call with Estève, who helps the visitor identify suitable training. This call is distinct from the discovery workshop and the four-day journey. The approved destination is [Estève's discovery-call booking page](https://calendly.com/greenelephant/free-ai-literacy-discovery-call), supplied by Estève and publicly reachable on 2026-10-01. Recording with Fathom is optional and requires the participant's explicit agreement before recording starts; an unrecorded call remains available. Estève will update the Calendly description manually using supplied draft copy. Final website/event wording about duration and cost remains to be aligned. Slot availability and end-to-end booking have not been tested. | Estève approves the action, URL and optional recording with explicit agreement, 2026-10-01; DEC-AIL-014/015 |
-| AI-LIT-REQ-022 | Approved homepage structure | Use five sections in order: (1) clear promise, audience introduction and booking button; (2) comparison of discovery workshop and four-day journey; (3) human-centred approach with ACX and all four Periodic Table communication layers, briefly explained; (4) people and experience, including coaches and Maeva's testimonial only after remaining publication details are confirmed; (5) practical questions and a repeated Calendly button. Supporting services stay in the footer. Exact wording, visuals and evidence/permission checks remain open. | Estève approves the five-section outline with the all-layer correction, 2026-10-01; DEC-AIL-017 |
+| AI-LIT-REQ-022 | Superseded homepage structure | Historical approved order: (1) clear promise, audience introduction and booking button; (2) comparison of discovery workshop and four-day journey; (3) human-centred approach with ACX and all four Periodic Table communication layers; (4) people and experience; (5) practical questions and repeated CTA. The 2026-10-05 workshop supersedes this order with AI-LIT-REQ-045 while preserving the approved CTA, offers, evidence gates and supporting-service placement. | DEC-AIL-017; superseded in part by DEC-AIL-047 |
 | AI-LIT-REQ-023 | Approved workshop package | Discovery workshop: 3.5 hours including a break; group size 6–12, maximum 16; EUR 2,400 excluding applicable VAT covers up to 12 participants, with EUR 100 excluding applicable VAT for each additional participant 13–16 (EUR 2,800 before VAT for 16). Participant materials, a preparation call and a follow-up call with the team lead are included. Call lengths, material formats and delivery mode remain open. Use the approved conditional VAT wording below; confirm invoice treatment from billing details and the service supplied. | Estève workshop approvals, 2026-10-01; DEC-AIL-018/019 |
 | AI-LIT-REQ-024 | Approved copy | Use the short English training-page copy below, approved in the workshop chat. Approval covers the wording; remaining visuals and website implementation are separate. | Estève approves the copy, 2026-10-01; DEC-AIL-020 |
 | AI-LIT-REQ-025 | Approved parked scope | Park /webinar, /webinars and /calendar. Preserve their original components and data for later; show a simple paused page without registration or webinar fetches, hide public navigation/promotional entry points, remove these URLs from the sitemap and mark their pages noindex. This is reversible parking, not deletion or a scheduled relaunch. Provider jobs and stored data are outside this UI change. | Estève requests webinar parking and explicitly selects all three pages, 2026-10-01; DEC-AIL-021 |
@@ -116,10 +124,51 @@ maintainability and real delivery capacity come before a platform rebuild.
 | AI-LIT-REQ-036 | Brand direction approved; exact wording pending review | Align footer, article and offers around humane AI use, human judgment and a practical conflict-to-trust benefit. Supply every new copy change in English and French and review links each workshop turn. Test only approved email copies/recipients; separate provider acceptance, delivery and privacy compliance. | Current user requests and explicit email approval; DEC-AIL-033 |
 | AI-LIT-REQ-037 | Approved correction | Replace rejected sketch-derived icons with clean teal outline symbols for ACX and new navigation. Keep version B original drawings and original Scan hero treatment. | Explicit user correction; DEC-AIL-034 |
 | AI-LIT-REQ-038 | Approved direction; local review | Dark ACX click targets with consistent purple outline icons, level numbers and names; raised Scan button and stacked arrow; English-only Scan notice in both languages; results-email repairs with both coaches copied. | DEC-AIL-035; visual and live-delivery acceptance open |
-| AI-LIT-REQ-039 | Approved; local implementation review | Five differentiated coaching pages for lifetime archives, next-chapter ventures, everyday AI confidence, facilitators/coaches and employer-funded experienced specialists. Launch all five in English in one window; prepare French later. Retain the four-day journey and independent-professional homepage priority; use the existing airy dark Poppins/Lato brand. | DEC-AIL-038/041; copy and local implementation approved, visual acceptance pending |
+| AI-LIT-REQ-039 | Approved and merged; further visual refinement proposed | Five differentiated coaching pages for lifetime archives, next-chapter ventures, everyday AI confidence, facilitators/coaches and employer-funded experienced specialists. Launch all five in English in one window; prepare French later. Retain the four-day journey and independent-professional homepage priority; use the existing airy dark Poppins/Lato brand. | DEC-AIL-038/041/045; merged through PR #42 at `ef0199a`; production equivalence not independently verified |
 | AI-LIT-REQ-040 | Repair requested; local candidate, runtime unverified | Reuse existing GA4 for a three-month landing-page comparison. The owner no longer finds the old homepage cookie choice: restore EN/FR Accept/Reject and withdrawal. Candidate tracks only public home/Scan/five coaching page views and selected enquiry/checkout-link clicks after acceptance, excludes private and assessment data, and reads a validated public measurement ID at runtime. Collection defaults off pending deployment/account/browser checks; do not start the comparison without delivery evidence. | Estève's GA repair request and clarification, 2026-10-03; DEC-AIL-039/043 |
-| AI-LIT-REQ-041 | Restored visuals accepted; merge and Replit handoff authorised | Preserve the accepted homepage/Maeva changes. Restore the fuller historical Scan content blocks and corresponding FR translations, without the walkthrough or screen mockups. Reuse the original coloured lens icons, circular/stacked explorer, role switches, deliverable/process icons and revisit timing circles/timeline; adapt labels and controls for EN/FR and responsive use. Preserve current privacy and self-reflection limits, original hero, testimonials, terms and purchased inclusions. Keep English-materials notices under spacious CTAs in each page's language, and fade section glows to transparent at all edges over one dark base. | Estève's correction request, 2026-10-03; DEC-AIL-043/044 refine DEC-AIL-040/041/042; visual acceptance and merge/handoff approval in DEC-AIL-045; production verification remains open |
+| AI-LIT-REQ-041 | Restored visuals accepted and merged | Preserve the accepted homepage/Maeva changes. Restore the fuller historical Scan content blocks and corresponding FR translations, without the walkthrough or screen mockups. Reuse the original coloured lens icons, circular/stacked explorer, role switches, deliverable/process icons and revisit timing circles/timeline; adapt labels and controls for EN/FR and responsive use. Preserve current privacy and self-reflection limits, original hero, testimonials, terms and purchased inclusions. Keep English-materials notices under spacious CTAs in each page's language, and fade section glows to transparent at all edges over one dark base. | Estève's correction request, 2026-10-03; DEC-AIL-043/044/045; merged through PR #42 at `ef0199a`; owner reports subsequent republication, not independently verified here |
+| AI-LIT-REQ-042 | Approved working boundary | Develop the next website-refresh candidate in a local Git worktree based on current GitHub `main`. Review copy, layout and small page changes through HTML rendered in the IDE/local browser before any PR. Replit inspection, synchronization, publication and deployment verification are outside this refresh phase. The user reports completing the GitHub synchronization and Replit republication during the preceding weekend; this is accepted as the working assumption for planning, not independently verified production evidence. | Estève's current instruction, 2026-10-05; DEC-AIL-046 |
+| AI-LIT-REQ-043 | Approved homepage-refresh direction; exact copy and composition in workshop | Build a shorter customer-as-hero homepage that defines AI literacy near the top, names beginners explicitly, exposes all four ACX levels immediately after the hero, links the audience paths more clearly to target visitors, keeps the approved CTA, moves the two learning formats to the bottom of the main narrative, and reduces the homepage prominence of the Periodic Table and Satellite Scan. Preserve the approved brand, offer facts, evidence limits and separate offer-depth boundaries. | SRC-AI-LIT-ANU-20261005; SRC-AI-LIT-STORYBRAND-20261005; Estève's completion criteria, 2026-10-05; DEC-AIL-046/047 |
+| AI-LIT-REQ-044 | Local visual acceptance in progress | Provide an IDE-rendered HTML implementation for desktop and mobile review. The first viewport should answer what Green Elephant offers, how it helps and what action to take; the page should expose a plain-language AI-literacy definition and visible ACX progression without relying on collapsed controls. Validate heading hierarchy, readable body sizing, keyboard operation, reduced motion, responsive wrapping and no horizontal overflow before proposing a PR. Homepage composition, five differentiated photographic heroes and niche-specific ACX sections are ready for rendered review. | SRC-AI-LIT-ANU-20261005; SRC-AI-LIT-STORYBRAND-20261005; DEC-AIL-046/048/049/050/051/052/053/054 |
+| AI-LIT-REQ-045 | Approved homepage completion criteria | Completion requires: materially less visible text; less small text, with essential explanatory and decision copy never dependent on fine print; four large, visible ACX levels immediately after the hero; the two learning formats at the bottom of the main page narrative; more concrete examples and outcomes; a stronger landing-page hero; the eyebrow direction `AI training built for beginners`; an explicit promise; a useful `Explore the training` subtext/link; clearer connection between professionals, coaches, facilitators and the selected target groups; and implementation of the copy selected from this PRD. Exact promise, subtext, typography scale and middle-section order are workshop decisions. | Estève's workshop completion criteria, 2026-10-05; DEC-AIL-047 |
+| AI-LIT-REQ-046 | Approved five-page visual and transition criteria; local candidate | Give each coaching landing page a meaningful, differentiated image within the approved directly-overhead home-office photographic family. Across every page, replace abrupt black-to-dark-blue boundaries with long, soft gradients whose edge colours meet without a visible line, including the fade over each hero photograph. Review transitions over the full page at desktop and mobile widths; do not judge isolated sections only. | Estève's workshop completion criteria and selection/refinement of Option B, 2026-10-05–06; DEC-AIL-047/053 |
+| AI-LIT-REQ-047 | Approved hero copy; bilingual local candidate | Use the English eyebrow `AI training built for beginners`, headline `Start using AI without becoming an AI expert.`, and promise `Practise a useful AI conversation and a simple connected workflow. Then understand how guided agents and AI-supported teamwork work—so you know your ACX level and your next practical step.` Retain the approved discovery-call CTA. Link to the ACX section with `Explore the four ACX levels` and the tangible sequence `Chat · Workflow · Agent · Teamwork`. The faithful French counterpart is a local translation candidate for visual and language review. | Estève approves Option D, 2026-10-06; DEC-AIL-048 |
+| AI-LIT-REQ-048 | Approved ACX presentation; bilingual local candidate | Use four large, always-visible cards directly below the hero. Desktop uses one four-card row, tablet a two-by-two grid, and phone one card per row. Each card combines the existing large ACX outline icon, level, tangible action and explicit human check: Chat—ask, improve and check; Workflow—connect repeatable steps and approve handoffs; Agent—set a goal, limits and check-ins; Teamwork—agree roles, sharing and decisions. Remove the old collapsed homepage ACX block. Preserve the honest offer-depth note and link to the full guide. French wording remains a local translation candidate. | Estève selects Option A, 2026-10-06; DEC-AIL-049 |
+| AI-LIT-REQ-049 | Approved homepage middle order; bilingual local candidate | After ACX, show five large starting-point paths that state the target visitor and a concrete task. Then show the human-centred method, coaches with permission-backed evidence, and the two learning formats. Keep practical questions and the repeated CTA last. The English cards link to the five approved English landing pages; the French cards describe the paths without inventing unavailable French destinations. Use responsive three-plus-two, two-column and one-column layouts and smooth matching section-edge gradients. | Estève selects middle-order Option A, 2026-10-06; DEC-AIL-050 |
+| AI-LIT-REQ-050 | Approved compact People-and-AI method; bilingual local candidate | Replace the large homepage Periodic Table presentation and two disclosures with four visible human actions: clarify the goal, set boundaries, check the work and make the decision. State that these responsibilities apply at every ACX level. Keep the Periodic Table and Satellite Scan as two secondary links to their dedicated pages. Use four columns, then two, then one; keep essential action text at 17px or larger and continue the matching dark gradient into the people section. | Estève selects method Option A, 2026-10-06; DEC-AIL-051 |
+| AI-LIT-REQ-051 | Approved audience wording clarification; bilingual local candidate | Read the earlier phrase as `for professionals, coaches and facilitators`, not `four professionals`. Keep three coach profiles—Estève, Anu and Jonas—and explicitly connect their combined AI, communication and conflict expertise to independent professionals, coaches, facilitators, experienced specialists and teams. Do not create a fourth profile or treat Maeva's testimonial as a coach profile. | Estève selects clarification Option A, 2026-10-06; DEC-AIL-052 |
+| AI-LIT-REQ-052 | Owner-approved photographic family; anatomy-reviewed v3 assets pending publication review | Use original, realistic, directly-overhead documentary scenes of lived-in Scandinavian home offices. Across the five-page family, vary visible age, gender presentation, skin tone, hairstyle and clothing while avoiding stereotype-led styling. Show no faces. Use ordinary domestic details, imperfect natural light, traditional pale-yellow/yellow Post-it notes, nearly vertical laptop screens whose displays cannot be seen, and varied messy printouts with folds, edits and wear. Every candidate must pass a full-resolution self-critique for one coherent person, exactly two plausible arms and hands, believable joints and no fused or duplicated anatomy before it enters the page. Avoid symmetrical studio styling, pristine grids, visible client data, readable text, third-party logos and identifiable people. Preserve prompt/output provenance and complete the project's normal rights, privacy and publication review; generated origin is not represented as legal clearance. | Estève requests more human diversity and explicit hallucination/anatomy checking, then accepts the five v3 images as perfect, 2026-10-06; DEC-AIL-053/055 |
+| AI-LIT-REQ-053 | Approved niche-specific ACX explanation; English local candidate | Each of the five coaching pages must show four visible ACX cards explaining what the learner can do in that niche at ACX 1 Chat, ACX 2 Workflow, ACX 3 Agent and ACX 4 Teamwork. Every card pairs one concrete capability with an explicit human check or decision. Reuse the homepage's exact four purple outline icons, purple level/name treatment and purple card edge so the progression is recalled consistently; retain teal for the human-check cue. Use four columns on wide screens, two on tablet and one on phone. | Estève requests clearer niche-level ACX explanations and homepage-aligned purple recall cues on all five pages, 2026-10-06; DEC-AIL-054/055 |
+| AI-LIT-REQ-054 | Approved seamless-gradient and spacing refinement; local candidate reviewed at desktop and phone widths | Across all five coaching pages, use one shared near-black edge colour for the landing-page base, hero-photo fade and both ends of every dark-blue section gradient. The hero overlay must begin at the header colour, move gradually through the photograph and finish at the page base. Use long multi-stop gradients, generous vertical spacing and exact matching edge colours; do not use an abrupt black-to-blue boundary or a one-pixel seam. Review every hero crop at 1440 × 900 and 390 × 844, one representative complete page at desktop width, the ACX grid at both widths and horizontal overflow before owner review. | Estève reports remaining black lines and asks for mobile/desktop rechecking plus a more airy treatment, 2026-10-06; DEC-AIL-055 |
+| AI-LIT-REQ-055 | Approved image-visibility direction; headline placement refined by REQ-056 | Give the five accepted v3 photographs a large hero area at their original colour and brightness. Concentrate the overlay at the header and bottom edges, with a long fade into the copy rather than a dark wash over the whole scene. Preserve the approved images and ACX styling. Match every section edge and fade into the footer and cookie-settings strip. The niche introduction and CTA may require scrolling, while desktop navigation retains the enquiry CTA. REQ-056 supersedes the initial placement of the headline below the photograph. | Estève requests more visible photographs, redesigned heroes and overlays, generous space and transition checks, 2026-10-06; DEC-AIL-056/057 |
+| AI-LIT-REQ-056 | Approved refinement direction; layout and draft copy implemented locally for review | Lift only the large headline into the desktop photograph's lower fade so it is visible without scrolling; keep supporting copy and niche CTA below. On phones, preserve the full scene and show the headline immediately beneath its fade within the first screen. Review all five pages at desktop and phone sizes. Rewrite each niche's four ACX examples from that visitor's perspective, using familiar tasks, named outputs and explicit human checks instead of abstract process language. Preserve the Chat → Workflow → Agent → Teamwork progression and the coaching-depth limits: practise 1–2, guided 3, explore 4. Exact new wording remains a review candidate, not an approved promise. | Estève requests first-screen headline visibility and role-based self-critique followed by direct draft copy edits, 2026-10-06; DEC-AIL-057 |
 
+| AI-LIT-REQ-057 | Approved presentation direction; local bilingual candidate | Replace the English/French homepage sky hero with a slow carousel using the five approved niche photographs, generous space and matching soft edge fades. Keep the headline stable while scenes change, retain approved copy and section order, and provide accessible pause/previous/next controls. Load only one responsive image initially, load later scenes on demand, wait for decoding before changing them, stop automatic advancement offscreen/in hidden tabs, and default to manual on reduced-motion, data-saving or detected 2G connections. Move the prior homepage sky photograph to both Satellite Scan heroes with a left-side scroll-linked elevator marker; disable decorative motion for reduced-motion users. Preserve all Scan offers, checkout, notices and content. | Estève requests the five-case homepage carousel, fast small-device/slow-network loading, airy gradients and sky/elevator Scan treatment in English and French, 2026-10-06; DEC-AIL-058 |
+
+| AI-LIT-REQ-058 | Option A approved; bilingual local candidate | Keep the spacious photographic carousel and headline unchanged. Replace REQ-047's supporting promise with: `AI literacy means knowing when to use AI, how to check its answers, and when not to use it. Practise chats and workflows. Explore agents and teamwork.` Supply a faithful French counterpart. Remove the repeated audience strip between the hero and ACX; retain audience descriptions in the five paths and coach introduction. Compact the supporting-copy/CTA area and its spacing so ACX arrives sooner without shrinking the photographs or dropping the CTA, exploration link or learning-depth limits. | Estève selects Option A in the requirements review, 2026-10-06; DEC-AIL-059 |
+
+| AI-LIT-REQ-059 | Typography Option A approved; local implementation verified | On both homepage languages and all five coaching pages, use at least 18px (1.125rem at the default root size) for essential explanations, coach biographies, ACX action/check copy and learning/offer limitations, and at least 16px (1rem) for supporting labels. Preserve already-larger introductions and headings. Let cards grow and wrap without clipping; verify desktop and narrow phones. Keep these rules scoped to the reviewed page content, not navigation, footer, Scan, tools or private interfaces. This resolves the typography-floor choice in TBD-010. | Estève selects Option A (18px essential body / 16px supporting labels), 2026-10-06; DEC-AIL-060 |
+
+| AI-LIT-REQ-060 | Copy-trimming direction approved; local wording candidate | Remove repeated explanations from both homepage languages and the five English coaching pages. Keep the approved hero promise, ACX cards and human checks intact. Shorten section introductions; distinguish who the page serves, what material to bring, skills to practise and the next useful output. Do not repeat course facts in prose when they are already visible beside it. Preserve permissions, privacy guidance, training-depth limits, non-guarantees, FAQs, group size, schedule/fee discussion and CTA destinations. | Estève selects Option A to trim repetition while preserving concrete examples and human checks, 2026-10-06; DEC-AIL-061 |
+
+| AI-LIT-REQ-061 | French review and five-path footer approved; wording/layout are local candidates | Review French homepage and Scan wording for beginners without changing offer facts, privacy boundaries, testimonials or English-only notices. Add all five existing coaching-page destinations to the shared EN/FR footer in an always-open, responsive group, reusing homepage titles with labelled outline icons and readable audience descriptions. Mark English destinations explicitly on the French footer; preserve every existing footer destination and parked-page exclusions. Wider sitemap naming/grouping suggestions remain proposals, not implementation approval. | Estève selects A and requests the five footer links plus a beginner sitemap critique without hiding links, 2026-10-06; DEC-AIL-062 |
+
+| AI-LIT-REQ-062 | Footer clarity and photographic cards approved; local candidate | Apply purpose-first footer group/link labels in English and French, keeping every retained destination and all groups expanded; use at least 16px footer links and generous touch targets. Each of the five homepage project cards previews its matching approved niche hero photograph, softly fading into readable copy. Reuse lightweight 640px derivatives with lazy loading; preserve imagery, offers, human checks and the carousel. Make all five cards usable links in both languages, explicitly marking English destinations on French cards. ACX remains the first section after the hero, before project cards and well before the pricing/training packages. | Estève selects footer Option A, requests matching photo backgrounds on the five homepage buttons and ACX before pricing, 2026-10-06; DEC-AIL-063 |
+
+| AI-LIT-REQ-063 | Bilingual sitemap and calmer ACX guide approved; local review candidate | Present the shared English/French footer as a labelled Sitemap / Plan du site with a plain-language definition, consistent action-led branches and teal outline icons for every section. Keep all links visible, including the five project pages, and group data-protection information with policies. Simplify the ACX article into a four-level overview followed by short explanations, concrete tasks and human checks; put deeper terminology and original sketches in optional disclosures. Use the final four-colour drawing as a responsive, softly faded hero background; retain the untouched full drawing and explain its original broader level-4 label. Align body copy at 18px, supporting text at 16px, use an open reading column and verify phone/laptop layouts. Target plain language suitable for an eighth-grade reader and low attention load; do not claim certified reading level or ADHD usability validation. Preserve offer facts, safety boundaries and sources. | Estève requests a simpler map-like bilingual footer and airy, beginner-friendly ACX article, 2026-10-06; DEC-AIL-064 |
+
+| AI-LIT-REQ-064 | Direction approved; Batch 1 EN/FR local candidate; factual/legal review open; other batches pending | Align all retained sitemap destinations with beginner-friendly AI literacy grounded in conscious communication and the accepted homepage brand. Cover copy, headings, typography, spacing, gradients, accessible interactions, metadata and English/French preparation in reviewable batches. Include AI Policy, Privacy, Cookies and Terms, retaining complete and accurate disclosures. Preserve destination links, tool behaviour, approved offers, source artwork and human checks. Separate ordinary language/design alignment from any proposed change to a service promise, legal obligation, processing practice or private application. Suggest selective overhead photography where useful, with no generation or publication implied. | Estève requests all sitemap pages aligned, including privacy and AI policies, and workshop-mode batch reviews, 2026-10-06; DEC-AIL-065 |
+
+| AI-LIT-REQ-065 | Maeva placement and action-card Option A approved; local bilingual implementation | On both homepage languages, keep the four human actions and their Periodic Table / Satellite Scan links together, then show Maeva’s existing quote and portrait before the three-coach introduction. Preserve the hero, ACX, five project paths, offers and testimonial wording. Make the actions more tangible; use action-specific visual cues rather than ACX-level icons, because the checks apply at every level. The current reversible candidate uses teal outline symbols, four responsive cards and one email-drafting example per action. Estève selected Option A: retain the distinct symbols, cards and concrete examples. This approval does not extend to subsequent four-connection or Scan wording candidates. | Estève requests Maeva above the coaches, tangible human-action visuals and an ACX icon comparison, 2026-10-06; DEC-AIL-067 |
+
+| AI-LIT-REQ-066 | Scan/communication-drift refinement requested; local EN/FR Scan and cross-page wording candidate; owner review open | Smooth all Scan hero/section/footer transitions with a consistent edge colour. Replace the two small post-button copy blocks with one concise, readable promise and visible English-intake notice. Restore paired crosses/ticks and a direct communication drift-check link, merge mirror/personality sections, add clear outline cues to revisit cards and make each ACX use concrete. Align current purchase descriptions without changing prices, inclusions, timing, guarantees, questionnaire/scoring, consent collection or payment handlers. Frame `/signals` around everyday communication with self and people, with practical links to AI requests; preserve its question data and score calculation. Prepare four-connection examples across home EN/FR, all five existing English coaching pages and Scan EN/FR as a reversible interpretation candidate. No ADHD usability certification, AI-model training, installed agent or automatic profile-sharing claim. | Estève selects homepage Option A and requests these Scan/coherence refinements, 2026-10-06; DEC-AIL-067/068. Estève selected connections (H2S/H2H/HAI/A2A) under DEC-AIL-070; exact Scan wording/visual acceptance remain open. |
+
+| AI-LIT-REQ-067 | Approved presentation direction; local implementation under review | Across retained public pages linked from the sitemap, photo edges must fade smoothly into matching black/dark-blue surfaces, including hero and landscape/footer photos at desktop and phone sizes. Match each adjacent section colour; make fades proportional to the image rather than fixed-height strips. Preserve original photos, artwork, content, routes and tool behaviours. Estève selects communication connections (H2S/H2H/HAI/A2A) for the requested four types; keep ACX levels, human actions and Think/Say/Do/Feel layers distinct. | Estève: “A + Check all the gradient boundaries in the photos under the sitemap … smooth gradients to black or the dark blues on all pages”; 2026-10-06; DEC-AIL-070 |
+| AI-LIT-REQ-068 | Implementation direction approved; local search/learning candidate; human review and public measurement open | Improve organic discovery of the five existing AI coaching pages and the next learning-tool batch through useful visible copy, initial HTML, matching titles/descriptions, factual organization/service data, canonical/language links and descriptive links to existing YouTube videos. Prepare channel-ready video titles/descriptions/scripts from approved offer facts. Treat Google/YouTube/agentic-search visibility as an outcome to measure after publication; do not invent rankings, search volume, transcripts, upload dates, certificates, ratings or coaching prices. Preserve tools, source media, providers, consent and crawler policy. | Estève: “go next and make sure we do the SEO / GEO work on the new pages … organic findability via YouTube, Google and agentic search for AI literacy training”; 2026-10-06; DEC-AIL-071 |
+
+| AI-LIT-REQ-069 | Review acknowledged; requested local release-preparation fixes | Smooth the shared sitemap footer back to the same black as Cookie choices; show green, readable expansions for H2S/H2H/HAI/A2A across home, Scan, coaching and ACX sections, in both existing languages. Repair the current high/critical dependency findings with a verified build, add the new search/policy tests to CI, and align retained Flow-result and role/privacy copy with reflection limits and actual recipient/provider handling. Preserve ratings, scoring, submission behavior, media, prices and service inclusions. The owner reports reviewing the prior candidate; this does not certify legal/provider facts or authorize commit, push, merge, publication or channel edits. | Estève: “i have reviewed, tackle the things you found” plus footer-gradient/acronym requests; 2026-10-06; DEC-AIL-072 |
+
+**Maeva quotation update, 2026-10-06 (DEC-AIL-069):** The owner supplies her full French message and requests a closer EN/FR rendering. Restore her training recommendation, Estève’s quick understanding/adaptation to her needs, practical/supportive teaching, increased autonomy/efficiency/mental clarity and thanks. French preserves her wording with spelling, accent and punctuation corrections; English is labelled as a translation. Use three readable paragraphs. This refines REQ-065’s quote-preservation instruction through an explicit source-based update; her portrait, attribution and position before the three coaches stay in place. English wording/visual review and existing publication gates remain separate.
 
 **Audience priority approved on 2026-09-30:** independent professionals lead the
 message; teams, entrepreneurs and intrapreneurs remain supported audiences.
@@ -144,10 +193,11 @@ names, testimonials, outcomes, case studies or training materials.
 | AI-LIT-TBD-003 | Discuss your training needs links to Estève's approved Calendly discovery event in AI-LIT-REQ-021. Public page and host verified; optional Fathom recording requires explicit agreement before starting. Manual event-copy update, slot availability and complete booking-path verification remain open. | Action, owner and URL approved in DEC-AIL-014; recording choice approved in DEC-AIL-015 — Estève |
 | AI-LIT-TBD-004 | Five new coaching pages launch English first together; French follows in a later reviewed batch. Existing homepage/Scan refinements remain bilingual. French preparation for other retained pages and its release schedule remain open. | DEC-AIL-018/029/038/040 — Estève |
 | AI-LIT-TBD-005 | Satellite Scan supports the journey and is the base for retained bootcamp/coaching services. Public materials/access and whether the general AI course requires a Scan remain open. | Partly resolved by DEC-AIL-008/009 — Estève |
-| AI-LIT-TBD-006 | Main menu approved: AI Literacy Training, Our Approach, About; Calendly CTA and logo-to-Home link. Conflict Bootcamp and Coaching Journeys remain under More ways to work with us in the footer. Five-section homepage order approved in AI-LIT-REQ-022. Exact URLs, other page outlines, remaining footer links and first-release journey remain open. | Main navigation DEC-AIL-016; homepage DEC-AIL-017; footer service group DEC-AIL-011 — Estève |
-| AI-LIT-TBD-007 | Preserve React/Vite/Express by default; any technical restructuring needs separate approval. Confirm the implementation baseline and production equivalence before implementation. | Stack-preservation boundary approved in DEC-AIL-008; baseline gate remains open |
-| AI-LIT-TBD-008 | Replit workspace/deployment relationship, deployed commit and environment | Unverified current state |
+| AI-LIT-TBD-006 | Main menu approved: AI Literacy Training, Our Approach, About; Calendly CTA and logo-to-Home link. Conflict Bootcamp and Coaching Journeys remain under More ways to work with us in the footer. The refreshed homepage order is hero, ACX, five starting points, human-centred method and supporting-tool links, Maeva’s evidence, three coaches, two learning formats, then practical questions and CTA. Remaining footer details remain open. | Main navigation DEC-AIL-016; prior homepage DEC-AIL-017; revised hierarchy DEC-AIL-047/050 — Estève |
+| AI-LIT-TBD-007 | Preserve React/Vite/Express by default; any technical restructuring needs separate approval. Current GitHub `main` commit `ef0199a2084ea090355e831a314ca25505370262` is selected as the local refresh baseline in `codex/website-refresh-anu`; production equivalence is not required for local visual drafting. | Stack-preservation boundary DEC-AIL-008; local review boundary DEC-AIL-046 |
+| AI-LIT-TBD-008 | Replit deployment evidence is outside the current refresh phase. The owner reports a GitHub sync and Replit republication during the preceding weekend; no present task depends on independent deployment verification. | Deferred by current user instruction, 2026-10-05; DEC-AIL-046 |
 | AI-LIT-TBD-009 | Three-month GA4 page comparison requested. Verify existing tag/consent behaviour; exact events, attribution, report criteria and collection settings remain proposed. SEO, performance and accessibility thresholds remain open. | Objective selected in DEC-AIL-039; detailed acceptance below is proposed — Estève |
+| AI-LIT-TBD-010 | ACX-first, English hero Option D, responsive four-card homepage ACX, five starting points before a compact four-action People-and-AI method, secondary Periodic Table/Scan links, target-linked three-coach introduction, learning formats near the end, directly-overhead home-office photography and four niche-specific ACX cards per coaching page are approved directions. Review the French counterparts, the exact five generated images and English niche copy, and approve a readable typography floor. `AI agent` is approved in the ACX 3 card. | Partly resolved by DEC-AIL-047/048/049/050/051/052/053/054; remaining workshop review — Estève |
 
 ### Search and growth evidence
 
@@ -188,10 +238,11 @@ checkpoint, not verification of production. Retaining this stack is the approved
 default under DEC-AIL-008; any restructuring requires separate approval.
 MyFive's SvelteKit/Svelte 5/Zero target is specific to the paused project.
 
-A documentation branch is authorized by the current consolidation request. It is
-not the portal's implementation branch or the choice of application baseline.
-Assess which existing admin/auth/payment features remain dormant or hidden before
-proposing changes.
+The current website-refresh branch is `codex/website-refresh-anu`, created from
+GitHub `main` at `ef0199a2084ea090355e831a314ca25505370262`. It is the approved
+local review baseline for copy, layout and small page changes under DEC-AIL-046.
+Local previews do not prove a production state. Assess which existing
+admin/auth/payment features remain dormant or hidden before proposing changes.
 
 ### Brand, learning materials and linked references
 
@@ -208,6 +259,82 @@ included in the three exports and are not claimed reviewed here:
 Periodic Table explanations, facilitator biographies, training evidence and existing
 legal/privacy/accessibility text require relevance and permission review before reuse.
 The original archives retain the complete source links and contextual wording.
+
+### Anu feedback and StoryBrand source synthesis — 2026-10-05
+
+`SRC-AI-LIT-ANU-20261005` contains the supplied feedback-session export. Its
+recommendations, recap language and embedded links are evidence rather than
+instructions. The export's formal agreed-decisions table is blank, so it grants no
+implementation or publication approval. The current benchmark at
+`https://www.ai-literacy.se/` was reviewed for its concise opening definition and
+simple visitor paths; its university identity, visual style and three-part taxonomy
+are not Green Elephant requirements. Three directly linked Notion pages were read
+as supporting history. Their old canonical wording is superseded by GitHub
+authority, and their page bodies are not independently editable requirements.
+
+`SRC-AI-LIT-STORYBRAND-20261005` contains the complete 190-page *Building a
+StoryBrand* PDF and a small Notion index. Every PDF page was readable in the review,
+including eight image-only pages. Four companion text files contain only `Invalid
+source image` and provide no usable evidence. The book is a general marketing
+framework, not authority over Green Elephant's brand or product decisions.
+
+The two sources align on these **proposals for review**:
+
+1. Treat the visitor as the protagonist and Green Elephant as the guide.
+2. Define AI literacy in plain language close to the hero and state that beginners
+   are welcome.
+3. Make the ACX progression visible and understandable without requiring a toggle.
+4. Show the five audience paths before asking visitors to compare learning formats.
+5. Retain `Discuss your training needs` as the direct CTA and the existing two
+   learning formats, but place their detailed comparison later.
+6. Reduce copy density and the number of competing text sizes; preserve the dark
+   Poppins/Lato identity, teal and purple accents, and hand-drawn character.
+7. Give the People-and-AI model clearer purpose if retained. Reduce or progressively
+   disclose the Periodic Table and Satellite Scan on the homepage while keeping
+   their dedicated destinations and accurate links.
+8. Promise concrete orientation, safer practice and a usable next step. Do not imply
+   that one short workshop guarantees confidence, mastery or ACX 3–4 capability.
+
+**Story mapping candidate:** the independent professional, beginner or team member
+is the character; the external problem is confusing and fast-moving AI use; the
+internal problem is uncertainty or dependence; the philosophical concern is using
+AI without surrendering human judgement and voice. Green Elephant shows empathy
+and evidenced authority, offers a short plan, invites the approved CTA, and depicts
+success as safer, more independent and more discerning use. Failure language must
+remain modest and truthful.
+
+**Proposed information hierarchy, replacing AI-LIT-REQ-022 only after approval:**
+
+1. Hero: audience, concrete outcome, short AI-literacy definition and CTA.
+2. ACX: “How far do you want to take AI?” with four visible levels and honest scope.
+3. Five audience paths: lifetime archive, next-chapter venture, everyday AI
+   confidence, facilitators/coaches and employer-funded experienced specialists.
+4. Human-centred method: People-and-AI first; concise Periodic Table support.
+5. Two ways to learn: discovery workshop and four-day journey, with approved facts.
+6. Evidence and people: permission-backed testimonial and the three coaches.
+7. Practical questions and repeated CTA; Scan remains secondary or transitional.
+
+**Candidate one-liner, not approved copy:** “We help independent professionals and
+teams build practical AI confidence so they can use AI at work while keeping their
+judgement and voice.” Review “confidence” against the promise boundary above.
+
+**Open review choices:** primary problem framing; the proposed section order; the
+homepage role of People-and-AI, the Periodic Table and Scan; `AI helper` versus `AI
+agent`; the niche order; and the exact reason-to-believe. These choices belong in
+the rendered local prototype, with the approved baseline available for comparison.
+
+**Approved local review sequence for this refresh:**
+
+1. Draft the PRD and unresolved choices on `codex/website-refresh-anu`.
+2. Implement a bounded HTML candidate in the existing React/Vite/Express app.
+3. Run the local preview in the IDE and compare the approved baseline with the
+   proposal at desktop and mobile widths.
+4. Record Estève's copy and hierarchy decisions, then update the PRD/log.
+5. Run applicable build, accessibility, responsive and repository checks.
+6. Prepare a focused GitHub PR only after the rendered candidate is accepted.
+
+This sequence stops at PR preparation for the current phase. It does not include
+Replit access, synchronization, publication or production verification.
 
 ### Supplied training model — source evidence and adaptation gates
 
@@ -389,7 +516,7 @@ claimed A1/B1/C1 approvals as source evidence, not new authority. Its broad
 audience matches DEC-AIL-007. Google confirms ordinary SEO fundamentals apply
 to AI search features; useful visible text, internal links and matching metadata
 remain the priority. No new special AI file, ranking promise or numeric target
-is adopted. The existing repository already contains AI guidance files.
+is adopted. The existing repository already contains AI guidance files. REQ-068 authorises a bounded implementation of search fundamentals and YouTube preparation; it does not authorise account changes or publication.
 
 The current working-tree robots policy permits public crawling by GPTBot and,
 through the wildcard group, OAI-SearchBot. OpenAI distinguishes search discovery
@@ -467,6 +594,181 @@ without inventing a lastmod date. All 20 XML destinations are represented in the
 preview footer (Home uses its local preview link). Original parked-page exclusions
 and private-route exclusions remain. Route/fragment coverage and XML validation
 are separate from browser navigation and authenticated account-flow verification.
+
+### Beginner navigation review — 2026-10-06
+
+**Status:** AI-LIT-REQ-061 footer addition and French editorial review implemented
+in the working tree. Footer labels/grouping and French project-card links have
+since been selected and implemented under REQ-062 / DEC-AIL-063. Header changes,
+breadcrumbs and the three-part learning signpost remain proposals.
+This is a source/UI-based critique, not a usability study or measured comprehension
+score. Source baseline: `ef0199a2084ea090355e831a314ca25505370262` plus local edits.
+
+- [x] Five coaching links in a separate always-open group before the existing
+  directory: “Learn AI through your own project” / “Apprendre l’IA à partir de
+  votre projet”. Reuse homepage titles and audiences; use book, lightbulb,
+  conversation, people and briefcase outline icons with text, never icons alone.
+- [x] French links state “Page en anglais”; no invented French niche routes.
+  Use `hreflang` for destination language, not `lang="en"` on French labels.
+- [x] Review French homepage, Scan shell, restored sections and FAQ wording.
+  Prefer “Relier les étapes” over “Flux de travail”; define an agent through its
+  tasks; explain prompts as examples of requests. Simplify awkward translations
+  and keep the Scan delivery timing tied to questionnaire completion. Offer,
+  safety, testimonial, price and refund terms are not redefined.
+- [ ] Owner accepts the revised French wording and footer presentation.
+
+**Critique:** the training-first header is short and the five examples provide
+recognisable entry points. The footer still asks a newcomer to distinguish brand
+names, tools, paid services, audience pages and two similarly named interview
+coaching links. “Four ACX levels”, “four human actions”, “five starting points”
+and “two learning formats” are different dimensions, not a sequence of courses.
+At this review checkpoint, the French homepage's five cards were non-clickable
+while the footer provided labelled English links. REQ-062 resolves this gap with
+five photographic links carrying an explicit English-page notice.
+
+| Beginner question / observed friction | Proposed improvement — keep every destination | UI treatment |
+| --- | --- | --- |
+| Where should I start? “Explore” and “AI Literacy Training” require interpretation. | Rename Explore → Start here; main training label → Learn AI / Apprendre l’IA. Add a direct “Choose your project” anchor to the five paths. | Compass/book icon with text; visibly separated introductory group; preserve current section destinations. |
+| Are five paths five different courses? How do they relate to ACX? | Add “Choose a project. Practise at your ACX level. Pick a learning format.” Make clear that the five paths are examples for the coaching journey, not prerequisites or five extra offers. | Three short labelled steps; retain purple only for ACX progression and teal for actions. No extra carousel or hidden detail. |
+| Is Satellite Scan an AI skill test or a technical scanner? | Label it “Understand your communication — Satellite Scan” / “Mieux comprendre votre communication — Satellite Scan”. Describe it as optional personal reflection with a coach-prepared dashboard, not an AI proficiency test. | Separate group with a compass icon; show the existing price and English-questionnaire notice close to entry links. No new guarantee. |
+| What do the resource names mean? | Use purpose + brand: “Explore communication skills — Periodic Table”; “Reflect on a situation — Flow Check”; “Recognise communication patterns — Signals”; “Explore speech examples — Speech Lab”; “Example requests for AI — Prompt Library”. | One short descriptor per link, icons as supporting cues. Add Free/Paid or time badges only where verified. |
+| Why two interview links and several kinds of coaching? | Keep both routes but label their role: “Interview programme details” for /programs#interview-coaching and “Interview coaching page” for /interview-coaching. Group retained non-AI services under “Communication coaching & other services”. | Group spacing and descriptive link titles, not deletion or accordions. Preserve all existing service routes. |
+| Where will this link take me, and in which language? | Make the French five-path cards link to their existing English pages with “Page en anglais”, matching the footer. Add top breadcrumbs on niche pages; retain their existing bottom “Explore the other coaching journeys” link. | Visible destination-language text; consistent title/icon across card, footer and niche breadcrumb; no automatic language redirect. |
+
+Suggested next batch: the descriptive footer labels, group headings and spacing
+first; then header anchors/breadcrumbs and the French path-card consistency repair.
+Keep all retained links expanded on mobile, raise remaining 14–15px footer labels
+to 16px, use generous touch targets and clear keyboard focus. Costs: a longer
+footer and more scrolling, but less guessing. Avoid adding icons to every legal
+or account link. Keep account access and policies distinct from learning choices.
+
+**Suggested validation before acceptance:** ask a real beginner to find (1) a
+first AI task, (2) the two training formats, (3) what Scan provides and costs,
+(4) an example prompt, and (5) a French/English destination. Ask what they expect
+before clicking; record confusion rather than inventing a comprehension score.
+
+<a id="ai-lit-sitewide-alignment-20261006"></a>
+### Sitewide alignment workshop — 2026-10-06
+
+**Evidence/status:** working-tree inventory at base
+`ef0199a2084ea090355e831a314ca25505370262`; direction approved under
+AI-LIT-REQ-064 / DEC-AIL-065, with service-preservation Option A approved in
+DEC-AIL-066. This is a route/source-code triage, not a completed
+visual, content, security or legal audit of every page. No page code changed in
+this checkpoint. The footer has 43 links in each language and 27 distinct local
+destinations per language after removing fragments; external destinations are
+not pages we can rewrite. The ACX article is included as a linked learning page.
+
+#### Coverage and proposed batch order
+
+| Batch | Complete route coverage | Current position / next work |
+| --- | --- | --- |
+| 1 — Trust and policy foundation | `/ai-policy`, `/privacy`, `/terms`, `/cookies` | EN/FR copy and shared layout implemented as a local candidate. Full details, contents links, Poppins/Lato 18px/16px, reciprocal language routes/metadata, sitemap and French cookie-choice presentation prepared. Targeted checks pass; legal seller/controller, retention, active connector coverage, live settings and legal approval remain open. No decorative photography. |
+| 2 — Learn and practise | `/periodic-table`, `/flow-check`, `/signals`, `/decode`, `/resources` including `#prompts` | `/signals`, Flow Check and Periodic Table surrounding copy are local candidates. `/decode` and `/resources` now have shared learning introductions, practical tasks, FAQs and initial HTML under REQ-068; exact owner acceptance remains open. Legacy result/prompt content is preserved and may need separate review. Explain who each tool helps, one real task and a next step toward learning. Preserve table artwork, tool mechanics, scoring, outputs, safety notices and anchors. Rewrite surrounding copy, not validated questionnaire items without review. |
+| 3 — Personal reflection by role | `/for-executive-assistants`, `/for-ceos`, `/for-virtual-assistants`, `/executive-coaching-assessment` | Pending. Link communication reflection to practical AI use without diagnostic, hiring-screening or guaranteed-result claims; align to current Scan inclusions and separately booked training. |
+| 4 — People and supporting services | `/connect` including `#team`, `#references`, `#contact`; `/coaching`; `/programs` including `#ea-coaching`, `#interview-coaching`; `/interview-coaching`; `/retreats` | Implementation pending; Option A approved under DEC-AIL-066. Keep the existing coaching, interview and retreat services. Simplify language and align design; explain how their communication skills support AI literacy without implying AI training is included in every service. Preserve approved prices, scope and deliverables. Flag unsupported existing claims for review rather than treating them as verified promises. No invented testimonials or research claims. |
+| 5 — Existing refresh and French completion | `/`, `/fr`, `/scan`, `/fr/scan`, `/ai-coaching/lifetime-archive`, `/ai-coaching/next-chapter-business`, `/ai-coaching/everyday-confidence`, `/ai-coaching/facilitators-and-coaches`, `/ai-coaching/experienced-specialists`; `/blog/acx-levels-ai-literacy` and its `/fr` variant | Existing local refresh retained. EN/FR Scan refinement, aligned checkout descriptions and four-connection examples are local candidates under REQ-066; interpretation/owner review remains open. Regression/copy consistency review still needed; five niche French pages and remaining public French routes are not implemented. Add actual routes/content/metadata and only then update language links. |
+| 6 — Entry points and end-to-end checks | `/portal/login`, `/admin/login`, all retained footer destinations and language notices | Review public entry-page typography/instructions only. Preserve authentication/security and do not redesign authenticated portal/admin workflows. Keep external social, booking, email and EU guidance links; check destinations without submitting forms. |
+
+Suggested learning thread, for wording review:
+**EN:** Know what you want. Give useful context. Check the answer. Choose what
+to share. **FR:** Clarifiez votre objectif. Donnez le contexte utile. Vérifiez
+la réponse. Choisissez ce que vous partagez.
+
+#### Definition of done for each page
+
+- [ ] Plain-language purpose and a useful next action; technical terms explained.
+- [ ] Short paragraphs, a consistent heading hierarchy and optional deeper detail
+  where appropriate. Do not bury rights, risks, prices or consent disclosures.
+- [ ] Homepage Poppins/Lato, dark/teal system, purple ACX cues, 18px reading text
+  and 16px supporting text; ample space, visible focus and usable touch targets.
+- [ ] Soft section/photo transitions at phone and desktop sizes; no text hidden
+  behind decoration. Functional diagrams may retain necessary compact labels
+  only with an accessible readable equivalent.
+- [ ] English/French content, accessible labels, metadata, canonical/hreflang and
+  real destinations agree. Untranslated destinations remain explicitly labelled.
+- [ ] Existing forms, scoring, consent, payment and login behaviours preserved.
+- [ ] Targeted tests, build, mobile/desktop visual review, link checks and owner
+  review recorded separately. No claim of grade-level or ADHD validation without
+  measurement/user testing. Global TypeScript errors remain a separate gate.
+
+#### Policy triage — not legal clearance
+
+`PrivacyPolicyPage.tsx` names controllers and clinical services, states retention
+periods, promises immediate token deletion and says connected Notion data is never
+read. These need service-specific verification, not editorial assumptions.
+`AIPolicyPage.tsx` still has an “EU AI Act Compliance” heading, a broad risk
+classification, claims that all generated material is labelled and checked, and
+a human-only processing statement. Validate each before revising or retaining.
+AI-generated website illustration disclosure must describe the real asset use;
+do not present staged/generated scenes as documentary client photographs.
+
+Required next checks: controller identity/contact; data categories and purposes;
+legal bases; actual recipients including coach copies; AI/provider use and data
+sent; retention/deletion implementation and practice; transfers and agreements;
+rights/contact process; optional recording/analytics; service-specific automated
+processing. Code presence alone does not prove live use or provider settings.
+Separate coach-prepared dashboards from automated assistance and avoid “no
+profiling” as a substitute for explaining automated decisions.
+
+Read on 2026-10-06: the [European Commission's privacy-information guidance](https://commission.europa.eu/law/law-topic/data-protection/information-business-and-organisations/obligations_en)
+supports plain-language information while retaining purposes, legal bases,
+retention and rights. The [Commission's AI-literacy Q&A](https://digital-strategy.ec.europa.eu/en/faqs/ai-literacy-questions-answers)
+is a current reference for a separate AI Act review; the course is not to be
+marketed as certification or a compliance guarantee. Owner confirmation and
+appropriate legal review remain release gates for unresolved policy claims.
+
+#### Batch 1 implementation checkpoint — 2026-10-06
+
+**Local candidate, not policy approval or publication.** All four trust pages now
+share authored EN/FR copy and a dark/teal Poppins/Lato reading layout, with a short
+summary, contents links and all full-detail sections visible. Real `/fr/privacy`,
+`/fr/ai-policy`, `/fr/terms` and `/fr/cookies` routes, initial HTML, metadata,
+reciprocal language links and sitemap entries were added. French footer labels
+and the existing cookie-panel link/visibility were repaired; tracking payloads,
+collection conditions and consent decisions were not changed.
+
+Existing service prices, refund windows and topic coverage are retained. Copy
+distinguishes coach preparation from AI assistance, treats a human-only option
+as a question rather than a guarantee, removes the blanket AI risk classification
+and corrects the outdated claim that EU Replit hosting requires Enterprise.
+GDPR response wording and consumer-rights safeguards are draft legal clarifications,
+not evidence that operational schedules or contracts have been legally approved.
+
+Verification: 41 content/navigation/analytics/checkout tests and 12 public HTTP tests;
+build, repository and whitespace checks pass. Phone-width browser checks at
+390px covered all eight pages without horizontal overflow and with 18px Lato
+body text; desktop Privacy, AI Policy and Terms were visually sampled. Browser
+automation had intermittent timeouts, so an exhaustive desktop visual audit is
+not claimed. Full TypeScript still fails in existing examples, PromptsPage,
+auth/portal-auth/routes/storage; no diagnostics in Batch 1 files.
+
+Open facts: legal seller/controller and business contact details; per-purpose
+legal bases; retention and deletion across database, inboxes, exports, recordings
+and backups; enabled AI models, input categories and review practices; provider
+agreements/locations; GA account settings; complete live cookie/embed inventory.
+Additional Spotify/Oura connection and data-fetch code, Google Sheets/admin
+context gathering and database-hosting coverage need owner confirmation before
+the notice is called complete. Do not activate, disable or redesign those tools
+in this presentation batch. Human factual and legal review remain separate gates.
+
+GreenElephantOS is unaffected by the implementation: no shared payload, actual
+processing practice, consent collection rule, contract activation or provider
+integration changed. Reopen the paired-repository check if owner verification
+requires such a change. Preserve all earlier dirty work and untracked assets.
+
+#### Selective image suggestions — not approved assets
+
+- Reuse accepted overhead photographs first, without suggesting pictured people
+  are actual clients or staff. Keep the unchanged Periodic Table and ACX drawings.
+- If needed for resources: ceiling-view home desk with a real-looking annotated
+  draft, two distinct messy printouts, pale-yellow notes and a near-vertical
+  monitor. Show a tangible task rather than another generic office.
+- If needed for communication coaching: ceiling-view two-person practice setup
+  with notes and space between chairs. Natural age/clothing diversity, no visible
+  AI-looking faces; inspect limb counts, hands, chair/table geometry and objects.
+- No new image generation now. Review need, rights/provenance, realism and
+  responsive compressed crops before approval. Policies/login use icons/space.
 
 ### Concept 04 — smooth transitions, plain English and image comparison
 
@@ -1437,9 +1739,12 @@ calendar field or customer transfer, so no paired OS change is proposed. The
 website manifest still has no shared contracts dependency; no receiving-system
 integration is asserted. Any later shared flow needs its own explicit record.
 
-**Current state:** copy/layout implemented under DEC-AIL-041 and owner-reviewed
-under DEC-AIL-042. Commit, branch push and PR preparation are authorised; verify
-actual remote/CI state on GitHub. Not yet merged or published. Preview with
+**2026-10-03 batch state:** copy/layout implemented under DEC-AIL-041 and
+owner-reviewed under DEC-AIL-042/045. The batch was merged through PR #42; current
+GitHub `main` resolves to merge commit `ef0199a2084ea090355e831a314ca25505370262`,
+which is the new local-refresh baseline. The owner reports completing GitHub/Replit
+synchronization and republication during the preceding weekend; this PRD does not
+independently verify that production deployment. Preview locally with
 `npm run preview:website` at `http://127.0.0.1:5180` (backend actions unavailable).
 Existing account/billing/provider settings are untouched. Production build,
 repository checks, 62 isolated release tests and 7 new page checks pass. The full
@@ -1457,11 +1762,11 @@ are unchanged. Do not start the three-month comparison before verified measureme
 | --- | --- | --- |
 | AI-LIT-AC-001 | Broad audience, reference contexts, languages and reach recorded | Audience priority and organisational/union-funded compatibility approved in DEC-AIL-007; languages and reach remain source-recorded under DEC-AIL-003 |
 | AI-LIT-AC-002 | Current capabilities classified as reuse / hide-retire / replace / awaiting Estève | Open |
-| AI-LIT-AC-003 | Laptop/GitHub/Replit comparison completed without losing work | Open |
+| AI-LIT-AC-003 | A recoverable baseline is selected without losing work | Current GitHub `main` at `ef0199a` selected for `codex/website-refresh-anu`; Replit comparison deferred outside this phase under DEC-AIL-046 |
 | AI-LIT-AC-004 | Niche, problem, first offer, primary conversion and language rollout approved | Partial: audience/problem direction, formats, Calendly conversion, workshop package and English-first release approved; detailed offer and pricing questions remain under AI-LIT-TBD-002 |
-| AI-LIT-AC-005 | Journey/pages and acceptance criteria approved | Partial: main navigation DEC-AIL-016 and homepage outline DEC-AIL-017 approved; other page outlines, URLs and acceptance criteria remain open |
-| AI-LIT-AC-006 | Architecture and baseline decision supported by evidence | Open |
-| AI-LIT-AC-007 | Implementation backlog records project, repository/branch, acceptance, validation, blocker and last verification | Bounded local website/copy/checkout repairs authorized in current user requests; whole-site completion, PR split, rendered acceptance and release remain open |
+| AI-LIT-AC-005 | Journey/pages and acceptance criteria approved | Partial: main navigation DEC-AIL-016 and homepage baseline DEC-AIL-017 remain approved; replacement hierarchy and local acceptance are proposed in AI-LIT-REQ-043/044 |
+| AI-LIT-AC-006 | Architecture and baseline decision supported by evidence | React/Vite/Express preserved; GitHub `main` at `ef0199a` selected for local refresh under DEC-AIL-046; no architecture change proposed |
+| AI-LIT-AC-007 | Implementation backlog records project, repository/branch, acceptance, validation, blocker and last verification | Current draft records `codex/website-refresh-anu`, source commit, proposal gates and local-render acceptance; no website code implemented in this documentation batch |
 
 Existing Notion task references remain operational pointers, not extra decision logs:
 [recovery](https://app.notion.com/p/c4839f0c47964b828ac7c19298a1ab21),

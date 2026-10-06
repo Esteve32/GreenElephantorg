@@ -194,7 +194,7 @@ test("Approved ACX guide is readable without JavaScript and metadata matches the
     assert.equal(response.status, 200);
     const html = await response.text();
     assert.match(html, /<article class="acx-article">/);
-    assert.match(html, /ACX level 4: work with AI across team members/);
+    assert.match(html, /Agree who does what\./);
     assert.match(html, /name="robots" content="index, follow"/);
     const block = html.match(/<script type="application\/ld\+json" id="page-structured-data">([^<]+)<\/script>/);
     assert.ok(block);
@@ -223,7 +223,7 @@ test('French landing pages have real French content and reciprocal language link
     assert.doesNotMatch(html, /APERÇU PRIVÉ|DESIGN CANDIDATE|client-stories/);
   }
   const home = await (await fetch(origin + '/fr')).text();
-  assert.match(home,/Travaillez avec l’IA/); assert.match(home,/maeva-portrait/);
+  assert.match(home,/Utilisez l’IA/); assert.match(home,/maeva-portrait/);
   const scan = await (await fetch(origin + '/fr/scan')).text();
   assert.match(scan,/Questionnaire et guides vidéo actuellement en anglais/);
   assert.match(scan,/href="\/fr\/checkout\?product=satellitescan&amp;lang=fr"|href="\/fr\/checkout\?product=satellitescan&lang=fr"/);

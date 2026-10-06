@@ -53,7 +53,7 @@ export function ScanVideoDemo({
 
   return (
     <section
-      className="relative"
+      className="relative overflow-hidden"
       data-testid={`section-${testIdPrefix}-video-demo`}
     >
       <div

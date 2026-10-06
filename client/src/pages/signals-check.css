@@ -1,0 +1,15 @@
+/* Communication drift: readable, calm presentation; questionnaire/scoring unchanged. */
+.signals-check{background:linear-gradient(180deg,#0a0a0a,#08101c 45%,#0a0a0a);color:#fff;font-family:Lato,sans-serif}
+.signals-check h1,.signals-check h2,.signals-check h3,.signals-check [class*="font-semibold"]{font-family:Poppins,sans-serif}
+.signals-check p,.signals-check label,.signals-check li{font-size:1.125rem;line-height:1.65}
+.signals-check .signals-intro{max-width:58ch;margin:24px auto;text-align:left}
+.signals-check .signals-reading-note{font-size:1rem;line-height:1.65;max-width:68ch;margin:20px auto;text-align:left;color:#cdd4db}
+.signals-context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;text-align:left;margin:32px 0}
+.signals-context-grid>div{padding:22px;border:1px solid #00b3b34d;border-radius:12px;background:linear-gradient(145deg,#10272a,#081219)}
+.signals-context-grid h2{font-size:1.125rem;color:#8bded4;margin-bottom:12px}
+.signals-context-grid p{font-size:1.125rem}
+.signals-check button:focus-visible,.signals-check input:focus-visible{outline:3px solid #58d3c5;outline-offset:4px}
+@media(max-width:650px){.signals-context-grid{grid-template-columns:1fr}.signals-check h1{font-size:2.125rem;line-height:1.25}}
+
+.signals-check h1{font-size:clamp(2.125rem,4vw,3rem);line-height:1.25;letter-spacing:-.03em;text-wrap:balance}
+.signals-context-grid p{margin:0}

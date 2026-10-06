@@ -914,51 +914,8 @@ export default function InterviewCoachingPage() {
         </section>
       </div>
 
-      {/* Mont Ventoux Landscape Footer - full-width image that never crops */}
-      <section 
-        className="relative"
-        aria-label="Mont Ventoux landscape"
-        style={{ background: atmosphericPalette.abyss }}
-      >
-        {/* Top gradient overlay that bridges from dark gradient above */}
-        <div 
-          className="absolute top-0 left-0 right-0 h-48 z-10 pointer-events-none"
-          style={{ 
-            background: `linear-gradient(to bottom,
-              ${atmosphericPalette.abyss} 0%,
-              ${atmosphericPalette.abyss} 20%,
-              rgba(0,0,0,0.85) 40%,
-              rgba(0,0,0,0.5) 65%,
-              rgba(0,0,0,0.2) 85%,
-              transparent 100%
-            )`
-          }}
-        />
-        
-        {/* Full-width image that never crops at top */}
-        <img 
-          src={montVentouxLavenderUrl}
-          alt="Mont Ventoux lavender landscape, Provence"
-          className="w-full h-auto block"
-          style={{
-            maskImage: "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)"
-          }}
-        />
-        
-        {/* Bottom gradient overlay for smooth fade out */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-32 z-10 pointer-events-none"
-          style={{ 
-            background: `linear-gradient(to top,
-              ${atmosphericPalette.abyss} 0%,
-              ${atmosphericPalette.abyss} 30%,
-              rgba(0,0,0,0.6) 60%,
-              transparent 100%
-            )`
-          }}
-        />
-        
+      <section className="photo-boundary" aria-label="Mont Ventoux landscape">
+        <img src={montVentouxLavenderUrl} alt="Mont Ventoux lavender landscape, Provence" className="photo-boundary-image" />
         <div className="absolute bottom-8 left-0 right-0 z-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p className="text-white/80 text-sm">Mont Ventoux, Provence</p>

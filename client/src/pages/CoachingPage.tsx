@@ -180,7 +180,7 @@ export default function CoachingPage() {
               Personal & Team Coaching
             </Badge>
             <h1 
-              className="text-5xl md:text-6xl font-bold mb-6 text-white"
+              className="text-4xl md:text-6xl font-bold mb-6 text-white"
               data-testid="text-coaching-title"
             >
               Stop Repeating the Same Communication Patterns
@@ -485,7 +485,7 @@ export default function CoachingPage() {
       <section
         className="relative py-16"
         style={{
-          background: atmosphericPalette.skyHorizon
+          background: `linear-gradient(180deg, ${atmosphericPalette.skyHorizon}, #08101c)`
         }}
         data-testid="section-testimonials"
       >
@@ -540,56 +540,11 @@ export default function CoachingPage() {
         </div>
       </section>
 
-      {/* Zurich Footer - Full width image with seamless gradients */}
-      <section 
-        className="relative"
-        aria-label="Zurich landscape"
-        data-testid="section-zurich-footer"
-      >
-        {/* Top gradient - blends from skyHorizon testimonials section */}
-        <div 
-          className="absolute top-0 left-0 right-0 h-32 z-10 pointer-events-none"
-          style={{ 
-            background: `linear-gradient(to bottom,
-              ${atmosphericPalette.skyHorizon} 0%,
-              ${atmosphericPalette.skyHorizon}CC 30%,
-              ${atmosphericPalette.skyHorizon}66 60%,
-              transparent 100%
-            )`
-          }}
-          aria-hidden="true"
-        />
-        
-        {/* Full-width Zurich image container */}
-        <div className="w-full">
-          <img 
-            src={zurichUrl} 
-            alt="Zurich, Switzerland skyline"
-            className="w-full h-auto object-contain"
-            style={{ display: 'block' }}
-          />
-        </div>
-        
-        {/* Bottom gradient - fades to dark */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-40 z-10 pointer-events-none"
-          style={{ 
-            background: `linear-gradient(to top,
-              #000000 0%,
-              #000000CC 20%,
-              #00000099 40%,
-              #00000066 60%,
-              #00000033 80%,
-              transparent 100%
-            )`
-          }}
-          aria-hidden="true"
-        />
-        
-        {/* Location label */}
+      <section className="photo-boundary photo-boundary--coaching" aria-label="Mountain landscape" data-testid="section-zurich-footer">
+        <img src={zurichUrl} alt="Mountain landscape with green slopes and winding roads" className="photo-boundary-image" />
         <div className="absolute bottom-8 left-0 right-0 z-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p className="text-white/80 text-sm">Zurich, Switzerland</p>
+            <p className="text-white/80 text-sm">Mountain landscape</p>
           </div>
         </div>
       </section>

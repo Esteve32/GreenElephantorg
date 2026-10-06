@@ -1,4 +1,5 @@
 // French editorial draft. Public routing and indexing await the bilingual-shell batch.
+import { renderReadableAcx } from './acx-readable';
 export const ACX_ARTICLE_FR = {
   "language": "fr",
   "status": "draft_for_review",
@@ -6,7 +7,7 @@ export const ACX_ARTICLE_FR = {
   "description": "Découvrez les quatre niveaux ACX : échanger avec l’IA, relier les tâches et travailler en équipe. Exemples simples et formations centrées sur l’humain."
 } as const;
 
-export const ACX_ARTICLE_FR_HTML = `<header class="acx-article-header">
+const ORIGINAL_ARTICLE_FR_HTML = `<header class="acx-article-header">
 <p class="acx-kicker">Comprendre l’IA · Guide pratique</p>
 <h1>Les quatre niveaux ACX : un guide pratique pour travailler avec l’IA</h1>
 <p class="acx-deck">De votre premier échange avec l’IA au travail en équipe. Découvrez ce qui change, ce que vous pouvez pratiquer et où votre jugement reste essentiel.</p>
@@ -83,3 +84,5 @@ export const ACX_ARTICLE_FR_HTML = `<header class="acx-article-header">
 <p><a href="/connect#team">Rencontrer les coachs</a> · <a href="/resources#prompts">Explorer la bibliothèque de prompts</a> · <a href="/ai-policy">Lire notre politique d’utilisation de l’IA</a></p></footer>
 </div></div>
 `;
+
+export const ACX_ARTICLE_FR_HTML = renderReadableAcx(ORIGINAL_ARTICLE_FR_HTML, 'fr');

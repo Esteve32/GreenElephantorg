@@ -1,3 +1,7 @@
+import { LEARNING_PAGES, renderLearningHero, renderLearningPractice, renderLearningQuestions } from "@shared/learning-pages";
+import { FICTIONAL_SCAN_SAMPLE as sampleScanData } from "@shared/fictional-scan-sample";
+import { RESOURCE_VIDEOS } from "@shared/resource-videos";
+import "./learning-tools.css";
 import { WEBINARS_PARKED } from "@shared/site-features";
 import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -29,7 +33,7 @@ import {
 } from "@/components/ui/accordion";
 import { SiLinkedin, SiOpenai } from "react-icons/si";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { atmosphericPalette } from "@/constants/atmosphericGradient";
 import { LENSES, type LensType } from "@/constants/lenses";
@@ -80,6 +84,7 @@ function safeParseNumber(value: string | number | null | undefined, fallback = 0
 
 interface LensPrompt {
   id: string;
+  lensType?: string;
   lens: string;
   lensColor: string;
   title: string;
@@ -1048,235 +1053,6 @@ Ask someone for feedback on [specific behavior].
   roleCategory: "all"
 };
 
-const sampleScanData = `# Coaching Data Summary for Esteve Pannetier
-Date generated: Thursday, 30 October 2025
-Data submitted via Typeform on Thursday, 30 October 2025 at 16:35
-
----
-
-## Qualitative Responses
-
-### <GENDER>
-Non-binary/third gender
-
-### <COMS_QUALIFICATIONS>
-Ergonomics, NVC, Mediation, Negotiation, Interviewing and AoH (art of hosting and harvesting meaningful conversations)
-
-### <ALL_SITUATIONS> 
-TEAMBUILDING (Team loyalty, on-boarding and culture), TEAMWORK (Problem-solving and planning), CO-CREATION (Creativity, brainstorms and collaborative sessions), TRAINING (Teaching, training and learning), RESEARCH (Expert interviews and qualitative research), CONFLICTS (Conflict prevention, handling, mediating and resolution), SALES (Cold calls, customer and public relations), WORKSHOPS (Kick-offs, strategic planning and process development), WRITING (Emails, chats, reports and content production), NEGOTIATION (Proposals, agreements and contracts), NETWORKING (Social media groups, meet-ups and get-togethers), CUSTOMER SERVICE (Reclamations, service and maintenance), LEADERSHIP (Managing, mentoring and coaching), GOVERNANCE (Board, politics and investor relations), FEEDBACK (Supervisor reviews, career discussions and peer feedback), PRESENTATIONS (Face-to-face live slides or hand-drawing doodles), MEETINGS (Project reviews, weekly updates and retros)
-
-### <COMMON_SITUATIONS>
-TEAMWORK (Problem-solving and planning), LEADERSHIP (Managing, mentoring and coaching), MEETINGS (Project reviews, weekly updates and retros), WRITING (Emails, chats, reports and content production), TRAINING (Teaching, training and learning)
-
-### <CHALLENGING_SITUATIONS>
-NETWORKING (Social media groups, meet-ups and get-togethers)
-
-### <WHY_CHALLENGING_SITUATION>
-I procrastinate writing, i find the SoMedia LI conventions tedious. I want to have fun with content creation.
-
-### <%GBRFOCUS_CHALLENGING_SITUATION>
-I focus on the other person
-
-### <COLLECTIVE_INTELLIGENCE> 
-STEWARD (to structure communication over time), HOST (to structure, facilitate and lead the conversation), HARVESTER (to coordinate and structure outputs from others), EXPERT (to present, coach or consult)
-
-### <GBR_TIMING>
-I communicate when it best suits others.
-
-### <GBR_BODYLANGUAGE>
-I adapt and mirror other people's body language.
-
-### <GBR_SILENCE>
-Others need me to pause and listen.
-
-### <GBR_INTONATION>
-I adapt my way of speaking to people's needs.
-
-### <GBR_RHYTHM>
-I adapt to the others' needs - if they want me to slow down, I slow down.
-
-### <BENCHMARKS>
-IDEO, Ubisoft, Buurtzog
-
-### <ATTITUDE_SCORE>
-both learning while getting things done.
-
-### <CHALLENGE_QUALIFICATION>
-Lack of alignment on purpose, roles, commit, responsibilities and accountabilities
-
-### <FLOW_FEELING>
-I feel flow, my thinking is clear and I'm completely present to myself and others.
-
-### <CONFLICT_BEHAVIOUR>
-I usually hear the other persons' needs
-
-### <GROUP_NEEDS> (stages of team)
-I need more direction, inclusion and acceptance from others, I need more autonomy, productivity and results, I need more trust, structure and processes
-
-### <EGO_TRIGGERS>
-Age, Gender, Disability or Illness, Appearance or Clothing, Family or Childcare, Countries Travelled to or Lived in, Fitness or Posture, Influence or Charisma, Behaviour, Social Status, Power or Reputation, Personality, Certificates, Awards or Qualifications, Job Title or Position, Philosophy or Values, Personal Growth and Development, Secularism (indifference to, or rejection or exclusion of religion and religious considerations), Individualism (focus on individual over the state or a social group)
-
-### <CONVERSATION_POLARITY>
-I lead or follow differently with each person
-
-### <GIVE_FEEDBACK>
-Positive phrases or compliments, My advice, My opinion
-
-### <RECEIVE_FEEDBACK>
-Positive phrases or compliments, Their opinion
-
-### <LEARNING_DISABILITY>
-ADHD, Dyslexia (reading difficulties), Dyscalculia (calculating difficulties), Other
-
-### <EMAIL>
-esteve@arbora.partners
-
-### <END_TOKEN>
-jh6q9rdituox55h7xymkzjh6q9rdutzf
-
----
-
-## Full Raw Data with Labels
-
-<<GDPR_%CONSENT>>: true
-<<REASON>>: 
-<<FNAME>>: Esteve
-<<LNAME>>: Pannetier
-<<SEQUENCE OF SCAN>>: This is my 5th scan
-<<JOB_TITLE>>: CTO
-<<NATIONALITY>>: France
-<<EDUCATION>>: Bachelor's degree
-<<GENDER>>: Non-binary/third gender
-<<YOB>>: 1980
-<<TIME_IN_ORG>>: More than 24 months
-<<LEARNING_DISABILITY>>: 
-<<COMS_QUALIFICATIONS>>: Ergonomics, NVC, Mediation, Negotiation, Interviewing and AoH (art of hosting and harvesting meaningful conversations)
-<<LEARNING_HOURS>>: 10
-<<EMAIL>>: 
-<PRACTICAL_EXPERIENCE_GE>: 
-<<THEORY_WATCHED_GE>>: 
-<<QUALITY_DIGITAL_GE>>: 
-<<QUALITY_TEACHING_COACHING_GE>>: 
-<<QUALITY_PRINT_GE>>: 
-<<ACTIVATION_LEARNING>>: 
-<<ACTIVATION_LEARNING_NEEDS>>: 
-<<ALL_SITUATIONS>>: TEAMBUILDING (Team loyalty, on-boarding and culture), TEAMWORK (Problem-solving and planning), CO-CREATION (Creativity, brainstorms and collaborative sessions), TRAINING (Teaching, training and learning), RESEARCH (Expert interviews and qualitative research), CONFLICTS (Conflict prevention, handling, mediating and resolution), SALES (Cold calls, customer and public relations), WORKSHOPS (Kick-offs, strategic planning and process development), WRITING (Emails, chats, reports and content production), NEGOTIATION (Proposals, agreements and contracts), NETWORKING (Social media groups, meet-ups and get-togethers), CUSTOMER SERVICE (Reclamations, service and maintenance), LEADERSHIP (Managing, mentoring and coaching), GOVERNANCE (Board, politics and investor relations), FEEDBACK (Supervisor reviews, career discussions and peer feedback), PRESENTATIONS (Face-to-face live slides or hand-drawing doodles), MEETINGS (Project reviews, weekly updates and retros)
-<<COMMON_SITUATIONS>>: TEAMWORK (Problem-solving and planning), LEADERSHIP (Managing, mentoring and coaching), MEETINGS (Project reviews, weekly updates and retros), WRITING (Emails, chats, reports and content production), TRAINING (Teaching, training and learning)
-<<CHALLENGING_SITUATIONS>>: NETWORKING (Social media groups, meet-ups and get-togethers)
-<<WHY_CHALLENGING_SITUATION>>: I procrastinate writing, i find the SoMedia LI conventions tedious. I want to have fun with content creation.
-<<%GBRFOCUS_CHALLENGING_SITUATION>>: I focus on the other person
-<<EFFICACY_COMMUNICATION>>: 7
-<<QUALITY_CONVERSATION>>: 6
-<<QUALITY_CONVERSATION>>: 5
-<<QUALITY_CONVERSATION>>: 8
-<<QUALITY_CONVERSATION>>: 9
-<<COLLECTIVE_INTELLIGENCE>>: STEWARD (to structure communication over time), HOST (to structure, facilitate and lead the conversation), HARVESTER (to coordinate and structure outputs from others), EXPERT (to present, coach or consult)
-<<SELF_AWARENESS_COMPETENCE>>: 8
-<<CHECKING_ASSUMPTIONS_COMPETENCE>>: 7
-<<EXTERNAL_AUTHORITY_COMPETENCE>>: 6
-<<ELEPHANT_COMPETENCE>>: 9
-<<ADAPTING_COMPETENCE>>: 9
-<<LABELLING_COMPETENCE>>: 8
-<<INFORMING_COMPETENCE>>: 8
-<<BLUEQUESTION_COMPETENCE>>: 8
-<<JUDGING_COMPETENCE>>: 7
-<<PROJECTING_COMPETENCE>>: 7
-<<APOLOGISING_COMPETENCE>>: 6
-<<STORYTELLING_COMPETENCE>>: 7
-<<POSITIVEPHRASES_COMPETENCE>>: 8
-<<GREENQUESTION_COMPETENCE>>: 8
-<<MIRRORING_COMPETENCE>>: 8
-<<SUMMARISING_COMPETENCE>>: 9
-<<ACCUSATIONAUDIT_COMPETENCE>>: 9
-<<UNLOCKING_COMPETENCE>>: 7
-<<ADVISING_COMPETENCE>>: 8
-<<REDQUESTION_COMPETENCE>>: 9
-<<SUGGESTING_COMPETENCE>>: 8
-<<SUPPORTING_COMPETENCE>>: 9
-<<ORDERING_COMPETENCE>>: 8
-<<AGREEING_COMPETENCE>>: 9
-<<HOSTING_COMPETENCE>>: 9
-<<EXPRESSING_COMPETENCE>>: 8
-<<PRESENCING_COMPETENCE>>: 9
-<<GBR_TIMING>>: I communicate when it best suits others.
-<<GBR_BODYLANGUAGE>>: I adapt and mirror other people's body language.
-<<GBR_SILENCE>>: Others need me to pause and listen.
-<<GBR_INTONATION>>: I adapt my way of speaking to people's needs.
-<<GBR_RHYTHM>>: I adapt to the others' needs - if they want me to slow down, I slow down.
-<<INTENTION_LEARNING>>: 9
-<<INTENTION_PRAGMATISM>>: 9
-<<INTENTION_PHILAUTIA>>: 4
-<<INTENTION_EGO>>: 4
-<<INTENTION_GRATITUDE>>: 7
-<<INTENTION_RESPONSIBILITIES>>: 9
-<<INTENTION_UNITING>>: 9
-<<INTENTION_SEDUCING>>: 7
-<<INTENTION_FIXINGPROBLEMS>>: 9
-<<INTENTION_CHANGINGOTHERS>>: 5
-<<INTENTION_TAKINGOVER>>: 2
-<<INTENTION_INFLUENCING>>: 4
-<<INTENTION_KINDNESS>>: 9
-<<INTENTION_RESPECT>>: 9
-<<INTENTION_BUILDINGTRUST>>: 8
-<<INTENTION_EMPATHY>>: 9
-<<INTENTION_CURIOSITY>>: 8
-<<INTENTION_AGAPE>>: 9
-<<BENCHMARKS>>: IDEO, Ubisoft, Buurtzog
-<<GROWTH_FOCUS>>: 10
-<<ATTITUDE_SCORE>>: both learning while getting things done.
-<<CHAORDIC_SCORE>>: 9
-<<WASTED_TIME>>: Way too much time
-<<SCHEDULING_ORDER>>: 5
-<<CONVERSATIONS_ORDER>>: 3
-<<WRITTEN_ORDER>>: 8
-<<MEETINGS_ORDER>>: 7
-<<ONLINE_ORDER>>: 6
-<<LEARNING_ORDER>>: 5
-<<PRESENTING_ORDER>>: 6
-<<HARVESTING_ORDER>>: 6
-<<RULES_ORDER>>: 3
-<<DIRECTION_ORDER>>: 2
-<<ROLES_ORDER>>: 1
-<<CHALLENGE>>: 7
-<<CHALLENGE_QUALIFICATION>>: Lack of alignment on purpose, roles, commit, responsibilities and accountabilities
-<<MOTIVATION>>: 9
-<<MOTIVATION_QUALIFICATION>>: People. Belonging
-<<COMPETENCE>>: 9
-<<FLOW_FEELING>>: I feel flow, my thinking is clear and I'm completely present to myself and others.
-<<COMPETENCE_QUALIFICATION>>: 
-<<CONFLICT_BEHAVIOUR>>: I usually hear the other persons' needs
-<<GROUP_NEEDS (stages of team)>>: I need more direction, inclusion and acceptance from others, I need more autonomy, productivity and results, I need more trust, structure and processes
-<<NEED_STRATEGY>>: 3
-<<NEED_GOALS>>: 3
-<<NEED_HONESTY>>: 7
-<<NEED_RESPECT>>: 9
-<<NEED_AUTONOMY>>: 9
-<<NEED_RESOURCES>>: 2
-<<NEED_SAFETY>>: 5
-<<EGO_DISTANCE>>: 2
-<<EGO_VICTIM>>: 6
-<<EGO_VAMPIRE>>: 7
-<<EGO_DRAGON>>: 7
-<<EGO_HOST>>: 9
-<<EGO_HARVESTER>>: 8
-<<EGO_DEVIL>>: 8
-<<EGO_HERO>>: 7
-<<EGO_JOKER>>: 7
-<<EGO_MONK>>: 4
-<<EGO_ARTISAN>>: 8
-<<EGO_TRIGGERS>>: Age, Gender, Disability or Illness, Appearance or Clothing, Family or Childcare, Countries Travelled to or Lived in, Fitness or Posture, Influence or Charisma, Behaviour, Social Status, Power or Reputation, Personality, Certificates, Awards or Qualifications, Job Title or Position, Philosophy or Values, Personal Growth and Development, Secularism (indifference to, or rejection or exclusion of religion and religious considerations), Individualism (focus on individual over the state or a social group)
-<<LEAD_COMPETENCE>>: 9
-<<FOLLOW_COMPETENCE>>: 6
-<<CONVERSATION_POLARITY>>: I lead or follow differently with each person
-<<RELATIONSHIP_BUILDING>>: 8
-<<FEEDBACK_QLTY>>: 5
-<<GIVE_FEEDBACK>>: Positive phrases or compliments, My advice, My opinion
-<<RECEIVE_FEEDBACK>>: Positive phrases or compliments, Their opinion
-<<LEARNING_DISABILITY>>: ADHD, Dyslexia (reading difficulties), Dyscalculia (calculating difficulties), Other
-<<EMAIL>>: esteve@arbora.partners
-<<DATE_TIME_SUBMITTED>>: Thu Oct 30 2025 18:43:34 GMT+0200 (Eastern European Standard Time)
-<<END_TOKEN>>: jh6q9rdituox55h7xymkzjh6q9rdutzf`;
-
 interface VideoData {
   id: string;
   title: string;
@@ -1286,187 +1062,9 @@ interface VideoData {
   duration: string;
 }
 
-const understandingYourDataVideos: VideoData[] = [
-  {
-    id: "ego",
-    title: "EGO: Satellite Scan Video Coaching",
-    lensType: "ego",
-    youtubeId: "Bxjk4rxJnkE",
-    duration: "43:36"
-  },
-  {
-    id: "dynamics",
-    title: "DYNAMICS: Satellite Scan Video Coaching",
-    lensType: "dynamics",
-    youtubeId: "DL3hhDqbfgU",
-    infographic: greenEmpathyInfographicUrl,
-    duration: "9:45"
-  },
-  {
-    id: "influence",
-    title: "INFLUENCE: Satellite Scan Video Coaching",
-    lensType: "influence",
-    youtubeId: "rVJvDT-9n5k",
-    duration: "37:42"
-  },
-  {
-    id: "attitude",
-    title: "ATTITUDE: Satellite Scan Video Coaching",
-    lensType: "attitude",
-    youtubeId: "xrkeazuA-Ck",
-    duration: "7:59"
-  },
-  {
-    id: "chaordic",
-    title: "CHAORDIC: Satellite Scan Video Coaching",
-    lensType: "chaordic",
-    youtubeId: "F8pLhU5Dc7s",
-    duration: "24:24"
-  },
-  {
-    id: "flow",
-    title: "FLOW: Satellite Scan Video Coaching",
-    lensType: "flow",
-    youtubeId: "mYavMqD1Tm0",
-    duration: "26:42"
-  },
-  {
-    id: "alignment",
-    title: "ALIGNMENT: Satellite Scan Video Coaching",
-    lensType: "alignment",
-    youtubeId: "vXc5OAJAQHM",
-    duration: "32:37"
-  },
-  {
-    id: "needs",
-    title: "NEEDS: Satellite Scan Video Coaching",
-    lensType: "needs",
-    youtubeId: "7CLTewj4W4g",
-    duration: "26:23"
-  }
-];
+const understandingYourDataVideos: VideoData[] = RESOURCE_VIDEOS.understandingYourDataVideos.map(video => ({ ...video, infographic: ({"dynamics": greenEmpathyInfographicUrl} as Record<string, string>)[video.id] }));
 
-const scienceOfCommunicationVideos: VideoData[] = [
-  {
-    id: "tedx",
-    title: "The green blue red movement: Esteve Pannetier at TEDxTurku",
-    lensType: null,
-    youtubeId: "mbdzgJHXb3Y",
-    duration: "20:37"
-  },
-  {
-    id: "attitude-change",
-    title: "2101 Attitude to Change: Balance learning with doing to embrace personal change",
-    lensType: "attitude",
-    youtubeId: "uM0Rf8bvYRA",
-    infographic: attitudeChangeInfographicUrl,
-    duration: "11:10"
-  },
-  {
-    id: "influence-strategies",
-    title: "1101 Influence Strategies: 3 Strategies of Communication to Lead with Respect",
-    lensType: "influence",
-    youtubeId: "-c3X1A3pOVI",
-    infographic: influenceStrategiesPdfUrl,
-    duration: "8:31"
-  },
-  {
-    id: "gbr-basics",
-    title: "1103 GreenBlueRed™ Basics: Upgrade your interactions by understanding the colours",
-    lensType: "influence",
-    youtubeId: "W7dzDkCUsgk",
-    infographic: greenBlueRedPdfUrl,
-    duration: "11:23"
-  },
-  {
-    id: "congruence",
-    title: "5102 Congruence: 3 Levels of Communication is a new way to understand conversations",
-    lensType: "alignment",
-    youtubeId: "2KUgC9rNS5k",
-    infographic: congruenceInfographicUrl,
-    duration: "28:24"
-  },
-  {
-    id: "green-empathy",
-    title: "Green Communication - The Power of Empathy",
-    lensType: "alignment",
-    youtubeId: "4UrH1lIqy-4",
-    infographic: greenEmpathyInfographicUrl,
-    duration: "31:52"
-  },
-  {
-    id: "blue-barriers",
-    title: "Blue Communication - The 5 Barriers of Communication",
-    lensType: "ego",
-    youtubeId: "YL8S0qn10aE",
-    infographic: blueInfographicImageUrl,
-    duration: "52:46"
-  },
-  {
-    id: "conscious-feedback",
-    title: "4102 Conscious Feedback: How to give and receive conscious feedback at work",
-    lensType: "flow",
-    youtubeId: "ixwmT_avY3I",
-    infographic: consciousFeedbackInfographicUrl,
-    duration: "18:35"
-  },
-  {
-    id: "measuring-flow",
-    title: "4101 Measuring Flow: How to measure communication flow in your work and with your team",
-    lensType: "flow",
-    youtubeId: "EZBP2FByWBg",
-    infographic: flowMeasuringInfographicUrl,
-    duration: "13:07"
-  },
-  {
-    id: "chaordic-balance",
-    title: "Chaordic Balance: What does 'chaordic' balance mean? 3101",
-    lensType: "chaordic",
-    youtubeId: "omq_x_mtqDE",
-    infographic: chaordicRolesPdfUrl,
-    duration: "8:58"
-  },
-  {
-    id: "ego-triggers",
-    title: "Ego Triggers 7101 doodled live to Futuriceans in Berlin",
-    lensType: "ego",
-    youtubeId: "p-LhY1uPgMg",
-    infographic: blueInfographicImageUrl,
-    duration: "10:43"
-  },
-  {
-    id: "chaordic-doodle",
-    title: "Chaordic Balance 3101 doodle live to Futuriceans in Berlin",
-    lensType: "chaordic",
-    youtubeId: "HFhzuFgdxjk",
-    infographic: chaordicRolesPdfUrl,
-    duration: "12:57"
-  },
-  {
-    id: "alignment-conflicts",
-    title: "Alignment in Conflicts 5101 doodled live to Futuriceans in Berlin",
-    lensType: "alignment",
-    youtubeId: "kk6zfMZrZ8A",
-    infographic: nvcGreenBlueRedPdfUrl,
-    duration: "6:21"
-  },
-  {
-    id: "functional-conflicts",
-    title: "Functional Conflicts 6104 doodled live to Futuriceans in Berlin",
-    lensType: "needs",
-    youtubeId: "tPZDOBHnziI",
-    infographic: nvcGreenBlueRedPdfUrl,
-    duration: "5:18"
-  },
-  {
-    id: "end-boring-meetings",
-    title: "3201 The Secret to End Boring and Inefficient Meetings: how to invite meetings consciously",
-    lensType: "chaordic",
-    youtubeId: "Q0yNbBNx-HY",
-    infographic: chaordicRolesPdfUrl,
-    duration: "35:34"
-  }
-];
+const scienceOfCommunicationVideos: VideoData[] = RESOURCE_VIDEOS.scienceOfCommunicationVideos.map(video => ({ ...video, infographic: ({"attitude-change": attitudeChangeInfographicUrl, "influence-strategies": influenceStrategiesPdfUrl, "gbr-basics": greenBlueRedPdfUrl, "congruence": congruenceInfographicUrl, "green-empathy": greenEmpathyInfographicUrl, "blue-barriers": blueInfographicImageUrl, "conscious-feedback": consciousFeedbackInfographicUrl, "measuring-flow": flowMeasuringInfographicUrl, "chaordic-balance": chaordicRolesPdfUrl, "ego-triggers": blueInfographicImageUrl, "chaordic-doodle": chaordicRolesPdfUrl, "alignment-conflicts": nvcGreenBlueRedPdfUrl, "functional-conflicts": nvcGreenBlueRedPdfUrl, "end-boring-meetings": chaordicRolesPdfUrl} as Record<string, string>)[video.id] }));
 
 function PromptCard({ prompt, onVote }: { prompt: LensPrompt; onVote: (id: string) => void }) {
   const [copied, setCopied] = useState(false);
@@ -1619,6 +1217,11 @@ function ScrollProgressLine() {
 
 export default function ResourcesPromptsPage() {
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
+  // Green Elephant: table links select an existing lens, never arbitrary content.
+  const search = useSearch();
+  const requestedLens = new URLSearchParams(search).get("lens") ?? "";
+  const relatedLens = Object.prototype.hasOwnProperty.call(LENSES, requestedLens)
+    ? requestedLens as LensType : null;
   const [copiedSample, setCopiedSample] = useState(false);
   const { toast } = useToast();
   
@@ -1666,6 +1269,7 @@ export default function ResourcesPromptsPage() {
         }
         return {
           id: p.id,
+          lensType: p.lensType,
           lens: lens?.name || p.lensType,
           lensColor: lens?.hexColor || '#666666',
           title: p.title,
@@ -1682,13 +1286,17 @@ export default function ResourcesPromptsPage() {
     return [quickWinsPrompt, ...lensPrompts];
   }, [apiPrompts, promptsLoading]);
 
-  // Filter prompts by selected role
-  const filteredPrompts = useMemo(() => {
-    if (roleFilter === "all") {
-      return allPrompts;
+  // Preserve role filtering while narrowing table links to their related lens.
+  const filteredPrompts = useMemo(() => allPrompts.filter(p =>
+    (!relatedLens || (p.lensType ?? p.lens.toLowerCase()) === relatedLens) &&
+    (roleFilter === "all" || p.roleCategory === roleFilter || p.roleCategory === "all")
+  ), [allPrompts, roleFilter, relatedLens]);
+
+  useEffect(() => {
+    if (relatedLens && !promptsLoading) {
+      document.getElementById("prompt-library")?.scrollIntoView({ block: "start" });
     }
-    return allPrompts.filter(p => p.roleCategory === roleFilter || p.roleCategory === "all");
-  }, [allPrompts, roleFilter]);
+  }, [relatedLens, promptsLoading]);
 
   // Handle vote - call API and refetch to sync vote counts
   // Disable voting when using fallback data (prompts don't exist in DB)
@@ -1764,16 +1372,16 @@ export default function ResourcesPromptsPage() {
         {...PAGE_METADATA["/resources"]}
         breadcrumbs={[
           { name: "Home", url: "/" },
-          { name: "Resources", url: "/resources" },
-          { name: "Prompts & Resources", url: "/resources" }
+          { name: "Communication resources", url: "/resources" }
         ]}
+        faqItems={[...LEARNING_PAGES["/resources"].faq]}
       />
       <ScrollProgressLine />
       <section 
         className="relative min-h-[90vh] overflow-hidden"
         style={{
           background: `linear-gradient(180deg,
-            #000000 0%,
+            #0a0a0a 0%,
             #020204 5%,
             #030308 10%,
             #040410 15%,
@@ -1819,8 +1427,8 @@ export default function ResourcesPromptsPage() {
             backgroundPosition: 'center 40%',
             backgroundRepeat: 'no-repeat',
             transform: 'scaleY(-1)',
-            maskImage: 'linear-gradient(to bottom, black 0%, black 15%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 15%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.2) 55%, transparent 70%)'
+            maskImage: 'linear-gradient(to bottom, transparent 0%, black 24%, black 72%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 24%, black 72%, transparent 100%)'
           }}
         />
         
@@ -1830,8 +1438,8 @@ export default function ResourcesPromptsPage() {
           style={{
             height: '200px',
             background: `linear-gradient(180deg, 
-              #000000 0%,
-              rgba(0, 0, 0, 0.85) 50%,
+              #0a0a0a 0%,
+              rgba(10, 10, 10, 0.85) 50%,
               transparent 100%
             )`
           }}
@@ -1852,31 +1460,14 @@ export default function ResourcesPromptsPage() {
           }}
         />
         
-        <div className="relative z-10 h-full flex flex-col justify-end items-center px-4 pb-16" style={{ paddingTop: 'calc(50vh + 20px)' }}>
+        <div className="relative z-10 h-full flex flex-col justify-end items-center px-4 pb-16" style={{ paddingTop: 'clamp(10rem, 28vh, 18rem)' }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Badge className="mb-6 bg-needs/20 text-needs border-needs/30">
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                Your Scan is Complete
-              </Badge>
-            </motion.div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white" style={{ fontFamily: 'Archivo, sans-serif' }}>
-              Congratulations, Explorer
-            </h1>
-            
-            <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              Deepen your journey with AI prompts, videos, and infographics — each aligned with your 8-lens results.
-            </p>
+            <div className="ge-learning-copy ge-learning-hero" dangerouslySetInnerHTML={{ __html: renderLearningHero("/resources") }} />
           </motion.div>
           
           <motion.div
@@ -1924,6 +1515,8 @@ export default function ResourcesPromptsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative py-20">
           
           <div className="space-y-24">
+            <div className="ge-learning-copy" dangerouslySetInnerHTML={{ __html: renderLearningPractice("/resources") }} />
+            <div className="ge-learning-copy" dangerouslySetInnerHTML={{ __html: renderLearningQuestions("/resources") }} />
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1937,41 +1530,20 @@ export default function ResourcesPromptsPage() {
                   <Video className="w-5 h-5 text-white" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-white">
-                  How to Use Your Dashboard
+                  Use your Scan materials
                 </h2>
               </div>
               <p className="text-white/70 mb-8 max-w-2xl">
-                Watch this introduction to understand what your Satellite Scan results mean and how to interpret your communication profile.
+                Start with your coach-prepared dashboard and practice materials. Choose one communication situation, notice which reflections fit and decide what to try next.
               </p>
               
-              <div className="aspect-video max-w-4xl bg-black rounded-lg overflow-hidden border border-white/10">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube.com/embed/videoseries?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB"
-                  title="How to Use Your Satellite Scan Dashboard"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  className="border-0"
-                  data-testid="youtube-dashboard"
-                />
-              </div>
-              
+              <ol className="space-y-4 text-white/70 max-w-2xl text-lg leading-relaxed list-decimal pl-6">
+                <li>Pick one question or prompt that helps with your current task.</li>
+                <li>Check the reflection against your own experience and discuss unclear points with your coach.</li>
+                <li>Use only chosen preferences when guiding AI, then review its answer. AI training and coaching are booked separately.</li>
+              </ol>
               <div className="mt-6">
-                <a 
-                  href="https://www.youtube.com/playlist?list=PLYvfWnYASrYcADsrLB75TRKtcYx7BUdxB" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <Button 
-                    className="bg-needs hover:bg-needs/90 text-white" 
-                    data-testid="button-view-playlist"
-                  >
-                    <Play className="w-4 h-4 mr-2" />
-                    View Full Playlist on YouTube
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </Button>
-                </a>
+                <Link href="/scan" className="text-needs underline underline-offset-4">Explore the Satellite Scan</Link>
               </div>
             </motion.div>
             
@@ -2065,7 +1637,7 @@ export default function ResourcesPromptsPage() {
                     <AccordionContent>
                       <div className="px-6 pb-6 space-y-4">
                         <p className="text-sm text-white/70">
-                          New to two-step prompts? Practice with this sample Satellite Scan data from Estève before using your own.
+                          New to two-step prompts? Practice with this fictional, partial example before using your own data. All ratings and situations are invented; missing details should stay unknown.
                         </p>
 
                         <div className="bg-black/30 rounded-xl p-5 border border-white/10">
@@ -2079,8 +1651,8 @@ export default function ResourcesPromptsPage() {
 
                             <div className="flex-1 space-y-3">
                               <div>
-                                <h4 className="font-semibold text-white text-sm mb-1">Estève's Satellite Scan Results</h4>
-                                <p className="text-xs text-white/50">Complete coaching data across all 8 lenses with situation analysis</p>
+                                <h4 className="font-semibold text-white text-sm mb-1">Fictional Scan Practice Example</h4>
+                                <p className="text-xs text-white/50">Invented practice inputs across all 8 lenses; not a real assessment</p>
                               </div>
 
                               <div className="flex flex-wrap gap-2">
@@ -2116,6 +1688,19 @@ export default function ResourcesPromptsPage() {
                 </Accordion>
               </Card>
               
+              <div id="prompt-library" className="scroll-mt-48 mb-6" data-testid="prompt-library-filter">
+                <h3 className="text-xl font-semibold text-white">
+                  {relatedLens ? `${LENSES[relatedLens].name} prompts` : "Prompt library"}
+                </h3>
+                {relatedLens && <p className="mt-2 text-white/70">
+                  Related prompts for this communication lens.{' '}
+                  <a href="/resources#prompt-library" className="text-needs underline">Show all prompts</a>
+                </p>}
+              </div>
+              {!promptsLoading && filteredPrompts.length === 0 && (
+                <p className="mb-6 text-white/70">No prompts are currently available for this lens. <a href="/resources#prompt-library" className="text-needs underline">Show all prompts</a></p>
+              )}
+
               {!promptsLoading && isUsingFallback && (
                 <div className={`mb-4 p-3 rounded-lg flex items-center gap-2 text-sm ${hadFetchError ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'bg-yellow-500/10 border border-yellow-500/30 text-yellow-400'}`}>
                   <span className="font-medium">{hadFetchError ? 'API Error — Using default prompts' : 'Using default prompts'}</span>
@@ -2170,11 +1755,11 @@ export default function ResourcesPromptsPage() {
                   <Video className="w-5 h-5 text-white" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-white">
-                  Understanding Your Data
+                  Explore the eight communication lenses
                 </h2>
               </div>
               <p className="text-white/70 mb-8 max-w-2xl">
-                Video coaching for each lens of your Satellite Scan results. Watch to understand what your data means for your communication style.
+                Watch existing teaching videos about the eight lenses. If you have Scan materials, compare the ideas with your own experience. The videos are communication resources, not an assessment of your AI skills.
               </p>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -2195,6 +1780,7 @@ export default function ResourcesPromptsPage() {
                         title={video.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
+                        loading="lazy"
                         className="border-0"
                         data-testid={`video-understanding-${video.id}`}
                       />
@@ -2215,7 +1801,8 @@ export default function ResourcesPromptsPage() {
                         )}
                         <span className="text-xs text-white/50">{video.duration}</span>
                       </div>
-                      <h3 className="font-semibold text-white text-sm leading-tight">{video.title}</h3>
+                      <h3 className="font-semibold text-white text-lg leading-snug">{video.title}</h3>
+                      <a href={`https://www.youtube.com/watch?v=${video.youtubeId}`} target="_blank" rel="noopener noreferrer" className="inline-block py-3 text-base text-needs underline underline-offset-4">Watch on YouTube<span className="sr-only">: {video.title}</span></a>
                     </div>
                   </motion.div>
                 ))}
@@ -2234,11 +1821,11 @@ export default function ResourcesPromptsPage() {
                   <Download className="w-5 h-5 text-white" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-white">
-                  Science of Communication
+                  Communication ideas and downloads
                 </h2>
               </div>
               <p className="text-white/70 mb-8 max-w-2xl">
-                Go deeper into the foundations. 15 videos covering TEDx talks, GreenBlueRed basics, and advanced concepts — each with downloadable infographics.
+                Explore 15 existing teaching videos, including a TEDx talk and GreenBlueRed examples. Download an infographic where one is available, and consider how the ideas apply to your situation.
               </p>
               
               <div className="space-y-6">
@@ -2259,6 +1846,7 @@ export default function ResourcesPromptsPage() {
                         title={video.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
+                        loading="lazy"
                         className="border-0"
                         data-testid={`video-science-${video.id}`}
                       />
@@ -2279,7 +1867,8 @@ export default function ResourcesPromptsPage() {
                         )}
                         <span className="text-xs text-white/50">{video.duration}</span>
                       </div>
-                      <h3 className="font-semibold text-white text-sm leading-tight">{video.title}</h3>
+                      <h3 className="font-semibold text-white text-lg leading-snug">{video.title}</h3>
+                      <a href={`https://www.youtube.com/watch?v=${video.youtubeId}`} target="_blank" rel="noopener noreferrer" className="inline-block py-3 text-base text-needs underline underline-offset-4">Watch on YouTube<span className="sr-only">: {video.title}</span></a>
                       {video.infographic ? (
                         <Button
                           variant="outline"
@@ -2409,54 +1998,8 @@ export default function ResourcesPromptsPage() {
         </div>
       </div>
       
-      <section 
-        className="relative min-h-[80vh]"
-        aria-label="Mont Ventoux landscape"
-      >
-        {/* Base background - starting from page black going to black */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            background: `linear-gradient(to bottom,
-              #000000 0%,
-              #050a14 15%,
-              #0a1424 30%,
-              #081020 50%,
-              #050a14 70%,
-              #020408 85%,
-              #000000 100%
-            )`
-          }}
-        />
-        
-        {/* Mont Ventoux image - with gentle top mask to show mountain and sky */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            backgroundImage: `url(${provenceImageUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 40%',
-            backgroundRepeat: 'no-repeat',
-            maskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.6) 15%, rgba(0,0,0,0.85) 22%, black 30%, black 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.6) 15%, rgba(0,0,0,0.85) 22%, black 30%, black 100%)'
-          }}
-        />
-        
-        {/* Bottom gradient overlay to fade to black */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ 
-            height: '25%',
-            background: `linear-gradient(to top,
-              #000000 0%,
-              rgba(0, 0, 0, 0.9) 30%,
-              rgba(0, 0, 0, 0.6) 60%,
-              rgba(0, 0, 0, 0.2) 85%,
-              transparent 100%
-            )`
-          }}
-        />
-        
+      <section className="photo-boundary min-h-[80vh]" aria-label="Mont Ventoux landscape">
+        <div className="photo-boundary-cover" style={{ backgroundImage: `url(${provenceImageUrl})`, backgroundPosition: 'center 40%' }} />
         <div className="absolute bottom-8 left-0 right-0 z-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <motion.div

@@ -2,6 +2,20 @@
 
 Human-centred AI literacy and communication coaching by Estève Pannetier and fellow coaches. AI supports human skills, judgement and agency.
 
+## AI literacy training and practical coaching
+- [Training formats and discovery workshop](https://greenelephant.org/#training)
+- [AI coaching for archives and personal projects](https://greenelephant.org/ai-coaching/lifetime-archive)
+- [AI coaching for a new business idea](https://greenelephant.org/ai-coaching/next-chapter-business)
+- [Everyday AI confidence](https://greenelephant.org/ai-coaching/everyday-confidence)
+- [AI training for facilitators and coaches](https://greenelephant.org/ai-coaching/facilitators-and-coaches)
+- [AI coaching for experienced professionals](https://greenelephant.org/ai-coaching/experienced-specialists)
+
+## Practice resources
+- [Communication prompts and existing teaching videos](https://greenelephant.org/resources)
+- [Speech Lab: communication practice for AI writing](https://greenelephant.org/decode)
+- [Periodic Table: 146 communication elements](https://greenelephant.org/periodic-table)
+- [Green Elephant YouTube channel](https://www.youtube.com/@greenelephantorg)
+
 ## Start here
 - [English homepage](https://greenelephant.org/)
 - [Accueil en français](https://greenelephant.org/fr)

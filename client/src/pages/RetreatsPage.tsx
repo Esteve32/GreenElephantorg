@@ -222,7 +222,7 @@ export default function RetreatsPage() {
                 <img 
                   src={microhabitImageUrl} 
                   alt="Microhabit Framework" 
-                  className="w-full max-w-md rounded-lg"
+                  className="photo-edge-layer w-full max-w-md rounded-lg"
                   data-testid="img-microhabit"
                 />
               </div>

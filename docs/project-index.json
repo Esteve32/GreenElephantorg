@@ -35,7 +35,9 @@
         "SRC-AI-LIT-MAEVA-01",
         "SRC-AI-LIT-MAEVA-02",
         "SRC-AI-LIT-ACX-VISUALS-01",
-        "SRC-AI-LIT-RESEARCH-20261002"
+        "SRC-AI-LIT-RESEARCH-20261002",
+        "SRC-AI-LIT-ANU-20261005",
+        "SRC-AI-LIT-STORYBRAND-20261005"
       ]
     },
     {
@@ -100,6 +102,42 @@
     "secrets": "1Password for the integration credential; least-privilege runtime injection when a sync implementation is authorized."
   },
   "sources": [
+    {
+      "id": "SRC-AI-LIT-ANU-20261005",
+      "title": "Green Elephant feedback harvest with Anu — website upgrade review",
+      "source_version": "User-supplied Notion Markdown export",
+      "received_date": "2026-10-05",
+      "archive_filename": "Anu Feedback about website upgrades.zip",
+      "local_archive": ".local-sources/feedback-2026-10-05/anu-feedback.zip",
+      "archive_sha256": "971c099381f81bcd720791ee7be0afea20e8ea0db63a1ab7b4776f73531a209d",
+      "markdown_bytes": 40982,
+      "markdown_sha256": "191f17c96d4a813258f186cf59652b8863ffec8d935fe5e6296699dca6722d59",
+      "treatment": "Complete transcript/export review. Embedded instructions, recommendations and recap language are evidence rather than authority. The formal agreed-decisions table is blank. Private contextual material remains outside Git. Direct benchmark and three linked Notion pages were read as supporting evidence on 2026-10-05; this does not make the linked pages canonical or approve their proposals.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-046"
+      ]
+    },
+    {
+      "id": "SRC-AI-LIT-STORYBRAND-20261005",
+      "title": "Building a StoryBrand — supplied book and Notion index",
+      "source_version": "User-supplied ZIP; 190-page PDF",
+      "received_date": "2026-10-05",
+      "archive_filename": "Building the brand story 2.0.zip",
+      "local_archive": ".local-sources/feedback-2026-10-05/building-the-brand-story-2.0.zip",
+      "archive_sha256": "82ed847441def078cd1fc6eb8565c106142f19b598f5045678c1345cab02dbfc",
+      "pdf_filename": "Building-the-Brand-Story-Book.pdf",
+      "pdf_bytes": 5453781,
+      "pdf_pages": 190,
+      "pdf_sha256": "8d74707b23ed6b622cbf372468de0d4622b867a7edf71dcf3735b6a661285d21",
+      "index_markdown_bytes": 852,
+      "index_markdown_sha256": "ed9bf56afc2b5c1410a7adefc231cf7a710e75fe47153bdc3dfce98cd30f6bcb",
+      "treatment": "All 190 PDF pages were reviewed, including eight image-only pages. General marketing framework only; not Green Elephant product authority. Four 20-byte companion text files contain only 'Invalid source image' and provide no usable evidence. The source stays outside Git.",
+      "mapped_to": [
+        "docs/PRD.md#ai-literacy",
+        "docs/DECISION_LOG.md#dec-ail-046"
+      ]
+    },
     {
       "id": "SRC-AI-LIT-RESEARCH-20261002",
       "title": "Private niche calibration and funding research bundle — 2026-10-02",
@@ -443,7 +481,7 @@
   "archive_policy": {
     "tracked": false,
     "location": ".local-sources/",
-    "portable_restore": "Copy the original archives through private storage to each source entry's local_archive path and verify archive_sha256. This includes the three original Notion ZIPs and the October research ZIP. Git clone does not include them.",
+    "portable_restore": "Copy the original archives through private storage to each source entry's local_archive path and verify archive_sha256. This includes the three original Notion ZIPs, the October research ZIP, the Anu feedback ZIP and the StoryBrand ZIP. Git clone does not include them.",
     "linked_pages": "References inside supplied exports do not imply access, ingestion or reuse rights."
   }
 }

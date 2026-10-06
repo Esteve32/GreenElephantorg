@@ -350,7 +350,7 @@ export default function ConnectPage() {
       {/* Hero Section - matching ScanPage */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden" data-testid="section-hero">
         <motion.div 
-          className="absolute inset-0 bg-cover bg-top"
+          className="photo-edge-layer absolute inset-0 bg-cover bg-top"
           style={{ 
             backgroundImage: `url(${earthOrbitUrl})`,
             y: earthY
@@ -778,57 +778,8 @@ export default function ConnectPage() {
         </section>
       </div>
       
-      {/* Footer Section - matching ScanPage */}
-      <section 
-        className="relative h-screen"
-        aria-label="Finnish Archipelago landscape" 
-        data-testid="section-cityscape"
-      >
-        {/* Base background matching page gradient */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            background: `linear-gradient(to bottom,
-              #273d5f 0%,
-              #1e3050 12%,
-              #152545 25%,
-              #0d1a38 40%,
-              #080f20 55%,
-              #040810 70%,
-              #000000 100%
-            )`
-          }}
-        />
-        
-        {/* Archipelago image - with top mask to fade into background */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            backgroundImage: `url(${archipelagoUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-            maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 5%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.3) 15%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.85) 30%, black 40%, black 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 5%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.3) 15%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.85) 30%, black 40%, black 100%)'
-          }}
-        />
-        
-        {/* Bottom gradient overlay to fade tree line to black */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ 
-            height: '35%',
-            background: `linear-gradient(to top,
-              #000000 0%,
-              rgba(0, 0, 0, 0.95) 20%,
-              rgba(0, 0, 0, 0.8) 40%,
-              rgba(0, 0, 0, 0.5) 60%,
-              rgba(0, 0, 0, 0.2) 80%,
-              transparent 100%
-            )`
-          }}
-        />
-        
+      <section className="photo-boundary photo-boundary--connect h-screen" aria-label="Finnish Archipelago landscape" data-testid="section-cityscape">
+        <div className="photo-boundary-cover" style={{ backgroundImage: `url(${archipelagoUrl})`, backgroundPosition: 'center center' }} />
         <div className="absolute bottom-8 left-0 right-0 z-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p className="text-white/80 text-sm">Finnish Archipelago</p>

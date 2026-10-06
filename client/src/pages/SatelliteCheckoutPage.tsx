@@ -1,3 +1,4 @@
+import { localPage } from '@shared/site-language';
 import { useSiteLanguage } from "@/hooks/use-site-language";
 import { useState } from 'react';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -81,9 +82,9 @@ export default function SatelliteCheckoutPage() {
         <section aria-labelledby="scan-order-title">
           <h2 id="scan-order-title" className="text-2xl font-semibold mb-4">{c.includedTitle}</h2>
           <p className="text-3xl font-bold mb-6" aria-live="polite">{money}</p>
-          <ul className="space-y-4 list-disc pl-5">{c.included.map(item => <li key={item}>{item}</li>)}</ul>
-          <p className="text-sm text-muted-foreground mt-6">{c.small}</p>
-          <p className="text-sm text-muted-foreground mt-4">{c.boundary}</p>
+          <ul className="space-y-4 list-disc pl-5 text-lg">{c.included.map(item => <li key={item}>{item}</li>)}</ul>
+          <p className="text-lg mt-6">{c.promise}</p><p className="text-lg text-muted-foreground mt-6">{c.small}</p>
+          <p className="text-base text-muted-foreground mt-4">{c.boundary}</p>
         </section>
         <section aria-labelledby="scan-payment-title" className="space-y-5">
           <h2 id="scan-payment-title" className="text-2xl font-semibold">{clientSecret ? (fr ? 'Paiement sécurisé' : 'Secure payment') : (fr ? 'Vos coordonnées' : 'Your details')}</h2>
@@ -113,7 +114,7 @@ export default function SatelliteCheckoutPage() {
             {!stripePromise && price > 0 && <p role="status">{fr ? 'Le paiement en ligne est indisponible. Contactez-nous pour commander.' : 'Online payment is unavailable. Please contact us to order.'}</p>}
             <Button type="submit" className="w-full bg-needs text-white" disabled={busy || (!stripePromise && price > 0)}>{busy ? (fr ? 'Préparation…' : 'Preparing…') : price === 0 ? (fr ? 'Valider mon Scan offert' : 'Claim my free Scan') : `${fr ? 'Continuer vers le paiement' : 'Continue to payment'} — ${money}`}</Button>
           </form> : <Elements stripe={stripePromise} options={{ clientSecret, locale: language, appearance: { theme: 'night', variables: { colorPrimary: '#009999', colorBackground: '#0a1628' } } }}><ScanPayment language={language} amount={SCAN_PRICE} /></Elements>}
-          <p className="text-sm text-muted-foreground">{fr ? 'Votre e-mail sert au reçu et au suivi de votre achat. Vos réponses au Scan et vos résultats sont aussi envoyés à Estève et Anu pour vous accompagner. Cet achat ne vous inscrit pas à une newsletter.' : 'We use your email for your receipt and service updates. Your Scan answers and results are also sent to Estève and Anu to support your coaching. Buying does not subscribe you to a newsletter.'} <Link href="/privacy" className="underline">{fr ? 'Confidentialité (en anglais)' : 'Privacy policy'}</Link>.</p>
+          <p className="text-base text-muted-foreground">{fr ? 'Votre e-mail sert au reçu et au suivi de votre achat. Vos réponses au Scan et vos résultats sont aussi envoyés à Estève et Anu pour vous accompagner. Cet achat ne vous inscrit pas à une newsletter.' : 'We use your email for your receipt and service updates. Your Scan answers and results are also sent to Estève and Anu to support your coaching. Buying does not subscribe you to a newsletter.'} <Link href={localPage('/privacy',language)} className="underline">{fr ? 'Confidentialité' : 'Privacy policy'}</Link>.</p>
           <a href="mailto:esteve@greenelephant.org" className="block underline">esteve@greenelephant.org</a>
         </section>
       </div>

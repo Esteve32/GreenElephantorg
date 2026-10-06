@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { SiGoogle, SiLinkedin } from "react-icons/si";
 import { useQuery } from "@tanstack/react-query";
-import { ScanLocationCarousel, SCAN_LOCATIONS } from "@/components/portal/ScanLocationCarousel";
 
 export default function ClientLoginPage() {
   const [tab, setTab] = useState<string>("login");
@@ -65,19 +64,6 @@ export default function ClientLoginPage() {
   }>({ queryKey: ["/api/portal/settings/public"] });
 
   const showLinkedIn = publicSettings?.linkedinLoginEnabled ?? false;
-
-  const stars = useMemo(
-    () =>
-      Array.from({ length: 150 }, (_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        top: `${30 + Math.random() * 65}%`,
-        opacity: Math.random() * 0.8 + 0.1,
-        duration: `${Math.random() * 3 + 2}s`,
-        delay: `${Math.random() * 5}s`,
-      })),
-    []
-  );
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,33 +185,16 @@ export default function ClientLoginPage() {
           )`
         }}
       >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <ScanLocationCarousel fullScreen startIndex={(() => {
-            const saved = localStorage.getItem("ge_preferred_country");
-            if (!saved) return 0;
-            const idx = SCAN_LOCATIONS.findIndex((l) => l.id === saved);
-            return idx >= 0 ? idx : 0;
-          })()} />
-          <div className="absolute inset-0 bg-black/50" />
-        </div>
-
-        <div
-          className="absolute inset-0 overflow-hidden"
-          style={isTakingOff ? { animation: "takeoffStars 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards" } : undefined}
-        >
-          {stars.map((star) => (
-            <div
-              key={star.id}
-              className="absolute w-px h-px bg-white rounded-full"
-              style={{
-                left: star.left,
-                top: star.top,
-                opacity: star.opacity,
-                animation: `pulse ${star.duration} ease-in-out infinite`,
-                animationDelay: star.delay,
-              }}
-            />
-          ))}
+        <div className="photo-edge-layer absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          <img
+            src="/images/coaching/everyday-confidence-hero-1280.jpg"
+            srcSet="/images/coaching/everyday-confidence-hero-640.jpg 640w, /images/coaching/everyday-confidence-hero-1280.jpg 1280w"
+            sizes="100vw"
+            alt=""
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-black/65" />
         </div>
 
         <div

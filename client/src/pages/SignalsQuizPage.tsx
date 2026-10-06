@@ -1,3 +1,5 @@
+import './homepage.css';
+import './signals-check.css';
 import { PAGE_METADATA } from "@shared/page-metadata";
 import { useState } from "react";
 import { SEO } from "@/components/SEO";
@@ -113,8 +115,7 @@ export default function SignalsQuizPage() {
   };
 
   const handleShare = (platform: "linkedin" | "twitter" | "copy") => {
-    const tier = getScoreTier(score);
-    const shareText = `I just assessed my communication patterns using GreenElephant's Early Warning System. My drift score: ${score}/100 (${tier.label}). Ready to transform your conflicts into trust? Take the assessment: ${window.location.origin}/signals`;
+    const shareText = `I tried GreenElephant’s six-question communication drift check. It helps you reflect on everyday conversations and choose one clearer response. Try it: ${window.location.origin}/signals`;
 
     if (platform === "linkedin") {
       window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + "/signals")}`, "_blank");
@@ -148,19 +149,24 @@ export default function SignalsQuizPage() {
     const isAnswered = answers[question.id] !== undefined;
 
     return (
-      <div className="min-h-screen pt-24 pb-16">
+      <div className="ge-site signals-check min-h-screen pt-24 pb-16">
         <SEO
         {...PAGE_METADATA["/signals"]}
         />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <Badge className="mb-4 bg-destructive text-white">Early Warning System</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'Archivo, sans-serif' }}>
-              Communication Drift Assessment
+            <Badge className="mb-4 bg-needs/10 text-needs border-needs/30">Everyday communication · Free reflection</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Communication drift check.
             </h1>
-            <p className="text-lg text-muted-foreground">
-              {currentQuestion + 1} of {QUIZ_QUESTIONS.length} completed
-            </p>
+            {currentQuestion === 0 && <p className="signals-intro">Drift is the gap between what you mean and how you communicate. Notice one habit, then choose a clearer response.</p>}
+            {currentQuestion === 0 && <div className="signals-context-grid" aria-label="Where this can help">
+              <div><h2>With yourself</h2><p>What do I need? What am I assuming?</p></div>
+              <div><h2>With people</h2><p>Did I say it clearly? Did we understand each other?</p></div>
+              <div><h2>With AI</h2><p>Did I explain my goal and tone? Does the answer fit?</p></div>
+            </div>}
+            {currentQuestion === 0 && <p className="signals-reading-note">Six questions about everyday conversations. Use one insight with people, yourself or AI. A reflection aid, not a diagnosis or prompting test.</p>}
+            <p className="text-lg text-muted-foreground" aria-live="polite">Question {currentQuestion + 1} of {QUIZ_QUESTIONS.length}</p>
           </div>
 
           <div className="mb-8">
@@ -205,6 +211,7 @@ export default function SignalsQuizPage() {
                 </div>
               </RadioGroup>
 
+              {currentQuestion === QUIZ_QUESTIONS.length - 1 && <p className="signals-reading-note">“See Results” sends your answers to GreenElephant, where they are stored and used for a comparison average. Email is optional.</p>}
               <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
                 <Button
                   variant="outline"
@@ -234,7 +241,7 @@ export default function SignalsQuizPage() {
   // Processing Stage
   if (stage === "processing") {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+      <div className="ge-site signals-check min-h-screen pt-24 pb-16 flex items-center justify-center">
         <div className="text-center">
           <motion.div
             animate={prefersReducedMotion ? {} : {
@@ -249,9 +256,9 @@ export default function SignalsQuizPage() {
           >
             <AlertTriangle className="h-24 w-24 text-needs mx-auto mb-6" />
           </motion.div>
-          <h2 className="text-3xl font-bold mb-4">Analyzing Your Patterns...</h2>
+          <h2 className="text-3xl font-bold mb-4">Preparing your reflection…</h2>
           <p className="text-muted-foreground">
-            Calculating your communication drift score
+            Summarising the answers you chose
           </p>
         </div>
       </div>
@@ -263,18 +270,19 @@ export default function SignalsQuizPage() {
     const tier = getScoreTier(score);
     const TierIcon = tier.icon;
     const topRisks = getTopRiskLenses(answers);
-    const avgScore = averageData?.averageScore ?? averageScore ?? 50;
+    const avgScore = averageData?.averageScore ?? averageScore;
+    const reflection = score <= 35 ? {title: 'Keep a useful habit.', text: 'Your responses point to fewer of these drift patterns today. Pick one habit to keep practising.'} : score <= 70 ? {title: 'Choose one small adjustment.', text: 'Your responses describe a mix of patterns. Start with one conversation where a clearer request could help.'} : {title: 'Pause and explore one pattern.', text: 'You selected more of these drift patterns. Choose one situation to reflect on, with support if useful.'};
 
     return (
-      <div className="min-h-screen pt-24 pb-16">
+      <div className="ge-site signals-check min-h-screen pt-24 pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <Badge className={`mb-4 bg-${tier.color} text-white`}>{tier.label}</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'Archivo, sans-serif' }}>
-              Your Drift Score: {score}/100
+            <Badge className={`mb-4 bg-${tier.color} text-white`}>Your answers today</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Your reflection score: {score}/100
             </h1>
             <p className="text-lg text-muted-foreground">
-              Community Average: {Math.round(avgScore)}/100
+              {avgScore === null ? "Comparison average unavailable" : `Comparison average: ${Math.round(avgScore)}/100`}
             </p>
           </div>
 
@@ -283,16 +291,17 @@ export default function SignalsQuizPage() {
               <div className="flex items-center gap-3 mb-2">
                 <TierIcon className={`h-12 w-12 text-${tier.color}`} />
                 <div>
-                  <CardTitle className="text-2xl">{tier.title}</CardTitle>
+                  <CardTitle className="text-2xl">{reflection.title}</CardTitle>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-lg">{tier.description}</p>
+              <p className="text-lg">{reflection.text}</p>
+              <p className="signals-reading-note">This score summarises your responses. It does not objectively measure your communication, predict performance or assess your AI skills.</p>
               <div>
                 <p className="font-semibold mb-3">Next Steps:</p>
                 <ul className="space-y-2">
-                  {tier.guidance.map((item, idx) => (
+                  {['Name what you wanted to communicate.', 'Check one assumption with the other person.', 'For an AI draft, state your goal and tone, then check the answer.'].map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">
                       <CheckCircle2 className={`h-5 w-5 text-${tier.color} flex-shrink-0 mt-0.5`} />
                       <span>{item}</span>
@@ -306,9 +315,9 @@ export default function SignalsQuizPage() {
           {topRisks.length > 0 && (
             <Card className="backdrop-blur-sm bg-card/50 border-white/10 mb-8">
               <CardHeader>
-                <CardTitle>Your Top Risk Lenses</CardTitle>
+                <CardTitle>Two perspectives to explore</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  These areas show the highest drift signals
+                  These reflect the answers you selected. They are starting points for reflection.
                 </p>
               </CardHeader>
               <CardContent>
@@ -380,7 +389,7 @@ export default function SignalsQuizPage() {
                   data-testid="button-retake-quiz"
                 >
                   <RefreshCw className="mr-2 h-5 w-5" />
-                  Retake Assessment
+                  Reflect again
                 </Button>
               </div>
             </div>
@@ -452,9 +461,9 @@ export default function SignalsQuizPage() {
           )}
 
           <div className="mt-8 text-center">
-            <Link href="/choose-your-path">
+            <Link href="/scan">
               <Button variant="outline" size="lg" data-testid="button-choose-path">
-                Explore Coaching & Retreats
+                Explore the Satellite Scan — €99.95
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

@@ -32,7 +32,7 @@ export function ScanOptions({ language }: { language: SiteLanguage }) {
       <form onSubmit={submit} className="ge-scan-form">
         <label htmlFor="scan-updates-name">{fr ? 'Votre nom (facultatif)' : 'Your name (optional)'}<input id="scan-updates-name" autoComplete="name" value={name} onChange={event=>setName(event.target.value)} /></label>
         <label htmlFor="scan-updates-email">{fr ? 'Votre adresse e-mail' : 'Your email address'}<input id="scan-updates-email" type="email" autoComplete="email" required value={email} onChange={event=>setEmail(event.target.value)} /></label>
-        <div className="ge-checkbox"><input id="scan-updates-consent" type="checkbox" required checked={consent} onChange={event=>setConsent(event.target.checked)} /><label htmlFor="scan-updates-consent">{consentText} <a href="/privacy">{fr ? 'Confidentialité (en anglais)' : 'Privacy policy'}</a></label></div>
+        <div className="ge-checkbox"><input id="scan-updates-consent" type="checkbox" required checked={consent} onChange={event=>setConsent(event.target.checked)} /><label htmlFor="scan-updates-consent">{consentText} <a href={localPage('/privacy',language)}>{fr ? 'Confidentialité' : 'Privacy policy'}</a></label></div>
         <div className="ge-cta-group"><button className="button" type="submit" disabled={!consent || !email || status==='sending'}>{status==='sending' ? (fr ? 'Envoi en cours…' : 'Sending…') : (fr ? 'Recevoir les nouvelles' : 'Get updates')}</button></div>
         {status === 'error' && <p role="alert">{fr ? 'L’envoi n’a pas abouti. Veuillez réessayer.' : 'Your request could not be sent. Please try again.'}</p>}
       </form>}

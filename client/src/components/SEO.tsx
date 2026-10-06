@@ -1,3 +1,4 @@
+import { ORGANIZATION_SCHEMA, discoverySchema, discoveryBreadcrumbs } from "@shared/search-discovery";
 import { siteLanguage, basePagePath, hasFrenchPage, localPage } from "@shared/site-language";
 import { SITE_ORIGIN, DEFAULT_SOCIAL_IMAGE, fullPageTitle, isPrivatePage } from "@shared/page-metadata";
 import { useEffect } from 'react';
@@ -99,29 +100,19 @@ export function SEO({
     // noIndex support for admin/private pages
     updateMeta('robots', (noIndex || isPrivatePage(window.location.pathname)) ? 'noindex, nofollow' : 'index, follow');
 
-    // Organisation schema — injected on every page for AI agent discoverability
-    if (!document.getElementById('org-structured-data')) {
-      const orgScript = document.createElement('script');
+    // Update the shared factual identity, including after client-side navigation.
+    let orgScript = document.getElementById('org-structured-data');
+    if (!orgScript) {
+      orgScript = document.createElement('script');
       orgScript.setAttribute('type', 'application/ld+json');
       orgScript.setAttribute('id', 'org-structured-data');
-      orgScript.textContent = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "GreenElephant",
-        "alternateName": "GreenElephant.org",
-        "url": "https://greenelephant.org",
-        "logo": "https://greenelephant.org/ge-logo-512.png",
-        "description": "Conscious communication platform. Tools, coaching, and retreats built around the Periodic Table of Conscious Communication.",
-        "email": "esteve@greenelephant.org",
-        "areaServed": "Worldwide",
-        "knowsAbout": ["Conscious Communication", "Self-Awareness", "Emotional Intelligence", "Personal Development", "Career Transition Coaching", "Executive Coaching", "Communication Diagnostics", "Flow Theory", "Micro-habits", "Behavioural Change", "Leadership Presence", "Future-Proof Career Skills"],
-        "sameAs": ["https://www.linkedin.com/company/greenelephant-org"],
-        "founder": { "@type": "Person", "name": "Estève Pannetier", "email": "esteve@greenelephant.org" }
-      });
       document.head.appendChild(orgScript);
     }
+    orgScript.textContent = JSON.stringify(ORGANIZATION_SCHEMA);
+    const pageSchema = structuredData ?? discoverySchema(canonicalPath ?? window.location.pathname);
+    const pageBreadcrumbs = breadcrumbs ?? discoveryBreadcrumbs(canonicalPath ?? window.location.pathname);
 
-    if (structuredData) {
+    if (pageSchema) {
       let script = document.getElementById('page-structured-data');
       if (!script) {
         script = document.createElement('script');
@@ -129,7 +120,7 @@ export function SEO({
         script.setAttribute('id', 'page-structured-data');
         document.head.appendChild(script);
       }
-      script.textContent = JSON.stringify(structuredData);
+      script.textContent = JSON.stringify(pageSchema);
     }
 
     if (faqItems && faqItems.length > 0) {
@@ -155,11 +146,11 @@ export function SEO({
       faqScript.textContent = JSON.stringify(faqSchema);
     }
 
-    if (breadcrumbs && breadcrumbs.length > 0) {
+    if (pageBreadcrumbs && pageBreadcrumbs.length > 0) {
       const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
-        "itemListElement": breadcrumbs.map((item, index) => ({
+        "itemListElement": pageBreadcrumbs.map((item, index) => ({
           "@type": "ListItem",
           "position": index + 1,
           "name": item.name,
@@ -189,50 +180,7 @@ export function SEO({
   return null;
 }
 
-// Organisation schema — injected on every page that uses SEO for agent discoverability
-export const ORGANIZATION_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "GreenElephant",
-  "alternateName": "GreenElephant.org",
-  "url": "https://greenelephant.org",
-  "logo": "https://greenelephant.org/ge-logo-512.png",
-  "description": "Human-centred AI literacy and communication coaching. Workshops, practical learning journeys and the Satellite Scan help people use AI while keeping their judgement and voice.",
-  "email": "esteve@greenelephant.org",
-  "areaServed": "Worldwide",
-  "foundingDate": "2022",
-  "knowsAbout": [
-    "Conscious Communication",
-    "Self-Awareness",
-    "Emotional Intelligence",
-    "Personal Development",
-    "Personal Growth",
-    "Resilience",
-    "Social Intelligence",
-    "Career Transition Coaching",
-    "Future-Proof Career Skills",
-    "Executive Coaching",
-    "Leadership Development",
-    "Communication Diagnostics",
-    "Flow Theory",
-    "Micro-habits",
-    "TEAL Organisations",
-    "Behavioural Change",
-    "Leadership Presence",
-    "AI-Assisted Communication",
-    "Ethical Personal Development",
-    "Ethical HR Tools"
-  ],
-  "sameAs": [
-    "https://www.linkedin.com/company/greenelephant-org"
-  ],
-  "founder": {
-    "@type": "Person",
-    "name": "Estève Pannetier",
-    "jobTitle": "Founder & Lead Communication Coach",
-    "email": "esteve@greenelephant.org"
-  }
-};
+export { ORGANIZATION_SCHEMA } from "@shared/search-discovery";
 
 export const PRODUCT_STRUCTURED_DATA = {
   satelliteScan: {
@@ -320,8 +268,8 @@ export const PRODUCT_STRUCTURED_DATA = {
   flowCheck: {
     "@context": "https://schema.org",
     "@type": ["SoftwareApplication", "Service"],
-    "name": "Check-my-FLOW — Free Flow Assessment",
-    "description": "Free 5-minute assessment based on Csikszentmihalyi's 1988 flow model. Measures perceived Motivation, Challenge, and Competence in a communication situation. Maps you to Flow, Challenge/Stress, Comfort, or Danger/Apathy zones.",
+    "name": "Flow Check — Communication Reflection",
+    "description": "Reflect on motivation, challenge and competence in one communication situation. Use three ratings to choose a practical next step.",
     "url": "https://greenelephant.org/flow-check",
     "applicationCategory": "Assessment Tool",
     "serviceType": "Communication Assessment",

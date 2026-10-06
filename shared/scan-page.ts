@@ -1,3 +1,4 @@
+import { renderCommunicationConnections } from './communication-connections';
 import { scanLiteracy, type ScanLanguage } from './scan-literacy';
 import { localPage } from './site-language';
 import { DISCOVERY_URL, escapeCopy as e } from './coaching-pages';
@@ -20,7 +21,7 @@ const frenchTestimonials = [
 export const scanPageCopy = {
   en: {
     eyebrow: 'Satellite Scan · AI literacy',
-    intro: 'Notice your communication habits. Use what you learn to give AI clearer instructions, keep your own voice and check its answers.',
+    intro: scanLiteracy.en.intro,
     offer: 'A personal communication assessment, a dashboard prepared by a coach, and prompts and exercises to help you practise.',
     buy: 'Get your Satellite Scan — €99.95',
     notice: 'Questionnaire and video guides currently in English. Automatic translations may be inaccurate.',
@@ -29,7 +30,9 @@ export const scanPageCopy = {
     how: 'How it works.',
     steps: ['Buy your Scan and check your email for the next steps.', 'Complete the questionnaire at your own pace.', 'Use your dashboard and prompts to explore a real task and review what you learn.'],
     voiceTitle: 'Bring your own voice to AI.',
-    voice: 'Start with your goal, your preferred tone and what matters to you. Practise turning those choices into a clear request. Read the answer, check it and change what doesn’t fit.',
+    voice: 'Choose your goal, tone and boundaries. Turn a few useful Scan insights into a short brief. Check the AI draft and change what doesn’t fit.',
+    briefTitle: 'A brief you can try',
+    brief: 'Goal: explain a delay. Tone: clear and calm. Boundary: no invented promises. Check: dates and next steps.',
     privacy: 'Share only what an AI tool needs. Leave out private client or workplace information.',
     faqTitle: 'Your questions.',
     faq: [
@@ -60,8 +63,8 @@ export const scanPageCopy = {
   },
   fr: {
     eyebrow: 'Satellite Scan · Apprendre à utiliser l’IA',
-    intro: 'Repérez vos habitudes de communication. Appuyez-vous sur ce que vous découvrez pour donner des consignes plus claires à l’IA, garder votre propre voix et vérifier ses réponses.',
-    offer: 'Un bilan personnel de communication, un tableau de bord préparé par un coach, et des consignes et exercices pour pratiquer.',
+    intro: scanLiteracy.fr.intro,
+    offer: 'Un questionnaire sur vos habitudes de communication, un tableau de bord préparé par un coach et des exercices pour vous entraîner, avec ou sans IA.',
     buy: 'Acheter votre Satellite Scan — 99,95 €',
     notice: 'Questionnaire et guides vidéo actuellement en anglais. Les traductions automatiques peuvent être inexactes.',
     includedTitle: 'Ce qui est inclus.',
@@ -69,7 +72,9 @@ export const scanPageCopy = {
     how: 'Comment ça marche.',
     steps: ['Achetez votre Scan, puis consultez les prochaines étapes dans votre boîte mail.', 'Répondez au questionnaire à votre rythme.', 'Utilisez votre tableau de bord et les consignes pour essayer une tâche réelle et faire le point.'],
     voiceTitle: 'Gardez votre voix dans vos échanges avec l’IA.',
-    voice: 'Partez de votre objectif, du ton souhaité et de ce qui compte pour vous. Entraînez-vous à transformer ces repères en une demande claire. Lisez la réponse, vérifiez-la et changez ce qui ne vous convient pas.',
+    voice: 'Choisissez votre objectif, le ton et les limites. Transformez quelques repères utiles du Scan en une courte fiche. Vérifiez le brouillon de l’IA et ajustez-le.',
+    briefTitle: 'Une fiche à essayer',
+    brief: 'Objectif : expliquer un retard. Ton : clair et calme. Limite : aucun engagement inventé. À vérifier : dates et prochaines étapes.',
     privacy: 'Ne partagez avec un outil d’IA que les informations nécessaires. Écartez les données privées de vos clients ou de votre travail.',
     faqTitle: 'Vos questions.',
     faq: [
@@ -92,34 +97,36 @@ export const scanPageCopy = {
     translation: 'Traductions des témoignages en anglais.',
     guaranteeTitle: 'Garantie de satisfaction de 14 jours',
     guarantee: 'Si, après avoir reçu votre tableau de bord personnalisé, vous estimez que le Satellite Scan ne vous a pas apporté d’éclairage utile, contactez-nous sous 14 jours pour un remboursement intégral. Sans justification à fournir.',
-    terms: 'Conditions de service (en anglais)', privacyLink: 'Politique de confidentialité (en anglais)',
+    terms: 'Conditions de service', privacyLink: 'Politique de confidentialité',
     training: 'Parlons de vos besoins de formation', more: 'Découvrir votre Scan',
-    freeTitle: 'Essayez un premier petit pas.',
-    freeText: 'Faites le point sur votre motivation, le défi perçu et votre confiance dans une situation de votre choix. Aucune adresse e-mail n’est nécessaire.',
-    freeLink: 'Faire le bilan de fluidité gratuit (en anglais)',
+    freeTitle: 'Commencez par un exercice gratuit.',
+    freeText: 'Choisissez une situation et faites le point sur votre motivation, la difficulté ressentie et votre confiance. Aucune adresse e-mail n’est nécessaire.',
+    freeLink: 'Essayer le Flow Check gratuit (en anglais)',
   },
 };
 
 export function renderScanPageBody(language: ScanLanguage): string {
   const c = scanPageCopy[language], acx = scanLiteracy[language];
   const checkout = `${localPage('/checkout', language)}?product=satellitescan&lang=${language}`;
-  const buy = (position: string) => `<div class="ge-cta-group"><a class="button" href="${e(checkout)}" data-testid="button-get-scan-${position}">${e(c.buy)} <span aria-hidden="true">↗</span></a><p class="ge-note scan-language-notice">${e(c.notice)}</p></div>`;
+  const buy = (position: string) => `<div class="ge-cta-group"><a class="button" href="${e(checkout)}" data-testid="button-get-scan-${position}">${e(c.buy)} <span aria-hidden="true">↗</span></a><p class="scan-brand-promise">${e(acx.promise)}<span class="scan-language-notice">${e(c.notice)}</span></p></div>`;
   const detail = (title: string, text: string, link?: [string,string]) => `<details><summary>${e(title)}</summary><p>${e(text)}</p>${link ? `<p><a class="text-link" href="${link[0]}">${e(link[1])} →</a></p>` : ''}</details>`;
   return `
-    <section class="ge-landing-hero ge-scan-hero"><div class="wrap"><p class="eyebrow">${e(c.eyebrow)}</p><h1>${e(acx.title)}</h1><p class="ge-lead">${e(c.intro)}</p>${buy('hero')}<p class="ge-note">${e(c.offer)}</p><a class="ge-scroll" href="#scan-more">${e(c.more)} <span aria-hidden="true">↓</span></a></div></section>
+    <div class="scan-elevator" aria-hidden="true"><span></span></div>
+    <section class="ge-landing-hero ge-scan-hero"><img class="scan-sky" src="/images/website/earth-orbit-1600.jpg" srcset="/images/website/earth-orbit-640.jpg 640w, /images/website/earth-orbit-1600.jpg 1600w" sizes="100vw" alt="" fetchpriority="high" decoding="async"><div class="wrap"><p class="eyebrow">${e(c.eyebrow)}</p><h1>${e(acx.title)}</h1><p class="ge-lead">${e(c.intro)}</p>${buy('hero')}<a class="ge-scroll" href="#scan-more">${e(c.more)} <span aria-hidden="true">↓</span></a></div></section>
     ${renderRestoredScanSections(language)}
-    <section class="ge-band"><div class="section wrap ge-split"><div><h2>${e(c.voiceTitle)}</h2><p>${e(c.voice)}</p><p class="ge-note">${e(c.privacy)}</p></div><div><h2>${e(c.how)}</h2><ol class="ge-scan-steps">${c.steps.map(item=>`<li>${e(item)}</li>`).join('')}</ol></div></div></section>
-    <section class="section wrap"><h2>${e(acx.levelsTitle)}</h2><p>${e(acx.levelsIntro)}</p><div class="ge-acx-links">${acx.levels.map(([title,text],i)=>`<div><a class="ge-acx-link" href="${localPage(`/blog/acx-levels-ai-literacy#acx-${i+1}`,language)}"><img src="/images/acx/acx-${i+1}-outline.svg" width="44" height="44" alt=""><span>ACX ${i+1}<strong>${e(title)}</strong></span></a><p>${e(text)}</p></div>`).join('')}</div><a class="text-link" href="${localPage('/blog/acx-levels-ai-literacy',language)}">${e(acx.guide)} →</a></section>
+    <section class="section wrap" id="scan-connections">${renderCommunicationConnections(language, 'scan-connection-map')}</section>
+    <section class="ge-band"><div class="section wrap ge-split"><div><h2>${e(c.voiceTitle)}</h2><p>${e(c.voice)}</p><p class="ge-note">${e(c.privacy)}</p><p class="ge-note">${e(acx.small)}</p></div><aside class="ge-example" aria-label="${e(c.briefTitle)}"><h3>${e(c.briefTitle)}</h3><p>${e(c.brief)}</p></aside></div></section>
+    <section class="section wrap" id="scan-acx"><h2>${e(acx.levelsTitle)}</h2><p>${e(acx.levelsIntro)}</p><div class="ge-acx-links">${acx.levels.map(([title,text],i)=>`<div><a class="ge-acx-link" href="${localPage(`/blog/acx-levels-ai-literacy#acx-${i+1}`,language)}"><img src="/images/acx/acx-${i+1}-outline.svg" width="44" height="44" alt=""><span>ACX ${i+1}<strong>${e(title)}</strong></span></a><p>${e(text)}</p></div>`).join('')}</div><a class="text-link" href="${localPage('/blog/acx-levels-ai-literacy',language)}">${e(acx.guide)} →</a></section>
     <section class="ge-band"><div class="section wrap ge-split"><h2>${e(c.faqTitle)}</h2><div class="ge-questions">
       ${restoredScan[language].FAQ_ITEMS.map(item=>detail(item.question,item.answer,'linkUrl' in item && item.linkUrl ? [item.linkUrl,item.linkText!] : undefined)).join('')}
       ${c.faq.filter((_,i)=>i===0||i===2).map(item=>detail(item.question,item.answer)).join('')}
       ${detail(c.framework,c.frameworkText,['/periodic-table',c.frameworkLink])}
-      ${detail(c.situations,c.situationsText)}${detail(c.compare,c.compareText)}
+      ${detail(c.situations,c.situationsText)}
       ${detail(c.resources,c.resourcesText,['/resources',c.resourcesLink])}
     </div></div></section>
     <section class="section wrap" id="scan-testimonials"><h2>${e(c.testimonials)}</h2>${c.translation ? `<p class="ge-note">${e(c.translation)}</p>` : ''}<div class="ge-scan-quotes">${testimonials.map((t,i)=>`<figure><blockquote>${e(language==='fr'?frenchTestimonials[i][0]:t.quote)}</blockquote><figcaption>${e(t.name)} · ${e(language==='fr'?frenchTestimonials[i][1]:t.role)}, ${e(language==='fr'?frenchTestimonials[i][2]:t.country)}</figcaption></figure>`).join('')}</div></section>
     ${renderRestoredProcess(language)}
-    <section class="section wrap ge-landing-close"><h2>${e(c.guaranteeTitle)}</h2><p>${e(c.guarantee)}</p>${buy('closing')}<p class="ge-note ge-terms"><a href="/terms">${e(c.terms)}</a><a href="/privacy">${e(c.privacyLink)}</a></p><a class="text-link" href="${DISCOVERY_URL}" target="_blank" rel="noopener noreferrer">${e(c.training)} ↗</a></section>
+    <section class="section wrap ge-landing-close"><h2>${e(c.guaranteeTitle)}</h2><p>${e(c.guarantee)}</p>${buy('closing')}<p class="ge-note ge-terms"><a href="${localPage('/terms',language)}">${e(c.terms)}</a><a href="${localPage('/privacy',language)}">${e(c.privacyLink)}</a></p><a class="text-link" href="${DISCOVERY_URL}" target="_blank" rel="noopener noreferrer">${e(c.training)} ↗</a></section>
     <section class="ge-band"><div class="section wrap"><h2>${e(c.freeTitle)}</h2><p>${e(c.freeText)}</p><div class="ge-cta-group"><a class="text-link" href="/flow-check">${e(c.freeLink)} →</a></div></div></section>
   `;
 }
