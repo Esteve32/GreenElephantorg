@@ -7,6 +7,8 @@ let fixture:any;
 before(async()=>{
  const root=dirname(fileURLToPath(import.meta.url));
  const mocks:Record<string,string>={
+    // These tests isolate the legacy-disabled link path; real activation SQL is covered separately.
+    './scan-order-link-runtime': 'export const createConfiguredScanReference=()=>async()=>undefined;export const hasScanSubmissionAwaitingReview=async()=>false;',
   './db': `let state={purchases:[],settings:[]},failLocale=false,tail=Promise.resolve();
    export function reset(purchases=[],settings=[],fail=false){state={purchases,settings};failLocale=fail;tail=Promise.resolve();}
    export function snapshot(){return structuredClone(state);}

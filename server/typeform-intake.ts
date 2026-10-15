@@ -1,3 +1,4 @@
+import type { SignedTypeformOriginal } from './typeform-originals';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { verifyTypeformSignature } from './delivery-security';
@@ -30,7 +31,7 @@ export type TypeformReceipt = {
   contentVersion?: number; contentDigest?: string; labelsDigest?: string;
 };
 export type TypeformIntakeOutcome = 'recorded' | 'partial' | 'review' | 'duplicate';
-export type TypeformIntakeStore = { receive(receipt: TypeformReceipt): Promise<{ outcome: TypeformIntakeOutcome; replayed: boolean }> };
+export type TypeformIntakeStore = { receive(receipt: TypeformReceipt, original?: SignedTypeformOriginal): Promise<{ outcome: TypeformIntakeOutcome; replayed: boolean }> };
 export const typeformDigest = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 
 /** The caller supplies reviewed form/hidden-field mapping; there are no live defaults. */
@@ -77,7 +78,7 @@ export function createTypeformIntakeHandler(deps: {
     try {
       if (!(await deps.enabled())) throw new TypeformIntakeError(503);
       const receipt = parseTypeformReceipt(req.body, req.headers['typeform-signature'], deps.secret(), deps.mapping(), deps.now?.());
-      const result = await deps.store.receive(receipt);
+      const result = await deps.store.receive(receipt,{raw:req.body,signature:String(req.headers['typeform-signature'])});
       // Receipt acknowledgement is neither mail acceptance nor completed report delivery.
       return res.status(result.outcome === 'review' ? 202 : 200).json({ received: true, outcome: result.outcome, replayed: result.replayed, emailDelivery: 'not_attempted' });
     } catch (error) {

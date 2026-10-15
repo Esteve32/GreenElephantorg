@@ -1,3 +1,4 @@
+import { createConfiguredScanReference,hasScanSubmissionAwaitingReview } from './scan-order-link-runtime';
 import { sendClaimedEmail } from './claimed-email';
 import { eq } from 'drizzle-orm';
 import { db } from './db';
@@ -43,9 +44,10 @@ export async function recordPaidScan(id:string,email:string,name:string|null,lan
   return {purchase,notifyAllowed:marker?.value==='en'||marker?.value==='fr'};
  });
 }
+const orderReference=createConfiguredScanReference(db,()=>process.env);
 export async function notifyScanPurchase(purchase:SatellitescanPurchase) {
  const kind='scan-purchase',id=purchase.id;
- return sendClaimedEmail({claim:()=>claimEmailOperation(kind,id),finish:accepted=>finishEmailOperation(kind,id,accepted),send:async()=>sendSatellitescanPurchaseEmail({customerEmail:purchase.customerEmail,customerName:purchase.customerName,amount:purchase.amount,paymentIntentId:purchase.stripePaymentIntentId,purchaseId:id,language:await purchaseLanguage(id),idempotencyKey:operationKey(kind,id)})});
+ return sendClaimedEmail({claim:()=>claimEmailOperation(kind,id),finish:accepted=>finishEmailOperation(kind,id,accepted),send:async()=>sendSatellitescanPurchaseEmail({customerEmail:purchase.customerEmail,customerName:purchase.customerName,amount:purchase.amount,paymentIntentId:purchase.stripePaymentIntentId,purchaseId:id,language:await purchaseLanguage(id),typeformReference:await orderReference(purchase),idempotencyKey:operationKey(kind,id)})});
 }
 export type ScanPurchaseEmailRecovery = 'accepted' | 'reconciliation_required' | 'historical_review_required' | 'ineligible';
 
@@ -67,11 +69,12 @@ export async function remindScanOnce(purchase:SatellitescanPurchase) {
  const [current]=await db.select().from(satellitescanPurchases)
   .where(eq(satellitescanPurchases.id,id)).limit(1);
  if(!current || !isScanReminderDue(current)) return false;
+ if(process.env.TYPEFORM_ORDER_INTAKE_ENABLED==='true'&&await hasScanSubmissionAwaitingReview(db,id))return false;
  const state=await claimEmailOperation(kind,id);
  if(state!=='claimed') return false;
  let accepted=false;
  try {
-  accepted=await sendSatellitescanReminderEmail(current.customerEmail,current.customerName,language,operationKey(kind,id));
+  accepted=await sendSatellitescanReminderEmail(current.customerEmail,current.customerName,language,operationKey(kind,id),await orderReference(current));
   if(accepted) await storage.updateSatellitescanReminderCount(id,1);
   return accepted;
  } finally {await finishEmailOperation(kind,id,accepted);}

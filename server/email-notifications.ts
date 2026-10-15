@@ -1,3 +1,4 @@
+import type { ScanTypeformReference } from '../shared/scan-typeform-link';
 import { brandedEmailWrapper } from './branded-email';
 import { scanServiceEmail } from './scan-service-email';
 import { escapeEmailHtml } from './scan-results-email';
@@ -70,6 +71,7 @@ interface SatellitescanPurchaseData {
   amount: string;
   paymentIntentId: string;
   purchaseId: string;
+  typeformReference?: ScanTypeformReference;
 }
 
 export async function sendPurchaseNotification(data: PurchaseNotificationData) {
@@ -251,7 +253,7 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
     const { client, fromEmail } = await getUncachableResendClient();
     const adminEmail = 'esteve@greenelephant.org';
     
-    const customerMessage = { from: fromEmail, to:data.customerEmail, replyTo:'esteve@greenelephant.org', ...scanServiceEmail('purchase',data.customerName,data.language) };
+    const customerMessage = { from: fromEmail, to:data.customerEmail, replyTo:'esteve@greenelephant.org', ...scanServiceEmail('purchase',data.customerName,data.language,data.typeformReference) };
     const adminText = `Satellite Scan purchase / Achat Satellite Scan\nCustomer / Client: ${data.customerName || ''}\nEmail: ${data.customerEmail}\nAmount / Montant: EUR ${data.amount}\nPayment / Paiement: ${data.paymentIntentId}\nPurchase / Achat: ${data.purchaseId}\nLanguage / Langue: ${data.language || 'en'}\nPrepare the dashboard after the participant submits the Scan. / Préparer le tableau de bord après la réponse au Scan.\nCustomer email acceptance and delivery are checked separately. / L’acceptation et la livraison de l’e-mail client sont vérifiées séparément.`;
     const adminMessage = {from:fromEmail,to:adminEmail,replyTo:'esteve@greenelephant.org',subject:'Satellite Scan purchase / Achat Satellite Scan',text:adminText,html:'<pre style="white-space:pre-wrap">'+escapeEmailHtml(adminText)+'</pre>'};
 
@@ -281,11 +283,11 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
   }
 }
 
-export async function sendSatellitescanReminderEmail(customerEmail:string,customerName:string|null,language:'en'|'fr'='en',idempotencyKey?:string) {
+export async function sendSatellitescanReminderEmail(customerEmail:string,customerName:string|null,language:'en'|'fr'='en',idempotencyKey?:string,typeformReference?:ScanTypeformReference) {
  try {
   if (!(await isConnectorEnabled('resend'))) return false;
   const {client,fromEmail}=await getUncachableResendClient();
-  await client.emails.send({from:fromEmail,to:customerEmail,replyTo:'esteve@greenelephant.org',...scanServiceEmail('reminder',customerName,language)},idempotencyKey?{idempotencyKey}:undefined);
+  await client.emails.send({from:fromEmail,to:customerEmail,replyTo:'esteve@greenelephant.org',...scanServiceEmail('reminder',customerName,language,typeformReference)},idempotencyKey?{idempotencyKey}:undefined);
   console.log('Scan reminder accepted; delivery unverified');return true;
  } catch {console.error('Scan reminder acceptance unconfirmed');return false;}
 }

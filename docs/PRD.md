@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.27.5**.
+One PRD, two product sections plus shared-system requirements. Version: **2.27.6**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -1693,6 +1693,26 @@ Runtime gates and configuration names are documented in
 The owner authorises merging the disabled foundation under DEC-AIL-101 while the
 remaining implementation stays explicitly unfinished. Do not mistake the source
 merge, passing tests or published Typeform text for backend activation.
+
+<a id="ai-lit-typeform-runtime-20261015"></a>
+### Next Typeform batch: published parameter and disabled runtime integration
+
+Under [DEC-AIL-102](DECISION_LOG.md#dec-ail-102), this section updates the earlier
+privacy-completion table for the next bounded batch. PR #63 is merged at
+`7dfb3ba39fc8ea6cf58c850222103bd7048a72b4`; source publication is not Replit deployment.
+
+| Boundary | Completed evidence | Gate still open |
+| --- | --- | --- |
+| Typeform | Public, saved and republished. `service_reference` is the only newly declared hidden parameter; no visible question/logic changes beyond the earlier approved wording. | Supervised actual signed complete submission and exact-response recovery, with a designated isolated target. |
+| Existing purchase/reminder journey | Optional runtime wiring puts a stable order reference into the same URL and recorded language; it reuses original expiry and pauses reminders when a qualifying response awaits review. | New flags OFF; separate keys and an explicitly reviewed lifetime must exist. No customer verification step or new email added. |
+| Intake at existing webhook | Enabled mode durably captures receipts and encrypted signed final originals before acknowledgement. Missing configuration/storage/connector fails closed, without falling through to email matching. | Original/review/content migrations plus the new additive originals/assignment migration need isolated Neon validation before a connected deployment. Legacy mode remains until explicitly switched. |
+| Owner evidence and coach task | Private/MFA-bound owner can record attestations backed by existing restricted references, then separately resolve the exact order. Raw-answer email and link possession remain insufficient identity evidence. One response/order creates one coach task. | Human evidence must actually exist. Fake browser identities/MFA and fictional attestations do not count as production evidence. |
+| Recovery and preview | Matching protected original labels plus exact Responses API content are required. Changed, missing, unsupported or unavailable content stays held. New completion previews include the trace CC. | No send/approval/transport activation in this batch. Exact live message, recipients, acceptance and delivery need separate review. |
+| Wider privacy | Prior consent/case/outbox/retention foundation remains. | Mailbox history/loop controls, signed per-recipient delivery, routine admin/customer split and weekly UI, provider/mailbox/backup retention/restore and independent full review remain unfinished. No full GDPR compliance claim. |
+
+`npm run typeform:preflight` reads only the public definition. It reports mapping,
+public status and missing marketing mapping honestly; it does not read responses,
+check production credentials, start a backend or clear activation gates.
 
 <a id="ai-lit-release-assembly-20261015"></a>
 ### Unified handover and release preparation — 15 October 2026

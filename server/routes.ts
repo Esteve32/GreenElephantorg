@@ -1,3 +1,4 @@
+import { createTypeformRuntime } from './typeform-runtime';
 import { withConfirmedMarketingPermission } from './privacy-permission';
 import { privacyStore,privacyOperations,privacyEnabled } from './privacy-runtime';
 import { registerPrivacyWorkflowRoutes,registerPublicConsentRoutes } from './privacy-workflow-routes';
@@ -92,6 +93,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerPublicConsentRoutes(app,{store:privacyStore,enabled:privacyEnabled,siteUrl:()=>publicSiteOrigin(process.env.PUBLIC_SITE_URL)});
   registerPrivacyWorkflowRoutes(app,{store:privacyStore,operations:privacyOperations,enabled:privacyEnabled,owner:()=>process.env.ADMIN_OWNER_EMAIL,
     bindings:()=>process.env.PRIVACY_ADMIN_GOOGLE_BINDINGS,siteUrl:()=>publicSiteOrigin(process.env.PUBLIC_SITE_URL),findAdmin:id=>storage.getAdminUserById(id)});
+
+  createTypeformRuntime(db,{env:()=>process.env,connectorEnabled:()=>isConnectorEnabled('typeform'),findAdmin:id=>storage.getAdminUserById(id),request:(url,init)=>fetch(url,init)}).register(app);
 
   app.use("/api/admin", auditMiddleware);
 

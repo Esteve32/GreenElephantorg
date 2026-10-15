@@ -1,13 +1,15 @@
+import type { TypeformOriginalCodec,SignedTypeformOriginal } from './typeform-originals';
 import { and, eq } from 'drizzle-orm';
 import type { db } from './db';
 import { auditLogs, satellitescanPurchases as purchases, scanTypeformBindings as bindings,
-  scanTypeformEvents as events, scanTypeformServiceTasks as tasks } from '@shared/schema';
+  scanTypeformEvents as events, scanTypeformServiceTasks as tasks,scanTypeformOriginals as originals } from '@shared/schema';
 import { TypeformIntakeError, type TypeformIntakeOutcome, type TypeformReceipt } from './typeform-intake';
 
 /** Injected database; no runtime DB import, provider, mail send or scheduler. */
-export function createTypeformIntakeStore(database: Pick<typeof db, 'transaction'>) {
+export function createTypeformIntakeStore(database: Pick<typeof db, 'transaction'>,options?:{originals:TypeformOriginalCodec}) {
   return {
-    async receive(input: TypeformReceipt) {
+    async receive(input: TypeformReceipt,source?:SignedTypeformOriginal) {
+      const protectedOriginal=options&&input.eventType==='form_response'?source?options.originals.seal(input,source):(()=>{throw new TypeformIntakeError(503);})():undefined;
       return database.transaction(async tx => {
         const audit = async (action: string) => {
           await tx.insert(auditLogs).values({ userEmail: 'system:typeform', actionType: action,
@@ -17,13 +19,20 @@ export function createTypeformIntakeStore(database: Pick<typeof db, 'transaction
         const inserted = await tx.insert(events).values({ ...record,
           completionVerified: completionVerified ? 'true' : 'false',
           outcome: 'review', reason: 'unmatched' }).onConflictDoNothing({ target: events.eventId }).returning();
+        const captureOriginal=async()=>{
+          if(!protectedOriginal)return;
+          const saved=await tx.insert(originals).values(protectedOriginal).onConflictDoNothing().returning({id:originals.eventId});
+          if(!saved.length){const [prior]=await tx.select().from(originals).where(eq(originals.eventId,input.eventId));if(!prior||prior.payloadDigest!==protectedOriginal.payloadDigest)throw new TypeformIntakeError(409);}
+        };
         if (!inserted.length) {
           const [prior] = await tx.select().from(events).where(eq(events.eventId, input.eventId));
           if (!prior || prior.payloadDigest !== input.payloadDigest || prior.formId !== input.formId
             || prior.responseId !== input.responseId || prior.eventType !== input.eventType) throw new TypeformIntakeError(409);
+          await captureOriginal();
           await audit('typeform_intake_replay');
           return { outcome: prior.outcome, replayed: true };
         }
+        await captureOriginal();
         let bindingId: string | undefined;
         const finish = async (outcome: TypeformIntakeOutcome, reason: string) => {
           await tx.update(events).set({ outcome, reason, bindingId }).where(eq(events.eventId, input.eventId));

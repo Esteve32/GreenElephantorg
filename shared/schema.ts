@@ -1180,3 +1180,22 @@ export const privacyWorkflowEvents = pgTable('privacy_workflow_events', {
   recordedAt: timestamp('recorded_at', { withTimezone: true }).defaultNow().notNull(),
 }, t => [uniqueIndex('privacy_workflow_event_version_unique').on(t.recordId,t.version),
   index('privacy_workflow_history_idx').on(t.recordId,t.version)]);
+
+// Protected signed originals. Never exposed by the generic privacy record API.
+export const scanTypeformOriginals = pgTable('scan_typeform_originals', {
+  eventId: varchar('event_id').primaryKey().references(() => scanTypeformEvents.eventId, { onDelete: 'restrict' }),
+  formatVersion: integer('format_version').notNull(), keyId: varchar('key_id').notNull(),
+  payloadDigest: varchar('payload_digest', { length: 64 }).notNull(),
+  nonce: text('nonce').notNull(), tag: text('tag').notNull(), ciphertext: text('ciphertext').notNull(),
+  capturedAt: timestamp('captured_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [check('scan_original_format', sql`${t.formatVersion}=1`),
+  check('scan_original_size', sql`length(${t.ciphertext})<=4000000`)]);
+
+export const scanTypeformAssignmentEvidence = pgTable('scan_typeform_assignment_evidence', {
+  reference: varchar('reference').primaryKey(),
+  eventId: varchar('event_id').notNull().references(() => scanTypeformEvents.eventId, { onDelete:'restrict' }),
+  actorId: varchar('actor_id').notNull(),
+  evidence: jsonb('evidence').$type<Record<string, unknown>>().notNull(),
+  requestDigest: varchar('request_digest', { length:64 }).notNull(),
+  recordedAt: timestamp('recorded_at', { withTimezone:true }).notNull().defaultNow(),
+}, t=>[index('scan_assignment_event_idx').on(t.eventId)]);

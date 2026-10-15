@@ -10,6 +10,8 @@ let fixture: any;
 before(async () => {
   const root = dirname(fileURLToPath(import.meta.url));
   const mocks: Record<string, string> = {
+    // These tests isolate the legacy-disabled link path; real activation SQL is covered separately.
+    './scan-order-link-runtime': 'export const createConfiguredScanReference=()=>async()=>undefined;export const hasScanSubmissionAwaitingReview=async()=>false;',
     './db': `export let locale='fr',fail=false;
       export function resetDb(value,unavailable=false){locale=value;fail=unavailable;}
       export const db={select(){return {from(){return {async where(){if(fail)throw Error('private database failure');return locale===undefined?[]:[{value:locale}];}};}};}};`,

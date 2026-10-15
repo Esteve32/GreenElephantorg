@@ -98,7 +98,7 @@ test('bound preview uses participant recipient, original EN/FR and complete text
   for(const eventId of ['synthetic-paid','synthetic-voucher']) {
     await resolve(eventId);const preview=await f.preview(f.actor,eventId,1);
     assert.equal(preview.message.to,eventId==='synthetic-paid'?'participant-0@example.test':'participant-1@example.test');
-    assert.deepEqual(preview.message.cc,['esteve@greenelephant.org','anu@greenelephant.org']);assert.equal(preview.message.from,'service@example.test');
+    assert.deepEqual(preview.message.cc,['esteve@greenelephant.org','anu@greenelephant.org','email@estevepannetier.com']);assert.equal(preview.message.from,'service@example.test');
     assert.equal(preview.approvalStatus,'not_approved');assert.equal(preview.emailDelivery,'not_attempted');
     assert.match(preview.message.text,/Fictional reflection for local review only/);assert.match(preview.message.attachments[0].contentUtf8,/Your fictional reflection/);
     assert.ok(preview.message.text.includes(preview.message.attachments[0].contentUtf8));
