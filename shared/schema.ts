@@ -1160,3 +1160,23 @@ export const scanTypeformReviewActions = pgTable('scan_typeform_review_actions',
 }, t => [uniqueIndex('scan_typeform_review_actions_event_version').on(t.eventId, t.version),
   check('scan_review_action_version', sql`${t.version} > 0`),
   check('scan_review_action_decision', sql`${t.decision} IN ('held','rejected','resolved')`)]);
+
+// AI-LIT privacy workflow records. No MY5 records or raw provider answers.
+export const privacyWorkflowRecords = pgTable('privacy_workflow_records', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  kind: text('kind').notNull(), scopeKey: text('scope_key').notNull(),
+  subjectId: varchar('subject_id').references(() => contacts.id, { onDelete: 'set null' }),
+  version: integer('version').notNull().default(0), data: jsonb('data').$type<Record<string, unknown>>().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [uniqueIndex('privacy_workflow_scope_unique').on(t.kind, t.scopeKey),
+  index('privacy_workflow_subject_idx').on(t.subjectId, t.kind),
+  check('privacy_workflow_version_check', sql`${t.version} >= 0`)]);
+export const privacyWorkflowEvents = pgTable('privacy_workflow_events', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  recordId: varchar('record_id').notNull().references(() => privacyWorkflowRecords.id, { onDelete: 'restrict' }),
+  mutationId: varchar('mutation_id').notNull().unique(), requestDigest: text('request_digest').notNull(),
+  version: integer('version').notNull(), action: text('action').notNull(), actorId: varchar('actor_id').notNull(),
+  evidence: jsonb('evidence').$type<Record<string, unknown>>().notNull(),
+  recordedAt: timestamp('recorded_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [uniqueIndex('privacy_workflow_event_version_unique').on(t.recordId,t.version),
+  index('privacy_workflow_history_idx').on(t.recordId,t.version)]);

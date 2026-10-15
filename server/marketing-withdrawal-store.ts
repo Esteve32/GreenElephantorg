@@ -1,3 +1,4 @@
+import { recordWorkflowWithdrawal } from './privacy-workflow-store';
 import { eq } from 'drizzle-orm';
 import { db } from './db';
 import { adminSettings, contacts, privacyPreferenceEvents } from '@shared/schema';
@@ -24,6 +25,7 @@ const store: WithdrawalStore = {
       await tx.update(contacts).set({ consentGiven: 'false' }).where(eq(contacts.id, contactId));
     },
     async appendOnce(event) {
+      if(event.contactId && process.env.PRIVACY_WORKFLOWS_ENABLED==='true') await recordWorkflowWithdrawal(tx,event.contactId,event.recordedAt);
       const rows = await tx.insert(privacyPreferenceEvents).values(event)
         .onConflictDoNothing({ target: privacyPreferenceEvents.subjectKey })
         .returning({ id: privacyPreferenceEvents.id });

@@ -7,7 +7,7 @@ import { registerRoutes } from "./routes";
 import { registerPortalRoutes } from "./portal-auth";
 import { setupVite, serveStatic, log } from "./vite";
 import { startOnboardingScheduler } from "./onboarding-scheduler";
-import { startDailyPulseScheduler } from "./daily-pulse";
+import { startConfiguredPrivacyWorker } from "./privacy-runtime";
 
 const app = express();
 registerPublicHttp(app);
@@ -107,8 +107,9 @@ app.use((req, res, next) => {
     // Runs every 5 minutes to check for pending Fibonacci sequence emails
     startOnboardingScheduler();
 
-    // Set up daily pulse digest scheduler (runs at 8:00 AM UTC daily)
-    startDailyPulseScheduler();
+    // Routine daily digests are retired. Reviewed weekly work uses a durable
+    // occurrence key; collection and sending remain separately disabled by default.
+    startConfiguredPrivacyWorker();
   });
 })();
 

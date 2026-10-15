@@ -1,3 +1,6 @@
+import { withConfirmedMarketingPermission } from './privacy-permission';
+import { privacyStore,privacyOperations,privacyEnabled } from './privacy-runtime';
+import { registerPrivacyWorkflowRoutes,registerPublicConsentRoutes } from './privacy-workflow-routes';
 import { qrRedirectHandler } from './qr-redirect';
 import { printedQrUrl, safeQrTarget } from '../shared/qr-campaign';
 import { registerRopaRoutes } from './ropa-routes';
@@ -84,6 +87,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     siteUrl: () => process.env.PUBLIC_SITE_URL || 'https://www.greenelephant.org',
     findAdmin: id => storage.getAdminUserById(id), store: createRopaStore(db),
   });
+  // New positive, notice-versioned requests stay pending until fresh confirmation.
+  // The legacy blanket grant and misleading immediate welcome response are retired.
+  registerPublicConsentRoutes(app,{store:privacyStore,enabled:privacyEnabled,siteUrl:()=>publicSiteOrigin(process.env.PUBLIC_SITE_URL)});
+  registerPrivacyWorkflowRoutes(app,{store:privacyStore,operations:privacyOperations,enabled:privacyEnabled,owner:()=>process.env.ADMIN_OWNER_EMAIL,
+    bindings:()=>process.env.PRIVACY_ADMIN_GOOGLE_BINDINGS,siteUrl:()=>publicSiteOrigin(process.env.PUBLIC_SITE_URL),findAdmin:id=>storage.getAdminUserById(id)});
+
   app.use("/api/admin", auditMiddleware);
 
   // Mount MyFive Extension API Router
@@ -714,67 +723,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerEmailPreferenceRoutes(app, {
     secret: () => process.env.EMAIL_UNSUBSCRIBE_SECRET || '',
     withdraw: suppressMarketing,
-  });
-
-  // Newsletter subscription endpoint
-  app.post("/api/newsletter", async (req, res) => {
-    try {
-      const { name, consentText } = req.body;
-      const email = normalizeEmail(req.body.email);
-      if (typeof consentText !== 'string' || !consentText.trim()) return res.status(400).json({message:'Newsletter agreement is required'});
-
-      const contactValidation = insertContactSchema.safeParse({
-        email,
-        name,
-        consentGiven: "true",
-        consentText,
-        source: "newsletter"
-      });
-
-      if (!contactValidation.success) {
-        const validationError = fromError(contactValidation.error);
-        return res.status(400).json({ message: validationError.message });
-      }
-
-      // Check if contact already exists
-      let contact = await storage.getContactByEmail(email);
-      let isNewContact = false;
-      if (!contact) {
-        contact = await storage.createContact(contactValidation.data);
-        isNewContact = true;
-      }
-
-      if (await isMarketingSuppressed(contact.id)) return res.status(409).json({message:'This address is unsubscribed. Contact us to confirm a new subscription.'});
-      await db.update(contacts).set({consentGiven:'true',consentText,consentedAt:new Date()}).where(eq(contacts.id,contact.id));
-      // Add newsletter channel to contact's channels reached
-      await storage.addChannelToContact(email, 'Newsletter');
-
-      // Sync contact to Notion CRM with updated channels (async, don't block response)
-      syncContactWithNotion(contact.id).catch(err => 
-        console.log('Notion sync deferred:', err.message)
-      );
-
-      const subscription = await storage.createNewsletterSubscription({
-        contactId: contact.id
-      });
-
-      if (contactValidation.data.consentGiven === 'true') {
-        sendNewsletterConfirmationEmail({
-          email,
-          name: name || null,
-        }).catch(err => console.log('Newsletter confirmation email failed:', err.message));
-      }
-
-      res.status(201).json({
-        message: "Welcome to the community!",
-        subscription: { id: subscription.id }
-      });
-    } catch (error: any) {
-      console.error("Newsletter subscription error:", error);
-      res.status(500).json({
-        message: "We encountered an issue. Please try again."
-      });
-    }
   });
 
   app.post("/api/scan-interest", async (req, res) => {
@@ -4389,7 +4337,8 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
 
           if (await isMarketingSuppressed(contact.id)) continue;
           const footer = marketingFooter(contact.id);
-          await resend.emails.send({
+          const permission=await withConfirmedMarketingPermission(contact.id,contact.email,async()=>{
+           const sent=await resend.emails.send({
             from: 'GreenElephant <hello@greenelephant.org>',
             to: contact.email,
             subject: subject,
@@ -4407,6 +4356,9 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
               </div>
             `,
           });
+           if(!sent.data?.id)throw Error("provider_acceptance_unknown");return sent.data.id;
+          });
+          if(!permission.allowed)continue;
 
           successCount++;
           await storage.updateBatchEmailRecipient(recipient.id, {
@@ -4698,7 +4650,8 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
           claimed=true;
           const footer = marketingFooter(recipient.contactId);
           const htmlWithTracking = campaign.htmlContent + footer.html;
-          await resend.emails.send({
+          const permission=await withConfirmedMarketingPermission(recipient.contactId,recipient.email,async()=>{
+           const sent=await resend.emails.send({
             from: formattedFrom,
             to: recipient.email,
             subject: campaign.subject,
@@ -4706,6 +4659,9 @@ Analyse the scan data below across ALL 8 lenses, but focus on finding the **top 
             replyTo: "esteve@greenelephant.org",
             headers: footer.headers,
           }, {idempotencyKey:operationKey('newsletter',operationId)});
+           if(!sent.data?.id)throw Error('provider_acceptance_unknown');return sent.data.id;
+          });
+          if(!permission.allowed){await finishEmailOperation('newsletter',operationId,false);claimed=false;continue;}
           await finishEmailOperation('newsletter',operationId,true);
           claimed=false;
           
