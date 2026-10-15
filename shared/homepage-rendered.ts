@@ -8,8 +8,10 @@ export type HomepageLanguage = 'en' | 'fr';
 export const HOMEPAGE_HERO = {
   en: {
     eyebrow: 'AI training built for beginners',
-    headline: 'Start using AI without becoming an AI expert.',
-    promise: 'AI literacy means knowing when to use AI, how to check its answers, and when not to use it. Practise chats and workflows. Explore agents and teamwork.',
+    headline: '4 days to rethink AI.',
+    headlineEmphasis: 'Make it work for you.',
+    promise: 'Ask better questions. Check AI’s answers. Stay in control.',
+    format: '4 part-time days · Small group',
     cta: 'Discuss your training needs',
     ctaNote: 'A discovery call with Estève.',
     explore: 'Explore the four ACX levels',
@@ -17,8 +19,10 @@ export const HOMEPAGE_HERO = {
   },
   fr: {
     eyebrow: 'Une formation à l’IA conçue pour les débutants',
-    headline: 'Utilisez l’IA sans devoir devenir expert.',
-    promise: 'Comprendre l’IA, c’est savoir quand l’utiliser, comment vérifier ses réponses et quand s’en passer. Exercez-vous à dialoguer avec l’IA et à relier des tâches. Découvrez les agents IA et le travail en équipe.',
+    headline: 'Changez de regard sur l’IA en 4 jours.',
+    headlineEmphasis: 'Mettez-la à votre service.',
+    promise: 'Posez de meilleures questions. Vérifiez les réponses de l’IA. Gardez le contrôle.',
+    format: '4 jours à temps partiel · Petit groupe',
     cta: 'Parlons de votre formation',
     ctaNote: 'Un appel découverte avec Estève.',
     explore: 'Découvrir les quatre niveaux ACX',
@@ -140,12 +144,10 @@ const DISCOVERY_URL = 'https://calendly.com/greenelephant/free-ai-literacy-disco
 
 function renderHero(language: HomepageLanguage): string {
   const copy = HOMEPAGE_HERO[language];
-  const headlineBreak = language === 'en'
-    ? 'Start using AI<br><em>without becoming an AI expert.</em>'
-    : 'Utilisez l’IA<br><em>sans devoir devenir expert.</em>';
+  const headlineBreak = `${escapeCopy(copy.headline)}<br><em>${escapeCopy(copy.headlineEmphasis)}</em>`;
   const captions = HOMEPAGE_PATHS[language].items;
   const slides = COACHING_PAGES.map((page, i) => `<img class="home-slide${i === 0 ? ' is-active' : ''}" ${i === 0 ? 'src' : 'data-src'}="/images/coaching/${page.slug}-hero-1280.jpg" ${i === 0 ? 'srcset' : 'data-srcset'}="/images/coaching/${page.slug}-hero-640.jpg 640w, /images/coaching/${page.slug}-hero-1280.jpg 1280w" sizes="100vw" width="1536" height="1024" alt="" aria-hidden="true" decoding="async" ${i === 0 ? 'fetchpriority="high"' : ''} data-caption="${escapeCopy(captions[i].title)}">`).join('');
-  return `<section class="home-photo-hero" aria-labelledby="hero-title"><div class="home-carousel" role="region" aria-label="${language === 'fr' ? 'Cinq façons de commencer' : 'Five ways to begin'}">${slides}<div class="home-photo-heading wrap"><p class="eyebrow">${copy.eyebrow}</p><h1 id="hero-title">${headlineBreak}</h1></div></div><div class="wrap home-carousel-toolbar"><p class="home-scene-caption">01 / 05 · ${captions[0].title}</p><div class="home-carousel-controls" hidden><button type="button" data-carousel="previous" aria-label="${language === 'fr' ? 'Image précédente' : 'Previous image'}">←</button><button type="button" data-carousel="pause">${language === 'fr' ? 'Pause' : 'Pause'}</button><button type="button" data-carousel="next" aria-label="${language === 'fr' ? 'Image suivante' : 'Next image'}">→</button></div></div><div class="wrap hero home-hero-details"><div><p class="intro">${copy.promise}</p><a class="button" href="${DISCOVERY_URL}" target="_blank" rel="noopener">${copy.cta} <span aria-hidden="true">↗</span></a><p class="sub">${copy.ctaNote}</p><a class="descend" href="#acx-levels"><strong>${copy.explore}</strong><small>${copy.stages}</small><span aria-hidden="true">↓</span></a></div></div></section>`;
+  return `<section class="home-photo-hero" aria-labelledby="hero-title"><div class="home-carousel" role="region" aria-label="${language === 'fr' ? 'Cinq façons de commencer' : 'Five ways to begin'}">${slides}<div class="home-photo-heading wrap"><p class="eyebrow">${copy.eyebrow}</p><h1 id="hero-title">${headlineBreak}</h1></div></div><div class="wrap home-carousel-toolbar"><p class="home-scene-caption">01 / 05 · ${captions[0].title}</p><div class="home-carousel-controls" hidden><button type="button" data-carousel="previous" aria-label="${language === 'fr' ? 'Image précédente' : 'Previous image'}">←</button><button type="button" data-carousel="pause">${language === 'fr' ? 'Pause' : 'Pause'}</button><button type="button" data-carousel="next" aria-label="${language === 'fr' ? 'Image suivante' : 'Next image'}">→</button></div></div><div class="wrap hero home-hero-details"><div><p class="intro">${copy.promise}</p><p class="sub home-hero-format">${copy.format}</p><a class="button" href="${DISCOVERY_URL}" target="_blank" rel="noopener">${copy.cta} <span aria-hidden="true">↗</span></a><p class="sub">${copy.ctaNote}</p><a class="descend" href="#acx-levels"><strong>${copy.explore}</strong><small>${copy.stages}</small><span aria-hidden="true">↓</span></a></div></div></section>`;
 }
 
 function renderAcx(language: HomepageLanguage): string {
