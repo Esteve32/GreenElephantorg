@@ -171,12 +171,15 @@ test('footer purpose-first labels distinguish learning, tools and other services
   assert.match(homepage.en.footer, /Explore other coaching/);
 });
 
-test('homepages render the approved beginner hero and tangible ACX path', () => {
+test('homepages render the four-day AI promise and tangible ACX path in both languages', () => {
   for (const language of ['en', 'fr'] as const) {
     const html = homepage[language].main;
     const copy = HOMEPAGE_HERO[language];
     assert.ok(html.includes(copy.eyebrow));
+    assert.ok(html.includes(copy.headline));
+    assert.ok(html.includes(copy.headlineEmphasis));
     assert.ok(html.includes(copy.promise));
+    assert.ok(html.includes(copy.format));
     assert.ok(html.includes(copy.explore));
     assert.ok(html.includes(copy.stages));
     assert.match(html, /href="#acx-levels"/);
@@ -186,8 +189,10 @@ test('homepages render the approved beginner hero and tangible ACX path', () => 
   }
   assert.doesNotMatch(homepage.en.main, /AI training built around people|Learn to use AI with confidence/);
   assert.doesNotMatch(homepage.fr.main, /Des formations à l’IA pensées pour vous|Apprenez à utiliser l’IA avec confiance/);
-  assert.match(HOMEPAGE_HERO.en.promise, /^AI literacy means knowing when to use AI/);
-  assert.match(HOMEPAGE_HERO.fr.promise, /^Comprendre l’IA, c’est savoir quand l’utiliser/);
+  assert.match(HOMEPAGE_HERO.en.headline, /^4 days to rethink AI/);
+  assert.match(HOMEPAGE_HERO.fr.headline, /^Changez de regard sur l’IA en 4 jours/);
+  assert.match(HOMEPAGE_HERO.fr.promise, /Gardez le contrôle/);
+  assert.doesNotMatch(homepage.fr.main, /garder la main/i);
 });
 
 test('homepages place four visible ACX cards directly after the hero', () => {
