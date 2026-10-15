@@ -1,3 +1,4 @@
+import PrivacyWorkflows from '@/components/admin/PrivacyWorkflows';
 import RopaRegister from '@/components/admin/RopaRegister';
 import { AdminTroubleshooting } from '@/components/admin/AdminTroubleshooting';
 import { AdminLearningPanel } from '@/components/admin/AdminLearning';
@@ -14,15 +15,10 @@ import type { PrivacyWithdrawalPage } from '@shared/privacy-admin';
 type State = { kind: 'loading' } | { kind: 'error'; code: string } | { kind: 'ready'; page: PrivacyWithdrawalPage };
 const tabs = [
   ['overview', 'Overview', BookOpen], ['consent', 'Consent history', History],
-  ['inbox', 'Privacy inbox', Inbox], ['health', 'Troubleshooting', Activity],
+  ['notices', 'Notice wording', BookOpen], ['outbox', 'Email review', Inbox], ['retention', 'Retention', History], ['inbox', 'Privacy inbox', Inbox], ['health', 'Troubleshooting', Activity],
   ['recovery', 'Recovery & audit', LockKeyhole],
 ] as const;
 const surface = 'bg-white/5 border-white/10';
-
-function Pending({ title, children }: { title: string; children: React.ReactNode }) {
-  return <Card className={surface}><CardHeader><Badge variant="outline" className="w-fit text-amber-200 border-amber-200/30">Not connected</Badge>
-    <CardTitle>{title}</CardTitle></CardHeader><CardContent className="text-white/70 leading-relaxed">{children}</CardContent></Card>;
-}
 
 export default function RoPAAdmin() {
   const [state, setState] = useState<State>({ kind: 'loading' });
@@ -96,6 +92,7 @@ export default function RoPAAdmin() {
           <p className="text-sm text-white/60">This workspace is being built in stages. Its availability does not certify GDPR compliance. HR and employer payers have no access here.</p>
         </TabsContent>
         <TabsContent value="consent" className="space-y-4">
+          <PrivacyWorkflows kind="consent" accessExpiresAt={page.accessExpiresAt}/>
           <Card className={surface}><CardHeader className="gap-3"><div className="flex justify-between gap-3 flex-wrap"><CardTitle>Marketing withdrawals</CardTitle><Button variant="outline" onClick={refresh}><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button></div>
             <p className="text-white/70">Newest first · up to 25 records per page · times shown in Helsinki. Each page read is audited before records are returned.</p></CardHeader>
             <CardContent>
@@ -113,13 +110,16 @@ export default function RoPAAdmin() {
           </Card>
           <p className="text-sm text-white/60">Event evidence records the withdrawal when received. It does not confirm every provider's current state. Service email preferences are separate.</p>
         </TabsContent>
-        <TabsContent value="inbox"><Pending title="Privacy inbox">The DPO mailbox and responsible people still need confirmation. No emails are imported and no decisions are inferred from correspondence. Human-reviewed decisions will be linked to cases and relevant processing activities.</Pending></TabsContent>
+        <TabsContent value="inbox"><PrivacyWorkflows kind="case" accessExpiresAt={page.accessExpiresAt}/><p className="text-white/60 mt-4">Mailbox import is not connected. Record received requests using their existing references.</p></TabsContent>
+        <TabsContent value="notices"><PrivacyWorkflows kind="notice" accessExpiresAt={page.accessExpiresAt}/></TabsContent>
+        <TabsContent value="outbox"><PrivacyWorkflows kind="attention" accessExpiresAt={page.accessExpiresAt}/></TabsContent>
+        <TabsContent value="retention"><PrivacyWorkflows kind="retention" accessExpiresAt={page.accessExpiresAt}/></TabsContent>
         <TabsContent value="health"><Card className={surface}><CardHeader><CardTitle>What this read confirms</CardTitle></CardHeader><CardContent className="space-y-4 text-white/70">
           <p>The privacy access check, withdrawal-history query and access-audit write succeeded for this request.</p>
           <p>Typeform intake, website consent, provider delivery status, Notion acknowledgement, retention and the weekly admin digest are not checked here.</p>
           <Button variant="outline" onClick={refresh}><RefreshCw className="w-4 h-4 mr-2" />Check again</Button>
         </CardContent></Card></TabsContent>
-        <TabsContent value="recovery"><Pending title="Recovery and audit controls">Activity edits append a version and preserve earlier versions. This workspace cannot edit individual consent evidence, restore marketing consent or grant emergency access. A controlled operator-recovery procedure is documented; live rehearsal, an audit-history viewer and retention controls remain unfinished. Each successful history read already creates a minimal admin audit entry.</Pending></TabsContent>
+        <TabsContent value="recovery"><PrivacyWorkflows kind="recovery" accessExpiresAt={page.accessExpiresAt}/></TabsContent>
       </Tabs>}
     </div>
   </main>;

@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.27.3**.
+One PRD, two product sections plus shared-system requirements. Version: **2.27.4**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -1667,6 +1667,30 @@ website-only help and existing QR storage; no OS data transfer, schema/package
 contract change or OS implementation. Provider mapping, named-recipient gates,
 isolated Neon validation, human message approval and human release remain open.
 [Brochure runbook](operations/qr-brochure.md).
+
+<a id="ai-lit-privacy-completion-20261015"></a>
+### Privacy completion candidate and live Typeform wording — 15 October 2026
+
+This status under [DEC-AIL-100](DECISION_LOG.md#dec-ail-100) supersedes earlier
+"current implementation" descriptions for the paths below. It does not mark the
+whole privacy programme complete. Estève will merge the eventual reviewed PR and
+then prepare Replit separately. GitHub source and live provider settings differ.
+
+| Area | Verified implementation | Still required before activation/completion |
+| --- | --- | --- |
+| Two Typeform questions | Readiness: “Are you ready to start your Satellite Scan?” Optional raw answers: “Which email address should receive your raw Scan answers?” Short descriptions explain the choice beside each question. Published and public definition compared with the original: four text changes only; routing/types/required settings unchanged. | The form is English; this wording edit does not certify its other privacy statements, sensitive questions or timing promises. |
+| Actual Typeform mapping | Stable readiness ID `kyfdA3IJdQ6u`, final answer IDs and accepted/refusal ending IDs are recorded in `server/typeform-mapping.ts`. A signed accepted ending plus required answers is required, rather than readiness alone. V2 recovery ignores generated field/choice refs. | Declare/review the hidden order parameter `service_reference`; inspect an isolated signed complete payload/API recovery; persist protected original evidence; mount the reviewed path at the existing webhook URL; preserve purchase language; complete evidence-backed participant assignment and service dispatch. Same-link order evidence never verifies a person. |
+| Choice history | Immutable bilingual notice versions; fresh pending requests; signed POST confirmation or refusal; withdrawal; same-request deduplication; old/superseded/expired links blocked. No legacy grants inferred. New handlers are feature-gated and old withdrawal remains usable while they are disabled. | Owner-reviewed live notice wording, final confirmation message and supervised delivery; complete other collection-surface adapters and historical reconciliation. |
+| Marketing enforcement | New marketing gates require current notice, confirmed choice, current contact address, no suppression and no recovery hold. The final submission holds the same contact lock as withdrawal. Provider acceptance errors are not success. | Supervised production checks; inventory every remaining optional path. A message already submitted cannot be recalled by a later withdrawal. |
+| Cases and privacy attention | Source-scoped request deduplication; responsible owner; one-calendar-month review target; identity, hold and outcome controls; durable attention work. Restricted panels show history and exact drafts, including trace CC. New workers/sends OFF by default. | Verified mailbox identity/alias mapping, resumable history/cursor reconciliation, loop prevention, per-recipient/provider delivery reconciliation and signed delivery webhook. Unknown/submitting outcomes remain held; no blind retries. Review target is operational, not a legal deadline determination. |
+| Routine admin mail | Automatic daily digest startup removed. Durable weekly occurrence keys and reviewed recipient references exist; restart/DST tested. No weekly schedule or deadline-alert window is selected by default. | Split/gate every mixed immediate admin/customer path, persist routine outstanding tasks, and finish weekly settings/digest UI. No global Resend disablement as a substitute for category preferences. |
+| Retention and recovery | Owner-reviewed metadata rules, bounded expiring dry run, changed-version/hold rejection, explicit application and processing recovery hold/resume. Blank policy periods remain unknown. | Full retention inventory and reviewed legal/business periods; cross-provider/mailbox/backup acknowledgements, restore rehearsal and independent privacy review. Current redaction covers only named workflow metadata; it does not erase contacts, orders, providers or backups. |
+| Review and release | Local SQL/HTTP tests and a fictional browser check. Additive migration prepared, never applied to a connected database. | Designated isolated Neon validation, named/MFA production evidence, final full privacy/security review, Estève's PR review/merge, exact-SHA manual Replit release and public smoke checks. Both existing Replit databases contain data. Issue #43 remains deferred and analytics collection OFF. |
+
+Runtime gates and configuration names are documented in
+[the secrets inventory](operations/secrets.md#privacy-workflow-candidate).
+The PR remains a review candidate until the missing implementation is closed.
+Do not mistake passing local tests or the two published text edits for activation.
 
 <a id="ai-lit-release-assembly-20261015"></a>
 ### Unified handover and release preparation — 15 October 2026

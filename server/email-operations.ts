@@ -1,3 +1,4 @@
+import { confirmedMarketingPermission } from './privacy-permission';
 import { withdrawMarketingWithHistory } from './marketing-withdrawal-store';
 import { eq } from 'drizzle-orm';
 import { db } from './db';
@@ -26,7 +27,7 @@ export async function purchaseLanguage(purchaseId: string): Promise<'en'|'fr'> {
 }
 export async function isMarketingSuppressed(contactId:string):Promise<boolean> {
   const [row]=await db.select().from(adminSettings).where(eq(adminSettings.key,operationKey('marketing-suppressed',contactId))).limit(1);
-  return !!row;
+  return !!row || !(await confirmedMarketingPermission(contactId));
 }
 export async function suppressMarketing(contactId:string):Promise<void> {
   await withdrawMarketingWithHistory(contactId);

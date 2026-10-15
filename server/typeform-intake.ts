@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { verifyTypeformSignature } from './delivery-security';
-import { validScanReferenceField } from '../shared/scan-typeform-link';
+import { typeformMappingSchema, successfulTypeformCompletion } from './typeform-mapping';
 import { normalizeTypeformContent, typeformContentLabels } from './typeform-content';
 
 const reference = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/);
-const configSchema = z.object({ formId: reference, bindingField: z.string().refine(validScanReferenceField), completionFieldRef: reference });
+const configSchema = typeformMappingSchema;
 const eventSchema = z.object({
   event_id: reference,
   event_type: z.enum(['form_response', 'form_response_partial']),
@@ -51,12 +51,7 @@ export function parseTypeformReceipt(raw: Buffer, signature: unknown, secret: st
   const submittedAt = response.submitted_at ? new Date(response.submitted_at) : null;
   if (submittedAt && (!Number.isFinite(submittedAt.getTime()) || submittedAt.getTime() > now.getTime() + 300_000)) throw new TypeformIntakeError(400);
   const proof = response.hidden?.[config.data.bindingField];
-  const readiness = (response.answers ?? []).filter((answer): answer is Record<string, unknown> => {
-    if (!answer || typeof answer !== 'object') return false;
-    const field = (answer as Record<string, unknown>).field;
-    return !!field && typeof field === 'object' && (field as Record<string, unknown>).ref === config.data.completionFieldRef;
-  });
-  const completionVerified = final && readiness.length === 1 && readiness[0].type === 'boolean' && readiness[0].boolean === true;
+  const completionVerified = final && successfulTypeformCompletion(response,config.data);
   let commitment: { contentVersion?: number; contentDigest?: string; labelsDigest?: string } = {};
   if (completionVerified) {
     try {

@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.28.3
+# Green Elephant — Project Decision Log v11.28.4
 
-**Document Version:** `11.28.3`
-**Last Updated:** `2026-10-15T15:54:39+03:00`
+**Document Version:** `11.28.4`
+**Last Updated:** `2026-10-15T17:23:43+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.28.4 | 2026-10-15T17:23:43+03:00 | Estève Pannetier | AI-LIT DEC-AIL-100: verify two published Typeform text edits and stage privacy foundation; reserve merge to owner |
 | 11.28.3 | 2026-10-15T15:54:39+03:00 | Estève Pannetier — explicit GitHub PR/main instruction | AI-LIT: owner authorises consolidated candidate commit/push, GitHub PR and checked merge to main; live activation gates retained |
 | 11.28.2 | 2026-10-15T15:10:03+03:00 | Estève Pannetier — consolidation and preparation request only | AI-LIT: reconcile older handover with one GitHub review path; prepare exact-SHA release and defer analytics activation checks |
 | 11.28.1 | 2026-10-14T23:14:37+03:00 | Estève Pannetier — existing brochure QR choice | AI-LIT: owner retains printed homepage QR; remove replacement prompt and label mixed-source homepage measurement |
@@ -2501,6 +2502,18 @@ decision here when Estève selects one; do not silently change its status.
 - **Decision / affected:** commit the reviewed candidate, push its existing branch, reuse a matching PR or create one if absent, validate its exact head and merge via GitHub checks. Extends DEC-AIL-098 preparation status; REQ-035/036/040/075/076/089/106/109/110 and DEC-AIL-093/095/096/097 remain unchanged. Do not directly force-push main, bundle unrelated dependency PRs, close/resume MY5 PR4 or include ignored backups/private handovers.
 - **Preserved gates:** issue43 configuration/privacy checks deferred, collection OFF; Replit human Republish separate; Typeform mapping/evidence/keys/isolated-Neon, named access/recovery rollout, exact-message/send and production migration gates retained. New service paths stay unconnected. GitHub main is source authority, not proof of deployed source.
 - **Source / cross-repository:** verified pre-publication website main/base b1a8c52784861a98d1f0d3ada39bbbcdda332454 plus95-file candidate; OS main83391d8520a6bfb2e010590686d6e32797490b62 checked with pinned PRD/log. No additional shared contract/data transfer or OS implementation. Actual PR/head/merge receipts must be verified separately after creation.
+
+<a id="dec-ail-100"></a>
+### DEC-AIL-100 — Complete privacy work through review; clarify two live Scan questions
+
+- **Project / date / status:** AI-LIT; 2026-10-15 Europe/Helsinki; implementation and GitHub PR authorised; **Estève reserves merge to main and later Replit publication**. This later instruction supersedes DEC-AIL-099's agent-merge permission for this batch.
+- **Human authority:** Estève requests Typeform mapping and the full privacy work, followed by a PR which he will merge. He then explicitly asks the agent to fix the wording of the two identified questions within Typeform. Existing approved privacy directions remain in force; neither a document nor a handover grants additional live access.
+- **Live wording implementation:** published only the readiness title/description and optional raw-answer email title/description in form `ploJm1N3`. Public definition readback shows exactly those four changes. Question IDs, types, required flags, logic and endings are unchanged. Readiness concerns starting the Scan; raw-answer email remains optional and is neither marketing consent nor purchase/participant verification. No responses were opened, imported or sent.
+- **Local implementation / affected IDs:** REQ-035/036/083/086/087/089/106/108/109; DEC-AIL-089/090/091/095/096 remain the scope. Notice versions, pending/confirmed/refused/withdrawn evidence, cases, exact draft approval, held unknown delivery, reviewed metadata retention, recovery holds and the privacy review panels are a local candidate. New collection, worker and sending flags default OFF. The automatic daily summary startup is removed; weekly time, recipients and reminder window have no selected policy defaults.
+- **Mapping evidence:** actual stable field and ending IDs are inspected. The form has no declared `service_reference` hidden parameter and no separate optional-marketing question. The order-reference/participant-assignment/runtime intake path remains an activation gate. Generated field/choice refs are excluded from v2 recovery comparisons. The two wording changes do not activate this path.
+- **Validation / limits:** synthetic in-memory SQL tests and local HTTP tests exercise notice ordering, withdrawal/stale-link refusal, identity/outcome/hold rules, duplicates, transaction rollback, exact envelope approval, unknown acceptance, weekly occurrences/DST and metadata-only retention. Browser review uses fictional records, no live sender. These are implementation checks, not a full GDPR determination, proof of production migration, mailbox intake, provider delivery, backup restoration or deployment. Remaining work is tracked in the [current PRD status](PRD.md#ai-lit-privacy-completion-20261015).
+- **Source / cross-repository:** website base `ed49cac9d3b458670d64457a4f911a7917953ce3` plus working tree. OS PRD/log inspected at `83391d8520a6bfb2e010590686d6e32797490b62`; GEOS-REQ-002/003/004/005 checked. This candidate stores website-owned records only, adopts no contracts package, creates no OS schema/adapter and transfers no purchases or privacy data to Notion/Google; no paired OS implementation PR is required. A future mailbox/OS adapter requires its own verified receiving-side review.
+- **Release boundary:** keep the PR draft until missing implementation and independent review are resolved. No agent merge, real email, live database operation, GA4 activation, Replit pull or Republish. Issue #43 stays deferred, collection OFF. Preserve the existing manual release issue #31.
 
 ## MY5 pause and historical decisions
 

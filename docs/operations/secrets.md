@@ -71,3 +71,22 @@ candidate. Existing production values are not removed by this code; clean them u
 only during reviewed rollout after verifying the deployed revision. Do not export
 them for review. Follow [admin transition and recovery](admin-access-recovery.md)
 for the named-account preflight, session rejection and controlled operator recovery.
+
+<a id="privacy-workflow-candidate"></a>
+## Privacy workflow candidate
+
+- `PRIVACY_WORKFLOWS_ENABLED=false`: new notice/choice/case operations remain unavailable until the additive migration and access configuration are verified. Existing withdrawal suppression stays active independently while this flag is false. Legacy marketing flags alone no longer authorise campaigns.
+- `PRIVACY_WORKER_ENABLED=false`: no new background privacy work unless explicitly enabled together with workflows. The former daily digest scheduler is no longer started.
+- `PRIVACY_MAIL_SENDING_ENABLED=false`: independent final transport gate. An enabled worker still needs a fingerprint-matched human approval and the Resend connector. Previewing or approving a draft does not turn this flag on.
+- `PRIVACY_CONFIRMATION_KEY`: separate 32-byte key encoded as 64 hexadecimal characters. Never reuse provider/webhook keys; rotation invalidates pending confirmation drafts and links, requiring reconciliation.
+- `PRIVACY_MAIL_FROM`, `PRIVACY_MAIL_REPLY_TO`: reviewed sender identity and reply address. No live default is inferred. Domain/return-path/processor checks remain external gates.
+- `PRIVACY_ATTENTION_ALIASES`: exactly two distinct approved privacy aliases, comma separated. This is routing, not a grant of website access. Restricted Google/MFA bindings remain separately required. New privacy drafts always CC the owner's traceability address under the 15 October instruction; this does not change other existing customer-message recipients.
+- `PRIVACY_WEEKLY_DAILY_RECIPIENT`: private address resolved only when the owner selects that recipient reference. Weekly timezone/day/time, recipients and any deadline-attention window must be explicitly reviewed in the saved settings; none is seeded.
+
+The actual Typeform definition inspected on 15 October is English and declares no
+hidden parameters. Its ready-to-start and optional raw-answer email questions are
+not marketing consent or participant identity. `service_reference` remains a
+provider setup gate. The v2 mapping derives service language from the recorded
+purchase, not an assumed Typeform language response. Earlier `language` setup notes
+above describe the legacy path and are not evidence of a verified provider field.
+Do not enable new intake or sends from these names alone.
