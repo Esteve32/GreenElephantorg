@@ -1,5 +1,5 @@
 run = "npm run dev"
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "python-base-3.13"]
 
 [nix]
 channel = "stable-25_05"
@@ -11,6 +11,7 @@ externalPort = 80
 [deployment]
 build = "npm ci && npm run build"
 run = "npm start"
+deploymentTarget = "cloudrun"
 
 [workflows]
 runButton = "Project"
