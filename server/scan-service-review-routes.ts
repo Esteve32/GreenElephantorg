@@ -7,10 +7,11 @@ import type { ScanServiceReviewStore } from './scan-service-review-store';
 import type { ScanCompletionPreview } from '@shared/scan-service-review';
 import { TypeformRecoveryError } from './typeform-content';
 
-/** Staged registration only: not mounted in server/routes.ts. No default evidence reader. */
+/** Runtime mounting supplies protected evidence; direct tests retain injected fixtures. */
 export function registerScanServiceReviewRoutes(app: Express, deps: {
   owner(): string | undefined; siteUrl(): string;
   findAdmin(id: string): Promise<PrivacyAdminIdentity | undefined>; store: ScanServiceReviewStore;
+  attest?(actor:PrivacyAdminIdentity,eventId:string,input:unknown):Promise<unknown>;
   preview?(actor: PrivacyAdminIdentity,eventId: string,expectedVersion: number): Promise<ScanCompletionPreview>;
 }) {
   const base = '/api/admin/scan-service';
@@ -44,6 +45,11 @@ export function registerScanServiceReviewRoutes(app: Express, deps: {
   app.post(base + '/:eventId/actions', (req, res) => run(req, res, async (actor) => {
     z.object({}).strict().parse(req.query);
     res.json(await deps.store.act(actor, scanReviewId.parse(req.params.eventId), scanReviewAction.parse(req.body)));
+  }));
+  app.post(base+'/:eventId/evidence',(req,res)=>run(req,res,async(actor)=>{
+    z.object({}).strict().parse(req.query);
+    if(!deps.attest)throw new TypeformRecoveryError('recovery_unavailable');
+    res.json(await deps.attest(actor,scanReviewId.parse(req.params.eventId),req.body));
   }));
   app.post(base + '/:eventId/preview', (req,res) => run(req,res,async (actor) => {
     z.object({}).strict().parse(req.query);

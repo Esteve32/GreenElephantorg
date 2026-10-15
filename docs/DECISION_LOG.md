@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.28.5
+# Green Elephant — Project Decision Log v11.28.6
 
-**Document Version:** `11.28.5`
-**Last Updated:** `2026-10-15T17:33:48+03:00`
+**Document Version:** `11.28.6`
+**Last Updated:** `2026-10-15T17:50:45+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.28.6 | 2026-10-15T17:50:45+03:00 | Estève Pannetier | AI-LIT DEC-AIL-102: implement encrypted same-link Typeform intake, owner evidence and no-send recovery behind disabled flags |
 | 11.28.5 | 2026-10-15T17:33:48+03:00 | Estève Pannetier | AI-LIT DEC-AIL-101: owner authorises verified PR63 foundation merge, Typeform publication and next local batch |
 | 11.28.4 | 2026-10-15T17:23:43+03:00 | Estève Pannetier | AI-LIT DEC-AIL-100: verify two published Typeform text edits and stage privacy foundation; reserve merge to owner |
 | 11.28.3 | 2026-10-15T15:54:39+03:00 | Estève Pannetier — explicit GitHub PR/main instruction | AI-LIT: owner authorises consolidated candidate commit/push, GitHub PR and checked merge to main; live activation gates retained |
@@ -2525,6 +2526,18 @@ decision here when Estève selects one; do not silently change its status.
 - **Signing evidence:** GitHub reports candidate commit `b36a2fbc24e800ba78a742db49c97b405e2f72a6` verified, reason `valid`, authored as `email@estevepannetier.com`. Commit authorship, cryptographic verification and connected GitHub authentication are distinct. No password, token or key value is copied or created.
 - **Release limits:** the new workflow/worker/sending flags remain OFF; unfinished mapping/evidence/assignment, mailbox/delivery, routine-category and retention/backup work remain tracked in the PRD. A foundation merge is source publication only. Preserve issue #43 deferred/analytics OFF, populated-database boundaries and the human Replit release reminder.
 - **Cross-repository:** website base `ed49cac9d3b458670d64457a4f911a7917953ce3` and PR #63 head above; OS PRD/log at `83391d8520a6bfb2e010590686d6e32797490b62` (GEOS-REQ-002/003/004/005). Website-owned staging only; no OS schema, package adoption or data transfer is introduced. No paired OS implementation is required by this approval record.
+
+<a id="dec-ail-102"></a>
+### DEC-AIL-102 — Implement the next same-link intake and protected-evidence batch
+
+- **Project / date / status:** AI-LIT; 2026-10-15 Europe/Helsinki; implementation under Estève's DEC-AIL-101 next-batch instruction. PR #63 merged as `7dfb3ba39fc8ea6cf58c850222103bd7048a72b4`; this next code batch starts from that main commit and remains separately reviewable. It does not authorise agent Replit publication or an automatic service send.
+- **Actual provider result:** Typeform `ploJm1N3` saved/republished and public. Readback against the approved wording snapshot differs only in `/hidden`, now exactly `service_reference`. Visible questions, required flags, routing and endings remain unchanged. Public-definition SHA-256 `b4a07c3ba52c0000cb0032a452ad17eef27e83c9fcfeeff1073a647a1196ae34`. This closes the hidden-field setup gate, not the backend activation gates.
+- **Implementation / affected:** REQ-035/036/085/087/089/106/109 and DEC-AIL-095/096/100/101. Default-off order-aware mode mounts at the existing webhook URL and never falls back to email matching on an enabled-mode error. Verified final originals are encrypted with a separate AES-256-GCM key, signed content/labels are checked during recovery, and receipt/original/audit/task commit together. No raw-original HTTP export is added. Capture is application-append-only, not a claim of immutable database storage.
+- **Assignment boundary:** named privacy/MFA and current-owner checks protect review. Owner attestations name existing restricted evidence, participant and recipient; separate positive review of identity, recipient and payer access is required. They are bound to the exact signed response/order. Attestation alone neither completes an order nor asserts machine-verified identity. A separate resolve action creates one coach task; previews recover the exact response and include the required trace CC. No service-send action is enabled.
+- **Same-link / expiry:** purchase and reminder messages can carry the reference in their existing URL, retaining recorded language. Keys and reference lifetime have no policy defaults; retries reuse original purchase time and existing binding expiry. Qualifying final responses awaiting review pause their order's reminder. No new customer question, email or verification step is introduced.
+- **Verification:** real in-memory SQL/HTTP integration tests plus a fictional browser flow cover encrypted replay/tampering, capture rollback, owner attestation and separate resolution, wrong-order isolation, required HTTPS origin, no email fallback, default-off keys/lifetime and no blind resubmission. Shared transaction evidence reads avoid nested transaction/snapshot gaps. Read-only `typeform:preflight` checks the public definition without credentials, responses or database access.
+- **Remaining:** actual isolated Neon migration validation, deployment-managed keys/lifetime, supervised signed complete webhook/API recovery and production MFA, exact live recipient/message approval, sending/delivery reconciliation, mailbox/routine/retention-backup batches and independent full privacy review. Website Typeform-related runtime flags stay OFF. Issue #43 remains deferred, collection OFF; Replit release still uses issue #31 and human Republish.
+- **Cross-repository:** website base `7dfb3ba39fc8ea6cf58c850222103bd7048a72b4` plus working tree; paired OS main re-resolved and PRD/log read at `83391d8520a6bfb2e010590686d6e32797490b62`. GEOS-REQ-002/003/004/005 checked. Existing website↔Typeform service boundary only; no OS schema, shared package or transfer to Notion/Google, so no paired OS implementation PR is required.
 
 ## MY5 pause and historical decisions
 

@@ -60,7 +60,7 @@ export async function scanServiceReviewFixture() {
   }
   async function reset() {
     await client.exec(`DROP TRIGGER IF EXISTS fail_review_audit ON audit_logs; DROP TRIGGER IF EXISTS fail_review_task ON scan_typeform_service_tasks;
-      TRUNCATE scan_typeform_review_actions,scan_typeform_service_tasks,scan_typeform_events,scan_typeform_bindings,satellitescan_purchases,audit_logs,admin_users,admin_settings;
+      TRUNCATE scan_typeform_review_actions,scan_typeform_service_tasks,scan_typeform_events,scan_typeform_bindings,satellitescan_purchases,audit_logs,admin_users,admin_settings CASCADE;
       INSERT INTO admin_users(id,email,google_id,role,is_active) VALUES('synthetic-owner','owner@greenelephant.org','12345','super_admin','true');`);
     evidence.clear(); apiItems.clear(); definitions.clear();
     for (let order = 0; order < 2; order++) {

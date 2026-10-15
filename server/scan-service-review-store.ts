@@ -8,6 +8,7 @@ import { scanReviewAction, scanReviewId, ScanReviewError, scanReviewNextAction, 
 import type { PrivacyAdminIdentity } from './privacy-admin-access';
 import { typeformDigest } from './typeform-intake';
 
+type ScanReviewTransaction=Parameters<Parameters<Pick<typeof db,'transaction'>['transaction']>[0]>[0];
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 // Server-owned, immutable recovery evidence. Never populated from the HTTP body.
 export const scanAssignmentEvidence = z.object({
@@ -30,7 +31,7 @@ const rowView = (event: Event): ScanReviewRow => ({ eventId: event.eventId, form
 /** Inject local immutable evidence only; no runtime DB/provider/sender initialization. */
 export function createScanServiceReviewStore(database: Pick<typeof db, 'transaction'>, options: {
   owner(): string | undefined;
-  evidence(eventId: string): Promise<readonly unknown[]>;
+  evidence(eventId: string,transaction?:ScanReviewTransaction): Promise<readonly unknown[]>;
   now?(): Date;
 }) {
   type Tx = Parameters<Parameters<typeof database.transaction>[0]>[0];
@@ -48,9 +49,9 @@ export function createScanServiceReviewStore(database: Pick<typeof db, 'transact
   }
   const qualifies = (event: Event) => event.eventType === 'form_response' && event.completionVerified === 'true'
     && !!event.mappingDigest && !!event.bindingDigest && !!event.submittedAt;
-  async function evidenceFor(event: Event, binding?: Binding) {
+  async function evidenceFor(tx:Tx,event: Event, binding?: Binding) {
     if (!qualifies(event) || !binding) return [];
-    const candidates = await options.evidence(event.eventId);
+    const candidates = await options.evidence(event.eventId,tx);
     if (!Array.isArray(candidates) || candidates.length > 25) throw new ScanReviewError('review_evidence_required');
     const valid: ScanAssignmentEvidence[] = [];
     for (const candidate of candidates) {
@@ -91,7 +92,7 @@ export function createScanServiceReviewStore(database: Pick<typeof db, 'transact
         const [event] = await tx.select().from(events).where(eq(events.eventId, eventId));
         if (!event) throw new ScanReviewError('review_not_found');
         const binding = await bindingFor(tx, event);
-        const evidence = await evidenceFor(event, binding);
+        const evidence = await evidenceFor(tx,event, binding);
         const [task] = await tx.select().from(tasks).where(eq(tasks.eventId, eventId));
         const history = await tx.select().from(actions).where(eq(actions.eventId, eventId)).orderBy(desc(actions.version)).limit(25);
         const [purchase] = binding ? await tx.select().from(purchases).where(eq(purchases.id, binding.purchaseId)) : [];
@@ -137,7 +138,7 @@ export function createScanServiceReviewStore(database: Pick<typeof db, 'transact
             || binding.completedDigest || (binding.responseId && binding.responseId !== event.responseId)
             || purchase.status !== 'succeeded' || purchase.typeformCompleted !== 'false'
             || purchase.typeformCompletedAt !== null || purchase.dashboardSent !== 'false') throw new ScanReviewError('review_evidence_required');
-          evidence = (await evidenceFor(event, binding)).find(e => e.reference === input.evidenceRef);
+          evidence = (await evidenceFor(tx,event, binding)).find(e => e.reference === input.evidenceRef);
           if (!evidence) throw new ScanReviewError('review_evidence_required');
           const [reserved] = await tx.select().from(tasks).where(and(eq(tasks.formId, event.formId), eq(tasks.responseId, event.responseId)));
           if (reserved) throw new ScanReviewError('review_conflict');

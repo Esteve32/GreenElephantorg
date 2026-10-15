@@ -90,3 +90,22 @@ provider setup gate. The v2 mapping derives service language from the recorded
 purchase, not an assumed Typeform language response. Earlier `language` setup notes
 above describe the legacy path and are not evidence of a verified provider field.
 Do not enable new intake or sends from these names alone.
+
+## Order-aware Typeform runtime — next local batch
+
+The earlier no-hidden-parameter observation is superseded by the 15 October
+DEC-AIL-102 public readback: `service_reference` is now declared and published.
+Run `npm run typeform:preflight` for a read-only public configuration check.
+
+- `TYPEFORM_ORDER_INTAKE_ENABLED=false`: default retains the existing handler. Enabling mounts the reviewed order-aware intake at the **same** `/api/typeform-webhook` URL. A failure in enabled mode never invokes the email-matching path. Deploy/validate all intake, service-review, content and originals migrations first. No schema-wide push or startup migration.
+- `TYPEFORM_FORM_ID`: must match the reviewed Individual Scan mapping exactly. The signing secret and connector must also be ready; public definition success alone does not prove them.
+- `TYPEFORM_EVIDENCE_KEY`: separate random 32-byte AES key, encoded as 64 hex characters. `TYPEFORM_EVIDENCE_KEY_ID` is its non-secret version label. Keys stay outside the database and repository. Originals contain private answers and the original reference/signature, so they are encrypted before storage. Application writes preserve first capture; the database is not claimed immutable. Dedicated access, backup, retention and deletion rules remain required.
+- `TYPEFORM_ORDER_LINKS_ENABLED=false`: independently gates purchase/reminder link preparation. It requires order-aware intake configuration, a separate `TYPEFORM_ORDER_REFERENCE_KEY` and an explicitly reviewed `TYPEFORM_ORDER_REFERENCE_TTL_HOURS`. No duration is seeded. Expiry derives from the original purchase time and is preserved on retries. Do not copy the placeholder `xxxxx` from Typeform's generic Share screen into customer links.
+- `TYPEFORM_SERVICE_PREVIEW_FROM`: reviewed sender address for no-send completion previews. Exact recovery also needs the existing scoped Typeform token. No extra Google/Notion permissions or real responses were read by local tests.
+
+Key loss or rotation, including a changed webhook signing secret, holds recovery
+when an original cannot be verified/decrypted. Retain old keys only under a reviewed
+operator policy; do not silently re-encrypt/replace originals or downgrade checks.
+No retention period is invented here. Metadata retention controls do not erase this
+new original/assignment evidence or provider/backups; include those in the full
+reviewed retention inventory before activation.
