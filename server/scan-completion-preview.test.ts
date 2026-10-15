@@ -163,5 +163,5 @@ test('preview rendering shares the unchanged existing wrapper and cannot initial
     const source=await readFile(file,'utf8');assert.doesNotMatch(source,/process\.env|from ['"].*(?:resend-client|email-notifications|scheduler)['"]|\bfetch\(/);
   }
   const ui=await readFile('client/src/pages/admin/ScanServiceReview.tsx','utf8');assert.match(ui,/sandbox=""/);assert.match(ui,/default-src \\'none\\'/);
-  assert.match(ui,/not approved or sent/);assert.match(ui,/setPreview\(null\)/);
+  assert.match(ui,/Approval and delivery status are shown in the service email controls/);assert.match(ui,/setPreview\(null\)/);
 });
