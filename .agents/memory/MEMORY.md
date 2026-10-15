@@ -1,1 +1,2 @@
 - [Exact-source release handoffs](exact-source-release-handoffs.md) — asset registration can create an automatic metadata checkpoint outside the reviewed release.
+- [Beginner AI copy insight](beginner-ai-copy-insight.md) — address fears that AI could replace or weaken the learner’s own thinking.
