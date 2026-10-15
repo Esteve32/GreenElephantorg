@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { AdminTroubleshooting } from "@/components/admin/AdminTroubleshooting";
 import { useState, useRef } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +18,27 @@ import {
   Lightbulb, Calendar
 } from "lucide-react";
 import { format } from "date-fns";
+
+class EmailReadError extends Error {
+  constructor(readonly status: number) { super('Email workspace read failed'); }
+}
+async function readEmailWorkspace(path: string, signal: AbortSignal) {
+  const response = await fetch(path, { credentials: 'include', cache: 'no-store', signal });
+  if (!response.ok) throw new EmailReadError(response.status);
+  return response.json();
+}
+function emailReadHelp(error: unknown, history = false) {
+  if (error instanceof EmailReadError && error.status === 401) return 'sign_in_required';
+  if (error instanceof EmailReadError && error.status === 403) return 'email_access_required';
+  return history ? 'email_history_unavailable' : 'email_access_unavailable';
+}
+const emailAccessSchema = z.object({ isAuthenticated: z.boolean(), role: z.enum(['admin', 'super_admin', 'viewer']).nullable() });
+const historyCount = z.union([z.number().int().nonnegative(), z.string().regex(/^\d+$/).transform(Number)]).refine(Number.isSafeInteger);
+const historySchema = z.array(z.object({
+  id: z.string(), subject: z.string(), status: z.string(),
+  successCount: historyCount, failedCount: historyCount, recipientCount: historyCount,
+  createdAt: z.string().datetime({ offset: true }), sentAt: z.string().datetime({ offset: true }).nullable(),
+}));
 
 type EmailType = "transactional" | "marketing" | "admin" | "onboarding";
 type TemplateType = "dark-hud" | "plain";
@@ -265,7 +288,7 @@ function TemplateBadge({ template }: { template: TemplateType }) {
   return <Badge className="text-xs bg-white/10 text-white/50 border-white/20">plain</Badge>;
 }
 
-function JourneyCard({ journey, onTest }: { journey: Journey; onTest: (journeyId: string) => void }) {
+function JourneyCard({ journey, onTest, canSend }: { journey: Journey; onTest: (journeyId: string) => void; canSend: boolean }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -289,6 +312,7 @@ function JourneyCard({ journey, onTest }: { journey: Journey; onTest: (journeyId
               size="sm"
               variant="outline"
               onClick={() => onTest(journey.id)}
+              disabled={!canSend}
               className="border-white/20 text-white/70 text-xs"
               data-testid={`button-test-journey-${journey.id}`}
             >
@@ -299,6 +323,8 @@ function JourneyCard({ journey, onTest }: { journey: Journey; onTest: (journeyId
               size="icon"
               variant="ghost"
               onClick={() => setOpen(!open)}
+              aria-label={`${open ? "Hide" : "Show"} ${journey.name} emails`}
+              aria-expanded={open}
               data-testid={`button-toggle-journey-${journey.id}`}
             >
               {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -332,7 +358,7 @@ function JourneyCard({ journey, onTest }: { journey: Journey; onTest: (journeyId
                     {email.gdpr && (
                       <Badge className="text-xs bg-green-900/30 text-green-400 border-green-700/30">
                         <ShieldCheck className="w-2.5 h-2.5 mr-1" />
-                        GDPR
+                        Footer noted
                       </Badge>
                     )}
                   </div>
@@ -413,7 +439,7 @@ function DeliverabilityCard({ topic }: { topic: typeof DELIVERABILITY_TOPICS[num
   );
 }
 
-function BatchEmailSection() {
+function BatchEmailSection({ canSend }: { canSend: boolean }) {
   const { toast } = useToast();
   const [batchIncludeChannels, setBatchIncludeChannels] = useState<string[]>([]);
   const [batchExcludeChannels, setBatchExcludeChannels] = useState<string[]>([]);
@@ -424,15 +450,12 @@ function BatchEmailSection() {
   const [pendingFormData, setPendingFormData] = useState<{ subject: string; body: string } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const { data: authStatus } = useQuery<{ isAuthenticated: boolean }>({
-    queryKey: ['/api/admin/check'],
+  const history = useQuery({
+    queryKey: ['/api/admin/batch-email/history', 'control-room'],
+    queryFn: async ({ signal }) => historySchema.parse(await readEmailWorkspace('/api/admin/batch-email/history', signal)),
+    staleTime: 0, gcTime: 0, refetchOnMount: 'always', refetchOnWindowFocus: true, retry: false,
   });
-  const isAuthenticated = authStatus?.isAuthenticated ?? false;
-
-  const { data: batchHistoryData, refetch: refetchBatchHistory } = useQuery<any[]>({
-    queryKey: ['/api/admin/batch-email/history'],
-    enabled: isAuthenticated,
-  });
+  const { data: batchHistoryData, refetch: refetchBatchHistory } = history;
 
   const formatDate = (dateString: string) => {
     try {
@@ -443,6 +466,7 @@ function BatchEmailSection() {
   };
 
   const handleBatchPreview = async () => {
+    if (!canSend) return;
     setBatchLoading(true);
     try {
       const response = await apiRequest("POST", "/api/admin/batch-email/preview", {
@@ -461,6 +485,7 @@ function BatchEmailSection() {
 
   const handleBatchSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!canSend) return;
     const form = e.currentTarget;
     const subject = (form.elements.namedItem('batchSubject') as HTMLInputElement)?.value;
     const body = (form.elements.namedItem('batchBody') as HTMLTextAreaElement)?.value;
@@ -475,7 +500,7 @@ function BatchEmailSection() {
   };
 
   const confirmSend = async () => {
-    if (!pendingFormData || !batchPreview) return;
+    if (!canSend || !pendingFormData || !batchPreview) return;
     setShowConfirmDialog(false);
     setBatchSending(true);
     try {
@@ -584,7 +609,7 @@ function BatchEmailSection() {
                 type="button"
                 variant="outline"
                 onClick={handleBatchPreview}
-                disabled={batchLoading}
+                disabled={batchLoading || !canSend}
                 className="border-white/20 text-white/70"
                 data-testid="button-batch-preview"
               >
@@ -672,7 +697,7 @@ function BatchEmailSection() {
             <div className="flex items-center gap-3 flex-wrap">
               <Button
                 type="submit"
-                disabled={batchSending || !batchPreview || batchPreview.count === 0}
+                disabled={!canSend || batchSending || !batchPreview || batchPreview.count === 0}
                 data-testid="button-batch-send"
               >
                 <Send className="h-4 w-4 mr-2" />
@@ -735,6 +760,7 @@ function BatchEmailSection() {
                     <Button
                       size="sm"
                       onClick={confirmSend}
+                      disabled={!canSend || batchSending}
                       data-testid="button-confirm-batch-send"
                     >
                       <Send className="w-3 h-3 mr-1" />
@@ -756,10 +782,14 @@ function BatchEmailSection() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {(!batchHistoryData || batchHistoryData.length === 0) && (
-            <p className="text-white/40">No batch emails sent yet.</p>
-          )}
-          {batchHistoryData && batchHistoryData.length > 0 && (
+          <p className="text-white/60 mb-4">History records this website’s batch attempts. It does not prove inbox delivery or include every other email channel.</p>
+          <Button type="button" variant="outline" className="mb-4" disabled={history.isFetching} onClick={() => void refetchBatchHistory()}>Refresh history</Button>
+          {history.isPending || history.isFetching ? <p role="status">Loading batch email history…</p>
+            : history.error ? <AdminTroubleshooting code={emailReadHelp(history.error, true)}
+                onRetry={emailReadHelp(history.error, true) === 'email_history_unavailable' ? () => { void refetchBatchHistory(); } : undefined}
+                retryLabel="Check history again" />
+            : batchHistoryData?.length === 0 ? <p role="status" className="text-white/70">No batch history records were returned. This does not establish whether other emails were sent.</p> : null}
+          {!history.isFetching && !history.error && batchHistoryData && batchHistoryData.length > 0 && (
             <div className="space-y-3">
               {batchHistoryData.map((batch: any) => (
                 <div key={batch.id} className="p-4 rounded-md bg-white/5 border border-white/10">
@@ -789,12 +819,35 @@ function BatchEmailSection() {
 }
 
 export default function EmailControlRoom() {
+  const access = useQuery({
+    queryKey: ['/api/admin/check', 'email-control-room'],
+    queryFn: async ({ signal }) => {
+      const value = emailAccessSchema.parse(await readEmailWorkspace('/api/admin/check', signal));
+      if (!value.isAuthenticated) throw new EmailReadError(401);
+      if (!value.role) throw new EmailReadError(403);
+      return value;
+    },
+    staleTime: 0, gcTime: 0, refetchOnMount: 'always', refetchOnWindowFocus: true, retry: false,
+  });
+  if (access.isPending || access.error) return <main className="min-h-screen bg-[#0A0C14] text-white pt-28 pb-16 px-4"><div className="max-w-3xl mx-auto">
+    <h1 className="text-2xl font-bold mb-6">Email Control Room</h1>
+    {access.isPending ? <p role="status">Checking Email Control Room access…</p> : <AdminTroubleshooting code={emailReadHelp(access.error)}
+      onRetry={emailReadHelp(access.error) === 'email_access_unavailable' ? () => { void access.refetch(); } : undefined} retryLabel="Check access again" />}
+  </div></main>;
+  return <fieldset disabled={access.isFetching} aria-busy={access.isFetching} className="min-w-0">
+    {access.isFetching && <p role="status" className="pt-24 text-center">Rechecking Email Control Room access…</p>}
+    <EmailControlRoomContent canSend={access.data?.role !== 'viewer' && !access.isFetching} />
+  </fieldset>;
+}
+
+function EmailControlRoomContent({ canSend }: { canSend: boolean }) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [testingId, setTestingId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<"journeys" | "batch" | "deliverability" | "inventory">("journeys");
 
   const handleTestSend = async (journeyId: string) => {
+    if (!canSend || testingId) return;
     setTestingId(journeyId);
     try {
       await apiRequest("POST", "/api/admin/email-test", { journeyId });
@@ -813,7 +866,7 @@ export default function EmailControlRoom() {
     }
   };
 
-  const gdprCompliant = ALL_EMAILS.filter(e => e.gdpr || e.type === "admin").length;
+  const footerNoted = ALL_EMAILS.filter(e => e.gdpr).length;
   const darkHudCount = ALL_EMAILS.filter(e => e.template === "dark-hud").length;
 
   const sections = [
@@ -825,7 +878,7 @@ export default function EmailControlRoom() {
 
   return (
     <div className="min-h-screen bg-[#0A0C14] text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
 
         <div className="mb-10">
           <div className="flex items-center gap-4 mb-2">
@@ -846,7 +899,7 @@ export default function EmailControlRoom() {
               { label: "Total email functions", value: ALL_EMAILS.length, color: "text-white", tip: "Number of distinct email-sending functions in the codebase. Each handles a specific trigger (purchase confirmation, onboarding step, admin alert, etc.)." },
               { label: "Customer journeys", value: JOURNEYS.length, color: "text-teal-400", tip: "Automated email sequences triggered by user actions. Each journey maps the full sequence from trigger to final email." },
               { label: "Dark HUD template", value: `${darkHudCount}/${ALL_EMAILS.length}`, color: "text-teal-400", tip: "How many emails use the branded dark HUD template (dark bg, teal accents, Poppins headings). Best practice: all client-facing emails should use it." },
-              { label: "GDPR compliant", value: `${gdprCompliant}/${ALL_EMAILS.length}`, color: "text-green-400", tip: "Emails with proper GDPR footer explaining why the recipient received it and how to unsubscribe. Target: 100% compliance." },
+              { label: "Footer noted in inventory", value: `${footerNoted}/${ALL_EMAILS.length}`, color: "text-teal-400", tip: "A source-inventory label, not a live check or GDPR compliance assessment. Consent, purpose, content and delivery need separate review." },
             ].map(stat => (
               <Tooltip key={stat.label}>
                 <TooltipTrigger asChild>
@@ -877,6 +930,8 @@ export default function EmailControlRoom() {
           ))}
         </div>
 
+        {!canSend && <p className="mb-4 text-amber-200" role="status">Sending is unavailable while access is checked or your account has a viewer role. The owner can check your assigned role.</p>}
+
         {activeSection === "journeys" && (
           <div className="mb-10">
             <h2 className="text-lg font-semibold mb-1">Customer Journeys</h2>
@@ -887,6 +942,7 @@ export default function EmailControlRoom() {
                   key={journey.id}
                   journey={journey}
                   onTest={handleTestSend}
+                  canSend={canSend && !testingId}
                 />
               ))}
             </div>
@@ -897,7 +953,7 @@ export default function EmailControlRoom() {
           <div className="mb-10">
             <h2 className="text-lg font-semibold mb-1">Batch Email</h2>
             <p className="text-sm text-white/50 mb-5">Send targeted emails to groups of contacts filtered by channel. Includes pre-send guardrails and delivery warnings.</p>
-            <BatchEmailSection />
+            <BatchEmailSection canSend={canSend} />
           </div>
         )}
 
@@ -1017,7 +1073,7 @@ export default function EmailControlRoom() {
         {activeSection === "inventory" && (
           <div>
             <h2 className="text-lg font-semibold mb-1">Full Email Inventory</h2>
-            <p className="text-sm text-white/50 mb-5">All 16 email functions in <code className="text-teal-400">server/email-notifications.ts</code> — with template, GDPR status, and audience.</p>
+            <p className="text-sm text-white/50 mb-5">All 16 email functions in <code className="text-teal-400">server/email-notifications.ts</code> — with template, recorded footer marker, and audience. This inventory is not live delivery or compliance evidence.</p>
             <div className="overflow-x-auto rounded-md border border-white/10">
               <table className="w-full text-sm">
                 <thead>
@@ -1027,7 +1083,7 @@ export default function EmailControlRoom() {
                     <th className="text-left px-4 py-3">Type</th>
                     <th className="text-left px-4 py-3">Template</th>
                     <th className="text-left px-4 py-3">Audience</th>
-                    <th className="text-left px-4 py-3">GDPR</th>
+                    <th className="text-left px-4 py-3">Footer noted</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1056,7 +1112,7 @@ export default function EmailControlRoom() {
         <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2 text-xs text-white/30">
             <ShieldCheck className="w-4 h-4" />
-            <span>All client-facing emails include GDPR unsubscribe footer. Admin-only emails stay plain by design.</span>
+            <span>Footer markers describe this source inventory. They do not verify consent, delivery, current provider settings or legal compliance.</span>
           </div>
           <Button
             variant="outline"

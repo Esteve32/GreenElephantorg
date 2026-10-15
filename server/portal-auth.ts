@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "./auth";
 import { publicSiteOrigin } from './delivery-security';
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
@@ -498,10 +499,7 @@ export function registerPortalRoutes(app: Express) {
     }
   });
 
-  app.get("/api/admin/portal-users", async (req, res) => {
-    if (!req.session?.isAdmin) {
-      return res.status(401).json({ message: "Admin required" });
-    }
+  app.get("/api/admin/portal-users", requireAdminAuth, async (req, res) => {
     try {
       const users = await storage.getAllClientUsers();
       const usersWithSubs = await Promise.all(
@@ -528,21 +526,17 @@ export function registerPortalRoutes(app: Express) {
     }
   });
 
-  app.get("/api/admin/settings", async (req, res) => {
-    if (!req.session?.isAdmin) {
-      return res.status(401).json({ message: "Admin required" });
-    }
+  app.get("/api/admin/settings", requireAdminAuth, async (req, res) => {
     try {
       const settings = await storage.getAllAdminSettings();
       const result: Record<string, string> = {};
-      settings.forEach((s) => { result[s.key] = s.value; });
+      settings.forEach((s) => { if (s.key !== "admin_password_hash") result[s.key] = s.value; });
       res.json(result);
     } catch (error: any) {
       res.status(500).json({ message: "Failed to fetch settings" });
     }
   });
 
-  const PROTECTED_SETTINGS_KEYS = ["admin_password_hash"];
   const SETTINGS_ALLOWLIST = [
     "portal_login_enabled",
     "portal_registration_enabled",
@@ -553,13 +547,9 @@ export function registerPortalRoutes(app: Express) {
     "linkedin_access_token",
     "linkedin_org_id",
     "linkedin_oauth_enabled",
-    "admin_password_hash",
   ];
 
-  app.post("/api/admin/settings", async (req, res) => {
-    if (!req.session?.isAdmin) {
-      return res.status(401).json({ message: "Admin required" });
-    }
+  app.post("/api/admin/settings", requireAdminAuth, async (req, res) => {
     if (req.session?.adminRole === "viewer") {
       return res.status(403).json({ message: "Viewers have read-only access" });
     }
@@ -570,9 +560,6 @@ export function registerPortalRoutes(app: Express) {
       }
       if (!SETTINGS_ALLOWLIST.includes(key)) {
         return res.status(400).json({ message: `Setting key '${key}' is not allowed` });
-      }
-      if (PROTECTED_SETTINGS_KEYS.includes(key) && req.session?.adminRole !== "super_admin") {
-        return res.status(403).json({ message: "Only super admins can modify this setting" });
       }
       const setting = await storage.setAdminSetting(key, String(value));
       res.json(setting);
@@ -902,10 +889,7 @@ export function registerPortalRoutes(app: Express) {
     }
   });
 
-  app.get("/api/admin/linkedin/test", async (req, res) => {
-    if (!req.session?.isAdmin) {
-      return res.status(401).json({ message: "Admin required" });
-    }
+  app.get("/api/admin/linkedin/test", requireAdminAuth, async (req, res) => {
 
     const clientId = process.env.LINKEDIN_CLIENT_ID;
     const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;

@@ -1,3 +1,5 @@
+import { AdminTroubleshooting } from '@/components/admin/AdminTroubleshooting';
+import { AdminLearningPanel, TrainingLink } from "@/components/admin/AdminLearning";
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -21,11 +23,10 @@ import {
   Users,
   ScrollText,
   UserPlus,
-  Trash2,
+  UserMinus,
   Clock,
   Mail,
   Activity,
-  KeyRound,
   Circle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -37,6 +38,7 @@ interface AdminUser {
   name: string | null;
   avatarUrl: string | null;
   role: string;
+  isOwner: boolean;
   invitedBy: string | null;
   isActive: string;
   createdAt: string;
@@ -54,7 +56,7 @@ interface AuditLogEntry {
 }
 
 const ROLE_LABELS: Record<string, string> = {
-  super_admin: "Super Admin",
+  super_admin: "Owner",
   admin: "Admin",
   viewer: "Viewer",
 };
@@ -93,20 +95,17 @@ export default function AccessControlAdmin() {
   const [inviteRole, setInviteRole] = useState("viewer");
   const [logPage, setLogPage] = useState(0);
   const LOG_PAGE_SIZE = 50;
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [auditFilterUser, setAuditFilterUser] = useState("");
   const [auditFilterAction, setAuditFilterAction] = useState("");
 
-  const { data: checkData } = useQuery<{ isAuthenticated: boolean; role: string | null }>({
-    queryKey: ["/api/admin/check"],
+  const { data: checkData, isFetching: checkingAccess, error: accessError } = useQuery<{ isAuthenticated: boolean; role: string | null; canManageTeam: boolean }>({
+    queryKey: ["/api/admin/check"], staleTime: 0, gcTime: 0, refetchOnWindowFocus: true,
   });
 
-  const isSuperAdmin = checkData?.role === "super_admin";
+  const isSuperAdmin = checkData?.canManageTeam === true && !checkingAccess && !accessError;
 
-  const { data: teamMembers, isLoading: teamLoading } = useQuery<AdminUser[]>({
-    queryKey: ["/api/admin/team"],
+  const { data: teamMembers, isLoading: teamLoading, error: teamError } = useQuery<AdminUser[]>({
+    queryKey: ["/api/admin/team"], staleTime: 0, gcTime: 0, refetchOnWindowFocus: true,
     enabled: isSuperAdmin,
   });
 
@@ -140,7 +139,7 @@ export default function AccessControlAdmin() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Team member invited", description: `${inviteEmail} has been added as ${ROLE_LABELS[inviteRole]}` });
+      toast({ title: "Team access added", description: `${inviteEmail} has been added as ${ROLE_LABELS[inviteRole]}` });
       setInviteEmail("");
       setInviteName("");
       setInviteRole("viewer");
@@ -161,6 +160,7 @@ export default function AccessControlAdmin() {
       toast({ title: "Role updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/team"] });
     },
+    onError: () => toast({ title: "Role change not confirmed", description: "Refresh and sign in again if needed.", variant: "destructive" }),
   });
 
   const toggleActiveMutation = useMutation({
@@ -173,6 +173,7 @@ export default function AccessControlAdmin() {
       toast({ title: "Status updated" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/team"] });
     },
+    onError: () => toast({ title: "Access change not confirmed", description: "Refresh and sign in again if needed.", variant: "destructive" }),
   });
 
   const removeMutation = useMutation({
@@ -184,37 +185,8 @@ export default function AccessControlAdmin() {
       }
     },
     onSuccess: () => {
-      toast({ title: "Team member removed" });
+      toast({ title: "Access deactivated" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/team"] });
-    },
-    onError: (err: Error) => {
-      toast({ title: "Failed", description: err.message, variant: "destructive" });
-    },
-  });
-
-  const changePasswordMutation = useMutation({
-    mutationFn: async () => {
-      if (newPassword !== confirmPassword) {
-        throw new Error("Passwords do not match");
-      }
-      if (newPassword.length < 8) {
-        throw new Error("Password must be at least 8 characters");
-      }
-      const res = await apiRequest("POST", "/api/admin/change-password", {
-        currentPassword,
-        newPassword,
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to change password");
-      }
-      return res.json();
-    },
-    onSuccess: (data: any) => {
-      toast({ title: "Password changed", description: data.message });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
     },
     onError: (err: Error) => {
       toast({ title: "Failed", description: err.message, variant: "destructive" });
@@ -227,10 +199,9 @@ export default function AccessControlAdmin() {
         <Card className="bg-white/5 border-white/10 max-w-md">
           <CardContent className="p-8 text-center">
             <Shield className="w-12 h-12 text-needs mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">Access Restricted</h2>
-            <p className="text-white/60 mb-4">
-              Only Super Admins can access the Access Control page.
-            </p>
+            {checkingAccess ? <p role="status">Checking owner access…</p> : <AdminTroubleshooting code={accessError ? 'callback_failed' : checkData?.isAuthenticated ? 'owner_required' : 'sign_in_required'} />}
+            <TrainingLink />
+
             <Button variant="outline" onClick={() => setLocation("/admin/submissions")} data-testid="button-back-admin">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
@@ -320,16 +291,18 @@ export default function AccessControlAdmin() {
                 </CardContent>
               </Card>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-xs">Total logged admin actions (settings changes, email sends, data updates). Every write operation is recorded for accountability and GDPR compliance.</TooltipContent>
+            <TooltipContent side="bottom" className="max-w-xs">Total logged admin actions (settings changes, email sends, data updates). Team access changes are transactionally audited. Other legacy actions require their own coverage review.</TooltipContent>
           </Tooltip>
         </div>
+
+        <AdminLearningPanel topics={["access", "mfa", "breakglass", "audit"]} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <Card className="bg-white/5 border-white/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white text-lg">
                 <UserPlus className="w-5 h-5 text-needs" />
-                Invite Team Member
+                Add Team Access
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -338,7 +311,7 @@ export default function AccessControlAdmin() {
                 <Input
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="anu@greenelephant.org"
+                  placeholder="name@greenelephant.org"
                   className="bg-white/5 border-white/15 text-white placeholder:text-white/30"
                   data-testid="input-invite-email"
                 />
@@ -360,8 +333,7 @@ export default function AccessControlAdmin() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="super_admin">Super Admin — Full access</SelectItem>
-                    <SelectItem value="admin">Admin — All except Access Control</SelectItem>
+                    <SelectItem value="admin">Admin — Standard admin tools</SelectItem>
                     <SelectItem value="viewer">Viewer — Read-only access</SelectItem>
                   </SelectContent>
                 </Select>
@@ -372,10 +344,10 @@ export default function AccessControlAdmin() {
                 className="w-full bg-needs text-white"
                 data-testid="button-invite"
               >
-                {inviteMutation.isPending ? "Inviting..." : "Invite Member"}
+                {inviteMutation.isPending ? "Adding..." : "Add Access"}
               </Button>
               <p className="text-xs text-white/40">
-                Only @greenelephant.org emails allowed. The invited user can log in using Google Auth.
+                Individually approve @greenelephant.org accounts. This adds Google sign-in access; it sends no invitation email and grants no privacy-record access.
               </p>
             </CardContent>
           </Card>
@@ -391,21 +363,21 @@ export default function AccessControlAdmin() {
               <div className="space-y-3">
                 <div className="p-3 rounded-md bg-needs/10 border border-needs/20">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge className={ROLE_COLORS.super_admin}>Super Admin</Badge>
+                    <Badge className={ROLE_COLORS.super_admin}>Owner</Badge>
                   </div>
-                  <p className="text-xs text-white/60">Full access to everything including Access Control, password changes, and team management.</p>
+                  <p className="text-xs text-white/60">Sole owner: team management and owner controls require a recent named Google login. Privacy records require a separate assignment.</p>
                 </div>
                 <div className="p-3 rounded-md bg-influence/10 border border-influence/20">
                   <div className="flex items-center gap-2 mb-1">
                     <Badge className={ROLE_COLORS.admin}>Admin</Badge>
                   </div>
-                  <p className="text-xs text-white/60">Access to all admin pages except Access Control. Can modify settings, send emails, manage content.</p>
+                  <p className="text-xs text-white/60">Daily site administration. Cannot manage team access or open privacy records without a separate privacy assignment.</p>
                 </div>
                 <div className="p-3 rounded-md bg-flow/10 border border-flow/20">
                   <div className="flex items-center gap-2 mb-1">
                     <Badge className={ROLE_COLORS.viewer}>Viewer</Badge>
                   </div>
-                  <p className="text-xs text-white/60">Read-only access to admin dashboards. Cannot modify settings, send emails, or delete records.</p>
+                  <p className="text-xs text-white/60">Reading access through protected admin routes; administrative writes are blocked. No team or privacy-record access. Legacy route coverage still needs review.</p>
                 </div>
               </div>
             </CardContent>
@@ -477,6 +449,8 @@ export default function AccessControlAdmin() {
           <CardContent>
             {teamLoading ? (
               <p className="text-white/50 text-sm">Loading...</p>
+            ) : teamError ? (
+              <p role="alert" className="text-amber-200">Team records could not be loaded. Refresh or sign in again with the owner account. No empty-list conclusion can be drawn.</p>
             ) : !teamMembers?.length ? (
               <div className="text-center py-8">
                 <Users className="w-8 h-8 text-white/20 mx-auto mb-2" />
@@ -487,7 +461,7 @@ export default function AccessControlAdmin() {
                 {teamMembers.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between gap-3 p-3 rounded-md bg-white/[0.03] border border-white/10"
+                    className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-md bg-white/[0.03] border border-white/10"
                     data-testid={`team-member-${member.id}`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -520,7 +494,7 @@ export default function AccessControlAdmin() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      {member.role !== "super_admin" && (
+                      {!member.isOwner && (
                         <>
                           <Select
                             value={member.role}
@@ -542,6 +516,8 @@ export default function AccessControlAdmin() {
                               isActive: member.isActive === "true" ? "false" : "true",
                             })}
                             className={member.isActive === "true" ? "text-white/40" : "text-green-400"}
+                            aria-label={`${member.isActive === "true" ? "Deactivate" : "Reactivate"} access for ${member.email}`}
+                            disabled={toggleActiveMutation.isPending}
                             data-testid={`button-toggle-${member.id}`}
                           >
                             <Activity className="w-4 h-4" />
@@ -550,14 +526,16 @@ export default function AccessControlAdmin() {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              if (confirm(`Remove ${member.email} from admin access?`)) {
+                              if (confirm(`Deactivate ${member.email}? Access stops; the account and audit history remain.`)) {
                                 removeMutation.mutate(member.id);
                               }
                             }}
                             className="text-red-400/60"
+                            aria-label={`Deactivate access for ${member.email}`}
+                            disabled={member.isActive !== "true" || removeMutation.isPending}
                             data-testid={`button-remove-${member.id}`}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <UserMinus className="w-4 h-4" />
                           </Button>
                         </>
                       )}
@@ -572,55 +550,14 @@ export default function AccessControlAdmin() {
         <Card className="bg-white/5 border-white/10 mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white text-lg">
-              <KeyRound className="w-5 h-5 text-needs" />
-              Change Admin Password
+              <Shield className="w-5 h-5 text-needs" />
+              Google sign-in and recovery
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-white/70">Current Password</Label>
-              <Input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password"
-                className="bg-white/5 border-white/15 text-white placeholder:text-white/30"
-                data-testid="input-current-password"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white/70">New Password</Label>
-              <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Min 8 characters"
-                className="bg-white/5 border-white/15 text-white placeholder:text-white/30"
-                data-testid="input-new-password"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white/70">Confirm New Password</Label>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-                className="bg-white/5 border-white/15 text-white placeholder:text-white/30"
-                data-testid="input-confirm-password"
-              />
-            </div>
-            <Button
-              onClick={() => changePasswordMutation.mutate()}
-              disabled={!currentPassword || !newPassword || !confirmPassword || changePasswordMutation.isPending}
-              className="w-full bg-needs text-white"
-              data-testid="button-change-password"
-            >
-              {changePasswordMutation.isPending ? "Changing..." : "Change Password"}
-            </Button>
-            <p className="text-xs text-white/40">
-              After changing, also update the ADMIN_PASSWORD environment variable to keep password login in sync.
-            </p>
+          <CardContent className="text-sm text-white/70 space-y-3">
+            <p>Each administrator signs in with their own approved Google account. Shared password access has been removed.</p>
+            <p>Recover a lost Google account through Google. If the owner cannot regain access, a separately reviewed operator recovery is required.</p>
+            <p>Team membership does not grant RoPA access. Privacy permission remains separately assigned.</p>
           </CardContent>
         </Card>
 

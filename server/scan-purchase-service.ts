@@ -9,6 +9,7 @@ import { sendSatellitescanPurchaseEmail, sendSatellitescanReminderEmail } from '
 import { storage } from './storage';
 import { couponCanCoverScan } from './scan-purchase-validation';
 import type { SatellitescanPurchase } from '@shared/schema';
+import { isScanReminderDue } from '../shared/scan-reminder';
 
 export async function redeemFreeScan(email:string,name:string|null,code:string,language:'en'|'fr') {
  return db.transaction(async tx=>{
@@ -46,13 +47,32 @@ export async function notifyScanPurchase(purchase:SatellitescanPurchase) {
  const kind='scan-purchase',id=purchase.id;
  return sendClaimedEmail({claim:()=>claimEmailOperation(kind,id),finish:accepted=>finishEmailOperation(kind,id,accepted),send:async()=>sendSatellitescanPurchaseEmail({customerEmail:purchase.customerEmail,customerName:purchase.customerName,amount:purchase.amount,paymentIntentId:purchase.stripePaymentIntentId,purchaseId:id,language:await purchaseLanguage(id),idempotencyKey:operationKey(kind,id)})});
 }
+export type ScanPurchaseEmailRecovery = 'accepted' | 'reconciliation_required' | 'historical_review_required' | 'ineligible';
+
+/** Reuse the original claim and locale. Never turn an uncertain attempt into a resend. */
+export async function recoverScanPurchaseEmail(purchase: SatellitescanPurchase): Promise<ScanPurchaseEmailRecovery> {
+ if (purchase.status !== 'succeeded') return 'ineligible';
+ const [marker] = await db.select().from(adminSettings)
+  .where(eq(adminSettings.key, operationKey('purchase-language', purchase.id)));
+ // Older purchases may already have been emailed before operation claims existed.
+ // A missing/invalid locale is a review gate, never permission to send in English.
+ if (marker?.value !== 'en' && marker?.value !== 'fr') return 'historical_review_required';
+ return await notifyScanPurchase(purchase) ? 'accepted' : 'reconciliation_required';
+}
 export async function remindScanOnce(purchase:SatellitescanPurchase) {
- const kind='scan-reminder',id=purchase.id,state=await claimEmailOperation(kind,id);
+ const kind='scan-reminder',id=purchase.id;
+ // The scheduler/admin list is a candidate snapshot, not current permission to send.
+ // Read the locale first, then recheck the actual order before claiming the send.
+ const language=await purchaseLanguage(id);
+ const [current]=await db.select().from(satellitescanPurchases)
+  .where(eq(satellitescanPurchases.id,id)).limit(1);
+ if(!current || !isScanReminderDue(current)) return false;
+ const state=await claimEmailOperation(kind,id);
  if(state!=='claimed') return false;
  let accepted=false;
  try {
-  accepted=await sendSatellitescanReminderEmail(purchase.customerEmail,purchase.customerName,await purchaseLanguage(id),operationKey(kind,id));
-  if(accepted) await storage.updateSatellitescanReminderCount(id,Number(purchase.remindersCount)+1);
+  accepted=await sendSatellitescanReminderEmail(current.customerEmail,current.customerName,language,operationKey(kind,id));
+  if(accepted) await storage.updateSatellitescanReminderCount(id,1);
   return accepted;
  } finally {await finishEmailOperation(kind,id,accepted);}
 }

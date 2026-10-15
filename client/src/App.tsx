@@ -14,7 +14,7 @@ import { AnalyticsConsent } from '@/components/AnalyticsConsent';
 
 import NotFound from "@/pages/not-found";
 
-const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table', '/portal', '/admin/login', '/myfive'];
+const pagesWithCustomFooter = ['/resources', '/prompts', '/connect', '/webinars', '/programs', '/periodic-table', '/portal', '/admin/login', '/admin/training', '/myfive'];
 
 function shouldHideGlobalFooter(location: string): boolean {
   return pagesWithCustomFooter.some(path =>
@@ -74,6 +74,9 @@ const SocialMediaAdmin = lazy(() => import("@/pages/admin/SocialMediaAdmin"));
 const ContentFlywheelLab = lazy(() => import("@/pages/admin/ContentFlywheelLab"));
 const PromptGeneratorAdmin = lazy(() => import("@/pages/admin/PromptGeneratorAdmin"));
 const LinkedInSetupAdmin = lazy(() => import("@/pages/admin/LinkedInSetupAdmin"));
+const AdminTrainingPage = lazy(() => import("@/pages/admin/AdminTrainingPage"));
+const RoPAAdmin = lazy(() => import("@/pages/admin/RoPAAdmin"));
+const ScanServiceReview = lazy(() => import("@/pages/admin/ScanServiceReview"));
 const GDPRControlsAdmin = lazy(() => import("@/pages/admin/GDPRControlsAdmin"));
 const TestimonialsAdmin = lazy(() => import("@/pages/admin/TestimonialsAdmin"));
 const BacklinksAdmin = lazy(() => import("@/pages/admin/BacklinksAdmin"));
@@ -206,6 +209,9 @@ function Router() {
         <Route path="/admin/content-lab" component={ContentFlywheelLab} />
         <Route path="/admin/prompt-generator" component={PromptGeneratorAdmin} />
         <Route path="/admin/linkedin-setup" component={LinkedInSetupAdmin} />
+        <Route path="/admin/training" component={AdminTrainingPage} />
+        <Route path="/admin/ropa" component={RoPAAdmin} />
+        <Route path="/admin/scan-service" component={ScanServiceReview} />
         <Route path="/admin/gdpr-controls" component={GDPRControlsAdmin} />
         <Route path="/admin/testimonials" component={TestimonialsAdmin} />
         <Route path="/admin/backlinks" component={BacklinksAdmin} />

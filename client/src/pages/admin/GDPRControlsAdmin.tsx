@@ -1,52 +1,91 @@
+import { AdminLearningPanel } from "@/components/admin/AdminLearning";
+import { AdminTroubleshooting } from "@/components/admin/AdminTroubleshooting";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AdminTooltip } from "@/components/AdminTooltip";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Shield, Database, Mail, Users, Eye, Scale, Cpu, AlertTriangle, RefreshCw, ExternalLink, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Shield, Database, Mail, Users, Eye, Scale, Cpu, AlertTriangle, RefreshCw, ExternalLink } from "lucide-react";
 import { SEO } from "@/components/SEO";
+
+class SettingsError extends Error {
+  constructor(readonly status: number) { super('Settings request failed'); }
+}
+
+function settingsHelp(error: unknown, saving = false) {
+  if (error instanceof SettingsError && error.status === 401) return 'sign_in_required';
+  if (error instanceof SettingsError && error.status === 403) return 'settings_access_required';
+  return saving ? 'settings_save_unconfirmed' : 'settings_unavailable';
+}
 
 export default function GDPRControlsAdmin() {
   const { toast } = useToast();
 
-  const { data: settings, isLoading } = useQuery<Record<string, string>>({
-    queryKey: ["/api/admin/settings"],
+  const { data: settings, isPending, isFetching, error, refetch } = useQuery<Record<string, string>>({
+    queryKey: ["/api/admin/settings", "gdpr-controls"],
+    queryFn: async ({ signal }) => {
+      const response = await fetch('/api/admin/settings', { credentials: 'include', signal });
+      if (!response.ok) throw new SettingsError(response.status);
+      const data: unknown = await response.json();
+      if (!data || typeof data !== 'object' || Array.isArray(data) ||
+        !Object.values(data).every(value => typeof value === 'string')) throw new SettingsError(502);
+      const values = data as Record<string, string>;
+      for (const key of ['portal_login_enabled', 'linkedin_oauth_enabled']) {
+        if (values[key] !== undefined && !['true', 'false'].includes(values[key])) throw new SettingsError(502);
+      }
+      return values;
+    },
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    retry: false,
   });
 
   const updateSetting = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: string }) => {
-      await apiRequest("POST", "/api/admin/settings", { key, value });
+      const response = await fetch('/api/admin/settings', {
+        method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, value }),
+      });
+      if (!response.ok) throw new SettingsError(response.status);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['/api/admin/settings'] });
       toast({ title: "Setting saved" });
     },
   });
 
+  // Both connected switches default to allowed on the server unless explicitly false.
+  // This describes the saved permission, not provider configuration/readiness.
+  const isEnabled = (key: string) => ['portal_login_enabled', 'linkedin_oauth_enabled'].includes(key)
+    ? settings?.[key] !== 'false' : settings?.[key] === 'true';
   const toggleSetting = (key: string) => {
-    const current = settings?.[key] === "true";
+    if (!settings || error || isFetching || updateSetting.isPending || updateSetting.error) return;
+    const current = isEnabled(key);
     updateSetting.mutate({ key, value: String(!current) });
   };
 
-  const isEnabled = (key: string) => settings?.[key] === "true";
+  const problem = error ? settingsHelp(error) : updateSetting.error ? settingsHelp(updateSetting.error, true) : null;
+  const checkSettings = () => { updateSetting.reset(); void refetch(); };
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-[#0a0a0a]">
-      <SEO title="GDPR & Data Controls | Admin" description="Manage data privacy settings, consent logs, and GDPR compliance for GreenElephant." canonicalPath="/admin/gdpr-controls" />
+      <SEO title="GDPR & Data Controls | Admin" description="Review privacy-control implementation and learn data-protection concepts." canonicalPath="/admin/gdpr-controls" />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 mb-8 flex-wrap">
           <Tooltip><TooltipTrigger asChild><a href="/admin/submissions" data-testid="link-admin-back">
-            <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" aria-label="Back to Admin Hub"><ArrowLeft className="h-4 w-4" /></Button>
           </a></TooltipTrigger><TooltipContent>Back to Admin Hub</TooltipContent></Tooltip>
           <div className="flex items-center gap-3 flex-wrap">
             <Shield className="h-8 w-8 text-needs" />
             <h1 className="text-3xl font-bold" data-testid="text-gdpr-controls-title">GDPR & Data Controls</h1>
             <AdminTooltip
-              what="Centralised GDPR compliance controls for GreenElephant. Toggle data handling policies, review consent settings, and run the ACX100 self-audit."
-              how="Each section has an enable/disable toggle. Changes take effect immediately. Hover the (?) icons for more details."
+              what="Implementation overview and privacy learning tools. This page does not certify GDPR compliance."
+              how="Only connected settings can be changed. Unconnected controls are labelled and disabled; learning explanations are available by hover, focus or tap."
               debug={[
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "AI Policy", href: "/ai-policy" },
@@ -56,10 +95,16 @@ export default function GDPRControlsAdmin() {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="h-32 flex items-center justify-center">
-            <div className="animate-spin h-6 w-6 border-2 border-needs border-t-transparent rounded-full" />
+        <AdminLearningPanel topics={["gdpr", "basis", "consent", "retention", "rights", "breach"]} />
+        <p className="rounded-lg border border-amber-300/30 bg-amber-300/10 p-4 mb-6 text-base">Implementation review: most switches below are not connected to server controls. They do not stop collection or sending. Use the fictional training view for demonstrations.</p>
+
+        {isPending || isFetching ? (
+          <div className="h-32 flex items-center justify-center gap-3" role="status">
+            <div aria-hidden="true" className="animate-spin h-6 w-6 border-2 border-needs border-t-transparent rounded-full" />
+            <span>Checking current settings…</span>
           </div>
+        ) : problem ? (
+          <AdminTroubleshooting code={problem} onCheckSettings={problem.startsWith('settings_') && problem !== 'settings_access_required' ? checkSettings : undefined} />
         ) : (
           <div className="space-y-6">
 
@@ -69,8 +114,8 @@ export default function GDPRControlsAdmin() {
                   <Database className="h-5 w-5 text-needs" />
                   Data Collection Controls
                   <AdminTooltip
-                    what="Toggle which types of data collection are active on the site."
-                    how="Disabling a toggle stops new data from being collected. Existing data is not affected — use the retention controls below for cleanup."
+                    what="Review proposed controls for collection and the connected portal setting."
+                    how="Unconnected switches do not control collection. Retention and cleanup require a separate implemented process."
                   />
                 </CardTitle>
               </CardHeader>
@@ -107,7 +152,8 @@ export default function GDPRControlsAdmin() {
                   <ToggleRow
                     label="Client Portal Login (Public)"
                     description="Show 'Log in' button in header, footer, and mobile menu. When off, portal access is hidden from public visitors and subscriptions cannot be purchased."
-                    enabled={isEnabled("portal_login_enabled")}
+                    connected
+                  enabled={isEnabled("portal_login_enabled")}
                     onToggle={() => toggleSetting("portal_login_enabled")}
                     isPending={updateSetting.isPending}
                   />
@@ -122,7 +168,7 @@ export default function GDPRControlsAdmin() {
                   OAuth & Third-Party Integrations
                   <AdminTooltip
                     what="Control which third-party login methods are available to portal users."
-                    how="Disable a provider to hide its login button. Users already authenticated via that provider can still use email/password."
+                    how="Only settings marked connected can be changed here. Website administrator Google login is separate from customer portal login."
                     debug={[{ label: "LinkedIn Setup", href: "/admin/linkedin-setup" }]}
                   />
                 </CardTitle>
@@ -138,6 +184,7 @@ export default function GDPRControlsAdmin() {
                 <ToggleRow
                   label="LinkedIn OAuth Login"
                   description="Allow portal users to sign in with their LinkedIn account (OIDC)"
+                  connected
                   enabled={isEnabled("linkedin_oauth_enabled")}
                   onToggle={() => toggleSetting("linkedin_oauth_enabled")}
                   isPending={updateSetting.isPending}
@@ -159,7 +206,7 @@ export default function GDPRControlsAdmin() {
                   Email & Consent Controls
                   <AdminTooltip
                     what="Control email sending behaviour and consent requirements."
-                    how="These settings affect how confirmation emails, onboarding sequences, and admin notifications are sent."
+                    how="These proposed switches are not connected to email sending. The current sender behaviour is unchanged."
                     debug={[{ label: "Email Control Room", href: "/admin/email-control-room" }]}
                   />
                 </CardTitle>
@@ -167,7 +214,7 @@ export default function GDPRControlsAdmin() {
               <CardContent className="space-y-4">
                 <ToggleRow
                   label="Confirmation Emails"
-                  description="Send GDPR-compliant confirmation emails after form submissions"
+                  description="Proposed confirmation-email control; delivery alone is not consent evidence"
                   enabled={isEnabled("gdpr_confirmation_emails")}
                   onToggle={() => toggleSetting("gdpr_confirmation_emails")}
                   isPending={updateSetting.isPending}
@@ -203,36 +250,36 @@ export default function GDPRControlsAdmin() {
                   Data Retention Policies
                   <AdminTooltip
                     what="Configure how long different types of data are retained before automatic cleanup."
-                    how="These define the retention periods shown in the privacy policy. Actual cleanup requires manual action or scheduled tasks (future feature)."
+                    how="No approved schedule or automated cleanup is established by this display. Review each category and its lawful purpose before setting a period."
                   />
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <RetentionRow
                   label="Contact & Marketing Data"
-                  current={settings?.gdpr_retention_contact || "24"}
-                  unit="months from last interaction"
+                  current="Not verified"
+                  unit="Retention decision and cleanup pending"
                   onSave={(val) => updateSetting.mutate({ key: "gdpr_retention_contact", value: val })}
                   isPending={updateSetting.isPending}
                 />
                 <RetentionRow
                   label="Assessment Results"
-                  current={settings?.gdpr_retention_assessments || "12"}
-                  unit="months (anonymised after 6)"
+                  current="Not verified"
+                  unit="Retention and anonymisation are not verified"
                   onSave={(val) => updateSetting.mutate({ key: "gdpr_retention_assessments", value: val })}
                   isPending={updateSetting.isPending}
                 />
                 <RetentionRow
                   label="Waitlist Entries"
-                  current={settings?.gdpr_retention_waitlist || "12"}
-                  unit="months after retreat cycle ends"
+                  current="Not verified"
+                  unit="Retention decision and cleanup pending"
                   onSave={(val) => updateSetting.mutate({ key: "gdpr_retention_waitlist", value: val })}
                   isPending={updateSetting.isPending}
                 />
                 <RetentionRow
                   label="Payment/Contract Records"
-                  current={settings?.gdpr_retention_payments || "72"}
-                  unit="months (EU tax requirement: 6-10 years)"
+                  current="Not verified"
+                  unit="Assess applicable accounting obligations before approving a period"
                   onSave={(val) => updateSetting.mutate({ key: "gdpr_retention_payments", value: val })}
                   isPending={updateSetting.isPending}
                 />
@@ -256,7 +303,7 @@ export default function GDPRControlsAdmin() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  After every publish, self-audit against these 8 pillars of the ACX100 framework.
+                  Use these reflection prompts as discussion material, not a legal audit or certification.
                   Rate each 1-5. Sections most relevant to GreenElephant are highlighted.
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -264,9 +311,9 @@ export default function GDPRControlsAdmin() {
                   <AuditPillar icon={Eye} label="II. Transparency" highlight description="AI content clearly labelled" />
                   <AuditPillar icon={Shield} label="III. Accountability" highlight description="Clear responsibility for AI outcomes" />
                   <AuditPillar icon={Database} label="IV. Data Governance" highlight={false} description="Formal data framework for AI" />
-                  <AuditPillar icon={Scale} label="V. Fairness" highlight description="No bias in assessments" />
+                  <AuditPillar icon={Scale} label="V. Fairness" highlight description="Review potential bias in assessments" />
                   <AuditPillar icon={Cpu} label="VI. Technical Robustness" highlight description="Graceful AI failure handling" />
-                  <AuditPillar icon={AlertTriangle} label="VII. Risk-Based Approach" highlight={false} description="EU AI Act compliance" />
+                  <AuditPillar icon={AlertTriangle} label="VII. Risk-Based Approach" highlight={false} description="Assess applicable AI obligations" />
                   <AuditPillar icon={RefreshCw} label="VIII. Continuous Monitoring" highlight={false} description="Post-deploy monitoring" />
                 </div>
                 <div className="flex gap-3 flex-wrap">
@@ -289,10 +336,10 @@ export default function GDPRControlsAdmin() {
             <Card className="bg-card/50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  Legal Pages Status
+                  Policy pages — review links
                   <AdminTooltip
-                    what="Quick status check for all required legal/policy pages."
-                    how="All pages should return HTTP 200 and be publicly accessible."
+                    what="Links to policy pages for human review."
+                    how="A link does not verify its contents, legal adequacy or current HTTP status."
                   />
                 </CardTitle>
               </CardHeader>
@@ -313,9 +360,10 @@ export default function GDPRControlsAdmin() {
   );
 }
 
-function ToggleRow({ label, description, enabled, onToggle, isPending }: {
+function ToggleRow({ label, description, enabled, onToggle, isPending, connected = false }: {
   label: string;
   description: string;
+  connected?: boolean;
   enabled: boolean;
   onToggle: () => void;
   isPending: boolean;
@@ -327,14 +375,16 @@ function ToggleRow({ label, description, enabled, onToggle, isPending }: {
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
       <Tooltip><TooltipTrigger asChild><Button
-        variant={enabled ? "default" : "outline"}
+        variant={connected && enabled ? "default" : "outline"}
         size="sm"
         onClick={onToggle}
-        disabled={isPending}
+        disabled={isPending || !connected}
+        aria-label={`${label}: ${connected ? (enabled ? 'On' : 'Off') : 'Not connected'}`}
+        aria-pressed={connected ? enabled : undefined}
         data-testid={`button-toggle-${label.toLowerCase().replace(/\s+/g, '-')}`}
       >
-        {enabled ? "On" : "Off"}
-      </Button></TooltipTrigger><TooltipContent>{enabled ? "Click to disable" : "Click to enable"} {label.toLowerCase()}</TooltipContent></Tooltip>
+        {connected ? (enabled ? "On" : "Off") : "Not connected"}
+      </Button></TooltipTrigger><TooltipContent>{connected ? (enabled ? "Click to disable" : "Click to enable") : "No server control is connected for"} {label.toLowerCase()}</TooltipContent></Tooltip>
     </div>
   );
 }
@@ -353,7 +403,7 @@ function RetentionRow({ label, current, unit, onSave, isPending }: {
         <p className="text-xs text-muted-foreground">{unit}</p>
       </div>
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="font-mono">{current} mo</Badge>
+        <Badge variant="outline" className="font-mono">{current}</Badge>
       </div>
     </div>
   );
@@ -380,7 +430,7 @@ function LegalPageRow({ label, path }: { label: string; path: string }) {
   return (
     <div className="flex items-center justify-between gap-3 p-2 rounded bg-muted/20">
       <div className="flex items-center gap-2">
-        <CheckCircle2 className="h-4 w-4 text-green-400" />
+        <ExternalLink className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm">{label}</span>
       </div>
       <a href={path} target="_blank" className="text-needs hover:underline text-xs inline-flex items-center gap-1" data-testid={`link-legal-${label.toLowerCase().replace(/\s+/g, '-')}`}>

@@ -1,3 +1,5 @@
+import { QR_PUBLIC_ORIGIN } from '@shared/qr-campaign';
+import { ContextHelp, ActionLearning } from '@/components/admin/ContextHelp';
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -131,7 +133,7 @@ export default function QRCommandCenter() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/qr-codes"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/qr-codes", purgeConfirm?.id, "scans"] });
       setPurgeConfirm(null);
-      toast({ title: "Scans Purged", description: "All scan data has been permanently deleted (GDPR)." });
+      toast({ title: "Scans Purged", description: "The stored scan rows for this QR have been deleted. Hosting logs and backups are separate." });
     },
   });
 
@@ -161,8 +163,7 @@ export default function QRCommandCenter() {
   };
 
   const getBaseUrl = () => {
-    if (typeof window !== "undefined") return window.location.origin;
-    return "https://greenelephant.org";
+    return QR_PUBLIC_ORIGIN;
   };
 
   const copyToClipboard = (text: string) => {
@@ -229,9 +230,19 @@ export default function QRCommandCenter() {
           <h1 className="text-2xl font-bold font-[Poppins] tracking-tight">QR Command Center</h1>
           <AdminTooltip
             what="QR Code Command Center"
-            how="Generate, control, and track QR codes that point to the GreenElephant portal. All scan data is collected ethically under GDPR — IPs and geolocation are logged only for analytics, never shared with third parties. You can purge scan data at any time."
+            how="Generate, control, and track QR codes that point to the GreenElephant portal. New link-open records contain only the QR reference and time. No visitor IP, browser, referrer or location is saved by the counter. Older records may contain earlier tracking data; purge them separately when appropriate."
           />
         </div>
+
+        <Card className="bg-black/40 border-white/10"><CardHeader><CardTitle>Purple Kauniainen brochure — keep the printed QR</CardTitle></CardHeader><CardContent className="space-y-3 text-base">
+          <Badge variant="outline" className="text-teal-200 border-teal-300/30">Existing QR retained</Badge>
+          <p>Keep using the QR already on your brochures. It opens <span className="break-all">https://www.greenelephant.org/</span>.</p>
+          <p><strong>Available measure: homepage visits from mixed sources.</strong> A separate brochure-scan count is unavailable because this address has no brochure marker.</p>
+          <p>Optional analytics can record homepage visits when collection is enabled and the visitor accepts. It does not count every scan. The campaign counts below cover separate /qr/ links, not this printed QR.</p>
+          <ContextHelp label="Homepage visits and brochure scans" meaning="The website sees the same homepage address whether someone scans this QR, types the address or opens a bookmark. It cannot tell those visits apart reliably." example="One brochure reader and one person using a bookmark can both appear as direct or unknown traffic. That label does not prove a brochure scan." action="Check the homepage page views in your existing analytics. Keep them labelled homepage visits. Do not relabel them as brochure scans or create a replacement campaign for this brochure." />
+          <Button variant="outline" onClick={() => setLocation('/admin/analytics')}>Open analytics setup and status</Button>
+        </CardContent></Card>
+        <ActionLearning task="For a separate campaign QR, open its Analytics view and compare its count before and after one test open. Your own test adds to the total." check="A separate /qr/ link can count opens of that link. The homepage QR on the current brochure does not use that counter. Shared links and repeat visits can add more opens; camera previews that never open the page cannot be counted." />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Tooltip>
@@ -260,12 +271,12 @@ export default function QRCommandCenter() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold" data-testid="text-total-scans">{totalScans}</p>
-                    <p className="text-xs text-white/50">Total Scans</p>
+                    <p className="text-xs text-white/50">Link opens</p>
                   </div>
                 </CardContent>
               </Card>
             </TooltipTrigger>
-            <TooltipContent>Total number of times all QR codes have been scanned</TooltipContent>
+            <TooltipContent>Counted link requests. Repeats, shared links and bots can be included; this is not a count of unique people or proven camera scans.</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -276,13 +287,13 @@ export default function QRCommandCenter() {
                     <Shield className="w-5 h-5 text-[#009999]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold" data-testid="text-gdpr-status">GDPR</p>
-                    <p className="text-xs text-white/50">Compliant Tracking</p>
+                    <p className="text-2xl font-bold" data-testid="text-gdpr-status">No visitor profile</p>
+                    <p className="text-xs text-white/50">New counter records</p>
                   </div>
                 </CardContent>
               </Card>
             </TooltipTrigger>
-            <TooltipContent>All scan data is GDPR-compliant. Purge any QR code's scan history at any time.</TooltipContent>
+            <TooltipContent>New records keep the QR reference and time only. Hosting logs and older records are separate. This screen does not certify legal compliance.</TooltipContent>
           </Tooltip>
         </div>
 
@@ -316,7 +327,7 @@ export default function QRCommandCenter() {
                         {masterQr.isActive === "true" ? "Active" : "Inactive"}
                       </Badge>
                       <Badge variant="outline" className="border-[#009999]/30 text-[#009999]">
-                        {masterQr.scanCount} scans
+                        {masterQr.scanCount} link opens
                       </Badge>
                     </div>
                   </div>
@@ -446,7 +457,7 @@ export default function QRCommandCenter() {
                         <Trash2 className="w-3.5 h-3.5 mr-1" /> Purge Data
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Permanently delete all scan records for this QR code (GDPR right to erasure)</TooltipContent>
+                    <TooltipContent>Delete the stored scan rows for this QR. Hosting logs and backups are separate.</TooltipContent>
                   </Tooltip>
                   <Button variant="ghost" size="sm" onClick={() => setSelectedQr(null)} data-testid="button-close-analytics">
                     Close
@@ -461,24 +472,25 @@ export default function QRCommandCenter() {
                 </div>
               ) : scanData ? (
                 <div className="space-y-4">
+                  <p className="text-base text-white/80">These are link opens, not unique people, proven camera scans or purchases. Repeat opens, shared links and bots can add to the count. Location and device details below, if any, come from older records.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
                       <p className="text-xl font-bold text-[#009999]" data-testid="text-analytics-total">{scanData.totalScans}</p>
-                      <p className="text-xs text-white/40">Total Scans</p>
+                      <p className="text-xs text-white/40">Link opens</p>
                     </div>
                     <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
                       <p className="text-xl font-bold text-white/80" data-testid="text-analytics-countries">{scanData.analytics.byCountry.length}</p>
-                      <p className="text-xs text-white/40">Countries</p>
+                      <p className="text-xs text-white/40">Legacy countries</p>
                     </div>
                     <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
                       <p className="text-xl font-bold text-white/80" data-testid="text-analytics-cities">{scanData.analytics.byCity.length}</p>
-                      <p className="text-xs text-white/40">Cities</p>
+                      <p className="text-xs text-white/40">Legacy cities</p>
                     </div>
                     <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
                       <p className="text-xl font-bold text-white/80" data-testid="text-analytics-devices">
                         {scanData.analytics.byDevice.length}
                       </p>
-                      <p className="text-xs text-white/40">Device Types</p>
+                      <p className="text-xs text-white/40">Legacy device types</p>
                     </div>
                   </div>
 
@@ -530,7 +542,7 @@ export default function QRCommandCenter() {
 
                   {scanData.analytics.byDay.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-white/70">Daily Scans (last entries)</p>
+                      <p className="text-sm font-medium text-white/70">Daily link opens (UTC)</p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
                         {scanData.analytics.byDay.slice(-14).map(([day, count]) => (
                           <div key={day} className="p-2 rounded bg-white/5 border border-white/10 text-center">
@@ -544,17 +556,17 @@ export default function QRCommandCenter() {
 
                   {scanData.scans.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-white/70">Recent Scans</p>
+                      <p className="text-sm font-medium text-white/70">Recent link opens — older rows may include visitor details</p>
                       <div className="rounded-lg border border-white/10 overflow-hidden">
                         <div className="overflow-x-auto">
                           <table className="w-full text-xs">
                             <thead>
                               <tr className="border-b border-white/10 bg-white/5">
                                 <th className="p-2 text-left text-white/50">Time</th>
-                                <th className="p-2 text-left text-white/50">IP</th>
-                                <th className="p-2 text-left text-white/50">Location</th>
-                                <th className="p-2 text-left text-white/50">Device</th>
-                                <th className="p-2 text-left text-white/50">ISP</th>
+                                <th className="p-2 text-left text-white/50">Legacy IP hash</th>
+                                <th className="p-2 text-left text-white/50">Legacy location</th>
+                                <th className="p-2 text-left text-white/50">Legacy device</th>
+                                <th className="p-2 text-left text-white/50">Legacy ISP</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -579,7 +591,7 @@ export default function QRCommandCenter() {
                   {scanData.totalScans === 0 && (
                     <div className="text-center py-6">
                       <BarChart3 className="w-10 h-10 text-white/20 mx-auto mb-2" />
-                      <p className="text-sm text-white/40">No scans recorded yet. Share the QR code to start tracking.</p>
+                      <p className="text-sm text-white/40">No link opens recorded yet. Test the published QR address before sharing it.</p>
                     </div>
                   )}
                 </div>
@@ -620,9 +632,9 @@ export default function QRCommandCenter() {
               <form onSubmit={handleCreateQr} className="p-4 rounded-lg bg-white/5 border border-white/10 space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-white/50 mb-1 block">Campaign Name</label>
+                    <label htmlFor="qr-name" className="text-base text-white/80 mb-1 block">Campaign Name</label>
                     <Input
-                      name="name"
+                      id="qr-name" name="name"
                       placeholder="e.g. Barcelona Retreat Jan 2027"
                       required
                       className="bg-white/5 border-white/20 text-white"
@@ -630,9 +642,9 @@ export default function QRCommandCenter() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-white/50 mb-1 block">Slug (URL-safe identifier)</label>
+                    <label htmlFor="qr-slug" className="text-base text-white/80 mb-1 block">Slug (URL-safe identifier)</label>
                     <Input
-                      name="slug"
+                      id="qr-slug" name="slug"
                       placeholder="e.g. barcelona-retreat-2027"
                       required
                       pattern="[a-z0-9-]+"
@@ -642,9 +654,9 @@ export default function QRCommandCenter() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Target URL (where the QR redirects to)</label>
+                  <label htmlFor="qr-targetUrl" className="text-base text-white/80 mb-1 block">Target URL (where the QR redirects to)</label>
                   <Input
-                    name="targetUrl"
+                    id="qr-targetUrl" name="targetUrl"
                     placeholder="/portal/login or https://greenelephant.org/scan"
                     required
                     className="bg-white/5 border-white/20 text-white"
@@ -652,9 +664,9 @@ export default function QRCommandCenter() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Description (optional)</label>
+                  <label htmlFor="qr-description" className="text-base text-white/80 mb-1 block">Description (optional)</label>
                   <Textarea
-                    name="description"
+                    id="qr-description" name="description"
                     placeholder="What is this QR code for?"
                     className="bg-white/5 border-white/20 text-white resize-none"
                     rows={2}
@@ -698,7 +710,7 @@ export default function QRCommandCenter() {
                             {qr.isActive === "true" ? "Active" : "Inactive"}
                           </Badge>
                           <Badge variant="outline" className="border-white/20">
-                            {qr.scanCount} scans
+                            {qr.scanCount} link opens
                           </Badge>
                           <span className="text-xs text-white/30">{formatDate(qr.createdAt)}</span>
                         </div>
@@ -775,34 +787,10 @@ export default function QRCommandCenter() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                <p className="text-sm text-white/80 font-medium">What we collect</p>
-                <ul className="text-xs text-white/50 mt-1 space-y-0.5 list-disc pl-4">
-                  <li>Hashed IP (SHA-256, salted — not reversible to raw IP)</li>
-                  <li>Country and region only (no city, no coordinates)</li>
-                  <li>Device type (mobile/desktop)</li>
-                  <li>Timestamp of scan</li>
-                  <li>Truncated user agent (first 200 chars)</li>
-                </ul>
-              </div>
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                <p className="text-sm text-white/80 font-medium">What we do NOT collect</p>
-                <ul className="text-xs text-white/50 mt-1 space-y-0.5 list-disc pl-4">
-                  <li>No raw IP addresses stored (hashed only)</li>
-                  <li>No personal names or email addresses</li>
-                  <li>No cookies or tracking pixels</li>
-                  <li>No cross-site tracking</li>
-                  <li>No persistent device fingerprinting</li>
-                  <li>No precise geolocation (lat/lon)</li>
-                </ul>
-              </div>
-            </div>
-            <p className="text-xs text-white/30">
-              Under GDPR Article 6(1)(f), scan tracking is processed under legitimate interest for analytics purposes. 
-              Users are not personally identifiable from scan data. All scan data can be purged at any time using the "Purge Data" button.
-            </p>
+          <CardContent className="space-y-3 text-base text-white/80">
+            <p>New counter records contain the campaign’s QR reference and the time of the link open. The counter does not save visitor IPs, IP hashes, browser details, referrers or location, and does not contact a location service.</p>
+            <p>The counter sets no cookies. Hosting/security logs and the site’s separate optional analytics have their own controls. Existing scan rows can still contain data collected by the earlier implementation.</p>
+            <p>Use Purge Data to remove stored scan rows for a campaign. This does not erase hosting logs or backups, or certify legal compliance. Review the notice and retention arrangements before release.</p>
           </CardContent>
         </Card>
       </div>
@@ -844,7 +832,7 @@ export default function QRCommandCenter() {
             </DialogTitle>
             <DialogDescription className="text-white/60">
               This will permanently delete all scan records for <strong className="text-white/80">{purgeConfirm?.name}</strong>.
-              The QR code itself will remain active. This supports GDPR right to erasure (Article 17).
+              The QR code itself will remain active. Hosting logs and backups are separate from these rows.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">

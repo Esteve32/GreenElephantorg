@@ -1,25 +1,15 @@
-import { useEffect, useState, useMemo } from "react";
-import { useLocation } from "wouter";
+import { AdminLoginHelp, AdminTroubleshooting } from '@/components/admin/AdminTroubleshooting';
+import { AdminLearningPanel } from "@/components/admin/AdminLearning";
+import { useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Lock, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Lock } from "lucide-react";
 import { SiGoogle } from "react-icons/si";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import earthImageUrl from "@assets/generated_images/earth_from_space_without_aurora.png";
 
 export default function AdminLoginPage() {
   useEffect(() => { document.title = "Admin Login | GreenElephant OS"; }, []);
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPasswordFallback, setShowPasswordFallback] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [, setLocation] = useLocation();
-  const { toast } = useToast();
-
   const searchParams = new URLSearchParams(window.location.search);
   const errorParam = searchParams.get("error");
 
@@ -35,54 +25,6 @@ export default function AdminLoginPage() {
       })),
     []
   );
-
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await apiRequest("POST", "/api/admin/login", { password });
-      const data = await response.json();
-
-      if (response.ok) {
-        await queryClient.invalidateQueries({ queryKey: ['/api/admin/check'] });
-        
-        toast({
-          title: "Login successful",
-          description: "Redirecting to admin dashboard...",
-        });
-        setTimeout(() => {
-          setLocation("/admin/submissions");
-        }, 500);
-      } else {
-        toast({
-          title: "Login failed",
-          description: data.message || "Incorrect password",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Could not connect to server",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const errorMessages: Record<string, string> = {
-    not_authorized: "Your Google account is not authorized for admin access. Ask a Super Admin to invite you.",
-    no_code: "Google login failed. Please try again.",
-    state_mismatch: "Security check failed. Please try again.",
-    not_configured: "Google login is not configured yet.",
-    token_failed: "Google authentication failed. Please try again.",
-    session_failed: "Session error. Please try again.",
-    callback_failed: "Login error. Please try again.",
-    no_email: "Could not retrieve your email from Google.",
-    dev_google: "Google login only works on the published site. Use password login in dev mode.",
-  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -177,15 +119,11 @@ export default function AdminLoginPage() {
               Mission Control
             </h1>
             <p className="text-lg text-white/70 max-w-md mx-auto">
-              Sign in with your GreenElephant Google account to access the admin dashboard
+              Sign in with your individually approved Google account to access the admin dashboard
             </p>
           </div>
 
-          {errorParam && (
-            <div className="w-full max-w-md mb-4 p-3 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center" data-testid="text-login-error">
-              {errorMessages[errorParam] || "Login failed. Please try again."}
-            </div>
-          )}
+          {errorParam && <div className="w-full max-w-xl" data-testid="text-login-error"><AdminTroubleshooting code={errorParam} /></div>}
 
           <Card className="w-full max-w-md backdrop-blur-md bg-black/40 border-white/10">
             <CardHeader>
@@ -206,62 +144,14 @@ export default function AdminLoginPage() {
                 Sign in with Google
               </Button>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10" />
-                </div>
-                <div className="relative flex justify-center text-xs">
-                  <span className="bg-transparent px-2 text-white/40">or</span>
-                </div>
-              </div>
+              <p className="text-sm text-white/60">
+                Google sign-in is required. Shared admin passwords are no longer supported.
+                Open the help below if you cannot sign in.
+              </p>
 
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors py-1"
-                onClick={() => setShowPasswordFallback(!showPasswordFallback)}
-                data-testid="button-toggle-password"
-              >
-                Use admin password
-                <ChevronDown className={`w-3 h-3 transition-transform ${showPasswordFallback ? 'rotate-180' : ''}`} />
-              </button>
+              <AdminLoginHelp />
 
-              {showPasswordFallback && (
-                <form onSubmit={handlePasswordSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-white/80">Admin Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your admin password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        data-testid="input-admin-password"
-                        autoComplete="current-password"
-                        className="bg-white/5 border-white/15 text-white placeholder:text-white/30 focus:border-needs/50 pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-                        data-testid="button-toggle-password-visibility"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-needs text-white"
-                    disabled={isLoading}
-                    data-testid="button-admin-login"
-                  >
-                    {isLoading ? "Logging in..." : "Login with Password"}
-                  </Button>
-                </form>
-              )}
+              <AdminLearningPanel topics={["mfa", "breakglass"]} />
 
               <div className="mt-4 p-4 rounded-md bg-white/5 border border-white/10">
                 <p className="text-sm text-white/50">
