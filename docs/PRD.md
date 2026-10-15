@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.27.4**.
+One PRD, two product sections plus shared-system requirements. Version: **2.27.5**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -1673,8 +1673,9 @@ isolated Neon validation, human message approval and human release remain open.
 
 This status under [DEC-AIL-100](DECISION_LOG.md#dec-ail-100) supersedes earlier
 "current implementation" descriptions for the paths below. It does not mark the
-whole privacy programme complete. Estève will merge the eventual reviewed PR and
-then prepare Replit separately. GitHub source and live provider settings differ.
+whole privacy programme complete. Estève subsequently authorises the agent to merge the tested foundation through
+PR #63 under DEC-AIL-101, then continue the next local integration batch. Replit
+publication remains a separate human step. GitHub source and live provider settings differ.
 
 | Area | Verified implementation | Still required before activation/completion |
 | --- | --- | --- |
@@ -1689,8 +1690,9 @@ then prepare Replit separately. GitHub source and live provider settings differ.
 
 Runtime gates and configuration names are documented in
 [the secrets inventory](operations/secrets.md#privacy-workflow-candidate).
-The PR remains a review candidate until the missing implementation is closed.
-Do not mistake passing local tests or the two published text edits for activation.
+The owner authorises merging the disabled foundation under DEC-AIL-101 while the
+remaining implementation stays explicitly unfinished. Do not mistake the source
+merge, passing tests or published Typeform text for backend activation.
 
 <a id="ai-lit-release-assembly-20261015"></a>
 ### Unified handover and release preparation — 15 October 2026

@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.28.4
+# Green Elephant — Project Decision Log v11.28.5
 
-**Document Version:** `11.28.4`
-**Last Updated:** `2026-10-15T17:23:43+03:00`
+**Document Version:** `11.28.5`
+**Last Updated:** `2026-10-15T17:33:48+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,7 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.28.5 | 2026-10-15T17:33:48+03:00 | Estève Pannetier | AI-LIT DEC-AIL-101: owner authorises verified PR63 foundation merge, Typeform publication and next local batch |
 | 11.28.4 | 2026-10-15T17:23:43+03:00 | Estève Pannetier | AI-LIT DEC-AIL-100: verify two published Typeform text edits and stage privacy foundation; reserve merge to owner |
 | 11.28.3 | 2026-10-15T15:54:39+03:00 | Estève Pannetier — explicit GitHub PR/main instruction | AI-LIT: owner authorises consolidated candidate commit/push, GitHub PR and checked merge to main; live activation gates retained |
 | 11.28.2 | 2026-10-15T15:10:03+03:00 | Estève Pannetier — consolidation and preparation request only | AI-LIT: reconcile older handover with one GitHub review path; prepare exact-SHA release and defer analytics activation checks |
@@ -2514,6 +2515,16 @@ decision here when Estève selects one; do not silently change its status.
 - **Validation / limits:** synthetic in-memory SQL tests and local HTTP tests exercise notice ordering, withdrawal/stale-link refusal, identity/outcome/hold rules, duplicates, transaction rollback, exact envelope approval, unknown acceptance, weekly occurrences/DST and metadata-only retention. Browser review uses fictional records, no live sender. These are implementation checks, not a full GDPR determination, proof of production migration, mailbox intake, provider delivery, backup restoration or deployment. Remaining work is tracked in the [current PRD status](PRD.md#ai-lit-privacy-completion-20261015).
 - **Source / cross-repository:** website base `ed49cac9d3b458670d64457a4f911a7917953ce3` plus working tree. OS PRD/log inspected at `83391d8520a6bfb2e010590686d6e32797490b62`; GEOS-REQ-002/003/004/005 checked. This candidate stores website-owned records only, adopts no contracts package, creates no OS schema/adapter and transfers no purchases or privacy data to Notion/Google; no paired OS implementation PR is required. A future mailbox/OS adapter requires its own verified receiving-side review.
 - **Release boundary:** keep the PR draft until missing implementation and independent review are resolved. No agent merge, real email, live database operation, GA4 activation, Replit pull or Republish. Issue #43 stays deferred, collection OFF. Preserve the existing manual release issue #31.
+
+<a id="dec-ail-101"></a>
+### DEC-AIL-101 — Publish approved Typeform changes and merge the staged foundation
+
+- **Project / date / status:** AI-LIT; 2026-10-15 Europe/Helsinki; current explicit owner approval for Typeform save/publication, GitHub-signed attribution, PR #63 merge to main and the next local integration batch.
+- **Human authority:** Estève: “These are correct. You can activate and save and republish the type form. Draft PR 63, sign it in GitHub with my email@estevepannetier.com credentials, push to main, and complete the next batch of work here.” This supersedes DEC-AIL-100's owner-only merge reservation and draft-only hold for the staged foundation. It does not claim the remaining privacy programme is complete or authorise live backend migration, mail sends or Replit Republish.
+- **Decision / affected:** publish the reviewed Typeform configuration and same-link hidden order-reference preparation without a new customer question or step. Merge the verified foundation through PR #63 after exact-head checks; continue signed receipt/original-evidence/runtime intake work in a separate bounded batch. REQ-035/036/083/086/087/089/106/108/109 and existing privacy/participant boundaries remain in force.
+- **Signing evidence:** GitHub reports candidate commit `b36a2fbc24e800ba78a742db49c97b405e2f72a6` verified, reason `valid`, authored as `email@estevepannetier.com`. Commit authorship, cryptographic verification and connected GitHub authentication are distinct. No password, token or key value is copied or created.
+- **Release limits:** the new workflow/worker/sending flags remain OFF; unfinished mapping/evidence/assignment, mailbox/delivery, routine-category and retention/backup work remain tracked in the PRD. A foundation merge is source publication only. Preserve issue #43 deferred/analytics OFF, populated-database boundaries and the human Replit release reminder.
+- **Cross-repository:** website base `ed49cac9d3b458670d64457a4f911a7917953ce3` and PR #63 head above; OS PRD/log at `83391d8520a6bfb2e010590686d6e32797490b62` (GEOS-REQ-002/003/004/005). Website-owned staging only; no OS schema, package adoption or data transfer is introduced. No paired OS implementation is required by this approval record.
 
 ## MY5 pause and historical decisions
 
