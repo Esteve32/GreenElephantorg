@@ -52,6 +52,9 @@ app.use('/api/typeform-webhook', express.raw({
   limit: '50mb' 
 }));
 
+// Resend delivery callbacks keep their exact signed bytes and a small body limit.
+app.use('/api/webhooks/resend-service', express.json({limit:'128kb',verify:(req,_res,buf)=>{req.rawBody=buf;}}));
+
 // Global JSON parser for all other routes
 app.use(express.json({
   limit: '10mb',

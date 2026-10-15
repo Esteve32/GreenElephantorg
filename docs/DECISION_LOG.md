@@ -6,10 +6,10 @@ requirements: docs/PRD.md
 project_index: docs/project-index.json
 ---
 
-# Green Elephant — Project Decision Log v11.28.6
+# Green Elephant — Project Decision Log v11.28.8
 
-**Document Version:** `11.28.6`
-**Last Updated:** `2026-10-15T17:50:45+03:00`
+**Document Version:** `11.28.8`
+**Last Updated:** `2026-10-15T18:56:03+03:00`
 
 One decision log serves both projects. Project-qualified IDs prevent a MyFive
 decision from being mistaken for an AI literacy decision. Legacy `DEC-xxx` IDs
@@ -35,6 +35,8 @@ A recording command does not grant approval. Do not change historical rows.
 | Version | Recorded at | Approved by | Change summary |
 | :--- | :--- | :--- | :--- |
 <!-- PROJECT_DECISION_LEDGER_ROWS -->
+| 11.28.8 | 2026-10-15T18:56:03+03:00 | Estève Pannetier — explicit publish-to-main and Replit-handover request, 15 October 2026 | AI-LIT DEC-AIL-104: owner authorises checked source PR publication and main merges before exact-commit Replit handover; live gates retained |
+| 11.28.7 | 2026-10-15T18:31:39+03:00 | Esteve Pannetier — explicit A and service-email safeguards request, 15 October 2026; local implementation only | AI-LIT: prepare disabled purchased-service approval, permanent send claims and Resend delivery controls; reserve database and release validation to Replit |
 | 11.28.6 | 2026-10-15T17:50:45+03:00 | Estève Pannetier | AI-LIT DEC-AIL-102: implement encrypted same-link Typeform intake, owner evidence and no-send recovery behind disabled flags |
 | 11.28.5 | 2026-10-15T17:33:48+03:00 | Estève Pannetier | AI-LIT DEC-AIL-101: owner authorises verified PR63 foundation merge, Typeform publication and next local batch |
 | 11.28.4 | 2026-10-15T17:23:43+03:00 | Estève Pannetier | AI-LIT DEC-AIL-100: verify two published Typeform text edits and stage privacy foundation; reserve merge to owner |
@@ -2538,6 +2540,27 @@ decision here when Estève selects one; do not silently change its status.
 - **Verification:** real in-memory SQL/HTTP integration tests plus a fictional browser flow cover encrypted replay/tampering, capture rollback, owner attestation and separate resolution, wrong-order isolation, required HTTPS origin, no email fallback, default-off keys/lifetime and no blind resubmission. Shared transaction evidence reads avoid nested transaction/snapshot gaps. Read-only `typeform:preflight` checks the public definition without credentials, responses or database access.
 - **Remaining:** actual isolated Neon migration validation, deployment-managed keys/lifetime, supervised signed complete webhook/API recovery and production MFA, exact live recipient/message approval, sending/delivery reconciliation, mailbox/routine/retention-backup batches and independent full privacy review. Website Typeform-related runtime flags stay OFF. Issue #43 remains deferred, collection OFF; Replit release still uses issue #31 and human Republish.
 - **Cross-repository:** website base `7dfb3ba39fc8ea6cf58c850222103bd7048a72b4` plus working tree; paired OS main re-resolved and PRD/log read at `83391d8520a6bfb2e010590686d6e32797490b62`. GEOS-REQ-002/003/004/005 checked. Existing website↔Typeform service boundary only; no OS schema, shared package or transfer to Notion/Google, so no paired OS implementation PR is required.
+
+<a id="dec-ail-103"></a>
+### DEC-AIL-103 — Finish the local purchased-service email controls and provider handoff
+
+- **Project/date/status:** AI-LIT;15 October 2026 Europe/Helsinki; approved local implementation. Human result acceptance, independent security/privacy review, activation, database validation and release remain separate.
+- **Human authority:** Estève selects A (purchased-service completion email work), names Resend Free/Replit/Cloudflare/Google/Stripe/Typeform and requests correct trigger wiring, loop safeguards and website admin deliverability controls. The preceding instruction reserves Replit release and local database validation to Estève/Replit agent. No real send or provider mutation follows from this approval.
+- **Decision:** implement reviewable, disabled service-message approval/dispatch metadata, permanent duplicate protection, recipient-count caps, pause/holds, signed provider reports and authenticated read-only reconciliation; retain the same paid/voucher/link journey, separate participant evidence and coach copies. Check source against Replit deployment ownership and current provider documentation. Do not assume Resend owns the existing cron, infer an actual schedule, or equate Google/SPF/Cloudflare with inbox delivery.
+- **Implementation/limits:** [PRD checkpoint](PRD.md#ai-lit-service-email-delivery-20261015). New ledger/pending-message encryption and receipt retention need Replit-side database validation and recovery review. Free-plan local caps cover tracked Scan mail only; other senders/account usage remain external. No automatic resend of unknown/submitting/accepted operations; failures pause tracked sends. New flags remain false; no provider, mailbox, DNS, cron, database or deployment changed. No full-privacy/compliance or per-recipient delivery certification.
+- **Validation/preservation:** 54 focused memory/provider-stub/HTTP tests, TypeScript/build/repository and whitespace checks pass; fictional mobile/desktop controls and keyboard/touch help pass. Four database companion tests are prepared for Replit only, not run locally; full release/database validation remains there. Source backup is private and hash-verified. No real send, provider/cron/DNS/database change, commit, push, merge or Replit release.
+- **Affected:** AI-LIT-REQ-010/035/036/076/089/105/106. Website base/HEAD 55ff1e43acf144ab9c7a6c2ccd7137c848318912 plus local candidate; merged main 7dfb3ba39fc8ea6cf58c850222103bd7048a72b4. PR64 is an unmerged prerequisite. OS main 83391d8520a6bfb2e010590686d6e32797490b62 PRD/log read; GEOS-REQ-002/003/004/005 unaffected implementation-wise: no new shared contract/package, OS record or Notion/Google transfer, so no paired OS change.
+
+
+<a id="dec-ail-104"></a>
+### DEC-AIL-104 — Publish the checked source and hand off the Replit relaunch
+
+- **Project/date/status:** AI-LIT;15 October 2026 Europe/Helsinki; approved GitHub source publication and release preparation.
+- **Approver/evidence:** Estève Pannetier explicitly asks to confirm the work is on GitHub main and, if it is not, to do that first, then provide a Replit-agent handover for relaunch. This supersedes earlier local-only/no-merge boundaries for the completed Typeform and purchased-service source batches.
+- **Decision:** merge prerequisite PR #64 and publish the service-email candidate through a checked PR; verify the resulting main SHA and give the Replit agent an exact-commit handover. Do not include unrelated dependency PRs or paused MY5. No force push, production data copy, real send, provider/DNS/cron change or Mac-side database validation is authorised by this publication step.
+- **Evidence at preparation:** PR #64 head55ff1e43acf144ab9c7a6c2ccd7137c848318912 passed GitHub Source build and was merged at106f8eeb4735bdc3a335f2a1425189f8210b3d8e. The service-email working tree retains the54 passing focused non-database checks and prepared Replit SQL companion described in DEC-AIL-103; its PR/CI/merge must be verified before claiming main contains it. Publication status and final SHA are recorded in the GitHub PR and private release handover rather than predicted here.
+- **Activation boundary:** new runtime flags remain OFF and the saved queue starts paused. The Replit agent owns identified database validation, migration/backup/rollback review, deployment configuration and provider/scheduler checks. Exact real messages/recipients require human approval; Estève personally selects Republish. Issue #31 remains open until verified deployment; issue #43 remains deferred with analytics OFF. Wider privacy and full French coverage retain their open acceptance gates.
+- **Affected/cross-check:** AI-LIT-REQ-010/035/036/076/089/105/106; DEC-AIL-102/103. Website base55ff1e43acf144ab9c7a6c2ccd7137c848318912 plus this working tree; prerequisite merged main106f8eeb4735bdc3a335f2a1425189f8210b3d8e. OS main freshly resolved and PRD/log read at83391d8520a6bfb2e010590686d6e32797490b62; GEOS-REQ-002/003/004/005 checked. Website release/email boundary only, with no shared-contract adoption or Notion/Google OS transfer; no paired OS PR is needed.
 
 ## MY5 pause and historical decisions
 

@@ -74,7 +74,7 @@ export async function remindScanOnce(purchase:SatellitescanPurchase) {
  if(state!=='claimed') return false;
  let accepted=false;
  try {
-  accepted=await sendSatellitescanReminderEmail(current.customerEmail,current.customerName,language,operationKey(kind,id),await orderReference(current));
+  accepted=await sendSatellitescanReminderEmail(current.customerEmail,current.customerName,language,operationKey(kind,id),await orderReference(current),id);
   if(accepted) await storage.updateSatellitescanReminderCount(id,1);
   return accepted;
  } finally {await finishEmailOperation(kind,id,accepted);}

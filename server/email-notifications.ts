@@ -1,3 +1,4 @@
+import { trackedServiceSend } from './service-email-runtime';
 import type { ScanTypeformReference } from '../shared/scan-typeform-link';
 import { brandedEmailWrapper } from './branded-email';
 import { scanServiceEmail } from './scan-service-email';
@@ -259,8 +260,8 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
 
     // Accepted by Resend is not proof of delivery to the recipient's inbox.
     const results = await attemptPurchaseEmails({
-      admin: () => client.emails.send(adminMessage, data.idempotencyKey ? {idempotencyKey:data.idempotencyKey+':admin'} : undefined),
-      customer: () => client.emails.send(customerMessage, data.idempotencyKey ? {idempotencyKey:data.idempotencyKey+':customer'} : undefined),
+      admin: () => trackedServiceSend('purchase_admin',adminMessage,data.idempotencyKey?data.idempotencyKey+':admin':undefined,data.purchaseId,()=>client.emails.send(adminMessage, data.idempotencyKey ? {idempotencyKey:data.idempotencyKey+':admin'} : undefined)) as ReturnType<typeof client.emails.send>,
+      customer: () => trackedServiceSend('purchase_customer',customerMessage,data.idempotencyKey?data.idempotencyKey+':customer':undefined,data.purchaseId,()=>client.emails.send(customerMessage, data.idempotencyKey ? {idempotencyKey:data.idempotencyKey+':customer'} : undefined)) as ReturnType<typeof client.emails.send>,
     });
     for (const result of results) {
       if (result.accepted) {
@@ -283,11 +284,12 @@ export async function sendSatellitescanPurchaseEmail(data: SatellitescanPurchase
   }
 }
 
-export async function sendSatellitescanReminderEmail(customerEmail:string,customerName:string|null,language:'en'|'fr'='en',idempotencyKey?:string,typeformReference?:ScanTypeformReference) {
+export async function sendSatellitescanReminderEmail(customerEmail:string,customerName:string|null,language:'en'|'fr'='en',idempotencyKey?:string,typeformReference?:ScanTypeformReference,purchaseId?:string) {
  try {
   if (!(await isConnectorEnabled('resend'))) return false;
   const {client,fromEmail}=await getUncachableResendClient();
-  await client.emails.send({from:fromEmail,to:customerEmail,replyTo:'esteve@greenelephant.org',...scanServiceEmail('reminder',customerName,language,typeformReference)},idempotencyKey?{idempotencyKey}:undefined);
+  const message={from:fromEmail,to:customerEmail,replyTo:'esteve@greenelephant.org',...scanServiceEmail('reminder',customerName,language,typeformReference)};
+  await trackedServiceSend('reminder',message,idempotencyKey,purchaseId,()=>client.emails.send(message,idempotencyKey?{idempotencyKey}:undefined));
   console.log('Scan reminder accepted; delivery unverified');return true;
  } catch {console.error('Scan reminder acceptance unconfirmed');return false;}
 }

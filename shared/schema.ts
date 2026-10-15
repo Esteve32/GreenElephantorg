@@ -1199,3 +1199,14 @@ export const scanTypeformAssignmentEvidence = pgTable('scan_typeform_assignment_
   requestDigest: varchar('request_digest', { length:64 }).notNull(),
   recordedAt: timestamp('recorded_at', { withTimezone:true }).notNull().defaultNow(),
 }, t=>[index('scan_assignment_event_idx').on(t.eventId)]);
+
+// Service-email metadata and encrypted purchase/reminder envelopes; completion drafts are recovered before sending.
+export const serviceEmailControl = pgTable('service_email_control', {
+ id: text('id').primaryKey(),data:jsonb('data').$type<import('../server/service-email').ServiceControls>().notNull(),
+});
+export const serviceEmailJobs = pgTable('service_email_jobs', {
+ id:text('id').primaryKey(),providerId:text('provider_id').unique(),data:jsonb('data').$type<import('../server/service-email').ServiceJob>().notNull(),
+});
+export const serviceEmailReceipts = pgTable('service_email_receipts', {
+ id:text('id').primaryKey(),data:jsonb('data').$type<import('../server/service-email').ServiceReceipt>().notNull(),
+});
