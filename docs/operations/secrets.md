@@ -24,7 +24,8 @@ remain to be verified inside Replit without copying credentials into this reposi
 
 | Group | Names |
 | --- | --- |
-| Core | `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`, `PORT`, `NODE_ENV`, `PUBLIC_SITE_URL` |
+| Restricted admin configuration | `ADMIN_OWNER_EMAIL`, `PRIVACY_ADMIN_GOOGLE_BINDINGS` (private assignments, blank by default; no values in Git) |
+| Core | `DATABASE_URL`, `SESSION_SECRET`, `PORT`, `NODE_ENV`, `PUBLIC_SITE_URL` |
 | Replit platform | `REPL_ID`, `REPLIT_DEV_DOMAIN`, `REPLIT_CONNECTORS_HOSTNAME`, `REPL_IDENTITY`, `WEB_REPL_RENEWAL` |
 | Email | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `EMAIL_UNSUBSCRIBE_SECRET` |
 | Payments | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SATELLITESCAN_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLIC_KEY` |
@@ -61,3 +62,12 @@ rotation and failure behavior without revealing the value.
 Never paste secret values into chat, PRs, command output or release evidence. Check
 production settings separately from workspace settings. Preserve existing values
 and add only the required reviewed configuration.
+
+## Retired shared admin password — local Google-only candidate
+
+`ADMIN_PASSWORD` and stored `admin_password_hash` are no longer read for admin
+login under DEC-AIL-086. Neither value should be added for new deployments of this
+candidate. Existing production values are not removed by this code; clean them up
+only during reviewed rollout after verifying the deployed revision. Do not export
+them for review. Follow [admin transition and recovery](admin-access-recovery.md)
+for the named-account preflight, session rejection and controlled operator recovery.

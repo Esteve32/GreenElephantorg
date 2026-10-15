@@ -16,8 +16,9 @@
     "manifest:generate": "node scripts/generate-repository-manifests.mjs",
     "decision:record": "node scripts/record-decision-version.mjs",
     "db:push": "drizzle-kit push",
-    "test:release": "node --import tsx --test server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts shared/marketing-analytics.test.ts server/public-http.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts scripts/navigation-accessibility.test.mjs server/search-discovery.test.ts shared/policy-pages.test.ts scripts/preview-hosts.test.ts server/type-safety-regressions.test.ts server/google-client-compatibility.test.ts scripts/analytics-preflight.test.ts client/src/components/youtube-opt-in-player.release.test.mjs",
-    "analytics:preflight": "tsx scripts/analytics-preflight.ts"
+    "test:release": "node --import tsx --test --test-concurrency=4 server/ropa.test.ts server/admin-google-mfa.test.ts server/admin-google-routes.test.ts server/admin-session.test.ts server/marketing-withdrawal.test.ts server/email-preference-routes.test.ts server/privacy-admin.test.ts server/admin-team.test.ts server/email-acceptance.test.ts server/email-senders.test.ts server/data-export-email.test.ts server/scan-results-email.test.ts server/purchase-email-delivery.test.ts shared/scan-answers.test.ts shared/scan-checkout.test.ts shared/website-polish.test.ts shared/marketing-analytics.test.ts server/public-http.test.ts server/qr-redirect.test.ts server/delivery-security.test.ts server/claimed-email.test.ts server/scan-paid-replay.test.ts server/scan-purchase-recovery.test.ts server/scan-reminder.test.ts server/typeform-intake.test.ts server/typeform-intake-db.test.ts server/scan-typeform-reference.test.ts server/scan-service-review.test.ts server/scan-completion-preview.test.ts scripts/navigation-accessibility.test.mjs server/search-discovery.test.ts shared/policy-pages.test.ts scripts/preview-hosts.test.ts server/type-safety-regressions.test.ts server/google-client-compatibility.test.ts scripts/analytics-preflight.test.ts client/src/components/youtube-opt-in-player.release.test.mjs",
+    "analytics:preflight": "tsx scripts/analytics-preflight.ts",
+    "preview:scan-review": "tsx scripts/preview-scan-review.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -94,6 +95,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
     "@replit/vite-plugin-cartographer": "^0.4.2",
     "@replit/vite-plugin-dev-banner": "^0.1.1",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",

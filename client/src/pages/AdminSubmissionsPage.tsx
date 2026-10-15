@@ -1,3 +1,5 @@
+import { AdminTroubleshooting } from '@/components/admin/AdminTroubleshooting';
+import { TrainingLink } from "@/components/admin/AdminLearning";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
@@ -280,9 +282,12 @@ const JOURNEY_STAGES: JourneyStage[] = [
 ];
 
 const SETTINGS_TOOLS = [
+  { label: "Admin Learning Lab", icon: Shield, href: "/admin/training", color: "text-teal-400 border-teal-400/30 bg-teal-400/5" },
   { label: "LinkedIn Setup", icon: Settings, href: "/admin/linkedin-setup", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
   { label: "Coupons & Pricing", icon: Ticket, href: "/admin/coupons", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
   { label: "SaaS Settings", icon: CreditCard, href: "/admin/saas-settings", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
+  { label: "RoPA & Privacy", icon: Shield, href: "/admin/ropa", color: "text-teal-400 border-teal-400/30 bg-teal-400/5" },
+  { label: "Scan service queue", icon: ClipboardCheck, href: "/admin/scan-service", color: "text-teal-400 border-teal-400/30 bg-teal-400/5" },
   { label: "GDPR Controls", icon: Shield, href: "/admin/gdpr-controls", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
   { label: "Connected Tools", icon: Settings, href: "/admin/integrations", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
   { label: "Access & Security", icon: Lock, href: "/admin/access-control", color: "text-slate-400 border-slate-400/30 bg-slate-400/5" },
@@ -335,7 +340,7 @@ export default function AdminSubmissionsPage() {
   };
 
   // Check authentication status on mount - refetch on every mount
-  const { data: authStatus, isLoading: authLoading } = useQuery<{ isAuthenticated: boolean }>({
+  const { data: authStatus, isLoading: authLoading, error: authError } = useQuery<{ isAuthenticated: boolean }>({
     queryKey: ['/api/admin/check'],
     staleTime: 0,
     refetchOnMount: 'always',
@@ -512,7 +517,7 @@ export default function AdminSubmissionsPage() {
   useEffect(() => {
     // Only redirect if auth check is complete and user is explicitly not authenticated
     if (!authLoading && authStatus !== undefined && authStatus.isAuthenticated === false) {
-      setLocation("/admin/login");
+      setLocation("/admin/login?error=sign_in_required");
     }
   }, [authLoading, authStatus, setLocation]);
 
@@ -838,15 +843,15 @@ export default function AdminSubmissionsPage() {
   const [populatingRecipients, setPopulatingRecipients] = useState(false);
 
   const handleResendEmails = async (purchaseId: string, customerEmail: string) => {
-    if (!confirm(`Resend welcome and receipt emails to ${customerEmail}?`)) return;
+    if (!confirm(`Check the purchase emails for ${customerEmail}? This may send the original messages only if no previous attempt is recorded. Existing or uncertain attempts will not be resent.`)) return;
     
     setResendingEmail(purchaseId);
     try {
       const response = await apiRequest("POST", `/api/admin/satellitescan/${purchaseId}/resend-emails`, {});
       const data = await response.json();
-      toast({ title: "Emails sent!", description: data.message });
+      toast({ title: "Provider acceptance recorded", description: data.message });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Could not resend emails", variant: "destructive" });
+      toast({ title: "Email review needed", description: error.message || "Could not check purchase emails. Review provider history before retrying.", variant: "destructive" });
     } finally {
       setResendingEmail(null);
     }
@@ -1110,7 +1115,7 @@ export default function AdminSubmissionsPage() {
     return (
       <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <p className="text-muted-foreground">Redirecting to login...</p>
+          <AdminTroubleshooting code={authError ? "callback_failed" : "sign_in_required"} />
         </div>
       </div>
     );
@@ -1143,6 +1148,7 @@ export default function AdminSubmissionsPage() {
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>GreenElephant OS</h1>
                 <p className="text-sm text-white/40">Admin Hub &middot; Customer Journey &middot; Operations</p>
+                <TrainingLink />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -2279,6 +2285,18 @@ export default function AdminSubmissionsPage() {
             <Card className="backdrop-blur-sm bg-card/50 border-white/10">
               <CardHeader>
                 <CardTitle>Satellitescan Purchases</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Check purchase email uses the original language and prevents repeat attempts.
+                  Provider acceptance does not confirm inbox delivery.
+                </p>
+                <details className="text-sm text-muted-foreground">
+                  <summary className="cursor-pointer">What to do when email needs review</summary>
+                  <ol className="mt-2 list-decimal space-y-1 pl-5">
+                    <li>Stop retrying if an attempt is pending, uncertain or already accepted.</li>
+                    <li>Ask the approved email operator to check both customer and admin messages in the provider history.</li>
+                    <li>Confirm the original language and delivery evidence before arranging any separately reviewed resend. A past purchase without language history needs this review too.</li>
+                  </ol>
+                </details>
               </CardHeader>
               <CardContent>
                 {satellitescanLoading && <p className="text-muted-foreground">Loading...</p>}
@@ -2352,11 +2370,11 @@ export default function AdminSubmissionsPage() {
                                   ) : (
                                     <Mail className="h-4 w-4" />
                                   )}
-                                  <span className="ml-1">Resend Emails</span>
+                                  <span className="ml-1">Check purchase email</span>
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                Resend welcome and receipt emails to this customer
+                                Check the original attempt. Previously accepted or uncertain emails are not resent. Inbox delivery needs a separate check.
                               </TooltipContent>
                             </Tooltip>
                             <Tooltip>

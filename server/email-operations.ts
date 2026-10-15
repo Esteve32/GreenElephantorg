@@ -1,3 +1,4 @@
+import { withdrawMarketingWithHistory } from './marketing-withdrawal-store';
 import { eq } from 'drizzle-orm';
 import { db } from './db';
 import { adminSettings } from '@shared/schema';
@@ -28,5 +29,5 @@ export async function isMarketingSuppressed(contactId:string):Promise<boolean> {
   return !!row;
 }
 export async function suppressMarketing(contactId:string):Promise<void> {
-  await db.insert(adminSettings).values({key:operationKey('marketing-suppressed',contactId),value:JSON.stringify({suppressed:true,updatedAt:new Date().toISOString()})}).onConflictDoNothing();
+  await withdrawMarketingWithHistory(contactId);
 }

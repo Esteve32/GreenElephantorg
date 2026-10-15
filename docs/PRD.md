@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.22.14**.
+One PRD, two product sections plus shared-system requirements. Version: **2.27.3**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -66,6 +66,1682 @@ v0.3 exported 2026-09-30, refined by the current AI-LIT decisions below.
 **Owner:** Estève Pannetier. The approved website scope may be merged through a
 reviewed PR; production publication and verified delivery remain separate gates.
 The MyFive project remains paused.
+
+
+<a id="ai-lit-email-workshop-20261007"></a>
+### Email lifecycle workshop — 7 October 2026
+
+**Status:** requested documentation and source audit; candidate requirements below
+are **proposals**, not permission to change sending, contacts, providers or code.
+Estève requests an AI-literacy email review covering paid Satellite Scan,
+workshop participants, the wider ecosystem and repeat business. Record human
+choices here and in [DEC-AIL-080](DECISION_LOG.md#dec-ail-080) before implementation.
+Website evidence is pinned to `b1a8c52784861a98d1f0d3ada39bbbcdda332454`;
+this section is a later **working-tree draft**. Live Resend settings, saved database
+templates, production deployment and inbox delivery have not been inspected.
+“Exists in source” below never means “verified sending in production”.
+
+#### Remaining specifications before choosing the next batch
+
+| Area / IDs | Current interpretation | Next evidence or decision |
+| --- | --- | --- |
+| French coverage — REQ-002/032/064 | Core bilingual routes exist; remaining retained pages and legacy email families are unfinished. The five niche coaching pages remain English first. | Route-by-route and template-by-template inventory and human copy review; do not repeat historical claims that the entire site is bilingual. |
+| Role/service alignment — REQ-064, DEC-AIL-065/066 | The coverage table still lists role-specific reflection pages and people/supporting services as pending. Later decisions record several partial repairs, not acceptance of every page. | Reconcile each current page with its acceptance criteria before marking this batch complete. Preserve retained services and their actual offers. |
+| Delivery and privacy — REQ-010/035/036, DEC-AIL-037/043/079 | Source safeguards exist; production signatures, correct recipients, actual delivery, access, retention and processor/transfer evidence remain open. | Use the deployment checklist and the message inventory below. Email work directly addresses this unfinished scope. |
+| Measurement and release — REQ-075, issues #31/#43 | Source tests are not production publication, consent testing or GA4 receipt. The latest recorded switch changes are owner-reported. | Exact deployment evidence and receiving-system checks. Do not enable collection during this email workshop. |
+| Offer details — REQ-017/020/023; TBD-002/004 | Four-day journey hours/price/logistics and some discovery-workshop delivery/preparation details remain open. | Confirm what is bought, included, delivered and when before writing promises into emails. |
+| Discovery and access — REQ-009/068 | Search/indexing outcomes, live booking/provider paths and final accessibility/visual acceptance are separate from source markup. | Bounded review with current evidence; no assumed ranking or funding/accreditation claims. |
+
+Earlier PRD checkpoints mentioning TypeScript failures or unfiltered campaign
+audiences are historical: later source repairs and the 7 October baseline checks
+supersede those engineering observations. They do not close human or production
+gates. The current baseline passed 119 release tests, type/repository/build checks;
+this is prior source-validation evidence, not a live email test.
+
+#### Current email inventory and gaps
+
+The source has 24 exported sender functions in
+[`server/email-notifications.ts`](../server/email-notifications.ts), plus direct
+admin batch/campaign/test sends in [routes](../server/routes.ts).
+Several functions create both customer and internal messages.
+
+| Journey / source | Current source behavior | Marketing, delivery or privacy review |
+| --- | --- | --- |
+| Scan address verification — `sendVerificationEmail` | Sends a requested code. | Keep factual, accessible and separate from promotion; verify expiry/rate limits and actual address-verification path. |
+| Paid/free-voucher Scan — `sendSatellitescanPurchaseEmail`, `notifyScanPurchase` | EN/FR purchase instructions plus separate internal purchase notice; shared public Typeform link carries language. | Good AI-literacy starting point. Confirm actual intake, English questionnaire/video notice, receipt information and the 48–72-hour coach promise. Service purchase does not subscribe the buyer to a newsletter. |
+| Incomplete Scan — `sendSatellitescanReminderEmail`, `remindScanOnce` | A daily in-process check selects incomplete purchases older than 72 hours; durable claim and accepted-send count limit duplicates. Admin reminder route also exists. | “After 72 hours” is a threshold, not an exact send time. Hosted process lifetime/restarts affect scheduling. Stop after completion/refund/cancellation and define recovery before expanding. |
+| Submitted Scan — `sendTypeformScanCompletionEmail` | Signed Typeform route; response-event claim; EN/FR complete answers in body and text attachment; participant receives it and both Estève and Anu are copied. | Current owner-approved coach copies are preserved. Checkout discloses them; verify the actual Typeform notice, necessity, coach access and mailbox retention. No employer/organiser receives answers merely because they bought a seat. |
+| Coach-prepared results — `sendCoachingRawDataEmail`, `sendCoachingDocLinkEmail`, `sendCoachOnlyEmail` | Manual admin sends of raw answers, dashboard link/summary or internal coach copy. Dashboard sending is not automatically triggered by creating a dashboard. | Verify report readiness and recipient access; offer a reviewed secure-link approach if chosen. Define service delay/support handling. The current source emails private content; a link does not automatically establish authorization. |
+| Account/support — `sendPortalDataExportEmail`, `sendPasswordResetEmail`, `sendNudgeDevNotification` | Requested export/reset and internal help notification. | Preserve security/service purpose; verify identity, short-lived access, attachment scope and retention. Do not add offers to security or rights-request messages. |
+| Other package purchases — `sendPurchaseNotification` | Generic admin purchase alert; special Interview Mastery customer branch with Scan and booking links. Other packages direct the operator to follow up manually. | Interview copy still says “90-question diagnostic”, conflicting with the current 129-question reflective Scan. Review package promises, language and payment/refund journeys separately; not proof of a workshop purchase flow. |
+| Newsletter — `sendNewsletterConfirmationEmail` and admin campaigns | Welcome still promotes communication, retreats and Play Labs. Campaign eligibility uses newsletter membership, consent flag and suppression; bulk sends add signed unsubscribe. | Rebrand around approved AI-literacy value and choices. The welcome itself uses reply-to-unsubscribe rather than the common signed footer. A welcome is not a verified double-opt-in flow. |
+| Scan-interest lead — `sendScanInterestConfirmationEmail`, `sendScanInterestAdminNotification` | Delivers free-tool links plus explicit paid-Scan promotion; route also creates a newsletter subscription. | Classify as marketing when it includes an offer. Check the exact permission requested and avoid treating a resource request as blanket permission for all follow-ups. |
+| Requested assessments — `sendQuizResultsEmail`, `sendFlowCheckResultEmail`, `sendFlowCheckAdminNotification` | Result messages include paid-Scan promotion; Flow sends an internal result notification. Legacy result/benchmark language remains in email templates. | Separate requested results from offers if chosen. Align interpretation with the reviewed website's non-diagnostic wording; check purpose/recipients and do not segment sales by inferred feelings, vulnerability or private answers. |
+| Contact — `sendContactFormEmails` | Receipt plus internal message; promises a personal reply within 24 hours. | Confirm an achievable service promise and owner. An enquiry is not newsletter enrolment. Keep essential reply routing separate from campaigns. |
+| Retreat waitlist — `sendWaitlistConfirmationEmail` | Acknowledgement plus internal alert; resource/Scan links and legacy offer language. | Preserve the requested retreat; decide whether other offers need a separate choice. Do not relabel the retreat as AI training without approval. |
+| Parked webinars — `sendWebinarWaitlistConfirmation`, `sendWebinarReplayConfirmationEmail` | Sender/API code remains although public webinar/calendar pages are parked. Replay text promises a link later, not verified automatic replay delivery. | Keep parked scope; no resumption through this workshop. Review any residual entry points and recipients before deciding what to retire. |
+| Legacy onboarding — `sendOnboardingEmail`, [scheduler](../server/onboarding-scheduler.ts), admin template seeds | Exported scheduler processing and manual trigger are paused. Runtime templates are database-backed. Seed route contains sequences 0–9; scheduler comments describe 0–12; admin/footer language says 12. Seed subject day labels also disagree with delays interpreted from Scan completion. | Do not restart the old cadence. Review purpose, readiness triggers, language, subscription and repetition rules. Database contents and any Resend-hosted automations remain unknown. |
+| Internal operations — `sendDailyPulseEmail`, `sendContentFlywheelEmail`; direct admin test sends | Internal activity summary and draft-content review; manual routes exist. | Keep internal-only messages out of customer programmes. The Email Control Room journey-test endpoint sends a pulse-style summary, not the actual journey template. Review financial summaries separately before using them as sales evidence. |
+
+The admin Email Control Room is a **static description**, including `gdpr: true`
+flags and an active-looking onboarding list. It is not an audit result. Proposed
+future UI should show purpose, source evidence, real activation state and outstanding
+checks rather than compliance badges.
+
+#### Proposed service and repeat-business design
+
+**Recommended commercial approach:** make the purchased experience reliable first,
+help the learner achieve one useful AI task, then offer the next appropriate
+service to people who have chosen that relationship. This is a strategic proposal,
+not a claim of increased revenue or a selected send schedule.
+
+| Stage | Proposed experience | Purpose / trigger boundary |
+| --- | --- | --- |
+| Paid Scan confirmation | One clear next action: open the questionnaire; explain language, time, coach access and support. | Verified purchase or authorized voucher activation; one message per purchase/recipient/purpose. |
+| Preparation/reminder | Help an incomplete participant resume; workshop participants also receive agreed session logistics. | Actual incomplete state and agreed cutoff; suppress after completion, cancellation or a relevant support hold. |
+| Submission | Confirm receipt, describe the next coach action and realistic delivery time. | Verified response tied to the correct purchase/participant; no claim that a finished dashboard already exists. |
+| Results ready | Provide verified access and one small practice task appropriate to the purchased deliverable. | Coach-confirmed readiness, correct participant and permission. Scope included support before setting follow-up volume. |
+| Included support / follow-up | Ask whether they can use the material and deliver any contracted follow-up. | Genuinely included service content; a sales invitation is classified separately. |
+| Optional AI-literacy practice | Proposed short series: choose a low-risk task, write a clearer request, check the output, reflect on one useful result. | Separate documented marketing choice if the programme promotes services; exact number, timing, languages and stopping rules await selection. |
+| Relevant next offer | Invite an individual to appropriate coaching or a four-day journey; invite an organisational buyer to a suitable team workshop. | Explicitly chosen interests and actual service state; avoid score-based targeting, fabricated urgency or unapproved prices. |
+| Longer relationship | Optional useful updates, returning-customer check-in and shareable referral invitation. | Agreed permission and frequency; pause conflicting campaigns and stop on objection. Do not collect friends' addresses or auto-send referrals. |
+
+A possible starter marketing cadence is three useful messages after results are
+available, followed by at most a monthly update. **This is unselected**, not an
+instruction to schedule. Existing contacts need a permission/history review;
+do not bulk-enrol or send a “permission request” campaign merely to repair missing
+consent. Keep transactional and promotional preferences distinguishable.
+
+Business review should ask whether participants complete the Scan, receive usable
+results on time, request suitable further help and make repeat purchases. Track
+unsubscribe/complaint/delivery failures as operating signals. Do not infer success
+from open pixels or make individual engagement surveillance a requirement.
+
+#### Workshop purchase and participant decisions still needed
+
+Estève's requested design includes a Scan for each workshop participant.
+This is a **requested outcome to specify**, not evidence that group checkout,
+seat allocation or those inclusions already exist at the advertised price.
+
+- Distinguish payer/buyer, organising contact, participant and assigned coach.
+  Current Scan purchase records are per email/payment and have no dedicated
+  workshop seat/cohort relationship in the inspected schema.
+- Decide enquiry/invoice-assisted booking versus online group checkout, which
+  workshop offer includes Scans, and whether current prices cover those Scans.
+  Preserve REQ-023's approved price, size and delivery depth until changed explicitly.
+- Prefer an invitation each participant accepts with their own language and
+  notice/preferences. Decide invitation sender, lawful collection route, expiry,
+  replacement seats, duplicate bookings, refunds and cancellation.
+- Give the organiser logistics/billing and only the agreed minimal participation
+  status. Private answers and individual reports do not become employer/team data
+  by default. Define any aggregate output and small-group re-identification risks.
+- Choose who prepares/reviews each report and who can see it. Verify the processing
+  roles and appropriate lawful basis for employer-sponsored participants; the
+  buyer's contract is not automatically a contract with every individual.
+- Stop resolving repeat purchases/workshop participation solely by email:
+  `markTypeformCompletedByEmail` updates matching purchases. Future delivery must
+  identify the intended order, participant and response without exposing identifiers.
+- Keep workshop attendance, learning support and marketing choices distinct. An
+  organiser cannot subscribe participants to unrelated offers on their behalf.
+
+#### Candidate requirements — no implementation approval
+
+| ID | Status | Candidate / acceptance question |
+| --- | --- | --- |
+| AI-LIT-REQ-076 | Requested audit and workshop; source review prepared | Maintain a complete sender/trigger/purpose/language/recipient inventory, reconcile remaining specs and review live templates separately. Record choices in this PRD/log before code; use local mockups → checked GitHub PR → human-authorized exact-SHA Replit sync → human Republish. |
+| AI-LIT-REQ-077 | Proposed; choice pending | Separate required service messages from optional learning/offers. Define subscription purpose, exact copy/version, time/source, withdrawal and suppression; purchase/result delivery must work without newsletter permission. Existing-contact migration, country-specific exceptions and re-subscription need review. |
+| AI-LIT-REQ-078 | Requested workshop outcome; mechanics/price unapproved | Specify one Scan entitlement per relevant workshop participant with separate buyer/organiser/participant/coach roles, individual notice/preferences and controlled report access. Decide sale/seat/invitation/cancellation model before data/schema/code changes. |
+| AI-LIT-REQ-079 | Proposed | Define email events and durable per-recipient delivery state; verify signed Resend delivery/bounce/complaint/suppression events, safe retries and staff reconciliation. Provider acceptance, recipient-server delivery and inbox/access checks are distinct. Respect both application preferences and provider suppression. |
+| AI-LIT-REQ-080 | Proposed | Audit and revise every retained customer template in EN/FR for AI-literacy positioning, current offer facts, non-diagnostic wording, accessible HTML/plain text, clear sender/reply routing and correct unsubscribe where promotional. Preserve parked services until separately chosen. |
+| AI-LIT-REQ-081 | Proposed | Define the full processing map, lawful basis by purpose, recipient access, retention/deletion, processor agreements/transfers and rights workflow, including Typeform, application/storage, Resend, coach mailboxes, report storage and any verified existing OS transfer. No blanket GDPR-compliant label or assumed EEA-only hosting. |
+| AI-LIT-REQ-082 | Proposed | Review synthetic local email previews, state/consent/replay tests, then exact approved sender/recipients/subject/body/attachments for an authorized live test. Record provider event, inbox content and accessible report result before marking that path verified. |
+
+**Workshop choice EMAIL-W01 resolved — DEC-AIL-093, 14 October 2026:** purchased-
+service emails first; optional learning/offers follow. Estève selected **A in the
+new launch-priority question**, which corresponds to **B in this older question**.
+This sets work order, not exact copy, cadence, recipients, sending or publication.
+Existing full privacy-system and confirmed-opt-in approvals remain in force.
+Workshop fulfilment mechanics, report sharing and optional programme details still
+need their own decisions/evidence where not already approved.
+
+#### Privacy and provider evidence to collect
+
+This is an operational design review, not legal clearance. The reviewed official
+guidance distinguishes purpose-specific lawful processing from blanket consent.
+Necessary service processing and marketing need separate analysis; adding an
+upsell can change how an otherwise factual email is classified. A conservative
+explicit marketing opt-in is proposed for this mixed audience; it is not a claim
+that consent is the only lawful route for every professional/customer in every
+country. Evaluate any B2B or existing-customer exception for the actual audience
+and country before using it.
+
+- Record the controller and processor roles, actual notices and contracts, necessary
+  data and recipients. Review open-text Scan answers for possible sensitive data
+  without inferring health or other protected characteristics.
+- Decide retention per purpose, including copies in inboxes/attachments and backups.
+  Keep necessary accounting and minimal suppression records distinct from coaching
+  answers and marketing profiles. Verify deletion/export propagation.
+- Confirm the real Resend sender domain, SPF/DKIM/DMARC alignment, Reply-To,
+  access owners, provider suppression, tracking settings and webhook configuration.
+  The inspected app has no Resend delivery/bounce/complaint webhook handler.
+  Native provider suppression may still operate; it has not been inspected.
+- Review external tracking separately: disabled application open-pixel behavior
+  does not prove Resend domain-level tracking is off.
+- Keep direct application sends and any Resend Contacts/Topics/Automations
+  consistent if those features are selected later. No new list, connector,
+  recurring job, provider purchase or transfer is approved by this review.
+
+Official sources checked 7 October 2026:
+[EDPB lawful processing](https://www.edpb.europa.eu/sme/be-compliant/process-personal-data-lawfully_en),
+[EDPB processing principles and retention](https://www.edpb.europa.eu/sme/learn-the-basics/data-protection-basics_en),
+[EDPB controller/processor roles](https://www.edpb.europa.eu/sme/learn-the-basics/data-controller-or-data-processor_en),
+[Finnish KKV electronic marketing guidance](https://www.kkv.fi/en/consumer-affairs/marketing-sales-and-indicating-prices/direct-marketing/inappropriate-direct-marketing/),
+[CNIL electronic marketing guidance](https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel),
+[UK ICO service versus promotional messages](https://ico.org.uk/for-organisations/advice-for-small-organisations/direct-marketing-and-data-protection/marketing-and-data-protection-in-detail/),
+[Resend event meanings](https://resend.com/docs/webhooks/event-types).
+Country-specific legal application and signed provider arrangements remain to verify.
+
+#### Delivery workflow and cross-repository boundary
+
+1. Inspect current Git status, current requirements and the selected source SHA.
+2. Make workshop choices; record status, human evidence, affected IDs and unresolved
+   details here and in the single decision log. Do not create a second authority.
+3. Prepare local fictional/synthetic email mockups and journey scenarios. Approve
+   purpose/content and implementation scope before changing application code.
+4. Implement in a reviewable local branch; run applicable repository, release,
+   TypeScript/build and privacy/recipient/state checks. Review the final diff.
+5. Commit/push/open the reviewed GitHub PR when authorized; merge only when
+   authorized and checks pass. Update release issue #31 for the actual merged SHA.
+6. Preserve Replit-only work, manually synchronize to that exact reviewed source,
+   complete production checks and keep development-database copying disabled.
+   The human selects **Republish**; verify production separately.
+7. Live email tests need exact final-message/recipient approval. Code review and
+   local previews alone do not grant permission to send to existing contacts.
+
+GreenElephantOS main was freshly resolved and its PRD/log read at
+`83391d8520a6bfb2e010590686d6e32797490b62`. Website GEOS-REQ-002/003/004 and
+OS GEOS-REQ-002/003/004, DEC-GEOS-001/002/003 govern this review.
+No OS schema/contract/provider/data transfer changes are made by this documentation
+batch, so no paired implementation PR is needed yet. Source contains older Notion
+sync calls for several lead/campaign paths; their runtime destination and authority
+remain unverified. The prohibition on introducing purchase-to-Notion copying
+remains. Reopen paired review before any shared operational change.
+
+
+<a id="ai-lit-ropa-workshop-20261007"></a>
+### RoPA, consent evidence and admin email controls — 7 October 2026
+
+**Status:** requested product direction, recorded in [DEC-AIL-081](DECISION_LOG.md#dec-ail-081).
+Estève requests an application-owned RoPA in the Replit deployment, ideally a
+Google Sheets mirror, links between email purposes, website buttons, Typeform
+consent and subsequent changes, and weekly admin summaries instead of daily or
+default individual alerts. This extends REQ-081; it does not approve the detailed
+schema, data import, live sending or deployment. Application code is unchanged.
+
+#### Source alignment and vocabulary
+
+- Interpret “Roper/Ropa” as **record of processing activities (RoPA)**, pending
+  identification of the current source. Drive metadata searches found historical
+  GDPR/Typeform email-preference material, not a confirmed current RoPA.
+  Do not copy contact rows or infer current permission from those filenames.
+- A RoPA describes activities/purposes and their handling. A restricted consent
+  ledger records an individual's choices and evidence. An operational event log
+  records execution. These are linked records with different access/retention
+  rules, not interchangeable proof of compliance.
+- “Bio is not the same as user” is unresolved: confirm whether this means
+  **buyer versus participant**, or **profile/bio versus account**. Do not silently
+  substitute either interpretation. Pending confirmation, the proposed design
+  separates account authentication, person/profile, payer/order, workshop organiser,
+  participant/seat and assigned coach. One person may hold multiple roles.
+- The existing application uses Drizzle with a Neon-compatible PostgreSQL driver
+  and DATABASE_URL. “Inside Replit” means an application-managed feature deployed
+  with the website; physical hosting, region, provider contract, backups and
+  production/development separation require verification. Do not claim EEA-only
+  storage or copy production data into local development.
+
+The register should cover purpose, data/subject categories, recipients, relevant
+transfers, retention and security, together with controller/contact information.
+Our proposed additional links to legal-basis assessments, notices, controls and
+release evidence support maintenance; a populated database alone does not
+establish compliance. Basis:
+[EDPB record-keeping guidance](https://www.edpb.europa.eu/sme/be-compliant/be-compliant_en)
+and [CNIL register guidance](https://www.cnil.fr/fr/RGPD-le-registre-des-activites-de-traitement),
+checked 7 October 2026.
+
+#### Proposed linked records and access
+
+These are conceptual records for review, not a database migration.
+
+| Record | Proposed contents and links | Boundary |
+| --- | --- | --- |
+| Processing activity + version | Stable activity ID; purpose; controller/contact and responsible owner; subject/data categories; legal-basis assessment reference; recipients/processors; transfer safeguards; retention/deletion trigger; security summary; rights contact; review status/date; effective period | Versioned app register, with approved metadata projection to Sheets. Distinguish unknown, drafted, reviewed and live-verified fields. No agent-created human attestation. |
+| Collection surface + notice version | Stable surface ID; page/form/button and locale; action type; activity IDs; exact notice/choice text version or secured snapshot/hash; Typeform form/question references; effective period and release SHA | Buttons that navigate or request delivery are not automatically consent controls. Map all relevant surfaces, including checkout, newsletter, result tools, contact, cookies, unsubscribes and Typeform. |
+| Person, account and relationship | Separate IDs for subject/contact, login account, payer/order, organiser, seat/participant and coach assignment; scoped access grants | Email is a contact attribute, not the sole join key or proof that two roles are identical. Payment grants no default access to another person's answers. Profile edits do not rewrite consent. Final terminology awaits clarification. |
+| Consent/preference evidence | Subject ID; purpose/activity; notice version; affirmative grant, refusal or withdrawal; event/effective times; language/source; minimal evidence reference; idempotency key | Restricted operational store, excluded from the general Sheet mirror. Purpose-specific current state derived from retained events; corrections recorded with provenance. No indefinite retention promise or needless IP/device collection. |
+| Email definition and event | Template/version; service/marketing/internal purpose; activity ID; recipient role; eligibility rule; triggering event; permission decision at sending time; provider message ID and outcome | A queued message must recheck current preference/suppression. Provider acceptance is not delivery. Use event IDs and access-controlled evidence instead of copying message bodies/answers into the RoPA. |
+| Change/review record | Old/new version; reason; actor; impact on purposes, recipients, retention, notices and permissions; PR/release evidence; effective date; reviewer status | Notice changes do not backdate agreement. Changed purposes require assessment and, where necessary, a fresh choice before the affected optional processing. Separate code deployment from live provider verification. |
+| Rights/retention case | Subject reference; request type; identity verification outcome; scoped systems; deadlines/owner; completion evidence and lawful exceptions | Track export, correction, erasure and withdrawal across providers. Deletion and backup expiry are distinct. Exclude identifiable cases from the general mirror. |
+
+Proposed navigation:
+**Activity → linked website/form controls → notice versions → restricted consent
+evidence → email policy/events → changes and review evidence.**
+Register readers must not inherit permission to open private evidence.
+
+Candidate activity inventory, to reconcile with the owner's existing register:
+purchase/billing; Scan fulfilment/coaching; workshop administration; account/security;
+requested assessments/resources; enquiries/support; optional learning/marketing;
+website measurement; admin reporting and compliance operations. Classify by purpose,
+not just by vendor. Typeform, Resend, payment provider, application database, coach
+mailboxes, report storage, Google and any verified OS integration link to the
+activities in which they actually participate.
+
+For Typeform, retain the relevant notice/question version and explicit answer when
+consent is the selected basis. Validate signed webhook events and deduplicate them,
+but do not equate a valid signature or completed form with valid consent. Use a
+scoped invitation/response association to the intended participant and entitlement;
+reject or reconcile ambiguous matches instead of completing every order with the
+same email. An organiser's purchase or uploaded roster cannot grant each
+participant's unrelated marketing permission.
+
+#### Proposed Google Sheets mirror — superseded by DEC-AIL-082
+
+**Historical proposal only:** Estève now selects the authenticated admin view.
+See [the current direction](#ai-lit-ropa-finland-20261007); do not build this mirror.
+
+- **Authority:** the operational register in the application is authoritative for
+  approved processing records. PRD/decision log remain authoritative for product
+  decisions. The Sheet is a one-way derived view, not a second editor of either.
+- **Tabs:** Activities; Collection surfaces; Notices index; Email policies;
+  Processors/transfers; Retention/security summaries; Changes/reviews; Sync status.
+  Keep personal consent events, customer emails, Scan answers, private reports,
+  access tokens, detailed security secrets and identifiable rights cases out.
+- **Access:** restricted owner-approved Google destination and readers; review
+  inherited folder permissions. Protected ranges reduce accidental edits but
+  are not an access-control substitute. Mirror only approved fields with scoped
+  service access; no public link sharing by default.
+- **Reliability:** stable row IDs, schema/source version, source update time,
+  last successful sync, revision/hash and row totals. Visible stale/error state;
+  retries must be idempotent. Publish a complete validated snapshot before
+  marking a version current. Partial failure must not masquerade as a full sync.
+- **Changes:** edits in Sheets do not flow silently into Replit. Detect/report
+  divergence; owner changes the canonical register and regenerates the mirror.
+  Withdrawn/deleted metadata must also be reconciled, with relevant Google
+  revision/trash retention documented.
+- **Backup:** a synchronized mirror is not a database backup. Define separate
+  encrypted backup, retention and tested restore arrangements.
+- **Activation:** agree the existing-source mapping, destination, allowed fields,
+  access and synchronization trigger before import/connection. Start with a
+  synthetic local export/readback test. No live Sheet or recurring sync is
+  created in this documentation batch.
+
+#### Admin email controls: requested outcome and implementation specification
+
+**Confirmed direction:** routine individual admin activity alerts off by default;
+replace daily summaries with a weekly digest. Exact schedule, recipients and
+activation remain pending. Monday 09:00 Europe/Helsinki is a suggested preview
+value, not a recorded human choice.
+
+Source explains the reported recurrence: server startup always calls
+startDailyPulseScheduler, which schedules 08:00 UTC daily. Separate purchase,
+Scan-interest and Flow alerts send immediately. The global Resend switch affects
+customer delivery too; it is not the appropriate control for admin notification
+preferences. This is a source diagnosis, not a readback of live configuration.
+
+| Control / behaviour | Requested or proposed outcome |
+| --- | --- |
+| Routine individual alerts | Default OFF. Inventory every admin send path and apply the category preference; never enable implicitly when the server restarts or Resend reconnects. |
+| Admin summary cadence | Weekly, with explicit IANA timezone/day/time and approved recipients. No daily scheduler remains active in parallel. Local/test runtimes do not start live sends. |
+| Customer confirmations and reminders | Independent of admin settings. Split mixed send functions before gating the admin portion; preserve the purchased service and its existing customer reminder policy. |
+| Support/fulfilment work | Durable admin task queue with owner, due date and status. Turning off email must not lose enquiries or Scan/report work. Resolve the current 24-hour contact reply promise before relying only on a weekly view. Any urgent-email exception needs a visible separate opt-in. |
+| Weekly content | Minimal counts and links to authenticated admin views; no raw answers, names, email lists or small-group interpretation breakdown by default. Include period/timezone and honest delivery status. |
+| Reporting accuracy | Bounded half-open reporting interval; successful purchases only; valid zero-price orders stay zero; missing/invalid amounts shown as unknown. Label gross/net/refunds explicitly. The current parseFloat(amount) fallback incorrectly turns zero into 99.95. |
+| Restart/multi-instance safety | Durable unique digest occurrence, atomic claim and provider idempotency where supported; restart, DST and missed-run tests; no automatic replay of an unlimited backlog. Ambiguous outcomes require reconciliation before resending. |
+| Provider outcome | Respect send failure/disabled result. The current runner returns success after a false sender result. Record accepted, delivered, failed/unknown distinctly; update the manual trigger and misleading journey-test path. |
+| Controls UI | View effective preferences, next occurrence, timezone, recipients, reporting window and last outcome. “Preview” uses synthetic/no-send rendering; live “Send” remains a separate explicit action. Audit preference changes. |
+
+#### Additional requirements and pending workshop choices
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-083 | Requested; detailed design pending | Application-owned, versioned RoPA linked to source notices, surfaces, email purposes and change/review evidence. Reconcile existing register; evidence-backed access, retention and provider records. |
+| AI-LIT-REQ-084 | Superseded by REQ-088 / DEC-AIL-082; retain history only | One-way Google Sheets register mirror with restricted approved metadata, stable IDs, visible freshness/reconciliation, no personal consent or Scan-data replication by default, and independent backup/restore. |
+| AI-LIT-REQ-085 | Requested distinction; terminology pending | Separate person/account/profile, payer and participant relations and scoped access. Confirm “bio” versus “buyer”; no email-only identity merge or inferred cross-role permission. |
+| AI-LIT-REQ-086 | Requested; schedule/recipient details pending | Routine admin notifications default OFF, weekly summary instead of daily; preserve customer sends, provide visible outstanding tasks and durable duplicate/failure controls. |
+| AI-LIT-REQ-087 | Proposed verification criteria | Test notice changes, withdrawal before queued send, webhook replay and ambiguous participant matching; test unauthorized evidence/mirror access, redaction, stale/partial mirror sync, DST/restart digest scheduling and zero-price/refund reporting. |
+
+Pending: current RoPA link/path (or confirmation to start new); meaning of “bio”;
+weekly day/time and activation preference; final recipients; Sheet destination/access;
+treatment of urgent support/fulfilment alerts. EMAIL-W01 was subsequently resolved
+as purchased-service first under DEC-AIL-093; no marketing programme is activated.
+
+**Original next batch (superseded by the current section below):** reconcile the existing register and role terminology,
+review a synthetic register/control-screen mockup, then choose the first local
+implementation batch. Preserve local IDE → reviewed GitHub → manual exact-SHA
+Replit sync → human Republish. Existing live sends remain unchanged until an
+authorized production change is deployed. Recheck the OS shared-data boundary
+before implementation; no OS change or paired PR is made for this specification.
+
+
+<a id="ai-lit-ropa-finland-20261007"></a>
+### Finnish/EU privacy operations — individual Scan service
+
+**Current direction, 7 October 2026:** [DEC-AIL-082](DECISION_LOG.md#dec-ail-082).
+Estève replaces the proposed Google Sheets view with an authenticated website
+admin view, requests all four intake channels below, troubleshooting and controlled
+emergency access, and confirms private individual use: an HR/employer buyer never
+gets the individual's Scan data. REQ-084's Sheet mirror is **superseded**, not an
+implementation dependency. No Sheets integration is to be built for this scope.
+
+The product may label the workspace **RoPA & Privacy**, with distinct sections
+for the activity register, consent history and privacy cases. A person's choice
+creates a consent event linked to an activity; it does not require duplicating an
+Article 30 activity for every person. Preserve that distinction in exports and
+operator training. The register is an internal accountability document, not the
+public privacy notice ([Finnish authority](https://tietosuoja.fi/en/record-of-processing-activities)).
+
+Private use is a product/access boundary, not a GDPR exemption for a commercial
+provider. The household exception does not exempt GreenElephant's service
+processing ([GDPR Article 2 and recital 18](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679)).
+No employer dashboards, employee comparisons, rankings, report access, consent
+choices or completion/progress data are exposed to an HR buyer. Payer access is
+limited to their billing/order information; fulfilment logistics must not disclose
+an individual's private participation details. Review assigned-coach access
+separately: existing code copies full Scan answers to both coaches.
+
+#### Four intake channels and the meaning of immediate
+
+**Proposed implementation contract:** save evidence, current purpose-specific
+permission and a durable work item in one database transaction. Only then return
+success. The admin view reads this canonical state; provider reconciliation is
+visible separately. No external-provider acknowledgement is represented as an
+atomic local update or as proof of delivery.
+
+| Channel / user story | Required behaviour | Failure and acceptance evidence |
+| --- | --- | --- |
+| Email preference link | A purpose-scoped, signed link permits easy withdrawal without account creation. GET is safe to open by mail scanners; an intentional POST changes preference. Standard one-click unsubscribe works separately. Commit withdrawal and suppression before confirmation, remove pending optional sends, recheck immediately before provider submission. | Replayed requests have one effect. Expired/invalid grant links cannot activate permission. Previously accepted mail cannot always be recalled; show accepted versus queued. Re-subscription requires a new positive verified choice, never an admin “undo”. |
+| Website email/checkbox | Server validates an active purpose and notice version, affirmative value and expected source. Record refusal where needed without making marketing mandatory for service. For new email opt-in, propose address confirmation: pending until verified; no offers while pending. | Missing/unchecked/unknown-version fields never become a grant. Do not trust client-supplied consent prose as the authoritative notice. Cross-device withdrawal and withdrawal racing a queued send are tested. No success response if the durable write fails. |
+| Typeform email/consent | Process allowlisted form/question references and the selected answer with the exact notice version. Use signed events and distinct event type/revision identities; bind a response to the correct subject/entitlement. Persist consent independently of completion-email success. | A box tick alone is not guaranteed to emit a webhook. Use a supported partial-submit checkpoint if consent must be captured before final submission; verify account/plan/form configuration. Partial intake must never mark the Scan complete or send a completed report. No grant when version or subject is ambiguous. |
+| Privacy/DPO inbox | Every received message to the confirmed mailbox is accounted for as a linked case item, unmatched item or restricted spam/quarantine disposition. Link relevant sent replies too. Preserve message/thread references, timestamps, provenance and reviewed decisions; deduplicate deliveries and reconcile missed events. | No automatic grant, erasure, disclosure or legal conclusion from arbitrary email text or an AI summary. A clear matched withdrawal is provisionally suppressed promptly; identity/scope ambiguity enters urgent review and cannot reactivate marketing. Rights requests elsewhere still count; the DPO address is not an exclusive gate. |
+
+Typeform supports submission/partial-response events, subject to configuration;
+this is not browser-keystroke capture. Verify actual deployed form behaviour:
+[webhooks](https://www.typeform.com/developers/webhooks/) and
+[partial responses](https://help.typeform.com/hc/en-us/articles/21102221958676-Collect-partial-responses).
+Do not enable indiscriminate capture after every question merely to capture one
+consent field.
+
+For an actual Google Workspace mailbox, a candidate adapter uses Gmail history
+plus Pub/Sub, durable cursors, watch renewal and periodic reconciliation; Google
+documents that notifications can be delayed or dropped. An alias/group requires
+a different confirmed delivery route. OAuth scope, mailbox access and verification
+requirements must be reviewed before connection. No domain-wide mailbox access
+by default. See [Google push notifications](https://developers.google.com/workspace/gmail/api/guides/push).
+
+**Proposed service targets, not legal deadlines or promises of perfect availability:**
+local preference enforcement before a successful response; refreshed admin state
+within 5 seconds of local commit; provider events normally processed within
+60 seconds of receipt; connector reconciliation every 5 minutes, with an overdue
+state after 15 minutes without a successful check. Distinguish idle healthy
+channels from absent events. Targets require deployment/load validation and
+operator coverage. During stale/unknown permission state, optional sending stops;
+privacy intake and necessary service workflows remain available. A provider outage
+cannot be described as “immediate everywhere”.
+
+Use source/effective/received/processed times, monotonic subject-purpose revisions
+and unique upstream event identities. Do not order solely by arrival time.
+Late/replayed grants must not supersede a later withdrawal; ambiguous event order
+stays suppressed pending review. An outbox retry cannot revive withdrawn
+permission, duplicate a grant or resend a previously accepted message.
+
+#### Admin view and enforceable controls
+
+Proposed route: **/admin/ropa**, reached from the existing authenticated admin hub.
+Every API and export checks server-side permission and subject/object scope.
+A hidden navigation link is not security. Prefer named Google Workspace admin
+accounts with enforced MFA and reauthentication for sensitive actions. Remove
+shared-password bootstrap from normal privacy access; preserve a documented,
+restricted recovery path. Verify account deactivation/session revocation.
+
+| Section | Controls and evidence |
+| --- | --- |
+| Overview / activity register | Search purposes, owners, versions, legal-basis review, recipients/transfers, retention and open gaps; export the Article 30 register without individual case content. Separate unknown/draft/reviewed/live-verified states. |
+| Consent timeline | Restricted subject lookup, purpose state, notice version, source and reason; grant/refusal/withdrawal/correction history; blocked pending sends and downstream acknowledgement. No editable universal “GDPR compliant” switch. |
+| Privacy inbox / cases | Unmatched messages, owner/deputy, receipt time, statutory deadline, identity-verification status, correspondence links, requested rights, reviewed decision and action receipts. Separate provisional classification from a signed human decision. |
+| Connector health | Last successful check, freshness, backlog/oldest item, rejected signatures, dead-letter/retry state, mismatch counts and watch expiry. Payload views are redacted. A credential's presence does not prove a working integration. |
+| Actions / retention | Pause optional sends, retry a specific safe failed operation, dry-run affected records, scoped rights export and reviewed retention/erasure jobs. Show actual outcome/receipt; no arbitrary SQL or bulk consent grants. |
+| Audit / recovery | Record actor, reason, scoped before/after version, case/incident link, approvals and time; protect evidence against alteration, log privileged reads/exports and denied attempts. Monitor log integrity and restore exercises. |
+| Notification preferences | Routine individual admin alerts OFF; weekly digest as already requested. DEC-AIL-091 adds the explicit privacy-case email exception: new cases and matters needing review alert the responsible owner through both approved privacy aliases, without requiring an admin visit. Urgent rights deadlines, connector outages and breaches need a separate staffed escalation path; repeated escalation timing remains to be reviewed. |
+
+Suggested access split pending owner selection: privacy administrators can handle
+consent/cases; ordinary admins see redacted health; assigned coaches receive only
+their authorised service access; buyers/HR/other customers get none. Do not
+automatically give existing super_admin accounts all privacy-case content.
+
+**Observed gaps at the current website baseline:**
+- GDPRControlsAdmin saves keys such as gdpr_admin_notifications,
+  gdpr_double_optin and gdpr_newsletter_enabled, but no corresponding enforcement
+  consumers were found in server/shared code. Its retention UI itself says cleanup
+  is future work. Existing badges/toggles are not evidence of functioning controls.
+- Generic auditMiddleware writes after a successful response, redacts only a small
+  top-level secret-name list, and audit failures do not roll back the action.
+  Sensitive privacy mutations need durable, minimised audit evidence in the
+  transaction, not a best-effort copy of the entire request body.
+- Shared-password login attributes access to the bootstrap owner. That is inadequate
+  attribution for named emergency use. Verify and repair session/role protections
+  before accepting privacy-admin access.
+- Typeform currently checks Resend and claims a result-send operation before its
+  completion workflow; it does not implement a purpose-specific consent ledger.
+  Contact creation can occur after email success. Isolate intake from notification.
+- Existing Notion contact sync calls must be reconciled with approved field/purpose
+  maps and actual destination access. “Google + Replit + Notion” does not omit
+  Typeform, Resend, payments, coach mailboxes or report links from the processor map.
+
+#### Break-glass, changes and erasure
+
+The following protocol is proposed for an actual incident, not a legal exemption:
+
+1. Named authorised responder records an incident/reason and performs strong
+   reauthentication. Grant the minimum time-limited scope (suggested maximum
+   30 minutes), read-only first, with a visible countdown and automatic revocation.
+2. Require another authorised approver for disclosure, broad export or exceptional
+   repair where available. Define an honest owner-only recovery procedure and
+   subsequent independent review when a second responder is unavailable.
+3. Log entry, accesses/actions, denials and expiry in a protected durable audit
+   channel. If audit storage is unavailable, sensitive access fails closed or
+   uses a pre-reviewed protected emergency journal; never silently bypass logging.
+4. Emergency access cannot grant consent, lift a marketing withdrawal, expose Scan
+   data to HR, permanently disable auditing, or discard an erasure request.
+   Pause optional processing and restore safe operation using documented steps.
+5. Close with review and recovery evidence. Reconstruct permissions from validated
+   history; do not “roll back” to an old database snapshot that revives consent.
+
+Normal corrections append a new version/reason instead of overwriting past choices.
+However **non-destructive editing is not indefinite personal-data retention**.
+Approved erasure removes/anonymises eligible payloads and links across relevant
+systems, records only necessary evidence of the action, documents lawful holds,
+and handles backup expiry and restored-data deletion. Pseudonyms and linkable
+hashes remain protected personal data. A mirror/export is not a backup.
+The Finnish authority explains erasure, limited exceptions and recipient
+notification in its [erasure guidance](https://tietosuoja.fi/en/right-to-erasure).
+
+#### Finnish/EU evidence and additional release gates
+
+These are compliance work items, not an automated legal certification. Legal
+interpretation and release evidence need a suitably qualified human review.
+
+| Area | Required evidence / design consequence | Primary source checked 7 October 2026 |
+| --- | --- | --- |
+| Purpose and consent | Separate service, optional marketing, analytics and optional integrations; freely chosen granular consent, withdrawal and minimal retained proof. Document other applicable lawful bases instead of treating every task as consent-based. | [Finnish consent guidance](https://tietosuoja.fi/en/consent-of-the-data-subject) |
+| Electronic marketing | Finnish electronic-communications rules apply alongside GDPR. Review natural-person/sole-trader audiences and any narrowly applicable customer exception; do not assume a work email permits offers. Proposed baseline is separate positive marketing opt-in. | [Finnish authority decision on section 200](https://www.finlex.fi/fi/viranomaiset/tietosuojavaltuutettu/2020/621) |
+| Rights and deadlines | Access, correction, erasure, restriction, portability where applicable and objection routes; receipt starts the case clock. Respond without undue delay, normally within one month; track reasoned extensions and timely notice. Simple withdrawal must not wait for this deadline. | [Finnish erasure/response guidance](https://tietosuoja.fi/en/right-to-erasure) |
+| Sensitive answers and risk | Inventory actual questions, free text, reports and any AI inference. Avoid unneeded health/special-category data; identify Article 9 condition where relevant. Assess DPIA need before changed processing, including high-personality/private-answer risk. Non-diagnostic copy does not settle the issue. | [Finnish DPIA criteria](https://tietosuoja.fi/en/list-of-processing-operations-which-require-dpia), [GDPR Articles 9/35](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679) |
+| Controller and DPO | Confirm legal entity/contact, named responsible owner/deputy and whether formal DPO designation is required. A dpo@ mailbox is not itself appointment or proof of independence. Do not mislabel the owner who determines purposes as an independent DPO without assessing conflicts. | [Finnish DPO guidance](https://tietosuoja.fi/en/data-protection-officers), [designation](https://tietosuoja.fi/en/designating-a-data-protection-officer) |
+| Security and incidents | Document proportionate safeguards, access reviews, incident assessment, backups and restoration. Risk-based authority notification may be due within 72 hours of awareness; high-risk affected-person notification is distinct. Weekly summaries cannot be the incident response mechanism. | [Finnish authority breach reminder](https://valtioneuvosto.fi/en/-/6927448/the-office-of-the-data-protection-ombudsman-reminds-controllers-organisations-must-assess-the-severity-of-a-personal-data-breach-to-the-data-subjects) |
+| Providers and transfers | Verify signed processing terms, subprocessors, locations/remote access, transfer mechanisms, retention/deletion and AI training terms for each actual service/tier. Do not infer these from the vendor brand or EU region label. Confirm Notion destinations and no wider workspace access. | [GDPR Articles 28/32/44 onward](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679) |
+| AI Act | Inventory actual AI systems/models and GreenElephant's provider/deployer role, purpose, oversight, transparency and prohibited-use screening. A RoPA is not an AI Act conformity assessment. No employment selection/evaluation or manipulative use in this individual service. Reassess if purpose changes. | [Commission AI Act overview](https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai) |
+| Current AI-literacy wording | July 2026 amendment changes Article 4 to measures supporting staff/representative AI-literacy development, without guaranteeing an individual's specified level. Revalidate older website compliance/mandatory-training claims; no paid course is automatically a legal certificate. | [Regulation EU 2026/1744, Article 1(5)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202601744), [Commission FAQ](https://digital-strategy.ec.europa.eu/en/faqs/ai-literacy-questions-answers) |
+
+Also review public notices (including indirect collection), cookies/tracking,
+age/audience scope, financial-record retention, data minimisation, accessible
+EN/FR choice wording and Finnish customer-service needs. Keep the service aimed
+at individual entrepreneurs as requested; do not silently rewrite or remove
+other published offers during this compliance design batch.
+
+#### Acceptance scenarios and implementation sequence
+
+| Scenario | Pass condition |
+| --- | --- |
+| Website grant, refusal and re-subscription | Correct purpose/version and address verification; no marketing from unchecked, pending or ambiguous evidence. |
+| Withdrawal versus queued send | Canonical suppression commits before success; later send blocked; already submitted provider message honestly identified. |
+| Typeform partial then final, duplicate and out-of-order events | Consent and completion are separate; one effect per source revision; no duplicate emails and no old grant revives a withdrawal. |
+| Resend/Notion unavailable during intake | Evidence still durable; provider work pending/failed with alert; no false success or customer-data leakage. |
+| DPO mail, reply, forwarded thread and spam | Every input accounted for; correct case links; quarantine and mismatches visible; human decisions evidenced; no automatic grant from quoted text. |
+| Gmail watch expires / notification is lost | Reconciliation recovers the bounded gap without duplicate cases; stale state visible; optional sends safely paused when eligibility is uncertain. |
+| Unauthenticated admin / ordinary admin / HR buyer | Server denies private-case and report access, including guessed URLs, IDs, exports and attachments. |
+| Emergency access expiry and failed audit storage | Minimum scope expires; audit preserved; prohibited actions remain denied; no silent bypass. |
+| Correction, erasure and backup restore | History remains accountable without retaining unnecessary payload; erased/withdrawn state survives restoration. |
+| Weekly summary and urgent incident | Daily/routine alerts stay off; summary excludes private content; urgent case handling has a tested separate route. |
+
+**Phases:** (1) review the synthetic local admin mockup and privacy boundaries;
+(2) implement the ledger, enforced admin permissions and website withdrawal path
+with isolated tests; (3) add verified Typeform and DPO adapters with reconciliation;
+(4) test retention/recovery and provider evidence; (5) authorised exact-SHA GitHub
+and manual Replit release, then authorised production acceptance. No production
+data import or connector activation is part of the mockup.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-088 | User-selected replacement | Authenticated RoPA & Privacy admin workspace replaces the proposed Sheet mirror; server-enforced purpose/case access and troubleshooting. |
+| AI-LIT-REQ-089 | Requested outcome; transaction/latency design proposed | All supported website/email preference events update linked evidence and effective permission; downstream work reconciled and optional sends rechecked. |
+| AI-LIT-REQ-090 | Requested outcome; form configuration pending | Typeform consent intake handles supported partial/final revisions independently of report sending, with verified notice/subject mapping. |
+| AI-LIT-REQ-091 | Alias topology and dual-address routing human-confirmed; delivery/access pending | Privacy mailbox correspondence linked to restricted cases, reviewed decisions and deadlines; deduplication, reconciliation and no autonomous legal decisions. Privacy/DPO-directed system mail targets both approved aliases of one primary mailbox; DEC-AIL-090 clarifies routing and pending verification. |
+| AI-LIT-REQ-092 | Requested; protocol details proposed | Auditable corrections, rights-compatible erasure, scoped temporary emergency access, safe recovery and tested failure handling. |
+| AI-LIT-REQ-093 | User-confirmed access boundary | Individual entrepreneur's data stays private; HR/employer payer never receives Scan data or personal progress/consent. Assigned coach scope pending. |
+| AI-LIT-REQ-094 | Requested evidence programme | Finland/EU compliance evidence matrix, risk/provider/AI-use assessment, end-to-end acceptance and qualified human review before compliance claims. |
+
+**Outstanding facts:** existing register source, verified privacy-mail delivery/access,
+named privacy administrators/alternate responder, assigned-coach access, actual
+Typeform questions/notices/partial-response plan, retention choices, AI systems and
+provider terms. No live credentials or personal records requested in chat.
+
+**Cross-repository:** OS main freshly resolved and PRD/log read at
+83391d8520a6bfb2e010590686d6e32797490b62; website base
+b1a8c52784861a98d1f0d3ada39bbbcdda332454 plus this working tree.
+GEOS-REQ-002/003/004/005 and DEC-GEOS-001/003 remain relevant. No OS/provider changes
+in this specification and mockup; a paired OS change or documented boundary review
+will be required for Gmail/Notion implementation. The old source-only Notion calls
+do not prove an approved receiving-system configuration.
+
+<a id="ai-lit-ropa-implementation-20261008"></a>
+### RoPA UX acceptance and first local implementation — 8 October 2026
+
+**Authority:** Estève accepts the mockup UX, requests alignment with existing admin
+branding and says to move on; [DEC-AIL-083](DECISION_LOG.md#dec-ail-083).
+Reuse the website's charcoal surfaces, teal accents, Poppins headings, Lato body
+font, cards, badges, focus states and responsive layout. Retain the accepted
+navigation and individual-privacy boundaries. Do not import MY5's distinct theme.
+
+First bounded local implementation: auditable marketing withdrawal behind the
+existing signed unsubscribe link. Save a minimal withdrawal event and existing
+marketing suppression atomically; retain the previous notice text/time rather
+than fabricating a historical grant. A failure returns a retry response, never a
+success assertion. Replay is idempotent; old suppressed contacts are not backfilled
+as newly consented. Missing/deleted contacts remain non-marketable without recreating
+a person record. Do not add personal email/body/IP data to the event.
+
+The first ledger slice records withdrawals only. It is not a full RoPA, grant
+capture, provider reconciliation, automated retention or production-ready privacy
+workspace. A scoped additive migration is prepared and tested only on a disposable in-memory
+PostgreSQL fixture. Production migration review and multi-connection checks remain
+release gates.
+Existing service sends and private-data recipients are not changed by this slice.
+
+**Local implementation evidence:** withdrawal service plus PostgreSQL transaction
+adapter, minimal privacy_preference_events schema and scoped SQL migration;
+existing unsubscribe route now uses the isolated handler and service. Existing
+suppression markers remain authoritative for marketing exclusion. Contact consent
+flags become false without rewriting original wording/time. Event keys are
+pseudonymous, not anonymous. A deleted-contact link records no recreated person.
+One recorded withdrawal per contact is intentionally supported in this slice;
+future re-subscription requires a reviewed versioned-transition design.
+
+**Checks:** 127 release tests passed (8 new isolated service/HTTP tests), TypeScript
+and production build passed; mockup desktop/mobile interactions passed and branded
+screenshots inspected. The release service tests model transaction failure/concurrency. A separate
+PGlite 0.5.8 / Drizzle 0.45.3 check executed the real migration and production
+adapter against synthetic in-memory PostgreSQL: duplicate requests, SQL-triggered
+rollback, retry, contact deletion and purpose constraints passed. PGlite has one
+connection, so this does not verify Neon transport or multi-process locking.
+No application/production database was accessed or migrated.
+
+**Not ready for release:** review the real deployment schema and verify Neon
+transport/multiple-connection concurrency before a production migration.
+Do not deploy this code ahead of its migration: an absent evidence table makes
+withdrawal return 503. Do not use schema-wide db:push on the brownfield database.
+Marketing send/withdrawal races already in flight, grant capture, provider outbox,
+Notion acknowledgement, privacy-admin access, automatic retention and the weekly
+scheduler are not resolved by this first slice. Never claim the complete workflow
+is finished from the new tests. Existing emails remain live until a separately
+reviewed deployment changes them.
+
+Named privacy-admin access, DPO mailbox, coach scope, retention and weekly schedule
+remain pending; no real private admin view is enabled before access is settled.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-095 | UX accepted; styling requested | Align the accepted RoPA mockup with existing website admin branding and components, with responsive and readable states. |
+| AI-LIT-REQ-096 | Local implementation requested continuation | First withdrawal-history slice: signed-link routing, atomic suppression/evidence, idempotent replay, failure handling and isolated tests; reviewed additive migration before deployment. |
+
+Website base b1a8c52784861a98d1f0d3ada39bbbcdda332454 plus working tree. OS main
+re-resolved to 83391d8520a6bfb2e010590686d6e32797490b62, whose PRD/log were read.
+GEOS-REQ-002/003/004/005 remain relevant. This slice stays inside the website and
+adds no OS transfer or adapter, so no paired OS implementation is required.
+Gmail/Notion work still requires its own boundary review. No production migration,
+live send, push/merge, Replit sync or publication is authorized by UX acceptance.
+
+<a id="ai-lit-privacy-admin-20261008"></a>
+### Restricted privacy administration — local continuation, 8 October 2026
+
+Authority: Estève's instruction to continue the accepted admin UX; DEC-AIL-084.
+Prepare a branded /admin/ropa page and a minimal withdrawal-history API. This is
+a read-only first slice; the full processing-activity register, cases, intake,
+recovery, retention and weekly digest remain unfinished.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-097 | Locally implemented and tested; activation pending | Default-closed privacy access: named admin/Google-subject bindings, current active admin role, recent named Google session, no shared-password or automatic super-admin bypass. |
+| AI-LIT-REQ-098 | Locally implemented and tested | Minimal paginated withdrawal history with durable access audit before response; no raw email, Scan answers, contact keys or mail bodies; distinct unavailable and empty states. |
+
+Implementation defaults are conservative safeguards, not a human selection of
+named administrators: deployment-only PRIVACY_ADMIN_GOOGLE_BINDINGS maps admin IDs
+to Google subjects; empty/malformed configuration denies access. A session from a
+verified Google callback expires for privacy reads after 30 minutes. Recheck the
+current admin record on each request; removed, disabled or viewer accounts fail
+closed. Google sign-in alone does not prove Workspace MFA or DPO appointment.
+Owner must confirm named users and MFA/operating arrangements before activation.
+No bindings are supplied or enabled by this work.
+
+Rotate successful admin login sessions and strictly check the OAuth state and
+verified v2 userinfo identity before marking a Google session. Identity model
+reference: [Google OAuth userinfo](https://developers.google.com/resources/api-libraries/documentation/oauth2/v2/python/latest/oauth2_v2.userinfo.html)
+and [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect),
+checked 8 October 2026. Live OAuth verification remains a release check.
+
+Use the existing audit_logs table through a direct transactional insert: admin
+identity, read action and returned row count only. Do not use the best-effort
+logger. Failure to read or durably audit returns 503 with no records. Generic
+audit viewers can see this minimal administrative action, never subjects or event
+references. Audit-history controls and durable denied-access logging remain
+future work; this is not an immutable compliance archive.
+
+The browser stores results only in mounted component memory, clears them when
+hidden/expired or a refresh fails, and rechecks access on return. The server
+enforces authorization independently of the UI. Existing website admin endpoints
+are not hardened or covered by this new gate; broader legacy-data access review
+remains necessary. No claim of a website-wide privacy boundary follows from it.
+
+Processing activities and individual evidence stay distinct. No mock records in
+the app; incomplete inbox/recovery controls say so and cannot perform writes.
+The new page inherits existing admin cards, typography, charcoal and teal theme.
+Google Sheets remains cancelled. No HR or buyer reporting is introduced.
+
+Website b1a8c52784861a98d1f0d3ada39bbbcdda332454 plus working tree; OS main rechecked
+at 83391d8520a6bfb2e010590686d6e32797490b62 (same PRD/log snapshot already read).
+GEOS-REQ-002/003/004/005 cross-check: website-only read/access layer, no OS adapter,
+transfer or contract change; no paired OS PR required for this slice.
+Mailbox, coach scope, weekly schedule/recipients and retention decisions remain
+pending. Production migration, named-access activation, GitHub and Replit release
+require the previously recorded gates. Local checks: 135 release tests, TypeScript and build passed for the first page.
+Actual PostgreSQL adapter checks covered tied microsecond pagination, minimal
+audit payloads, audit failure and retry. Isolated browser fixtures passed the five
+tabs, pagination, empty/error/denied/sign-in states, expiry, hidden-tab clearing,
+noindex and mobile overflow. These use fictional records; no real admin login or
+production database was exercised. Later named-owner changes require their own
+final check below.
+
+<a id="ai-lit-admin-identities-20261008"></a>
+### Named Google administrators and on-demand access — 8 October 2026
+
+Estève identifies one sole owner-level administrator, a separate daily account and
+a secondary administrator; future individually approved admins use the exact
+greenelephant.org domain. The owner's explicitly named external address is the
+single exception. DEC-AIL-085 records this direction. Exact operational addresses
+and proposed configuration are kept in the ignored local handover, not public
+configuration. Neither Google tenant membership nor the domain grants access.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-099 | Approved direction; local implementation candidate | Sole configured owner exception; ordinary daily/secondary administrators; exact team domain plus individually created accounts; fresh named Google login for owner controls. |
+| AI-LIT-REQ-100 | Approved direction; local implementation candidate | Owner can add, change, deactivate and reactivate staff access; record changes and audit atomically; preserve accounts on removal; protect the owner from normal team edits. |
+
+ADMIN_OWNER_EMAIL is deployment-managed and empty by default. Existing non-owner
+super_admin rows receive effective admin permissions, not owner permissions.
+Active account/domain/current role checks now apply through requireAdminAuth;
+session claims alone cannot retain disabled access. Team creation allows only
+Admin or Viewer at greenelephant.org. Owner creation/transfer is a separately
+reviewed operator procedure; regular invitations cannot add/promote an owner.
+No domain-wide automatic provisioning, emailed invitations, or privacy grant is
+performed. First Google login still requires an existing approved account.
+
+Invite/change/deactivate actions and minimal before/after audit entries share one
+database transaction. Existing DELETE compatibility route deactivates rather than
+deleting the row. The server protects the sole owner from edits/deactivation via
+this interface. Accounts can be reactivated deliberately; audit evidence remains.
+Denied attempts, immutable audit storage, owner recovery, scheduled access review,
+MFA enforcement/verification and broader permission coverage remain future work.
+This is not a claim of complete GDPR compliance.
+
+The legacy shared-password fallback remains ordinary-admin only and cannot use
+owner controls or privacy records. Replacing/removing that fallback requires the
+reviewed account transition; do not advertise it as a named identity or break-glass
+protocol. The current-account guard also blocks non-read methods for viewers. Legacy
+endpoints outside that guard and any GET side effects still need review.
+Estève selected privacy access for his two accounts only. The secondary
+administrator and future staff get no automatic privacy assignment. Estève confirms the two addresses are separate Google sign-in accounts. Their
+actual Google subjects and existing website records still need verification;
+mismatched primary addresses fail closed.
+
+Activation needs review of existing account rows, Google subject bindings, exact
+owner configuration, Workspace MFA, staging Google login and rejection cases.
+Do not auto-promote, create, migrate or disable production accounts in this batch.
+Website base/OS SHA and website-only boundary remain as recorded above; no OS
+adapter or paired OS implementation required. Final checks: 143 release tests pass; TypeScript and production compilation pass.
+Actual production SQL adapters were exercised with synthetic PGlite PostgreSQL:
+withdrawal rollback/replay, precise pagination, audit failure, owner protection,
+account creation, deactivation/reactivation and rollback on failed team audit.
+Browser checks cover the actual branded RoPA page and owner access screen with
+intercepted fictional responses. No real Google OAuth, production account or
+provider was tested. PGlite remains single-connection; Neon/multi-process and
+production migration checks remain release gates. Build retains its existing
+large-chunk warning. Shared-password removal and a complete legacy-route access
+audit remain needed before describing all administration as named-only.
+
+<a id="ai-lit-google-only-admin-20261008"></a>
+### Google-only admin access and controlled recovery — 8 October 2026
+
+Estève selected option A: remove shared-password admin access, reject existing
+password sessions and prepare controlled operator recovery (DEC-AIL-086). This
+supersedes the retained fallback described in the previous implementation snapshot.
+The sole-owner/team/privacy assignments in DEC-AIL-085 remain unchanged.
+Estève reconfirms that the secondary administrator retains all ordinary admin
+tools while excluded from RoPA/consent history. Team management and its security
+audit remain owner-only; a privacy denial must not disable ordinary admin access.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-101 | Approved; local implementation candidate | Use individually approved Google accounts for all website admin access. Retire password login/change endpoints and UI; reject sessions without Google provenance and require the subject to match the current active account, including legacy admin endpoints and status checks. No public bootstrap or fallback. |
+| AI-LIT-REQ-102 | Approved; procedure prepared, live rehearsal pending | Document controlled operator recovery with verified identity/approval, scoped backup and repair, preserved IDs/audit history, affected-session revocation and fresh-login checks. Recovery must not create another owner or expand privacy access without a separate decision. |
+
+Implementation: password routes return 410 without credential/account writes;
+shared-password sessions fail even while their cookies remain valid. Four portal
+admin routes and the Fathom callback now use current named-account authorization.
+The old hash is omitted from settings reads and removed from allowed settings writes;
+no stored setting or production secret is deleted. The login/access pages show
+Google sign-in and recovery guidance. Ordinary cookie lifetime and separate
+30-minute owner/privacy gates remain unchanged; customer portal login is separate.
+See the [transition/recovery runbook](operations/admin-access-recovery.md).
+
+Validation: 151 release tests pass on Node 24, including signed legacy-cookie
+rejection and the secondary-admin ordinary/owner/privacy separation. TypeScript
+and production build pass (existing large-chunk warning). Isolated desktop/mobile
+browser checks pass for Google-only login and owner recovery controls, with external
+requests blocked and fictional identities. Real Google identities, MFA,
+staging callback/recovery rehearsal, owner/bindings configuration and production
+release remain open. No accounts, production database or provider settings changed.
+The combined withdrawal migration still needs its own release gates.
+
+Cross-repository review: website working tree based on
+b1a8c52784861a98d1f0d3ada39bbbcdda332454; GitHub main rechecked unchanged. OS main
+83391d8520a6bfb2e010590686d6e32797490b62 re-resolved; its PRD/log read at that SHA.
+GEOS-REQ-002/003/004/005 apply. This changes website access only, with no OS adapter,
+payload, schema or provider transfer; no paired OS implementation is required.
+
+<a id="ai-lit-admin-learning-20261008"></a>
+### Admin teaching layer and Google MFA direction — 8 October 2026
+
+Estève requests an admin section usable in AI-literacy training, with short
+hover explanations and expandable descriptions of Break Glass Protocol, RoPA,
+GDPR, consent and related concepts. He requests robust Google MFA with SMS and
+alternative-email recovery, and confirms control of the GreenElephant Workspace.
+DEC-AIL-087 records the request; DEC-AIL-088 records the subsequent package A approval.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-103 | Approved request; local implementation candidate | Add accessible contextual definitions and expandable examples with sources and honest implementation status. Provide a separate administrator teaching view using fictional examples and no operational records/actions. Ordinary admins can teach without receiving privacy permissions. |
+| AI-LIT-REQ-104 | Package A approved; local verification implemented; live checks pending | Prefer passkeys, retain SMS fallback, and prepare independent recovery email and offline backup codes. Enforce Workspace MFA for the intended managed admin accounts; protect the external owner separately. Prepare signed Google MFA evidence validation that denies missing/invalid evidence. Verify provider eligibility, actual Finnish-carrier delivery and recovery without the primary phone before rollout. Do not represent named Google login, email recovery or a refreshed website session as verified MFA. |
+| AI-LIT-REQ-105 | Approved; local login/access and settings troubleshooting implemented; wider coverage and live acceptance pending | Give beginner administrators short, contextual troubleshooting instructions throughout admin, prioritising login, MFA and recovery. Use expandable steps, supplementary hover/focus definitions, direct official help links, expected results and a clear next action when stuck. Keep help usable before login and by keyboard/touch. |
+
+The local candidate adds /admin/training, eleven sourced topics, and fictional
+consent/RoPA and emergency-recovery walkthroughs. A dedicated status endpoint returns only an access boolean; the view displays
+no account identity or operational records. It has no write
+controls. Short definitions work on hover/focus; expanded examples work by keyboard,
+click and touch. Toolbox links appear in login, Access & Security, RoPA and GDPR
+screens; the Admin Hub links to the teaching view. Leaving teaching for operational
+pages is explicit. This is an English admin teaching layer; bilingual public-site
+release requirements remain separate.
+
+Unconnected legacy GDPR switches are disabled and labelled; the two existing
+connected settings remain available. Unverified retention defaults and automatic
+legal-page success icons are removed. The toolboxes distinguish local implementation,
+unconnected features, operational verification and legal/organisational responsibility.
+They do not certify GDPR or AI Act compliance. No live consent, account or provider
+configuration is changed by training interactions.
+
+MFA preparation: [existing recovery runbook](operations/admin-access-recovery.md)
+now distinguishes Workspace enforcement, external-owner protection, SMS delivery,
+recovery email and Google Security Bundle evidence. Estève selected package A:
+passkeys preferred, SMS fallback, independent recovery email and offline backup codes.
+Signed MFA claim validation is implemented and tested locally. On 8 October 2026,
+Estève confirmed the Google readiness checks complete, including the website OAuth
+client matching the production client ID. This is human-reported configuration
+evidence; the agent did not inspect live settings. Live sign-in, signed claims, SMS
+delivery and recovery acceptance remain pending. Existing owner and two-account privacy
+assignments remain unchanged, including ordinary access for the secondary admin.
+
+Beginner troubleshooting acceptance (DEC-AIL-088): explain technical terms on first
+use; aim for eighth-grade English, short sentences and one action per step. Each
+guide states what happened, what to try first, the expected result, and what to do
+if it fails. Put extra detail behind a labelled expansion; essential help cannot
+depend on hover. Support keyboard, touch and screen readers. Avoid time pressure,
+competing calls to action and repeated sign-in loops. Link directly to the relevant
+official setting/help page and identify whether the user, website owner, Workspace
+administrator or hosting operator can fix it. Never ask users to paste secrets.
+
+Cover wrong/unapproved/disabled accounts, restricted privacy access, expired
+sessions, configuration/callback/cookie failures, unavailable Google service,
+missing MFA evidence, SMS failure, lost phones and owner recovery. Public help
+must not reveal the approved-account list or private recovery contacts. A safe
+support reference must exclude tokens, codes and raw provider responses. Use
+fictional training examples. Show local implementation, provider checks and live
+verification as separate states; never infer success from a setup checkbox.
+
+The local callback now validates a signed Google ID token, including explicit MFA
+evidence and a nonce bound to the sign-in attempt; it no longer trusts userinfo alone. The callback address is the configured PUBLIC_SITE_URL
+origin plus /api/admin/auth/google/callback; the source default is
+https://www.greenelephant.org. Google configuration readiness is now human-confirmed
+as described above. The deployed candidate revision and successful live
+authentication remain unverified. Google’s documented Security Bundle prerequisites
+have been checked by Estève; actual signed claims must still be observed on the
+intended backend before activation.
+Missing provider support is a rollout blocker, not permission to weaken the gate.
+The [recovery runbook](operations/admin-access-recovery.md#beginner-configuration-checks)
+provides review steps. The local implementation now requests signed `amr` and
+`auth_time`, requires explicit `mfa`, checks signature/issuer/audience/expiry/nonce
+and current approved identity, rotates the session, and rejects older sessions
+without MFA provenance. One-use state, a ten-minute attempt limit and PKCE bind the
+callback to its originating attempt. No offline tokens or forced Google
+reauthentication are requested. Google authentication time is stored separately
+from website login time; the existing thirty-minute website window is unchanged.
+
+Pre-login help covers configuration, wrong/inactive accounts, expired attempts,
+cookies/session storage, provider failures, unavailable MFA evidence, lost phone,
+SMS and controlled recovery. RoPA, owner controls, training and Admin Hub failures
+use contextual guidance. Permission denials direct ordinary admins to their tools
+instead of a sign-in loop. Unknown provider/error values are never echoed.
+The wider requirement to explain all admin feature failures remains ongoing;
+the earlier bounded batch covers authentication, recovery and access checks.
+The next local wave extends this pattern to GDPR & Data Controls: loading and
+failed reads never display guessed Off values; 401/403 responses explain the next
+action; an unconfirmed save requires a read before another write. Only connected
+controls remain actionable after a successful read, using the backend’s existing
+default-allowed behavior when their keys are absent; malformed values remain
+unavailable. No server permissions,
+provider settings, consent rules or operational data flows change.
+
+**Settings-wave validation — 2026-10-08:** TypeScript, production build and nine
+existing admin-session tests pass on Node 24. Isolated browser fixtures cover
+loading, 401/403/500/503, malformed payloads/values, uncertain-save readback without
+repeated writes, successful and denied saves, return-to-tab failure, server defaults,
+keyboard help, accessible control names and desktop/mobile overflow. Existing
+login/recovery/access-help browser checks also pass after the shared-component edit;
+screenshots inspected. External requests were blocked and settings responses were
+fictional. This does not attest human screen-reader acceptance or live operations.
+The full 161-test result below belongs to the preceding MFA wave and was not rerun
+for this settings-only change. No auth/session/role backend implementation changed.
+Website main re-resolved unchanged at b1a8c52784861a98d1f0d3ada39bbbcdda332454;
+OS main re-resolved unchanged at 83391d8520a6bfb2e010590686d6e32797490b62, with
+its current PRD/log read. GEOS-REQ-002/003/004/005 remain unaffected: no shared
+schema, adapter, transfer or release-boundary change; no paired OS implementation.
+
+Sources checked 2026-10-08: Finland’s Data Protection Ombudsman, EDPB, official Google
+Account/Workspace/OIDC guidance, and Microsoft emergency-access guidance as a concept
+reference only. The content links to those sources. Validation: 161 release tests,
+TypeScript and production build pass on Node 24 (existing chunk-size warning).
+Synthetic RSA fixtures exercise the actual Google signature verifier. Isolated
+HTTP tests cover failed evidence, state/replay, storage/provider failures and all
+three role scenarios. Desktop/mobile browser checks and screenshot review cover
+keyboard expansion, focus definitions, accessible names, no horizontal overflow,
+401/403/503 help, recovery and training without private API calls. These checks are
+not a human screen-reader session, real Google login, SMS delivery, phone-loss
+rehearsal or human rollout acceptance.
+Website base b1a8c52784861a98d1f0d3ada39bbbcdda332454 and OS main
+83391d8520a6bfb2e010590686d6e32797490b62 freshly re-resolved unchanged; OS PRD/log
+already read at that SHA. GEOS-REQ-002/003/004/005 checked: no OS schema, adapter or
+data transfer changes; no paired OS implementation. Workspace policy changes would
+need their own reviewed operational scope. No push, migration or publication.
+
+<a id="ai-lit-full-privacy-system-20261008"></a>
+### Full privacy system — successive local batches, 8 October 2026
+
+**Authority:** Estève selects option B: “Entire privacy system as well: activity
+register, individual consent history, privacy cases, Typeform/mailbox intake and
+retention workflows, built in successive local batches.” DEC-AIL-089 records this
+implementation direction. This extends the local continuation scope; it does not
+select factual mailbox configuration, lawful bases, retention periods or live
+provider actions. Earlier REQ-088–105 boundaries remain in force.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-106 | Approved phased local implementation; incomplete | Build the linked activity register, individual consent evidence, privacy cases, Typeform/mailbox intake and retention workflows in reviewable local batches. Preserve purpose-specific permissions, human decisions, separate records and synthetic validation; never infer consent, a DPO appointment or production readiness. |
+| AI-LIT-REQ-107 | Local activity-register candidate | Create and edit activity metadata; stable activity IDs and preserved versions; purpose/notice/surface/provider/assessment references; explicit review status/evidence; search, paginated history and audited register-only export behind existing named privacy access. No individual consent grants or case messages in this register. |
+
+**First batch:** REQ-105 Email Control Room access/loading/history guidance plus
+REQ-107 activity register. Control Room access is checked before opening; viewer
+send controls remain disabled. Unavailable/malformed history is distinct from no
+records, retries only read, stale history is hidden on refresh failure, and support
+help excludes raw errors. Legacy static footer markers are labelled as inventory,
+not a GDPR certification. Existing email-send paths and schedules are unchanged;
+no test emails are sent by this batch.
+
+The RoPA register starts empty. Human-entered activity metadata includes controller
+and contact details, responsibilities, purposes, people/data categories, recipients,
+transfers/safeguards, retention, security and assessment references. This follows the
+[EDPB record-keeping guidance](https://www.edpb.europa.eu/sme/be-compliant/be-compliant_en)
+and [Finnish authority RoPA guidance](https://tietosuoja.fi/en/record-of-processing-activities),
+checked 8 October 2026; these fields do not establish substantive compliance.
+Blank fields are explicitly unknown. Linked references describe metadata; they do
+not activate providers or resolve the future consent subject/notice mapping.
+
+Technical implementation defaults: two additive tables hold current records and
+version snapshots. Each save requires a reason, expected version and unique request
+reference; stale edits conflict and the same accepted request can be replayed without
+another version. Account status/identity is checked again inside the write transaction.
+Record changes, their history and minimal audit evidence commit together. Audited
+reads/exports fail closed. No payload is copied by the legacy generic audit middleware.
+Writes require the configured website origin and JSON. Existing named privacy/MFA
+and thirty-minute session gates apply; no owner/ordinary-admin bypass is added.
+
+Editing a reviewed record starts a draft. Marking reviewed requires completed
+fields or a recorded explanation, human review evidence and explicit confirmation;
+live-verified status additionally requires recorded live evidence. These are
+human-maintained labels, not agent attestations. Archiving is a versioned status,
+not personal-data erasure. No automatic deletion or indefinite-retention policy
+is established. Earlier versions remain restricted.
+
+Reads use 25-record pages; version history is paginated too. Search is literal,
+not a SQL pattern. The JSON export includes the whole register up to a bounded
+1,000-activity limit and refuses larger exports instead of silently truncating.
+It excludes consent/case tables. No data from production or historic exports is
+imported. The SQL migration is prepared and tested locally only; apply through a
+separately reviewed migration plan, never startup migration or schema-wide db:push.
+
+**Validation — local candidate only:** 167 release tests pass on Node 24, including
+six new RoPA schema/HTTP boundary tests. TypeScript/build pass (existing bundle-size
+warning). The actual additive SQL and production store adapter pass isolated PGlite
+PostgreSQL checks: current/version persistence, same-request replay, conflicting keys,
+stale/overlapping edits, audit rollback on creation/update, failed-audit reads/exports,
+write-time account revocation, activity/history pagination, literal search/status
+filtering, bounded complete export and minimal audit payloads. PGlite has one
+connection: Neon transport, multi-process locking and production migration remain
+unverified. Browser fixtures pass Control Room access/loading/viewer/history failure,
+empty/malformed responses and retries without email requests; RoPA denial, empty/error
+recovery, draft creation, retry of an uncertain save with the same request ID,
+version edit/history, search/export and focus revocation. Desktop/mobile keyboard,
+no-overflow and screenshot checks pass. This is not human screen-reader acceptance.
+All browser API responses and database records were synthetic; external browser
+requests were blocked. No full backend, mail send or scheduler was started.
+
+**Remaining REQ-106 batches:** purpose/notice-version and subject mapping with
+individual grant/refusal/withdrawal/correction history; private cases and reviewed
+actions; configured Typeform and mailbox adapters with reconciliation; approved
+retention/erasure and recovery validation. The existing withdrawal-only ledger is
+preserved. Mailbox address/type is now human-confirmed in DEC-AIL-090; delivery/access,
+Typeform mapping and retention rules remain factual or human inputs, not inferred
+defaults. No live connector or scheduler is activated.
+The weekly digest remains a separate existing requirement with schedule/recipients
+pending. The full privacy system is not complete after this first register batch.
+
+**Mailbox clarification — DEC-AIL-090:** Estève confirms two privacy aliases of
+one primary Google Workspace mailbox and requests both as recipients of every
+privacy/DPO-directed system notification or forwarded request. This routing applies
+to privacy-directed mail, not every customer email. Exact operational addresses stay
+in private configuration/local handover notes. MX propagation/provisioning and delivery
+are still being checked; this is human-reported topology, not verified readiness.
+Google documents that [aliases share the primary mailbox](https://developers.google.com/workspace/admin/directory/v1/guides/manage-user-aliases);
+two aliases do not provide an independent backup inbox or guarantee delivery.
+
+The future local adapter must preserve both intended recipients, track submission
+and delivery evidence separately where available, expose partial/unknown failure,
+and prevent duplicate case actions from retries or alias deliveries. Intake must
+isolate privacy-addressed correspondence within the primary mailbox and exclude
+unrelated personal/business mail. Use provider message identity and case correlation;
+never collapse distinct requests solely by sender or subject. Prevent loops from
+system notifications delivered back into the intake mailbox. These are implementation
+constraints for later synthetic tests, not claims that routing/intake already works.
+No autonomous replies, real test sends, mailbox connection or live settings changes
+are authorized by this clarification.
+
+**Source / release boundary:** website main and working-tree base
+b1a8c52784861a98d1f0d3ada39bbbcdda332454; OS main freshly re-resolved unchanged at
+83391d8520a6bfb2e010590686d6e32797490b62, whose PRD/log were read in this session.
+GEOS-REQ-002/003/004/005 checked: this batch has no shared schema or OS transfer;
+website-owned tables only, so no paired OS implementation. Recheck before real
+mailbox/Notion adapters. Production migration, Neon multi-process checks, human UI
+acceptance and supervised live MFA/recovery remain separate. No commit, push, merge,
+provider action, production database change or deployment is authorised here.
+
+<a id="ai-lit-final-workshop-decisions-20261009"></a>
+### Next privacy batch and email alerts — 9 October 2026
+
+**Authority:** Estève explicitly selects 1A, 2A and 3A and adds that this needs
+push emails in case he does not see the admin interface. DEC-AIL-091 records these
+choices. These are approved product directions; implementation remains pending.
+
+- **Next bounded batch:** build the purpose/notice-version and individual
+  consent-history foundation first, preserving the existing withdrawal enforcement
+  and replay guarantees. Mailbox integration follows in a separate local batch.
+- **Confirmed email opt-in:** NEW optional email subscriptions and re-subscriptions
+  remain pending until the person confirms the email address. A fresh positive,
+  purpose-specific choice and the applicable notice version are required; a previous
+  verification alone cannot reactivate a withdrawal. No optional marketing while
+  pending. Do not infer grants for legacy contacts or make marketing a service condition.
+  Necessary service messages retain their separate rules. Confirmation wording and
+  live sending require their own review; this decision does not send any messages.
+- **Initial privacy-case responsibility:** Estève reviews new privacy cases; deputy
+  remains unassigned. Bind responsibility to the existing approved identity rather
+  than creating another login or expanding access. This is operational responsibility,
+  not a formal DPO appointment. The existing two-account privacy restriction remains.
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-108 | Approved direction; not implemented or activated | Send privacy-case attention notifications by email to both approved privacy aliases, independently of whether Estève opens the admin interface. Preserve restricted case content, duplicate/failure evidence and the existing access boundaries. |
+
+**Privacy email exception:** interpret “push emails” as event-triggered email,
+not browser/mobile push. The initial implementation should alert on new cases and
+new matters needing human attention, including urgent deadlines or intake failures.
+This is the explicit privacy-work exception to REQ-086's off-by-default routine
+individual admin alerts; the weekly routine digest and other email settings are
+unchanged. Privacy attention must not wait for the weekly digest. Exact repeated
+reminder/escalation intervals remain open; do not invent a staffed deputy or a
+guaranteed response/delivery time.
+
+Implementation constraints for the later local alert batch: persist the case event
+and notification work together; dispatch independently of the admin page; use both
+configured aliases under DEC-AIL-090. Keep emails brief, with a generic attention
+reason and an authenticated website link. Exclude names, addresses, message bodies,
+consent details, attachments and bearer-access tokens from notification content.
+The link must enforce the existing privacy/MFA checks, never grant access itself.
+Distinguish queued/submitted/delivered/failed/unknown evidence; do not mark a case
+read or handled merely because an email was sent. Use deduplicated work, bounded
+retries and reconciliation for ambiguous outcomes; prevent notifications returning
+to the aliases from creating new cases or alert loops. Validate with fictional
+messages and an injected fake sender. Provider readiness, final message review and
+supervised live delivery remain gates; no actual sender/scheduler is enabled here.
+
+**Validation / source boundary:** this decision batch updates documentation only.
+Earlier 167-test and PostgreSQL/browser evidence validates the earlier local register
+and Control Room candidate, not these new consent or alert workflows. Website base
+b1a8c52784861a98d1f0d3ada39bbbcdda332454 plus working tree; OS PRD/log previously
+read at 83391d8520a6bfb2e010590686d6e32797490b62. No fresh remote-resolution claim,
+OS schema, adapter or transfer change; GEOS-REQ-002/003/004/005 boundary unchanged.
+Recheck current sources and receiving-system contracts before integrations.
+No commit, push, merge, production database change, live email or deployment.
+
+<a id="ai-lit-launch-email-20261014"></a>
+### Launch email gap review and first reliability repair — 14 October 2026
+
+**Authority / status:** Estève requests faster local website/backend development
+because customers are ready to buy. Continue existing approved service preservation
+and DEC-AIL-089/091 privacy scope in reviewable batches. This is local implementation
+evidence under DEC-AIL-092, not approval of a new marketing programme, changed offers,
+message content, live sends or release. The previous consent-first privacy choice
+remains approved; the service defect below is a bounded reliability repair.
+
+| Path / requirement | Current working-tree evidence | Remaining launch work or gate |
+| --- | --- | --- |
+| Scan purchase and questionnaire reminder — REQ-035/036 | EN/FR templates, purchase claims and provider-acceptance checks exist. Manual purchase-email recovery now shares the automatic claim and original language. | Exact final-message/provider/inbox acceptance; actual intended backend revision; original questionnaire link and language checks. Reminder scheduling is process-dependent, not an exact delivery guarantee. |
+| Scan submission and coach results — REQ-035/036, REQ-089/106 | Signed submission and event deduplication exist; complete response email preserves approved coach copies; dashboard-ready email remains a manual coach action. | Correct subject/order association: current completion still updates by email. Consent intake must be durable independently of Resend availability; actual Typeform question/notice/participant mapping is unknown. Coach access, retention and human content review remain gates. Do not activate partial-response intake using this completion path. |
+| Individual consent — REQ-089/106, DEC-AIL-091 | Withdrawal-only history and suppression exist; activity register is locally tested. | Purpose/notice-version and subject-linked pending/confirmed/refused/withdrawn history, fresh address-confirmed opt-in, replay/order/race checks. No inferred legacy grants. This remains the next approved privacy implementation batch. |
+| Privacy attention — REQ-108, DEC-AIL-090/091 | Dual-alias routing, initial responsible owner and minimal alert requirements are approved. | Case/event storage and independent outbox/dispatch with fake-sender tests, per-recipient/unknown evidence and loop prevention; actual mailbox intake and supervised delivery later. No dependence on opening admin. |
+| Routine admin mail — REQ-086 | Existing daily scheduler still starts with the backend; weekly digest and default-off routine controls are unfinished. | Category controls independent of customer service, outstanding-task visibility, durable weekly occurrence and honest summary/outcome; final weekly recipients/timezone/day/time still need selection. Do not start the full backend to preview these changes. |
+| Optional learning/offers — REQ-076/077/080, DEC-AIL-080/091/093 | Legacy onboarding execution/manual trigger remain paused; confirmed opt-in direction is approved. | Purchased-service readiness leads; optional learning/offers follow. Programme scope, content, cadence and exact-message review remain open. Legacy packages and welcome families still need source/copy review; do not re-enable old sequences to accelerate launch. |
+
+**Repair implemented:** `/api/admin/satellitescan/:purchaseId/resend-emails`
+retains its URL and existing named-admin/write gates, but now checks/reuses the
+original purchase-email operation. Only a successful purchase with a recorded EN/FR
+language can enter it. Missing/invalid historical language requires review rather
+than defaulting to English. Already accepted operations submit nothing again;
+pending/unknown attempts require provider reconciliation. A false combined result
+can mean partial acceptance: inspect both customer and internal messages, never
+blindly retry the pair. Database/configuration failures return minimal errors.
+No message body, sender, recipient or scheduler policy was changed.
+
+The admin action is labelled **Check purchase email**, with an explicit confirmation,
+visible delivery limitation and keyboard/touch-expandable review steps. Success
+means recorded provider acceptance, including an earlier accepted operation; it does
+not claim a new send, recipient-server delivery or inbox access. A separately reviewed
+resend after reconciliation remains future operator work, not a bypass added here.
+
+**Local validation:** 175 release tests pass on Node 24, including eight new
+service/callback recovery regressions. Focused 21 tests, TypeScript and production
+build pass; existing bundle-size warning remains. Tests cover EN/FR, valid zero-price
+orders, historical/invalid language, unsuccessful purchases, manual/automatic replay
+and concurrency, partial/unknown acceptance, receipt failure, missing purchases and
+redacted HTTP errors. Real senders use a fake provider; no live email or database.
+The initial sandbox run could not bind loopback listeners and was stopped; the
+complete suite passed with loopback access. New help copy is build-checked; human
+visual/screen-reader acceptance remains open. Earlier browser/SQL evidence is
+historical and does not attest this new UI copy or a production migration.
+
+**Next bounded batch / acceptance:** preserve the consent-first privacy selection:
+add purpose/notice-version and individual history with synthetic mappings, retaining
+withdrawal suppression and fresh confirmation requirements. Accept only when tests
+prove pending/refused/unknown cannot market, stale/replayed evidence cannot revive a
+withdrawal, and evidence/current state/audit commit together. Do not send confirmation
+emails or infer real Typeform mappings. Later case/alert, adapter/reconciliation,
+routine-admin and retention batches remain distinct. The sales priority is clear;
+the complete email system is not launch-ready on the strength of this repair alone.
+
+**Source / release:** website main freshly resolved unchanged at
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454`; candidate is that base plus uncommitted
+working tree on `codex/local-website-continuation`. OS main freshly resolved at
+`83391d8520a6bfb2e010590686d6e32797490b62`, with its PRD/log read at that SHA.
+GEOS-REQ-002/003/004/005 checked: website-only recovery behavior, no shared schema,
+package, Notion/OS transfer or receiving-system integration change; no paired OS
+implementation needed. Existing source work was copied and hash-verified before
+editing; this is a source backup, not a provider/database backup. No commit, push,
+merge, production mutation, deployment, live email or full-backend startup occurred.
+Human-confirmed Google readiness is retained. Live MFA/login/SMS/recovery stays
+separate for the intended backend and supervised Friday 16 October 2026 Helsinki
+checkpoint; no duplicate schedule was created and no new receipt is claimed.
+
+<a id="ai-lit-service-first-20261014"></a>
+### Purchased-service priority and reminder eligibility — 14 October 2026
+
+**Approved work order — DEC-AIL-093:** Estève selects “A — Purchased-service
+emails first; optional learning/offers follow”. This resolves EMAIL-W01 and
+prioritises the existing paid/voucher service path. It does not remove the approved
+full privacy system or its consent-first ordering within the privacy work, activate
+marketing, change an offer or waive live/release gates.
+
+**Local repair:** both the database and memory overdue selectors now require a
+successful purchase, incomplete questionnaire with no completion timestamp, no sent
+dashboard, zero prior reminders and the existing 72-hour age threshold. Inconsistent
+or malformed state is excluded. A valid zero-price voucher remains eligible.
+Invalid threshold values fail closed; the 72-hour boundary is inclusive.
+
+The actual manual/scheduled reminder service treats the selected list as a candidate
+snapshot: load the original language, reload the purchase by its stable ID, recheck
+eligibility, then acquire the existing durable operation claim. Use the current
+recipient/name and advance the count to one only after accepted submission.
+Previously accepted/pending/unknown attempts are not resubmitted. An accepted send
+followed by count-write failure still preserves acceptance against duplicate retry.
+No copy, recipient policy, delay, scheduler activation or marketing eligibility
+was changed. No new tables or migrations are needed for this repair.
+
+**Limits:** this fresh read closes the stale-list problem; it is not an atomic
+transaction with external mail delivery. An order can change after the final read,
+and a message already accepted by the provider cannot be recalled by this check.
+Refund/cancellation webhook reconciliation and exact Typeform order/participant
+association remain open; the guard uses the application's current recorded state.
+Existing boolean runner summaries still group skipped/uncertain attempts as not
+sent; a richer operator reconciliation view remains follow-up.
+
+**Validation:** 183 release tests pass on Node 24, including eight new reminder
+tests. Focused 24 tests, TypeScript, build, repository and whitespace checks pass; the
+existing bundle-size warning remains. New tests exercise the actual memory
+selector and reminder orchestration with isolated database/provider fixtures:
+72-hour/zero-price eligibility, failed/refunded/fulfilled/inconsistent exclusions,
+stale and missing records, current recipient/EN-FR language, concurrent/replayed
+attempts, provider rejection/exception and failed count writes. No live service ran.
+Production SQL filters were reviewed; an additional PGlite integration harness
+could not run because the earlier temporary validation dependency is no longer
+present. Earlier PostgreSQL evidence does not validate this changed selector;
+Neon/production database validation remains an explicit gate.
+
+**Next service batch:** correct submission-to-purchase association and durable
+intake independent of notification, starting with a synthetic contract and tests.
+Verify actual Typeform form/question/hidden-field/notice mappings before connecting
+that contract; do not invent identifiers or complete every order sharing an email.
+Review dashboard-ready/manual coach fulfilment and remaining service templates
+before supervised provider/inbox checks. Optional learning/offers follow this
+service-readiness work. Privacy cases/alerts, consent foundation, weekly controls
+and retention remain on the approved backlog.
+
+**Evidence / boundaries:** working tree on `codex/local-website-continuation`,
+website base/main resolved earlier this session at
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454`; OS PRD/log checked earlier this session
+at `83391d8520a6bfb2e010590686d6e32797490b62`. GEOS-REQ-002/003/004/005:
+website-owned selection/dispatch only; no shared schema/package/OS transfer or
+paired implementation. Pre-edit source snapshot hash-verified. Live MFA/login/SMS/
+recovery remains separate for the appropriate backend and supervised Friday
+16 October Helsinki checkpoint. No live email, provider mutation, backend startup,
+production DB change, commit, push, merge, deployment or duplicate scheduling.
+
+<a id="ai-lit-typeform-intake-20261014"></a>
+### Typeform intake foundation and database validation — 14 October 2026
+
+**Authority / state — DEC-AIL-094:** Estève explicitly continues the proposed
+Typeform batch and database-provider validation, and asks the agent to inspect
+unknown configuration itself. Purchased-service-first DEC-AIL-093 and full privacy
+scope DEC-AIL-089/091 remain. This batch implements an **unconnected intake
+candidate**, not an activated replacement for the existing webhook.
+
+**Provider inspection, read-only:** the authenticated Typeform editor/share UI
+identifies the current individual Scan and confirms its public `individualscan`
+alias matches the source email link. The URL-parameter panel shows no configured
+custom parameters; its standard respondent/source switches are off. No purchase-
+invitation or language binding was verified. The form includes a refusal/early-exit
+path, so a final provider event alone must not prove successful service completion.
+Webhook UI shows an enabled website destination, an inactive duplicate and a
+separate enabled Notion destination. This is configuration evidence, not delivery,
+signature-secret equivalence, recipient access or OS integration verification.
+No responses/deliveries, target spreadsheets or Notion records were opened.
+
+Replit's UI shows separate Development and Production databases, both with data.
+Neither has been established as disposable validation storage. Workspace key-name
+inspection shows Typeform signing/API-token names and `DATABASE_URL`; the form-ID
+and dedicated validation-URL names were not visible. Values and production secret
+contents were not inspected. The standalone Neon console requires sign-in, and the
+canonical local checkout has no private `.env` files. No authorized isolated Neon
+target was established: live provider transport, multi-connection locks and production
+migration remain open. The agent did not ask the owner to supply secrets or infer
+that the existing development database is safe for test writes.
+
+**Implemented candidate:**
+
+- Signed, size-bounded webhook parsing requires an explicit form ID, hidden-field
+  name and qualifying boolean-question reference. No live defaults are guessed.
+  Event IDs/types and response IDs are separate; partial and final are distinct.
+  Missing/ambiguous qualifying evidence cannot complete a Scan. The affirmative
+  question is a service-mapping criterion, never a marketing/processing consent grant.
+- A high-entropy invitation reference is matched by digest to an application-owned
+  binding for exactly one purchase and an independently assigned participant reference.
+  Bindings require explicit expiry and recorded participant-verification evidence;
+  possession of a forwarded invitation alone is insufficient. No invitation issuer,
+  identity-verification UI or production assignments are created by this batch.
+- The actual store transaction records a minimal event receipt, locks/rechecks the
+  binding and successful purchase, updates only that purchase, creates a unique
+  service retrieval/review task and appends minimal audit evidence. Failures roll
+  everything back before acknowledgement. It has no Resend/provider dependency.
+- Partial responses cannot complete or create a result task. Exact replay has one
+  effect; event-identity collisions fail; different/changed responses and unmatched,
+  expired, revoked, unverified or historical state enter review. No email-only joins,
+  automatic newsletter grant, contact/OS transfer or individual report disclosure.
+- Receipts/tasks store digests and restricted Typeform references, not raw answers,
+  email addresses, original bearer references or consent prose. These references
+  remain protected metadata. `pending_retrieval` is not ready-to-send mail: later
+  content retrieval, digest/recipient checks and approved messaging are required.
+  This is not a full response backup if Typeform data becomes unavailable/deleted.
+
+Three additive tables and a prepared migration support the candidate. No migration
+is run at application startup. The new HTTP handler is **not registered** in the
+application, and no queue dispatcher/scheduler is enabled. The existing production
+route receives only the bounded safety repair: reject partial/unknown event types
+or contradictory partial response state before completion/email work. Its old
+email-based completion and notification coupling remain until reviewed replacement;
+do not describe those live gaps as fixed by an unconnected candidate.
+
+**Database and local validation:** 201 release tests pass on Node 24, including
+18 new parser/handler/SQL tests. Ten tests use the actual additive SQL, Drizzle
+store, database selector and reminder/operation-claim adapters on isolated PGlite
+PostgreSQL. They verify exact order scope for two purchases sharing an email,
+partial/final/replay and changed-response behavior, participant/eligibility denials,
+atomic rollback on audit/task failure, actual reminder filters, current-state reload
+and durable duplicate suppression. All records/providers are synthetic. PGlite is
+single-connection PostgreSQL; these tests do not attest Neon WebSocket transport,
+multi-process locking or deployment. Earlier reminder SQL-validation gap is now
+closed for isolated PostgreSQL, not for Neon.
+
+PGlite `0.3.14` is an exact development-only dependency so the SQL tests can run
+from the repository without a vanished temporary install. Existing lock entries,
+including optional Replit WASM dependencies, are preserved. The full default-parallel
+runner twice failed to decode child-process results for an existing reminder test
+file that passed alone. Bounding test-file concurrency to four preserves every test
+and yields a passing standard `npm run test:release`; no assertion was removed.
+TypeScript/build pass with the existing bundle-size warning. Dependency audit has
+zero high/critical findings and six moderate findings in existing toolchain packages;
+no automatic audit fix was run. No UI acceptance or real delivery is claimed.
+
+**Next bounded task / connection gate — corrected by DEC-AIL-095:** preserve the
+existing website/Stripe pay gate, purchase email, emailed Typeform link and existing
+completion webhook. Review how existing purchase/checkout evidence and that same
+emailed link can identify the correct order on receipt, with no new customer
+invitation, login or verification step. A correlation reference in the existing
+link is a possible technique to review, not permission to modify Typeform settings
+or event subscriptions. Keep buyer and participant distinct where applicable;
+payment or verified buyer email alone must not be claimed as another person's
+identity/permission. The staged binding/verification fields are implementation
+assumptions to reconcile with this preserved flow, not an approved new journey.
+Confirm actual runtime form/signing configuration and reviewed completion/content/
+recipient mapping before wiring the candidate. Any required live form edits, test
+sends, provider setting changes or migration retain separate authorization. Designate an
+isolated Neon test target before provider-specific validation; do not use populated
+development/production databases for synthetic migration experiments. Consent history,
+privacy attention alerts, weekly admin controls and retention remain open work.
+
+**Source / release:** website main freshly resolved unchanged at
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454` plus working tree; OS main unchanged at
+`83391d8520a6bfb2e010590686d6e32797490b62`, whose PRD/log were read at that SHA
+earlier this session. GEOS-REQ-002/003/004/005 checked: new tables are website-owned,
+no shared package/schema/OS transfer or paired implementation; existing Typeform
+Notion configuration is not proof of an OS contract and remains to reconcile.
+Source backup is separate from database/provider backup. Issue #31 is confirmed
+open for the earlier reviewed main; its complete release instructions are retained
+privately, not executed. Candidate is uncommitted; production SHA remains unknown.
+No commit/push/merge, full backend, production DB change, live test/send, provider
+mutation, Replit sync or deployment. Live MFA/login/SMS/recovery stays separate for
+the supervised Friday 16 October Helsinki checkpoint; no new schedule was created.
+
+<a id="ai-lit-existing-scan-flow-20261014"></a>
+### Preserve the existing paid Scan journey — 14 October 2026
+
+**Human clarification — DEC-AIL-095:** the website shop is the Stripe pay gate;
+Typeform is sent by email. The new intake must not trigger differently in Typeform.
+Preserve **website shop → Stripe payment → existing purchase email with Typeform
+link → existing form completion webhook → website fulfilment**. Backend reliability
+and exact-order matching must fit this journey. Do not add another invitation email,
+signup/login/verification screen, Typeform trigger, partial-response subscription or
+changed notification cadence without a separate human decision.
+
+This corrects the overly broad next-wave invitation/verification proposal, not the
+need for scoped order matching or durable receipts. Reuse existing checkout/payment
+evidence where its server-side binding is verified. Do not infer buyer/participant
+identity equivalence or pretend a generic emailed form link identifies one of several
+orders. If a technical mapping cannot be carried through the current link/form,
+record the specific gap and propose the smallest compatible change before any live
+provider edits. No new customer journey is approved by a backend storage field.
+
+The staged candidate remains unconnected and is preserved for adaptation. Earlier
+201-test evidence describes that candidate, not acceptance of its invitation/identity
+assumptions or live activation. No runtime/provider change in this clarification;
+documentation/repository checks only. Local work remains uncommitted and all live
+database, email, supervised MFA/recovery and release boundaries remain unchanged.
+
+<a id="ai-lit-order-reference-20261014"></a>
+### Order reference within the existing emailed form link — 14 October 2026
+
+**Authority / status:** local implementation under DEC-AIL-093/094/095 and Estève's
+request to complete one further bounded round, then provide a full handover. This
+is an **unconnected candidate** within the existing paid Scan journey, not approval
+to configure Typeform, create another email/customer step or activate a new intake.
+Affected: REQ-035/036/076 and service portions of REQ-089/106.
+
+**Implemented:** an injected reference preparer locks/rechecks the actual successful,
+incomplete, unfulfilled purchase, including valid zero-price voucher orders. It
+requires the original new-flow language marker; historical/invalid markers require
+review. A dedicated injected key derives a stable opaque reference per order and
+explicit form/field mapping; only its digest is stored. One binding and minimal audit
+commit together. Retries reuse that binding and original expiry; revoked, expired,
+completed, multiply bound or differently keyed/mapped records require reconciliation.
+No automatic rotation, expiry renewal, send, scheduler or provider call is included.
+
+The purchase/reminder renderer accepts an optional reference for the **same**
+`individualscan` link. Existing callers still omit it and retain the original generic
+link/copy. English/French HTML/text agree; the fragment is escaped in HTML. The
+reference carries no email, name, order/payment ID or answers, but remains protected
+bearer metadata. It identifies an order, not the person holding a forwarded link.
+Bindings start explicitly unassigned with no participant-verification evidence, so
+signed submissions using these new references still enter review in the staged store;
+they cannot silently complete an order, grant consent or assert a payer is a participant.
+
+**Connection gaps, now specific:** the actual form has no configured custom URL
+parameters. The smallest proposed provider change is to accept one reviewed opaque
+order-reference parameter through the existing emailed link and existing completion
+webhook; exact name/field mapping must be checked before any provider edit. Confirm
+language handling and the actual successful-completion outcome separately, because an
+early refusal also reaches an ending. No live parameter/default is invented. The
+new-flow checkout stores payment/voucher eligibility and email/language; the current
+SatelliteCheckoutPage does **not** verify participant identity. A backend review/
+assignment rule fitting the current journey remains necessary; no new customer
+verification screen is approved. Do not wire the preparer while this gate would strand
+all paid responses in review without an agreed fulfilment path. Dedicated-key storage/
+rotation, approved expiry, historical reconciliation, reviewed retrieval/recipient
+handling and the actual purchase/reminder send adapter remain connection work.
+
+**Final validation:** all 210 release tests, TypeScript, build, repository and whitespace
+checks pass on Node 24.19.0; existing bundle-size warning remains. Website-only local
+preview `/scan` and `/fr/scan` respond successfully; backend routes return 503. No
+live payment/email/authentication acceptance is inferred.
+
+**Database validation:** nine new tests exercise actual Drizzle/SQL on isolated
+PGlite: paid/voucher orders sharing an email, stable retries/original locale/expiry,
+unchanged bilingual message copy, ineligible/historical orders, revoked/expired/
+rotated/ambiguous bindings, audit rollback/retry, link injection and signed intake
+that refuses to infer participant identity. Single-connection concurrency is local
+evidence only; Neon transport and multiple-process locking remain unverified. Both
+populated Replit databases remain unsuitable for inferred disposable testing.
+
+**Cross-repository / limits:** website base/main checked this session at
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454` plus working tree; OS PRD/log previously
+read at `83391d8520a6bfb2e010590686d6e32797490b62` (GEOS-REQ-002/003/004/005). Existing
+website-owned candidate schema only, no shared contract or new OS transfer; no paired
+OS implementation. Prepared migration unchanged and applied only to synthetic PGlite.
+The connected legacy webhook still uses broad email-based completion and Resend
+availability: this batch does not fix its production matching. Human copy/provider,
+production DB, supervised authentication/recovery and release gates remain separate.
+
+<a id="ai-lit-scan-service-review-20261014"></a>
+### Owner-reviewed Scan service queue — 14 October 2026
+
+**Approval — DEC-AIL-096:** Estève selected “A — Implement this queue locally”
+after reviewing the exact-order/assignment/recipient proposal. The configured named
+owner may review the service queue using recent Google/MFA authentication. Hold,
+reject and resolve are explicit, versioned actions. Reviewed participant assignment
+is separate from verified identity; payment, an email match or a forwarded link
+cannot manufacture identity proof. Preserve the current customer journey and
+existing coach-copy policy. Missing/ambiguous evidence stays on hold. Affected:
+REQ-035/036/076 and service portions of REQ-089/106.
+
+**Local implementation candidate:** owner-only audited pagination/detail, protected
+recipient/assignment evidence, strict same-origin actions with mutation IDs and
+expected revisions. Original webhook outcomes remain immutable. Future receipts
+preserve reference/completion/mapping digests; historical gaps remain null. Resolution
+rechecks/locks one successful paid or valid voucher order and binding, commits one
+response reservation, exact-order completion, reviewed assignment, owner/deadline
+coach task and audit atomically. A unique form/response index also protects the
+staged automatic intake. Participant-verification fields remain unchanged. The task
+records retrieval pending, not a finished report, content backup or sent message.
+
+The admin page at `/admin/scan-service` supports hold/reject and selecting existing
+server-held evidence, with a coach handoff after resolution. It hides private state
+on lost visibility/access. No freely typed recipient or raw answers enter these
+actions. The injected immutable evidence loader has no live default; no Typeform
+reader, mail adapter or scheduler is imported. The route registration remains
+unmounted in the application while provider mapping, migrations and evidence
+recovery are unverified. An isolated synthetic harness exercises the real route,
+SQL and UI without importing full application startup.
+
+**Gates:** actual exact-response reader and canonical response/version comparison;
+reviewed evidence provenance, storage/access/retention and report-recipient access;
+Typeform field/completion/language mapping; dedicated key/expiry/legacy reconciliation;
+isolated Neon migration/transport/multi-process locks; bound message preview, exact
+human message approval and delivery reconciliation. The prepared additive migration
+must follow the earlier intake migration and refuses existing cross-order response
+conflicts. Neither populated Replit database is a disposable target. The legacy
+connected webhook and manual result sends remain connection work, not fixed live
+behavior. Existing coach-copy disclosures, privacy backlog and Friday supervised
+authentication/recovery checks stay separate. No production readiness is claimed.
+
+**Validation:** all 226 standard release tests pass on Node 24.19.0, including
+16 new actual SQL/HTTP review tests. TypeScript and build pass; the existing
+large-client-chunk warning remains. Browser checks using only fictional data
+verified hold/version history, evidence selection, exact-order resolution/coach
+handoff and refusal gating. PGlite is single-connection local evidence, not Neon
+transport or cross-process acceptance. Source backups remain separate from provider
+or database backup. The full application and schedulers were not started.
+
+**Source / cross-repository:** website main/base freshly checked at
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454` plus working tree; OS main freshly checked
+at `83391d8520a6bfb2e010590686d6e32797490b62`, PRD/log read in this conversation.
+GEOS-REQ-002/003/004/005: website-owned schema/review only, no new shared contract or
+OS/Notion transfer, so no paired OS implementation. No commit/push/merge, production
+DB, provider, mail, full backend or Replit action authorized by this local selection.
+
+<a id="ai-lit-scan-recovery-preview-20261014"></a>
+### Exact-response recovery and bound no-send preview — 14 October 2026
+
+**Authority / scope:** Estève asks to combine the supplied continuation prompt into
+this chat and continue the local work. This implements the next recovery/provenance
+and no-send preview slice under DEC-AIL-093/095/096, preserving the approved journey.
+It does not approve provider changes, real respondent reads, a live sender, raw-answer
+storage, a new customer step, actual sending or release. Affected REQ-035/036/076 and
+service portions of REQ-089/106. Review policy and identity boundary are unchanged.
+
+**Local candidate:** new signed receipts can commit an explicit v1 fingerprint of
+response identity/time, mapped order proof and supported typed answers, plus original
+question-label order. Object-key/answer-array order is normalized; choice/ranking
+array order remains meaningful. Unsupported types, ambiguous fields or absent original
+labels leave a recovery gap. Historical rows remain null. No raw content is persisted.
+
+An injected Responses API reader requests one exact response ID with completed-only
+filtering, bounded size/deadline and redirects disabled. It checks collection/identity,
+qualifying completion, mapped reference, content fingerprint and immutable signed
+question-label evidence. Empty recent results remain pending; changed/ambiguous data
+stays held. Its raw API-body digest is separate from the signed webhook's raw hashes.
+No API token/environment lookup, global transport or production reader is registered.
+
+A protected no-send operation requires a resolved reviewed task, current eligible
+order/binding, original language and explicit assignment/recipient evidence. It reads
+and audits context, recovers outside database locks, then rechecks/audits that context
+before disclosing content. Refunds, reassignment, changed evidence/version, locale or
+owner revocation invalidate the result. The draft carries reviewed participant To,
+existing Estève/Anu copies, reply address, exact sender/subject/HTML/text/attachment
+and a bound fingerprint. Sender is injected, with no live default. Approval remains
+`not_approved`; delivery remains `not_attempted`. No send, outbox, task advancement or
+`dashboardSent` change is included. The existing pure branded wrapper is extracted
+without byte changes and reused by the old senders; no live message copy is changed.
+
+The owner UI can inspect this draft after resolution; private content clears with
+visibility/access changes. Its sandboxed HTML view blocks scripts, navigation and
+external assets. The isolated harness uses fake API responses/credentials, original
+fictional labels and a fictional sender. Real Typeform/review registrations remain
+unmounted. No raw-answer/definition storage or retention policy is implied by memory
+fixtures. Content access/retention and evidence provenance remain connection gates.
+
+**Provider semantics checked:** Typeform documents exact `included_response_ids`,
+completed-only filtering and a possible lag for very recent results. Its webhook
+reference maps token to response ID, but example API items contain differing token/
+response_id values. This candidate holds conflicting identity fields; receiving-system
+validation must settle actual configured behavior before connection. It never falls
+back to searching by email or trusting a different raw JSON representation.
+See the [Responses reference](https://www.typeform.com/developers/responses/reference/retrieve-responses/)
+and [webhook identity reference](https://www.typeform.com/developers/webhooks/example-payload/).
+
+**Remaining gates:** actual form/reference/completion/language mapping; API region,
+identity-field behavior and exact approved runtime credentials; durable protected
+original-definition/recovery provenance, content storage/access/retention; isolated
+Neon migration/transport/locking; bound approval/dispatch and actual delivery. A third
+additive prepared migration follows intake and review migrations; only synthetic
+PGlite execution is authorized here. Both populated Replit DBs remain excluded.
+Legacy email-based completion and unbound manual result sends are still connection
+work. Coach-report retrieval/readiness/access is separate from this completion copy.
+
+**Validation:** all 241 standard release tests pass on Node24.19.0, including
+15 new recovery/preview cases; focused SQL/HTTP/sender run55passed. TypeScript and
+build pass with the existing bundle-size warning. Desktop browser checks verified
+resolution, exact participant/coach envelope, plain text, sandboxed HTML with links
+removed, and complete attachment using fictional data only. No provider response,
+live MFA, real inbox, Neon transport or multiple-process acceptance is inferred.
+
+**Source / boundary:** website main/base freshly resolved unchanged at
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454` plus working tree; OS main unchanged at
+`83391d8520a6bfb2e010590686d6e32797490b62`, paired PRD/log read in this conversation.
+GEOS-REQ-002/003/004/005: website-only digest/preview, no new shared package or OS
+transfer, no paired OS implementation. Source backup is separate from DB/provider
+backup. Production SHA remains unknown; no commit/push/merge, provider/production
+mutation, live email, full backend/scheduler or Replit deployment.
+
+<a id="ai-lit-learning-qr-20261014"></a>
+### Action learning in data administration and brochure link counts — 14 October 2026
+
+Estève asks for these two changes before continuing real provider mapping. This
+is an approved local implementation request. Estève subsequently chose to retain
+the printed QR; no live activation or brochure replacement is authorised by that choice. Decision: [DEC-AIL-097](DECISION_LOG.md#dec-ail-097).
+
+| ID | Status | Requirement |
+| --- | --- | --- |
+| AI-LIT-REQ-109 | Approved default; local learning candidate | For RoPA databases and data/privacy-leadership interfaces, teach through a small real action and a short check. Use progressive disclosure, short plain-English explanations around eighth-grade level, contextual hover/focus meanings and persistent click/tap examples/actions. Explain acronyms beside controls; keep essential cautions visible. Keyboard and touch must work. Examples must not populate real records, appoint CDO/DPO roles, select legal bases or certify compliance. |
+| AI-LIT-REQ-110 | Existing brochure QR retained by owner; separate attribution unavailable; live analytics delivery unverified | Keep the QR already printed on the brochure, pointing to `https://www.greenelephant.org/`. Report any existing consented homepage analytics as mixed-source homepage visits, never as brochure scans. Do not replace the QR, route all homepage traffic through a campaign counter or infer brochure attribution from direct/unknown traffic. Separate /qr/ campaign functionality remains available for other explicitly identified links. Preserve consent choices and minimise counter records. |
+
+**Implemented locally:** a reusable field-help/action-learning pattern; meanings,
+examples and actions for all 14 RoPA fields; three expandable field groups; status,
+metadata and review help; existing general admin tooltip icons now support a
+persistent keyboard/tap-open explanation; order-review learning prompts. Scoped
+personal working preferences are saved outside Git, without changing the pinned
+seed. Existing RoPA data schemas, validation, permissions and review attestations
+are unchanged.
+
+The brochure QR decodes to `https://www.greenelephant.org/` (no marker). Estève
+chooses to keep it: “I want to use the QR that I have from the brochures.” The
+replacement choice is settled. The admin screen records this choice, removes the
+replacement preset and links to existing analytics setup/status. Existing consented
+homepage page views can include these visits alongside other sources; they are not
+a brochure-scan count and do not cover every scan. No new root redirect, tracking
+cookie, source guess or customer question is added. Live analytics delivery at
+this exact address is not active according to the public configuration: collection
+is disabled and no measurement ID is exposed (read-only check; event/property
+verification remains open). The prior candidate generator/assets are
+retained for recovery/future explicitly approved links, not selected for this print.
+
+The public QR handler now records only the campaign reference; the existing store
+adds its row ID and timestamp. It saves no visitor IP/hash, browser, referrer,
+device or location and makes no geo-provider request. HEAD and advertised preview
+requests do not count; repeats/shared links/bots can. Target validation also covers
+legacy records. Redirects are temporary/no-store and counter failure preserves
+the validated destination. Historical fields are not purged. EN/FR privacy copy
+states this mechanism; retention/notice review and production acceptance remain
+open. This is not a compliance certification or a new legal-basis decision.
+
+**Validation:** 248/248 release tests, including seven new real HTTP QR cases;
+TypeScript/build pass. Browser checks cover keyboard-open learning, real versioned
+save of a fictional draft, 390px wrapping, tap-open/escape-close help, and one
+local QR open appearing in the separate fictional campaign count. Original and
+generated QR PNGs decode locally to their exact expected payloads. These checks
+do not verify the live route, Neon target or final printed brochure.
+
+**Cross-repository:** website base/HEAD
+`b1a8c52784861a98d1f0d3ada39bbbcdda332454` plus working tree; OS PRD/log read at
+`83391d8520a6bfb2e010590686d6e32797490b62`. GEOS-REQ-002/003/004/005 checked:
+website-only help and existing QR storage; no OS data transfer, schema/package
+contract change or OS implementation. Provider mapping, named-recipient gates,
+isolated Neon validation, human message approval and human release remain open.
+[Brochure runbook](operations/qr-brochure.md).
+
+<a id="ai-lit-release-assembly-20261015"></a>
+### Unified handover and release preparation — 15 October 2026
+
+Status evidence under [DEC-AIL-098](DECISION_LOG.md#dec-ail-098). Estève asks to
+feed the supplied purchased-service handover into this work so GitHub has one
+source of truth for PRs, while leaving issue #43 and production/GA4 privacy checks
+for later. This authorises reconciliation and concrete preparation, not activation,
+publication, a new consent policy or a claim that the local branch is deployed.
+
+**Authority:** keep this PRD and the existing decision log as the sole canonical
+requirements/decision pair. GitHub PRs, their reviewed commits and actual checks
+are the PR-state authority. Local handovers and the dated inventory below are
+reconciliation evidence, not a parallel PR ledger. Query GitHub again before
+publishing a PR or choosing a release SHA.
+
+**Reconciled input:** the supplied handover is the earlier 77-file/PRD2.26.0/
+log11.27.0 checkpoint of this same checkout and base, not another branch to merge.
+All 77 source paths remain in the 95-file candidate: 61 byte-identical, 16 updated
+by later preserved work, 18 additional paths. Its proposed exact-response recovery
+and bound no-send preview are already implemented under DEC-AIL-096's follow-up.
+Do not repeat that work or overwrite current state with the older handover.
+Paid-service priority DEC-AIL-093, same existing customer journey DEC-AIL-095 and
+owner-assignment policy DEC-AIL-096 remain settled; full privacy backlog remains.
+
+**GitHub snapshot, 15 October 2026:**
+
+| Item | Verified state | Treatment |
+| --- | --- | --- |
+| PR #55 | Merged; reviewed main `b1a8c52784861a98d1f0d3ada39bbbcdda332454` | Existing release target in issue #31, not proof of production identity |
+| PRs #56–61 | Open dependency updates | Separate maintenance scope; not merged or bundled by this preparation |
+| PR #4 | Open MY5 baseline | Remains paused; no implementation, merge or closure |
+| Local 95-file candidate | Uncommitted; no matching open integration PR found | Prepare one coherent review draft; no invented commit SHA or PR number |
+| Issue #43 | Deferred by current user; earlier deliberate collection hold retained | No account/config inspection, enablement or closure in this batch |
+
+**Preparation outcome:** identify the existing reviewed commit separately from a
+future integration commit. Prepare an exact-SHA source-only release handover, the
+complete issue #31 Bash, a conditional analytics activation/rollback plan and a
+reviewable integration PR title/body. Do not create a second canonical PR record,
+commit/push the dirty candidate automatically or silently include dependency PRs.
+No new PR/commit exists until it is actually created and verified in GitHub.
+
+The reviewed commit's isolated source archive passes 119/119 release tests,
+TypeScript, build and repository checks using existing local dependencies. This
+is not a new clean install, current dependency audit, Replit verification or live
+acceptance. PR #55's pre-merge CI run116 also reports success. Earlier 248 local
+candidate tests describe different source; do not label the reviewed commit as
+having the candidate's features or test count.
+
+**Activation remains conditional:** collection stays off. Before any later change,
+complete issue #43 production-source/stream/privacy/retention/consent gates and
+verify the exact deployed/rollback commit. A later reviewed app-scoped
+`GA4_COLLECTION_ENABLED=true` change and human Republish remain separate. For
+purchased-service activation, real Typeform mapping/recipient evidence, protected
+capture/retention, dedicated keys, isolated Neon checks and approved exact messages
+remain open; staging routes/readers stay unconnected. Preparation clears none of
+these gates. Keep the printed homepage QR under REQ-110; mixed homepage traffic
+cannot become a brochure-scan count. MY5 remains paused and the separate supervised
+MFA/recovery checkpoint is preserved without duplicate scheduling.
+
+**Cross-repository:** website base/main above plus working tree; pinned OS
+`83391d8520a6bfb2e010590686d6e32797490b62` PRD/log previously read and main rechecked.
+GEOS-REQ-002/003/004/005: evidence consolidation and existing release boundaries
+only; no new shared contract, data transfer or OS implementation.
+
+#### GitHub publication approved — 15 October 2026
+
+Estève now explicitly requests creating or updating the GitHub PR and pushing the
+candidate to main. [DEC-AIL-099](DECISION_LOG.md#dec-ail-099) authorises committing
+and pushing the reviewed local candidate, using one matching integration PR and
+merging through required checks. This supersedes the preparation-only publication
+limit for this candidate. It does not approve Replit publication, analytics
+collection, provider/DB activation or actual messages. Preserve issue #43's deferred
+checks, paused MY5 PR #4 and unrelated dependency PRs. Record the actual PR/head and
+merged main SHA after GitHub confirms them; no future SHA is inferred here.
 
 ### Final release repair
 

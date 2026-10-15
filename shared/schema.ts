@@ -80,6 +80,25 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
 
+// AI-LIT privacy evidence, separate from the paused MY5 consent models.
+// Minimal withdrawal-only slice. No public/admin endpoint exposes these rows.
+export const privacyPreferenceEvents = pgTable("privacy_preference_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contactId: varchar("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+  subjectKey: text("subject_key").notNull().unique(),
+  purpose: text("purpose").notNull(),
+  action: text("action").notNull(),
+  source: text("source").notNull(),
+  interfaceVersion: text("interface_version").notNull(),
+  recordedAt: timestamp("recorded_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  index("privacy_preference_events_contact_idx").on(table.contactId, table.recordedAt),
+  check("privacy_preference_events_purpose_check", sql`${table.purpose} = 'marketing_updates'`),
+  check("privacy_preference_events_action_check", sql`${table.action} = 'withdrawn'`),
+  check("privacy_preference_events_source_check", sql`${table.source} = 'email_preferences'`),
+  check("privacy_preference_events_interface_version_check", sql`${table.interfaceVersion} = 'email-unsubscribe-v1'`),
+]);
+
 // ============================================================================
 // MYFIVE EXTENSION SCHEMAS (Brownfield Extension - Drizzle ORM)
 // ============================================================================
@@ -1061,3 +1080,83 @@ export const insertCoachingDebriefSchema = createInsertSchema(coachingDebriefs).
 
 export type InsertCoachingDebrief = z.infer<typeof insertCoachingDebriefSchema>;
 export type CoachingDebrief = typeof coachingDebriefs.$inferSelect;
+
+// RoPA metadata only. Individual consent/cases remain separate protected records.
+export const ropaActivities = pgTable('ropa_activities', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  version: integer('version').notNull(),
+  record: jsonb('record').$type<import('./ropa').RopaRecord>().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [check('ropa_activities_version_positive', sql`${t.version} > 0`)]);
+
+export const ropaActivityVersions = pgTable('ropa_activity_versions', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  activityId: varchar('activity_id').notNull().references(() => ropaActivities.id, { onDelete: 'restrict' }),
+  version: integer('version').notNull(),
+  record: jsonb('record').$type<import('./ropa').RopaRecord>().notNull(),
+  reason: text('reason').notNull(), actorId: varchar('actor_id').notNull(),
+  mutationId: varchar('mutation_id').notNull().unique(),
+  recordedAt: timestamp('recorded_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [uniqueIndex('ropa_activity_version_unique').on(t.activityId, t.version),
+  index('ropa_activity_versions_activity_idx').on(t.activityId, t.version),
+  check('ropa_activity_versions_version_positive', sql`${t.version} > 0`)]);
+
+// Unconnected intake candidate: invitation/participant mapping is reviewed separately.
+export const scanTypeformBindings = pgTable('scan_typeform_bindings', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  referenceDigest: varchar('reference_digest', { length: 64 }).notNull().unique(),
+  purchaseId: varchar('purchase_id').notNull().references(() => satellitescanPurchases.id, { onDelete: 'restrict' }),
+  participantRef: varchar('participant_ref').notNull(), formId: varchar('form_id').notNull(),
+  participantVerifiedAt: timestamp('participant_verified_at', { withTimezone: true }),
+  participantVerificationRef: varchar('participant_verification_ref'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  isActive: text('is_active').notNull().default('true'), responseId: varchar('response_id'),
+  completedDigest: varchar('completed_digest', { length: 64 }),
+}, t => [check('scan_typeform_binding_active', sql`${t.isActive} IN ('true','false')`)]);
+
+export const scanTypeformEvents = pgTable('scan_typeform_events', {
+  eventId: varchar('event_id').primaryKey(), eventType: text('event_type').notNull(),
+  formId: varchar('form_id').notNull(), responseId: varchar('response_id').notNull(),
+  payloadDigest: varchar('payload_digest', { length: 64 }).notNull(),
+  responseDigest: varchar('response_digest', { length: 64 }).notNull(),
+  outcome: text('outcome').$type<'recorded' | 'partial' | 'review' | 'duplicate'>().notNull(), reason: text('reason').notNull(),
+  bindingId: varchar('binding_id').references(() => scanTypeformBindings.id, { onDelete: 'restrict' }),
+  submittedAt: timestamp('submitted_at', { withTimezone: true }),
+  receivedAt: timestamp('received_at', { withTimezone: true }).notNull(),
+  bindingDigest: varchar('binding_digest', { length: 64 }),
+  completionVerified: text('completion_verified'), mappingDigest: varchar('mapping_digest', { length: 64 }),
+  contentVersion: integer('content_version'), contentDigest: varchar('content_digest', { length:64 }), labelsDigest: varchar('labels_digest', { length:64 }),
+  reviewVersion: integer('review_version').notNull().default(0),
+  reviewState: text('review_state').$type<import('./scan-service-review').ScanReviewState>().notNull().default('open'),
+}, t => [check('scan_typeform_event_type', sql`${t.eventType} IN ('form_response','form_response_partial')`),
+  check('scan_typeform_event_outcome', sql`${t.outcome} IN ('recorded','partial','review','duplicate')`),
+  check('scan_review_version', sql`${t.reviewVersion} >= 0`),
+  check('scan_review_state', sql`${t.reviewState} IN ('open','held','rejected','resolved')`),
+  check('scan_completion_evidence', sql`${t.completionVerified} IN ('true','false')`),
+  check('scan_content_version', sql`${t.contentVersion} IS NULL OR ${t.contentVersion} = 1`)]);
+
+export const scanTypeformServiceTasks = pgTable('scan_typeform_service_tasks', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  bindingId: varchar('binding_id').notNull().unique().references(() => scanTypeformBindings.id, { onDelete: 'restrict' }),
+  purchaseId: varchar('purchase_id').notNull().unique().references(() => satellitescanPurchases.id, { onDelete: 'restrict' }),
+  eventId: varchar('event_id').notNull().references(() => scanTypeformEvents.eventId, { onDelete: 'restrict' }),
+  formId: varchar('form_id').notNull(), responseId: varchar('response_id').notNull(),
+  responseDigest: varchar('response_digest', { length: 64 }).notNull(),
+  state: text('state').notNull().default('pending_retrieval'),
+  ownerId: varchar('owner_id'), dueAt: timestamp('due_at', { withTimezone: true }),
+  participantRef: varchar('participant_ref'), recipientEmail: text('recipient_email'),
+  assignmentEvidenceRef: varchar('assignment_evidence_ref'), recipientEvidenceRef: varchar('recipient_evidence_ref'),
+  assignmentReviewedAt: timestamp('assignment_reviewed_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [check('scan_typeform_task_state', sql`${t.state} = 'pending_retrieval'`),
+  uniqueIndex('scan_typeform_response_once').on(t.formId, t.responseId)]);
+
+export const scanTypeformReviewActions = pgTable('scan_typeform_review_actions', {
+  mutationId: varchar('mutation_id').primaryKey(),
+  eventId: varchar('event_id').notNull().references(() => scanTypeformEvents.eventId, { onDelete: 'restrict' }),
+  version: integer('version').notNull(), actorId: varchar('actor_id').notNull(), requestDigest: varchar('request_digest', { length: 64 }).notNull(),
+  decision: text('decision').notNull(), reason: text('reason').notNull(), evidenceRef: varchar('evidence_ref'),
+  recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [uniqueIndex('scan_typeform_review_actions_event_version').on(t.eventId, t.version),
+  check('scan_review_action_version', sql`${t.version} > 0`),
+  check('scan_review_action_decision', sql`${t.decision} IN ('held','rejected','resolved')`)]);

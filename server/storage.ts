@@ -107,7 +107,8 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, avg, and, lt, sql, desc } from "drizzle-orm";
+import { eq, avg, and, lt, lte, isNull, sql, desc } from "drizzle-orm";
+import { isScanReminderDue } from '../shared/scan-reminder';
 
 // modify the interface with any CRUD methods
 // you might need
@@ -652,18 +653,8 @@ export class MemStorage implements IStorage {
 
   async getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]> {
     const now = new Date();
-    const thresholdMs = hoursThreshold * 60 * 60 * 1000;
-    
-    return Array.from(this.satellitescanPurchases.values()).filter(purchase => {
-      const createdAt = new Date(purchase.createdAt);
-      const ageMs = now.getTime() - createdAt.getTime();
-      
-      return (
-        purchase.typeformCompleted === "false" &&
-        parseInt(purchase.remindersCount) === 0 &&
-        ageMs >= thresholdMs
-      );
-    });
+    return Array.from(this.satellitescanPurchases.values())
+      .filter(purchase => isScanReminderDue(purchase, now, hoursThreshold));
   }
 
   async updateSatellitescanReminderCount(purchaseId: string, count: number): Promise<void> {
@@ -1232,13 +1223,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOverdueSatellitescanPurchases(hoursThreshold: number): Promise<SatellitescanPurchase[]> {
+    if (!Number.isFinite(hoursThreshold) || hoursThreshold < 0) return [];
     const thresholdDate = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000);
+    if (!Number.isFinite(thresholdDate.getTime())) return [];
     
     return await db.select().from(satellitescanPurchases).where(
       and(
+        eq(satellitescanPurchases.status, "succeeded"),
         eq(satellitescanPurchases.typeformCompleted, "false"),
+        isNull(satellitescanPurchases.typeformCompletedAt),
+        eq(satellitescanPurchases.dashboardSent, "false"),
         eq(satellitescanPurchases.remindersCount, "0"),
-        lt(satellitescanPurchases.createdAt, thresholdDate)
+        lte(satellitescanPurchases.createdAt, thresholdDate)
       )
     );
   }

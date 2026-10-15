@@ -1,11 +1,22 @@
+import { qrRedirectHandler } from './qr-redirect';
+import { printedQrUrl, safeQrTarget } from '../shared/qr-campaign';
+import { registerRopaRoutes } from './ropa-routes';
+import { createRopaStore } from './ropa-store';
+import { registerAdminSessionRoutes } from './admin-session-routes';
+import { registerAdminTeamRoutes } from './admin-team-routes';
+import { changeAdminTeamAudited } from './admin-team-store';
+import { registerPrivacyAdminRoutes } from './privacy-admin-routes';
+import { readPrivacyWithdrawalsAudited } from './privacy-admin-store';
+import { registerAdminGoogleRoutes } from './admin-google-routes';
+import { registerEmailPreferenceRoutes } from './email-preference-routes';
 import { eq } from 'drizzle-orm';
 import { publicAnalyticsConfig, validMeasurementId } from '../shared/marketing-analytics';
 import { contacts } from '@shared/schema';
-import { redeemFreeScan, recordPaidScan, notifyScanPurchase, remindScanOnce } from './scan-purchase-service';
+import { redeemFreeScan, recordPaidScan, notifyScanPurchase, recoverScanPurchaseEmail, remindScanOnce } from './scan-purchase-service';
 import { validScanPayment } from './scan-purchase-validation';
 import { eligibleMarketingContacts, marketingFooter } from "./marketing-email";
 import { escapeEmailHtml } from "./scan-results-email";
-import { verifyTypeformSignature, operationKey, OPERATION_PREFIX, normalizeEmail, emailLanguage, publicSiteOrigin, verifiedEmailToken, verifyEmailToken } from "./delivery-security";
+import { verifyTypeformSignature, operationKey, OPERATION_PREFIX, normalizeEmail, emailLanguage, publicSiteOrigin, verifiedEmailToken } from "./delivery-security";
 import { claimEmailOperation, finishEmailOperation, savePurchaseLanguage, purchaseLanguage, isMarketingSuppressed, suppressMarketing } from "./email-operations";
 import { appendScanAnswer, typeformAnswerValue } from "../shared/scan-answers";
 import { SCAN_PRICE } from "../shared/scan-checkout";
@@ -13,7 +24,7 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { db } from "./db";
 import { storage } from "./storage";
-import { requireAdminAuth, verifyAdminPassword, requireAdminRole, requireWriteAccess, auditMiddleware, logAuditEvent, hashAdminPassword } from "./auth";
+import { requireAdminAuth, requireAdminRole, requireWriteAccess, auditMiddleware, logAuditEvent } from "./auth";
 import { fetchGA4Metrics, emptyGA4Metrics, isGA4Configured, isGA4DataApiConfigured } from "./lib/ga4Client";
 import { isConnectorEnabled } from "./lib/connectorGuard";
 import Stripe from "stripe";
@@ -65,6 +76,14 @@ if (STRIPE_KEY) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Register before the legacy body-copying audit helper. Every RoPA read/write
+  // has a minimal durable audit inside its own database transaction.
+  registerRopaRoutes(app, {
+    bindings: () => process.env.PRIVACY_ADMIN_GOOGLE_BINDINGS,
+    owner: () => process.env.ADMIN_OWNER_EMAIL,
+    siteUrl: () => process.env.PUBLIC_SITE_URL || 'https://www.greenelephant.org',
+    findAdmin: id => storage.getAdminUserById(id), store: createRopaStore(db),
+  });
   app.use("/api/admin", auditMiddleware);
 
   // Mount MyFive Extension API Router
@@ -293,6 +312,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const { form_response } = body;
+      // Partial responses must never enter the legacy completion/send workflow.
+      // The new order-mapped intake remains staged separately.
+      if (body.event_type !== 'form_response' || form_response?.response_type === 'partial') {
+        return res.status(422).json({ received: false, message: 'Only complete form responses are supported by this endpoint' });
+      }
       
       if (!form_response) {
         console.error('❌ Invalid Typeform webhook payload - missing form_response');
@@ -680,20 +704,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/email/unsubscribe", (req, res) => {
-    const { contact, token } = req.query;
-    if (!verifyEmailToken(contact, token, process.env.EMAIL_UNSUBSCRIBE_SECRET || '')) return res.status(400).type('text').send('Invalid unsubscribe link / Lien invalide');
-    res.setHeader('Cache-Control','no-store');
-    res.type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Unsubscribe / Se désinscrire</title><body><h1>Stop marketing emails / Arrêter les e-mails marketing</h1><form method="post"><button type="submit">Confirm / Confirmer</button></form></body></html>`);
+  registerPrivacyAdminRoutes(app, {
+    bindings: () => process.env.PRIVACY_ADMIN_GOOGLE_BINDINGS,
+    owner: () => process.env.ADMIN_OWNER_EMAIL,
+    findAdmin: id => storage.getAdminUserById(id),
+    readAudited: readPrivacyWithdrawalsAudited,
   });
-  app.post("/api/email/unsubscribe", async (req, res) => {
-    const { contact, token } = req.query;
-    if (!verifyEmailToken(contact, token, process.env.EMAIL_UNSUBSCRIBE_SECRET || '')) return res.status(400).type('text').send('Invalid unsubscribe link / Lien invalide');
-    try {
-      await suppressMarketing(contact);
-      res.setHeader('Cache-Control','no-store');
-      res.type('text').send('Marketing emails stopped. Service emails are unchanged. / E-mails marketing arrêtés. Les e-mails liés à votre service restent actifs.');
-    } catch { res.status(503).type('text').send('Please try again / Veuillez réessayer'); }
+
+  registerEmailPreferenceRoutes(app, {
+    secret: () => process.env.EMAIL_UNSUBSCRIBE_SECRET || '',
+    withdraw: suppressMarketing,
   });
 
   // Newsletter subscription endpoint
@@ -1223,247 +1243,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin login endpoint (password-based, auto-creates super_admin on first login)
-  app.post("/api/admin/login", async (req, res) => {
-    try {
-      const { password } = req.body;
-      
-      if (!password) {
-        return res.status(400).json({ message: "Password required" });
-      }
-      
-      if (await verifyAdminPassword(password)) {
-        const bootstrapEmail = "esteve@greenelephant.org";
-        let adminUser = await storage.getAdminUserByEmail(bootstrapEmail);
-        if (!adminUser) {
-          adminUser = await storage.createAdminUser({
-            email: bootstrapEmail,
-            name: "Esteve",
-            role: "super_admin",
-            invitedBy: null,
-            isActive: "true",
-            avatarUrl: null,
-            googleId: null,
-          });
-        }
-
-        if (adminUser.isActive !== "true") {
-          return res.status(403).json({ message: "Account is disabled" });
-        }
-
-        req.session.isAdmin = true;
-        req.session.adminUserId = adminUser.id;
-        req.session.adminEmail = adminUser.email;
-        req.session.adminRole = adminUser.role;
-
-        await storage.updateAdminUser(adminUser.id, { lastLoginAt: new Date() });
-
-        const existingPortalUser = await storage.getClientUserByEmail(adminUser.email);
-        if (!existingPortalUser) {
-          await storage.createClientUser({
-            email: adminUser.email,
-            name: adminUser.name || adminUser.email.split("@")[0],
-            googleId: null,
-            avatarUrl: null,
-          });
-        }
-
-        const existingHash = await storage.getAdminSetting("admin_password_hash");
-        if (!existingHash) {
-          const hashed = await hashAdminPassword(password);
-          await storage.setAdminSetting("admin_password_hash", hashed);
-        }
-        
-        req.session.save((err) => {
-          if (err) {
-            console.error("Session save error:", err);
-            return res.status(500).json({ message: "Login failed" });
-          }
-          logAuditEvent(adminUser!.email, "admin_login", "/admin/login", { method: "password" });
-          res.json({ message: "Login successful" });
-        });
-      } else {
-        res.status(401).json({ message: "Incorrect password" });
-      }
-    } catch (error: any) {
-      console.error("Admin login error:", error);
-      res.status(500).json({ message: "Login failed" });
-    }
+  registerAdminSessionRoutes(app, {
+    findAdmin: id => storage.getAdminUserById(id),
+    owner: () => process.env.ADMIN_OWNER_EMAIL,
   });
 
-  // Admin password change (super_admin only)
-  app.post("/api/admin/change-password", requireAdminAuth, requireAdminRole("super_admin"), async (req, res) => {
-    try {
-      const { currentPassword, newPassword } = req.body;
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({ message: "Current and new password required" });
-      }
-      if (!(await verifyAdminPassword(currentPassword))) {
-        return res.status(401).json({ message: "Current password is incorrect" });
-      }
-      if (newPassword.length < 8) {
-        return res.status(400).json({ message: "New password must be at least 8 characters" });
-      }
-      const hashed = await hashAdminPassword(newPassword);
-      await storage.setAdminSetting("admin_password_hash", hashed);
-      logAuditEvent(
-        req.session?.adminEmail || "unknown",
-        "change_admin_password",
-        "admin_settings",
-        {},
-        req.ip
-      );
-      res.json({ message: "Password updated. Note: The ADMIN_PASSWORD environment variable should also be updated to match." });
-    } catch (error: any) {
-      console.error("Password change error:", error);
-      res.status(500).json({ message: "Failed to change password" });
-    }
-  });
-
-  // Admin Google Auth
-  app.get("/api/admin/auth/google", async (req, res) => {
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      return res.status(503).json({ message: "Google login is not configured" });
-    }
-
-    const { getBaseUrl } = await import("./portal-auth");
-    const baseUrl = getBaseUrl(req);
-    if (baseUrl.includes(".replit.dev")) {
-      console.log("Admin Google OAuth: dev domain detected, redirecting to admin login");
-      return res.redirect("/admin?error=dev_google");
-    }
-
-    const { randomBytes } = await import("crypto");
-    const state = randomBytes(16).toString("hex");
-    req.session.adminOAuthState = state;
-
-    const redirectUri = `${baseUrl}/api/admin/auth/google/callback`;
-    const scope = encodeURIComponent("openid email profile");
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account&state=${state}`;
-
-    console.log("Admin Google OAuth: redirecting to Google. Redirect URI:", redirectUri);
-
-    req.session.save(() => {
-      res.redirect(authUrl);
-    });
-  });
-
-  app.get("/api/admin/auth/google/callback", async (req, res) => {
-    try {
-      const { code, state, error: googleError } = req.query;
-
-      if (googleError) {
-        console.error("Admin Google OAuth returned error:", googleError, req.query);
-        return res.redirect(`/admin/login?error=google_${googleError}`);
-      }
-
-      if (!code) {
-        console.warn("Admin Google OAuth callback: no code received. Query:", req.query);
-        return res.redirect("/admin/login?error=no_code");
-      }
-
-      if (state !== req.session.adminOAuthState) {
-        console.warn("Admin Google OAuth state mismatch. Session state:", req.session?.adminOAuthState ? "present" : "missing", "Query state:", state ? "present" : "missing");
-        return res.redirect("/admin/login?error=state_mismatch");
-      }
-      delete req.session.adminOAuthState;
-
-      const clientId = process.env.GOOGLE_CLIENT_ID;
-      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-      if (!clientId || !clientSecret) {
-        return res.redirect("/admin/login?error=not_configured");
-      }
-
-      const { getBaseUrl: getBase } = await import("./portal-auth");
-      const redirectUri = `${getBase(req)}/api/admin/auth/google/callback`;
-
-      const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          code: code as string,
-          client_id: clientId,
-          client_secret: clientSecret,
-          redirect_uri: redirectUri,
-          grant_type: "authorization_code",
-        }),
-      });
-
-      const tokenData = await tokenRes.json();
-      if (!tokenData.access_token) {
-        return res.redirect("/admin/login?error=token_failed");
-      }
-
-      const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
-        headers: { Authorization: `Bearer ${tokenData.access_token}` },
-      });
-      const googleUser = await userInfoRes.json();
-
-      if (!googleUser.email) {
-        return res.redirect("/admin/login?error=no_email");
-      }
-
-      const normalizedEmail = googleUser.email.toLowerCase();
-
-      let adminUser = await storage.getAdminUserByGoogleId(googleUser.id);
-
-      if (!adminUser) {
-        adminUser = await storage.getAdminUserByEmail(normalizedEmail);
-        if (adminUser) {
-          adminUser = await storage.updateAdminUser(adminUser.id, {
-            googleId: googleUser.id,
-            avatarUrl: googleUser.picture || adminUser.avatarUrl,
-            name: adminUser.name || googleUser.name,
-            lastLoginAt: new Date(),
-          }) || adminUser;
-        }
-      } else {
-        await storage.updateAdminUser(adminUser.id, { lastLoginAt: new Date() });
-      }
-
-      if (!adminUser || adminUser.isActive !== "true") {
-        return res.redirect("/admin/login?error=not_authorized");
-      }
-
-      req.session.isAdmin = true;
-      req.session.adminUserId = adminUser.id;
-      req.session.adminEmail = adminUser.email;
-      req.session.adminRole = adminUser.role;
-
-      // Cascading portal access: auto-create/link client user
-      let clientUser = await storage.getClientUserByEmail(normalizedEmail);
-      if (!clientUser) {
-        clientUser = await storage.createClientUser({
-          email: normalizedEmail,
-          name: googleUser.name || adminUser.name,
-          googleId: googleUser.id,
-          avatarUrl: googleUser.picture,
-        });
-      } else if (!clientUser.googleId) {
-        await storage.updateClientUser(clientUser.id, {
-          googleId: googleUser.id,
-          avatarUrl: googleUser.picture || clientUser.avatarUrl,
-          name: clientUser.name || googleUser.name,
-        });
-      }
-
-      req.session.save((err) => {
-        if (err) {
-          console.error("Session save error after admin Google auth:", err);
-          return res.redirect("/admin/login?error=session_failed");
-        }
-        logAuditEvent(normalizedEmail, "admin_login", "/admin", { method: "google", role: adminUser!.role });
-        res.redirect("/admin/submissions");
-      });
-    } catch (error: any) {
-      console.error("Admin Google OAuth error:", error);
-      res.redirect("/admin/login?error=callback_failed");
-    }
+  registerAdminGoogleRoutes(app, {
+    storage,
+    config: () => ({ clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET, owner: process.env.ADMIN_OWNER_EMAIL }),
+    baseUrl: async req => (await import('./portal-auth')).getBaseUrl(req),
+    audit: async (email, action, resource, details) => {
+      // Login evidence must be durable; do not swallow a storage failure here.
+      await storage.createAuditLog({ userEmail: email, actionType: action, resource, details, ipAddress: null });
+    },
   });
 
   // Fathom OAuth — initiate
-  app.get("/api/admin/auth/fathom", requireAdminAuth, async (req, res) => {
+  app.get("/api/admin/auth/fathom", requireAdminAuth, requireWriteAccess, async (req, res) => {
     const clientId = process.env.FATHOM_CLIENT_ID;
     if (!clientId) {
       return res.status(503).json({ message: "Fathom integration is not configured — set FATHOM_CLIENT_ID" });
@@ -1487,7 +1283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Fathom OAuth — callback
-  app.get("/api/admin/auth/fathom/callback", async (req, res) => {
+  app.get("/api/admin/auth/fathom/callback", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
       const { code, state, error: fathomError } = req.query;
 
@@ -1765,6 +1561,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.adminUserId = undefined;
       req.session.adminEmail = undefined;
       req.session.adminRole = undefined;
+      req.session.adminGoogleSubject = undefined;
+      req.session.adminAuthenticatedAt = undefined;
     }
     if (email) {
       logAuditEvent(email, "admin_logout", "/admin");
@@ -1772,155 +1570,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Logged out successfully" });
   });
 
-  // Check admin authentication status
-  app.get("/api/admin/check", async (req, res) => {
-    const isAuthenticated = req.session && req.session.isAdmin === true;
-    if (isAuthenticated && req.session?.adminUserId) {
-      const adminUser = await storage.getAdminUserById(req.session.adminUserId);
-      return res.json({
-        isAuthenticated: true,
-        user: adminUser ? {
-          id: adminUser.id,
-          email: adminUser.email,
-          name: adminUser.name,
-          avatarUrl: adminUser.avatarUrl,
-          role: adminUser.role,
-        } : null,
-        role: req.session.adminRole,
-      });
-    }
-    res.json({ isAuthenticated: !!isAuthenticated, role: req.session?.adminRole || null });
-  });
-
-  // Access Control API routes (super_admin only)
-  app.get("/api/admin/team", requireAdminAuth, requireAdminRole("super_admin"), async (_req, res) => {
-    try {
-      const users = await storage.getAllAdminUsers();
-      res.json(users.map(u => ({
-        id: u.id,
-        email: u.email,
-        name: u.name,
-        avatarUrl: u.avatarUrl,
-        role: u.role,
-        invitedBy: u.invitedBy,
-        isActive: u.isActive,
-        createdAt: u.createdAt,
-        lastLoginAt: u.lastLoginAt,
-      })));
-    } catch (error: any) {
-      res.status(500).json({ message: "Failed to fetch team members" });
-    }
-  });
-
-  app.post("/api/admin/team/invite", requireAdminAuth, requireAdminRole("super_admin"), async (req, res) => {
-    try {
-      const { email, role, name } = req.body;
-      if (!email || !role) {
-        return res.status(400).json({ message: "Email and role required" });
-      }
-      const validRoles = ["super_admin", "admin", "viewer"];
-      if (!validRoles.includes(role)) {
-        return res.status(400).json({ message: "Invalid role. Must be super_admin, admin, or viewer" });
-      }
-      const normalizedEmail = email.toLowerCase().trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-        return res.status(400).json({ message: "Invalid email address" });
-      }
-      if (!normalizedEmail.endsWith("@greenelephant.org")) {
-        return res.status(400).json({ message: "Team members must use a @greenelephant.org email address" });
-      }
-      const existing = await storage.getAdminUserByEmail(normalizedEmail);
-      if (existing) {
-        return res.status(409).json({ message: "This user already has admin access" });
-      }
-      const adminUser = await storage.createAdminUser({
-        email: normalizedEmail,
-        name: name || null,
-        role,
-        invitedBy: req.session?.adminEmail || null,
-        isActive: "true",
-        avatarUrl: null,
-        googleId: null,
-      });
-      const existingPortalUser = await storage.getClientUserByEmail(normalizedEmail);
-      if (!existingPortalUser) {
-        await storage.createClientUser({
-          email: normalizedEmail,
-          name: name || normalizedEmail.split("@")[0],
-          googleId: null,
-          avatarUrl: null,
-        });
-      }
-      logAuditEvent(
-        req.session?.adminEmail || "unknown",
-        "invite_team_member",
-        "admin_users",
-        { invitedEmail: normalizedEmail, role },
-        req.ip
-      );
-      res.json(adminUser);
-    } catch (error: any) {
-      console.error("Team invite error:", error);
-      res.status(500).json({ message: "Failed to invite team member" });
-    }
-  });
-
-  app.patch("/api/admin/team/:id", requireAdminAuth, requireAdminRole("super_admin"), async (req, res) => {
-    try {
-      const { role, isActive } = req.body;
-      const validRoles = ["super_admin", "admin", "viewer"];
-      const validActiveValues = ["true", "false"];
-      const updates: any = {};
-      if (role) {
-        if (!validRoles.includes(role)) {
-          return res.status(400).json({ message: "Invalid role" });
-        }
-        updates.role = role;
-      }
-      if (isActive !== undefined) {
-        if (!validActiveValues.includes(isActive)) {
-          return res.status(400).json({ message: "isActive must be 'true' or 'false'" });
-        }
-        updates.isActive = isActive;
-      }
-      const updated = await storage.updateAdminUser(req.params.id, updates);
-      if (!updated) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      logAuditEvent(
-        req.session?.adminEmail || "unknown",
-        "update_team_member",
-        "admin_users",
-        { targetUser: updated.email, changes: updates },
-        req.ip
-      );
-      res.json(updated);
-    } catch (error: any) {
-      res.status(500).json({ message: "Failed to update team member" });
-    }
-  });
-
-  app.delete("/api/admin/team/:id", requireAdminAuth, requireAdminRole("super_admin"), async (req, res) => {
-    try {
-      const user = await storage.getAdminUserById(req.params.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      if (user.role === "super_admin") {
-        return res.status(403).json({ message: "Cannot remove a super admin" });
-      }
-      await storage.deleteAdminUser(req.params.id);
-      logAuditEvent(
-        req.session?.adminEmail || "unknown",
-        "remove_team_member",
-        "admin_users",
-        { removedEmail: user.email },
-        req.ip
-      );
-      res.json({ message: "Team member removed" });
-    } catch (error: any) {
-      res.status(500).json({ message: "Failed to remove team member" });
-    }
+  registerAdminTeamRoutes(app, {
+    guards: [requireAdminAuth, requireAdminRole('super_admin')],
+    owner: () => process.env.ADMIN_OWNER_EMAIL,
+    list: () => storage.getAllAdminUsers(),
+    change: changeAdminTeamAudited,
   });
 
   // Audit log endpoints
@@ -2889,7 +2543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to manually resend purchase emails for a specific Satellitescan purchase
+  // Compatibility URL: check/recover the original operation, never blindly resend.
   app.post("/api/admin/satellitescan/:purchaseId/resend-emails", requireAdminAuth, requireWriteAccess, async (req, res) => {
     try {
       const { purchaseId } = req.params;
@@ -2902,33 +2556,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ success: false, message: "Purchase not found" });
       }
       
-      console.log(`📧 Manual email resend triggered for: ${purchase.customerEmail}`);
-      
-      // Send the purchase emails
-      const emailSent = await sendSatellitescanPurchaseEmail({
-        customerEmail: purchase.customerEmail,
-        customerName: purchase.customerName || 'Valued Customer',
-        amount: purchase.amount,
-        paymentIntentId: purchase.stripePaymentIntentId,
-        purchaseId: purchase.id
+      const outcome = await recoverScanPurchaseEmail(purchase);
+      if (outcome === 'accepted') return res.json({
+        success: true,
+        outcome,
+        delivery: 'unverified',
+        message: 'Provider acceptance is recorded for the original purchase emails. Previously accepted emails were not resent. Inbox delivery remains unverified.',
       });
-      
-      if (emailSent) {
-        console.log(`✅ Manual email resend successful: ${purchase.customerEmail}`);
-        res.json({ 
-          success: true, 
-          message: `Emails resent to ${purchase.customerEmail}` 
-        });
-      } else {
-        console.error(`❌ Manual email resend failed: ${purchase.customerEmail}`);
-        res.status(500).json({ 
-          success: false, 
-          message: "Failed to send emails - check server logs" 
-        });
-      }
-    } catch (error: any) {
-      console.error("Manual email resend error:", error);
-      res.status(500).json({ success: false, message: error.message });
+      const messages = {
+        ineligible: 'Only successful purchases are eligible. No email was sent.',
+        historical_review_required: 'The original email language is not recorded. Review the purchase and provider history before arranging a resend. No email was sent.',
+        reconciliation_required: 'Email acceptance is uncertain or an attempt is still pending. Check both customer and admin messages in the provider history before retrying. No automatic resend is permitted.',
+      };
+      return res.status(409).json({ success: false, outcome, delivery: 'unverified', message: messages[outcome] });
+    } catch {
+      console.error('Purchase email recovery unavailable; reconcile before retrying');
+      res.status(503).json({ success: false, message: 'Purchase email status is unavailable. Check provider history before retrying; delivery is unverified.' });
     }
   });
 
@@ -6604,58 +6247,7 @@ Be warm, practical, and specific.${userContextBlock}${timelineBlock}`,
     }
   });
 
-  app.get("/qr/:slug", async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const qrCode = await storage.getQrCodeBySlug(slug);
-      if (!qrCode || qrCode.isActive !== "true") {
-        return res.redirect("/portal/login");
-      }
-
-      const rawIp = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
-      const userAgent = req.headers["user-agent"] || "";
-      const referer = req.headers["referer"] || "";
-
-      const { createHash } = await import("crypto");
-      const ipHash = rawIp && rawIp !== "unknown"
-        ? createHash("sha256").update(rawIp + "ge-qr-salt-2026").digest("hex").slice(0, 16)
-        : "unknown";
-
-      let deviceType = "desktop";
-      if (/mobile|android|iphone|ipad/i.test(userAgent)) deviceType = "mobile";
-      else if (/tablet|ipad/i.test(userAgent)) deviceType = "tablet";
-
-      let geoData: any = {};
-      try {
-        if (rawIp && rawIp !== "unknown" && rawIp !== "127.0.0.1" && rawIp !== "::1") {
-          const geoRes = await fetch(`http://ip-api.com/json/${rawIp}?fields=status,country,regionName`);
-          const geo = await geoRes.json();
-          if (geo.status === "success") {
-            geoData = {
-              country: geo.country || null,
-              region: geo.regionName || null,
-            };
-          }
-        }
-      } catch (geoErr) {
-        console.error("QR geo lookup error:", geoErr);
-      }
-
-      await storage.createQrScan({
-        qrCodeId: qrCode.id,
-        ipAddress: ipHash,
-        userAgent: userAgent.slice(0, 200),
-        referer: referer.slice(0, 500),
-        deviceType,
-        ...geoData,
-      });
-
-      res.redirect(qrCode.targetUrl);
-    } catch (error: any) {
-      console.error("QR redirect error:", error);
-      res.redirect("/portal/login");
-    }
-  });
+  app.get("/qr/:slug", qrRedirectHandler(storage));
 
   app.get("/api/admin/qr-codes", requireAdminAuth, async (_req, res) => {
     try {
@@ -6682,9 +6274,7 @@ Be warm, practical, and specific.${userContextBlock}${timelineBlock}`,
       if (!normalizedSlug || normalizedSlug.length < 2) {
         return res.status(400).json({ message: "Slug must be at least 2 characters (letters, numbers, hyphens)" });
       }
-      const isInternalPath = targetUrl.startsWith("/");
-      const isGreenElephantUrl = targetUrl.startsWith("https://greenelephant.org") || targetUrl.startsWith("https://www.greenelephant.org");
-      if (!isInternalPath && !isGreenElephantUrl) {
+      if (!safeQrTarget(targetUrl)) {
         return res.status(400).json({ message: "Target URL must be an internal path (e.g. /portal/login) or a greenelephant.org URL" });
       }
       const existing = await storage.getQrCodeBySlug(normalizedSlug);
@@ -6714,9 +6304,7 @@ Be warm, practical, and specific.${userContextBlock}${timelineBlock}`,
       if (description !== undefined) safeUpdates.description = description ? String(description).slice(0, 500) : null;
       if (isActive !== undefined) safeUpdates.isActive = isActive === "true" ? "true" : "false";
       if (targetUrl !== undefined) {
-        const isInternalPath = targetUrl.startsWith("/");
-        const isGreenElephantUrl = targetUrl.startsWith("https://greenelephant.org") || targetUrl.startsWith("https://www.greenelephant.org");
-        if (!isInternalPath && !isGreenElephantUrl) {
+        if (!safeQrTarget(targetUrl)) {
           return res.status(400).json({ message: "Target URL must be an internal path or greenelephant.org URL" });
         }
         safeUpdates.targetUrl = targetUrl;
@@ -6800,10 +6388,7 @@ Be warm, practical, and specific.${userContextBlock}${timelineBlock}`,
       if (!qrCode) return res.status(404).json({ message: "QR code not found" });
 
       const QRCode = (await import("qrcode")).default;
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-        : "https://greenelephant.org";
-      const qrUrl = `${baseUrl}/qr/${qrCode.slug}`;
+      const qrUrl = printedQrUrl(qrCode.slug);
 
       const format = (req.query.format as string) || "png";
       if (format === "svg") {
