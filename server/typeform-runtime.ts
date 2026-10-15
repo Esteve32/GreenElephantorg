@@ -1,3 +1,4 @@
+import { createServiceEmailRuntime } from './service-email-runtime';
 import type { Express,Request,Response,NextFunction } from 'express';
 import type { db } from './db';
 import { createTypeformOriginalCodec } from './typeform-originals';
@@ -34,6 +35,7 @@ export function createTypeformRuntime(database:Pick<typeof db,'transaction'>,opt
   const recover=createTypeformResponseReader({mapping:INDIVIDUAL_SCAN_MAPPING,token:env.TYPEFORM_PERSONAL_ACCESS_TOKEN,request:options.request,signedDefinition:c.evidence.signedDefinition});
   return createScanCompletionPreview(database,{owner:()=>options.env().ADMIN_OWNER_EMAIL,sender:env.TYPEFORM_SERVICE_PREVIEW_FROM,recover})(actor,eventId,expectedVersion);
  }
+ const mail=createServiceEmailRuntime(database,{env:options.env,findAdmin:options.findAdmin,preview});
  function register(app:Express){
   // Existing provider URL; enabled-mode failures never fall through to email matching.
   app.post('/api/typeform-webhook',handler);
@@ -43,6 +45,7 @@ export function createTypeformRuntime(database:Pick<typeof db,'transaction'>,opt
    const e=options.env(),access=await checkPrivacyAccess(req.session,e.PRIVACY_ADMIN_GOOGLE_BINDINGS,options.findAdmin,Date.now(),e.ADMIN_OWNER_EMAIL);
    if(!access.allowed)return res.status(access.status).json({code:access.code});return next();
   }catch{return res.status(503).json({code:'review_unavailable'});}});
+  mail.register(app);
   registerScanServiceReviewRoutes(app,{owner:()=>options.env().ADMIN_OWNER_EMAIL,siteUrl:()=>publicSiteOrigin(options.env().PUBLIC_SITE_URL),findAdmin:options.findAdmin,
    store:{list:(...args)=>core().review.list(...args),detail:(...args)=>core().review.detail(...args),act:(...args)=>core().review.act(...args)},preview,
    attest:(actor,eventId,input)=>core().evidence.attest(actor,eventId,input)});

@@ -8,7 +8,7 @@ project_index: docs/project-index.json
 
 # Green Elephant — Product Requirements
 
-One PRD, two product sections plus shared-system requirements. Version: **2.27.6**.
+One PRD, two product sections plus shared-system requirements. Version: **2.27.8**.
 Owner: Estève Pannetier. Reconciled: 2026-10-05. Workshop updated: 2026-10-07.
 
 The current governance decision is [DEC-GE-PRD-001](DECISION_LOG.md#dec-ge-prd-001).
@@ -1713,6 +1713,23 @@ privacy-completion table for the next bounded batch. PR #63 is merged at
 `npm run typeform:preflight` reads only the public definition. It reports mapping,
 public status and missing marketing mapping honestly; it does not read responses,
 check production credentials, start a backend or clear activation gates.
+
+<a id="ai-lit-service-email-delivery-20261015"></a>
+### Purchased-service email controls — source publication approved, 15 October 2026
+
+Under DEC-AIL-103, Estève selects the purchased-service email batch and asks for the Replit/Resend/Cloudflare/Google/Stripe/Typeform trigger loop, duplicate-send safeguards and owner deliverability controls. Replit release and all database validation remain with Estève's Replit agent. Under DEC-AIL-104, Estève now explicitly authorises committing/pushing this batch, checked PR merges to GitHub main and an exact-commit Replit handover. Prerequisite PR #64 (head55ff1e43acf144ab9c7a6c2ccd7137c848318912) was merged at106f8eeb4735bdc3a335f2a1425189f8210b3d8e. Source publication does not enable the new switches or certify production readiness; Replit validation and human Republish remain separate.
+
+- Purchase/customer/admin and reminder messages can enter a shared opt-in service ledger. Existing claims and unique paid/voucher identities remain. Queued purchase/reminder envelopes are encrypted with a separate key; their order, current recipient and reminder eligibility are rechecked. Completion drafts use fresh protected original/API recovery and require exact human approval of the full envelope/body/attachment, separate from submission. No new customer step, email, cadence or marketing permission is introduced.
+- The owner-only Google/MFA queue adds pause/resume, lower daily/monthly recipient caps, per-message holds, acceptance/delivery facts and read-only Resend reconciliation. Help supports hover/focus plus persistent click/tap examples. Approval hashes include exact message bytes/context; volatile retrieval timestamps do not make an unchanged approved draft unusable. Changed or unrecoverable evidence is held.
+- Durable claims, atomic quota reservation and one-request-per-second coordination prevent duplicate workers or manual clicks from submitting again, including after Resend's 24-hour idempotency window. Unknown/crashed/submitting/provider-rejected sends stay held with no blind retry. Exact authenticated provider job/draft tags can reconcile uncertain acceptance. Failure/bounce/complaint/suppression pauses tracked sending; receipt/reply/open/click handling sends no new email. A processing-recovery hold blocks service dispatch.
+- Quotas count To and all CC copies, including the trace copy. Free defaults 100/UTC day and 3,000/UTC month are local ceilings, not observed provider usage or a guarantee when other apps, inbound mail or legacy/privacy senders share the account. Provider message delivery does not establish inbox placement or delivery to every recipient/CC. Raw-answer completion is separate from dashboard/report readiness; the coach handoff remains open.
+- `SERVICE_EMAIL_CONTROL_ENABLED=false`, `SERVICE_EMAIL_SENDING_ENABLED=false`, a saved initial pause, separate encryption/webhook/cron secrets and an additive prepared migration keep activation gated. No new process timer or cron is created. Existing Replit process timers and any Resend automations remain production-inspection items. Missing/rotated keys never authorize resetting claims or falling back to legacy sends.
+
+**Local check result:** 54 focused memory/provider-stub/loopback HTTP tests passed, plus TypeScript, build and repository checks. Fictional desktop/mobile approval → resume → one submission → read-only reconciliation passed, including keyboard/touch help and 390px overflow checks. Four database companion tests are prepared for the Replit agent and were not executed locally; the full database-containing release suite was not rerun. The existing build chunk-size warning remains.
+
+**Validation scope:** fictional memory-state/provider-stub and loopback HTTP tests, TypeScript/build/repository checks and a fictional interface preview. Database engines, migrations, populated targets, production credentials, real payments/responses/email/inboxes and Replit release are not validated by this local batch. Live DKIM/return-path/alignment, exact scheduled triggers and provider usage remain unknown here. Public DNS readback supports Cloudflare nameservers and Google mail routing only; it is not deliverability or compliance certification. [Operator verification loop](operations/replit-deployment.md#service-email-verification-loop).
+
+**Affected:** AI-LIT-REQ-010/035/036/076/089/105/106; DEC-AIL-093/095/096/100/102. Website HEAD 55ff1e43acf144ab9c7a6c2ccd7137c848318912 plus working tree; OS main 83391d8520a6bfb2e010590686d6e32797490b62 freshly resolved and its PRD/log read. GEOS-REQ-002/003/004/005 checked: this is the existing website–email provider boundary, without a new Notion/Google OS data transfer, shared contract/package or OS implementation, so no paired OS PR is required.
 
 <a id="ai-lit-release-assembly-20261015"></a>
 ### Unified handover and release preparation — 15 October 2026

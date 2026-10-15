@@ -192,3 +192,9 @@ Treat email actions as draft-only unless the user approves the exact final messa
 for sending after reviewing it. Never send immediately after drafting, including
 batch workflows. If recipients, subject, body, attachments or sender change after
 approval, obtain a new review before sending.
+
+## Purchased-service email cross-check — Estève, 15 October 2026
+
+For every programmatic service-email change, cross-check the existing Replit deployment runbook and secrets inventory against the Stripe → existing purchase email/Typeform link → signed completion → reviewed service-email path. Replit hosts the app/triggers; Resend is the sending provider, currently owner-reported Free plan; Google handles mailboxes and Cloudflare handles DNS/security. Inspect actual scheduling/account evidence before assuming which service owns a cron or automation. Keep durable duplicate protection, recipient-count quotas, uncertain-send reconciliation and owner admin controls in scope. Google/SPF/Cloudflare or an accepted API response never establish inbox delivery. Preserve existing recipient/consent boundaries; do not enable tracking to measure delivery.
+
+The current local batch leaves all database validation and Replit release to Estève and the Replit agent. Prepare checks and reviewable source locally; do not run database engines/migrations, publish, change provider/DNS settings or send real messages from this instruction. See docs/operations/replit-deployment.md#service-email-verification-loop. This preference does not expand permissions.

@@ -77,7 +77,7 @@ export function createScanCompletionPreview(database: Pick<typeof db,'transactio
     const message = { from:sender,to:before.task.recipientEmail!,cc:['esteve@greenelephant.org','anu@greenelephant.org','email@estevepannetier.com'],replyTo:'esteve@greenelephant.org',
       subject:draft.subject,html:brandedEmailWrapper(draft.title,draft.subtitle,draft.bodyHtml,draft.footer),text:draft.text,
       attachments:[{filename:draft.filename,contentType:'text/plain; charset=utf-8',contentUtf8:draft.downloadText}] };
-    const fingerprint = contentHash({version:1,context:before.fingerprint,provenance:recovered.provenance,message});
+    const fingerprint = contentHash({version:1,context:before.fingerprint,message});
     await capture(actor,eventId,expectedVersion,before.fingerprint);
     return { previewVersion:1,taskId:before.task.id,eventId,reviewVersion:expectedVersion,fingerprint,
       contentDigest:before.event.contentDigest!,provenance:recovered.provenance,message,

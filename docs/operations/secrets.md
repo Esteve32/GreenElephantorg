@@ -109,3 +109,15 @@ operator policy; do not silently re-encrypt/replace originals or downgrade check
 No retention period is invented here. Metadata retention controls do not erase this
 new original/assignment evidence or provider/backups; include those in the full
 reviewed retention inventory before activation.
+
+## Service-email delivery controls — local candidate
+
+- `SERVICE_EMAIL_CONTROL_ENABLED=false`: opt-in shared ledger and owner controls for Scan purchase, reminder and separately approved completion messages. Enabling it requires the existing privacy foundation plus `migrations/20261015_service_email.sql`, validated by the Replit agent. It does not cover every legacy coaching or marketing sender.
+- `SERVICE_EMAIL_SENDING_ENABLED=false`: separate operator transport gate; the saved queue also starts paused. Turning on one switch cannot bypass the other. Disabling control while sending remains queued is not a safe rollback; pause and reconcile first.
+- `SERVICE_EMAIL_ENCRYPTION_KEY`: dedicated 32-byte key encoded as 64 hexadecimal characters. Separate from Typeform evidence/reference and provider keys. Pending purchase/reminder envelopes are encrypted with AES-256-GCM and authenticated to job/draft IDs. Completion content is recovered and rechecked rather than stored again. Key rotation holds unreadable pending drafts; never reset their claims.
+- `RESEND_SERVICE_WEBHOOK_SECRET`: signing secret for `/api/webhooks/resend-service`. Original bytes and Svix headers are verified with the installed Resend SDK; credentials are never passed to the browser. Do not confuse this with the Typeform or Stripe signing secret.
+- `SERVICE_EMAIL_CRON_SECRET`: separate secret of at least 32 characters for the bearer-authenticated POST `/api/internal/service-email-tick`. Replit owns the real schedule. No schedule is created or activated by this source change; do not duplicate an existing trigger. A tick checks at most five approved jobs, with a shared one-request-per-second reservation.
+
+The free-plan defaults are local ceilings of 100 recipient places per UTC day and 3,000 per UTC month, confirmed in Resend documentation on 15 October 2026. To/CC copies each count. They are not live account usage: other applications, privacy messages, legacy senders and inbound mail share the provider quota but are outside these counters. Set lower caps where appropriate; use Resend Usage for the account total. Provider quota/rate errors or uncertain acceptance remain held, with no automatic resend.
+
+`npm run service-email:preflight` reads configuration booleans only. Optional `-- --dns greenelephant.org` reads public DNS. It never starts the backend, accesses a database, retrieves email content or sends mail. A configured secret or active connector is not proof that the production endpoint, schedule, DKIM/return-path or receiving mailbox works. Use the [service-email verification loop](replit-deployment.md#service-email-verification-loop).

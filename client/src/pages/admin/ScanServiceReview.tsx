@@ -1,3 +1,4 @@
+import { ServiceEmailPanel } from '@/components/admin/ServiceEmailPanel';
 import { ActionLearning, ContextHelp } from '@/components/admin/ContextHelp';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
@@ -152,18 +153,18 @@ export default function ScanServiceReview() {
           {!detail.canResolve && <p className="text-amber-200">Resolution needs a qualifying final response, one eligible order and matching assignment/recipient evidence. Keep unclear cases on hold.</p>}
           <Button disabled={saving || !!attempt || !detail.canResolve || !evidence} onClick={() => act('resolved')}>Record assignment and create coach task</Button>
         </>}
-        {detail.task && <section className="border border-teal-300/30 rounded p-4 space-y-2"><h2 className="text-xl font-semibold">Coach handoff — retrieval pending</h2>
+        {detail.task && <section className="border border-teal-300/30 rounded p-4 space-y-2"><h2 className="text-xl font-semibold">Coach handoff</h2>
           <p>Owner reference: {detail.task.ownerId || 'Needs assignment'}</p><p>Target: {date(detail.task.dueAt)}</p>
           <p className="break-all">Reviewed participant: {detail.task.participantRef || 'Not recorded'} · recipient: {detail.task.recipientEmail || 'Needs review'}</p>
           <p className="text-white/70">{detail.task.nextAction}</p><p>Signed originals use separate encrypted evidence storage. A finished report is not stored by this queue. This review action did not send a message.</p>
           <Button variant="outline" disabled={saving || !!attempt} onClick={() => void loadPreview()}>Recover response and preview completion email</Button></section>}
-        {preview && <section className="border border-amber-200/40 rounded p-4 space-y-4"><h2 className="text-xl font-semibold">Completion email preview — not approved or sent</h2>
+        {preview && <section className="border border-amber-200/40 rounded p-4 space-y-4"><h2 className="text-xl font-semibold">Completion email content preview</h2>
           <dl className="space-y-2 break-words"><div><dt className="font-semibold">From</dt><dd>{preview.message.from}</dd></div>
             <div><dt className="font-semibold">To · reviewed participant</dt><dd>{preview.message.to}</dd></div>
             <div><dt className="font-semibold">Coach copies</dt><dd>{preview.message.cc.join(', ')}</dd></div>
             <div><dt className="font-semibold">Reply to</dt><dd>{preview.message.replyTo}</dd></div>
             <div><dt className="font-semibold">Subject</dt><dd>{preview.message.subject}</dd></div></dl>
-          <p className="text-white/70">This draft is bound to the reviewed order, recipient and recovered content. A changed draft needs a new review. There is no send action here.</p>
+          <p className="text-white/70">This draft is bound to the reviewed order, recipient and recovered content. A changed draft needs a new review. Approval and delivery status are shown in the service email controls below.</p>
           <details><summary className="cursor-pointer text-teal-200">Message fingerprint and source</summary><p className="break-all text-sm mt-2">{preview.fingerprint}</p>
             <p className="text-sm">Exact response {preview.provenance.responseId} · recovered {date(preview.provenance.retrievedAt)}</p></details>
           <h3 className="font-semibold">Plain text</h3><pre className="whitespace-pre-wrap break-words bg-black/30 p-3 rounded text-sm">{preview.message.text}</pre>
@@ -176,5 +177,6 @@ export default function ScanServiceReview() {
         </section>}
         <section><h2 className="font-semibold">Latest review actions</h2>{detail.history.length ? <ol className="mt-2 space-y-2">{detail.history.map(h => <li key={h.version} className="text-white/70">v{h.version} · {h.decision} · {h.reason.replaceAll('_', ' ')} · {date(h.recordedAt)}</li>)}</ol> : <p className="text-white/60">No operator decision recorded.</p>}</section>
       </CardContent></Card>}
+      {page && <ServiceEmailPanel key={page.accessExpiresAt} preview={preview} />}
     </div></main>;
 }
